@@ -1,0 +1,659 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Target Groups API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Target Groups
+  x-displayName: Target Groups
+paths:
+  /target-groups:
+    post:
+      summary: Create target group
+      description: 'Creates a new target group for the current user.
+
+
+        **Caution:** Target groups were deprecated in Tenable Vulnerability Management on February 4th, 2022. Tenable recommends that customers use [tags](ref:tags) instead to group and scan assets. Please update any existing integrations that your organization has. If you want to automatically migrate your target groups to tags via the API and pyTenable, see [Migrate Target Groups to Tags](doc:migrate-target-groups-to-tags). For more information about tags, see [Tags](https://docs.tenable.com/vulnerability-management/Content/Settings/Tagging/Tags.htm) in the Tenable Vulnerability Management User Guide. <div class="perms-callout">Requires the Scan Operator [24] user role to create user target groups. See [Roles](doc:roles).</div>'
+      operationId: target-groups-create
+      deprecated: true
+      tags:
+      - Target Groups
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name for the group.
+                members:
+                  type: string
+                  description: The members of the group. A comma-separated list of FQDNs or IP address ranges that you want to scan.
+                acls:
+                  items:
+                    $ref: '#/components/schemas/target-groups_ACL_Request'
+                  description: An array containing permissions to apply to the group.
+                  type: array
+                  example: '[{"type": "default", "permissions": 16}, {"type": "target-group", "permissions": 64, "name": "admin", "id": 1, "owner": 1}]'
+              required:
+              - name
+              - members
+              - type
+      responses:
+        '200':
+          description: Returned if the group was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_group'
+              examples:
+                response:
+                  value:
+                    acls:
+                    - permissions: 0
+                      type: default
+                    - permissions: 128
+                      owner: 1
+                      display_name: user2@example.com
+                      name: user2@example.com
+                      uuid: 00000000-0000-0000-0000-000000000000
+                      id: 2
+                      type: user
+                    uuid: 00000000-0000-0000-0000-000000000000
+                    default_group: 0
+                    members: 192.0.2.53, 192.0.2.54, 192.0.2.55, 192.0.2.56, 192.0.2.57
+                    name: RHEL_Hosts
+                    owner: user2@example.com
+                    shared: 0
+                    user_permissions: 128
+                    last_modification_date: 1543622674
+                    creation_date: 1543622674
+                    owner_uuid: 00000000-0000-0000-0000-000000000000
+                    owner_id: 2
+                    id: 18
+        '400':
+          description: Returned if your response message is missing a required parameter or is otherwise invalid.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create a group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - target-groups_cloud: []
+  /target-groups/{no_members}:
+    get:
+      summary: List target groups
+      description: 'Returns the current target groups.
+
+
+        **Caution:** Target groups were deprecated in Tenable Vulnerability Management on February 4th, 2022. Tenable recommends that customers use [tags](ref:tags) instead to group and scan assets. Please update any existing integrations that your organization has. If you want to automatically migrate your target groups to tags via the API and pyTenable, see [Migrate Target Groups to Tags](doc:migrate-target-groups-to-tags). For more information about tags, see [Tags](https://docs.tenable.com/vulnerability-management/Content/Settings/Tagging/Tags.htm) in the Tenable Vulnerability Management User Guide. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+      operationId: target-groups-list
+      deprecated: true
+      tags:
+      - Target Groups
+      parameters:
+      - description: Specifies whether to exclude members and access control lists (ACLs) from the response. If set to `true`, the `members` and `acls` properties for each group are empty.
+        required: true
+        name: no_members
+        in: path
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Returns the group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_target_groups'
+              examples:
+                response:
+                  value:
+                    target_groups:
+                    - acls:
+                      - permissions: 0
+                        type: default
+                      - permissions: 128
+                        owner: 1
+                        display_name: user2@example.com
+                        name: user2@example.com
+                        uuid: 00000000-0000-0000-0000-000000000000
+                        id: 2
+                        type: user
+                      uuid: 00000000-0000-0000-0000-000000000000
+                      default_group: 0
+                      type: user
+                      members: 192.0.2.53, 192.0.2.54, 192.0.2.55, 192.0.2.56, 192.0.2.57
+                      name: Centos_Hosts
+                      owner: user2@example.com
+                      shared: 0
+                      user_permissions: 128
+                      last_modification_date: 1543622642
+                      creation_date: 1543622642
+                      owner_uuid: 00000000-0000-0000-0000-000000000000
+                      owner_id: 2
+                      id: 17
+                    - acls:
+                      - permissions: 64
+                        type: default
+                      - permissions: 128
+                        owner: 1
+                        display_name: system
+                        name: nessus_ms_agent
+                        uuid: 00000000-0000-0000-0000-000000000000
+                        id: 1
+                        type: user
+                      uuid: 00000000-0000-0000-0000-000000000000
+                      default_group: 1
+                      type: user
+                      members: '*'
+                      name: Default
+                      owner: nessus_ms_agent
+                      shared: 1
+                      user_permissions: 64
+                      last_modification_date: 1532459326
+                      creation_date: 1532459326
+                      owner_uuid: 00000000-0000-0000-0000-000000000000
+                      owner_id: 1
+                      id: 7
+                    - acls:
+                      - permissions: 0
+                        type: default
+                      - permissions: 128
+                        owner: 1
+                        display_name: user2@example.com
+                        name: user2@example.com
+                        uuid: 00000000-0000-0000-0000-000000000000
+                        id: 2
+                        type: user
+                      uuid: 00000000-0000-0000-0000-000000000000
+                      default_group: 0
+                      type: user
+                      members: 192.0.2.53, 192.0.2.54, 192.0.2.55, 192.0.2.56, 192.0.2.57
+                      name: RHEL_Hosts
+                      owner: user2@example.com
+                      shared: 0
+                      user_permissions: 128
+                      last_modification_date: 1543622674
+                      creation_date: 1543622674
+                      owner_uuid: 00000000-0000-0000-0000-000000000000
+                      owner_id: 2
+                      id: 18
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - target-groups_cloud: []
+  /target-groups/{group_id}:
+    get:
+      summary: Get target group details
+      description: 'Returns details for the specified target group.
+
+
+        **Caution:** Target groups were deprecated in Tenable Vulnerability Management on February 4th, 2022. Tenable recommends that customers use [tags](ref:tags) instead to group and scan assets. Please update any existing integrations that your organization has. If you want to automatically migrate your target groups to tags via the API and pyTenable, see [Migrate Target Groups to Tags](doc:migrate-target-groups-to-tags). For more information about tags, see [Tags](https://docs.tenable.com/vulnerability-management/Content/Settings/Tagging/Tags.htm) in the Tenable Vulnerability Management User Guide. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+      operationId: target-groups-details
+      deprecated: true
+      tags:
+      - Target Groups
+      parameters:
+      - description: The ID of the group.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returns the group details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_group'
+              examples:
+                response:
+                  value:
+                    acls:
+                    - permissions: 0
+                      type: default
+                    - permissions: 128
+                      owner: 1
+                      display_name: user2@example.com
+                      name: user2@example.com
+                      uuid: 00000000-0000-0000-0000-000000000000
+                      id: 2
+                      type: user
+                    uuid: 00000000-0000-0000-0000-000000000000
+                    default_group: 0
+                    type: user
+                    members: 192.0.2.53, 192.0.2.54, 192.0.2.55, 192.0.2.56, 192.0.2.57
+                    name: Centos_Hosts
+                    owner: user2@example.com
+                    shared: 0
+                    user_permissions: 128
+                    last_modification_date: 1543622642
+                    creation_date: 1543622642
+                    owner_uuid: 00000000-0000-0000-0000-000000000000
+                    owner_id: 2
+                    id: 17
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the group.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - target-groups_cloud: []
+    put:
+      summary: Update target group
+      description: 'Updates a target group.
+
+
+        **Caution:** Target groups were deprecated in Tenable Vulnerability Management on February 4th, 2022. Tenable recommends that customers use [tags](ref:tags) instead to group and scan assets. Please update any existing integrations that your organization has. If you want to automatically migrate your target groups to tags via the API and pyTenable, see [Migrate Target Groups to Tags](doc:migrate-target-groups-to-tags). For more information about tags, see [Tags](https://docs.tenable.com/vulnerability-management/Content/Settings/Tagging/Tags.htm) in the Tenable Vulnerability Management User Guide. <div class="perms-callout">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>'
+      operationId: target-groups-edit
+      deprecated: true
+      tags:
+      - Target Groups
+      parameters:
+      - description: The ID of the group to edit.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the group.
+                members:
+                  type: string
+                  description: The members of the group. A comma-separated list of FQDNs or IP address ranges that you want to scan.
+                acls:
+                  items:
+                    $ref: '#/components/schemas/target-groups_ACL_Request'
+                  description: An array containing permissions to apply to the group.
+                  type: array
+                  example: '[{"type": "default", "permissions": 16}, {"type": "target-group", "permissions": 64, "name": "admin", "id": 1, "owner": 1}]'
+      responses:
+        '200':
+          description: Returned if the target group was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_group'
+              examples:
+                response:
+                  value:
+                    acls:
+                    - permissions: 0
+                      type: default
+                    - permissions: 128
+                      owner: 1
+                      display_name: user2@example.com
+                      name: user2@example.com
+                      uuid: 00000000-0000-0000-0000-000000000000
+                      id: 2
+                      type: user
+                    uuid: 00000000-0000-0000-0000-000000000000
+                    default_group: 0
+                    type: user
+                    members: 192.0.2.53, 192.0.2.54, 192.0.2.55, 192.0.2.56, 192.0.2.57
+                    name: Centos_Hosts
+                    owner: user2@example.com
+                    shared: 0
+                    user_permissions: 128
+                    last_modification_date: 1543622642
+                    creation_date: 1543622642
+                    owner_uuid: 00000000-0000-0000-0000-000000000000
+                    owner_id: 2
+                    id: 17
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to update the group.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - target-groups_cloud: []
+    delete:
+      summary: Delete target group
+      description: 'Deletes a target group.
+
+
+        **Caution:** Target groups were deprecated in Tenable Vulnerability Management on February 4th, 2022. Tenable recommends that customers use [tags](ref:tags) instead to group and scan assets. Please update any existing integrations that your organization has. If you want to automatically migrate your target groups to tags via the API and pyTenable, see [Migrate Target Groups to Tags](doc:migrate-target-groups-to-tags). For more information about tags, see [Tags](https://docs.tenable.com/vulnerability-management/Content/Settings/Tagging/Tags.htm) in the Tenable Vulnerability Management User Guide. <div class="perms-callout">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>'
+      operationId: target-groups-delete
+      deprecated: true
+      tags:
+      - Target Groups
+      parameters:
+      - description: The ID of the group to delete.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the target group was deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to delete the group.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/target-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - target-groups_cloud: []
+components:
+  schemas:
+    target-groups_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    target-groups_ACL_Request:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of permission (default, user, group).
+          enum:
+          - default
+          - user
+          - group
+        id:
+          type: integer
+          description: The unique ID of the user or group.
+        permissions:
+          type: integer
+          description: The permission value to grant access as described in [Permissions](doc:permissions).
+          format: int32
+    target-groups_group:
+      type: object
+      properties:
+        acls:
+          description: The Access Control Lists applicable to the group.
+          type: array
+          items:
+            $ref: '#/components/schemas/target-groups_ACL_Response'
+        id:
+          type: integer
+          description: The unique ID of the group.
+        default_group:
+          type: boolean
+          description: If true, this group is the default.
+        name:
+          type: string
+          description: The name of the group.
+        members:
+          type: string
+          description: The members of the group.
+        type:
+          type: string
+          description: The group type (user or system). Note that the system group type is deprecated. Tenable recommends that you create only user target groups.
+        owner:
+          type: string
+          description: The name of the owner of the group. A user of `nessus_ms_agent` indicates it is a system target group.
+        owner_id:
+          type: integer
+          description: The unique ID of the owner of the group.
+        last_modification_date:
+          type: integer
+          description: The last modification date for the group in unixtime.
+        shared:
+          type: integer
+          description: The shared status of the group.
+        user_permissions:
+          type: integer
+          description: The current user permissions for the group.
+    target-groups_target_groups:
+      type: array
+      items:
+        $ref: '#/components/schemas/target-groups_group'
+    target-groups_ACL_Response:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of permission (default, user, group).
+          enum:
+          - default
+          - user
+          - group
+        id:
+          type: integer
+          description: The unique ID of the user or group.
+        uuid:
+          type: string
+          description: The UUID of the owner of the object.
+        name:
+          type: string
+          description: The name of the user or group.
+        display_name:
+          type: string
+          description: The display-friendly name of the user or group.
+        permissions:
+          type: integer
+          description: The permission value to grant access as described in [Permissions](doc:permissions).
+          format: int32
+        owner:
+          type: integer
+          description: The ID of the owner of the object.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

@@ -1,0 +1,1217 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Networks API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Networks
+  x-displayName: Networks
+paths:
+  /networks:
+    post:
+      summary: Create network
+      description: "Creates a network object that you associate with scanners and scanner groups. \n\n**Note:** You cannot add AWS assets to network objects. For AWS assets, use the network segmentation provided by AWS instead.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.NETWORK.CREATE` custom role privilege. See [Roles](doc:roles).</div>"
+      operationId: networks-create
+      tags:
+      - Networks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: "The name of the network object. This name must be unique within your Tenable Vulnerability Management instance, cannot duplicate the name of a previously deleted network, and cannot be `default`.  \n  \n**Note:** You can add a maximum of 50,000 network objects to an individual Tenable Vulnerability Management instance."
+                  type: string
+                description:
+                  description: The description of the network object.
+                  type: string
+                assets_ttl_days:
+                  description: 'The number of days to wait before assets age out. Assets will be permanently deleted if they are not seen on a scan within the specified number of days.<ul><li>Minimum value: 14</li><li>Maximum value: 365</li></ul> **Warning:** If you enable this option, Tenable Vulnerability Management immediately deletes assets in the specified network that have not been seen for the specified number of days. All asset records and associated vulnerabilities are deleted and cannot be recovered. The deleted assets no longer count towards [your license](https://docs.tenable.com/early-access/tenableio/vulnerabilitymanagement/Content/GettingStarted/Licenses.htm).'
+                  type: integer
+              required:
+              - name
+            example:
+              name: Area 51
+              description: classified
+              assets_ttl_days: 91
+      responses:
+        '200':
+          description: Returned if the network was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_NetworkObject'
+              examples:
+                response:
+                  value:
+                    owner_uuid: 0e67b283-07a4-464c-a5e4-7b42576962fd
+                    created: 1557526802865
+                    modified: 1557526802865
+                    scanner_count: 0
+                    uuid: 42475f11-5e6b-4d6a-a53d-63fe494961df
+                    name: Headquarters
+                    description: Network devices at Columbia, MD location
+                    is_default: false
+                    created_by: 0f403df2-3b35-4339-9f74-1574805de203
+                    modified_by: 0f403df2-3b35-4339-9f74-1574805de203
+                    assets_ttl_days: 91
+                    created_in_seconds: 1557526802
+                    modified_in_seconds: 1557526802
+        '400':
+          description: 'Returned if Tenable Vulnerability Management encounters invalid JSON in the request body or if an invalid `assets_ttl_days` value was declared (min: 14, max: 365).'
+        '401':
+          description: Returned if Tenable Vulnerability Management cannot authenticate the user account that submitted the request.
+        '403':
+          description: Returned if you do not have permission to create network objects.
+        '409':
+          description: Returned if a network object with the same name already exists.
+        '415':
+          description: Returned if the request payload is in an unsupported format.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+      security:
+      - networks_cloud: []
+    get:
+      summary: List networks
+      description: Lists network objects for your organization.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.NETWORK.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: networks-list
+      tags:
+      - Networks
+      parameters:
+      - description: "A filter condition in the following format: `field:operator:value`. For network objects, you can only filter on the `name` field, using the following operators: \n* eq—The name of the returned network object is equal to the text you specify. \n* neq—The returned list of network objects excludes the network object where the name is equal to the text you specify. \n* match—The returned list includes network objects where the name contains the text you specify at least partially.\n\nYou can specify multiple `f` parameters, separated by ampersand (&) characters. If you specify multiple `f` parameters, use the `ft` parameter to specify how Tenable Vulnerability Management applies the multiple filter conditions."
+        required: false
+        name: f
+        in: query
+        schema:
+          type: string
+      - description: The operator that Tenable Vulnerability Management applies if multiple \`f\` parameters are present. The `OR` operator is the only supported value. If you omit this parameter and multiple `f` parameters are present, Tenable Vulnerability Management applies the `OR` operator by default.
+        required: false
+        name: ft
+        in: query
+        schema:
+          type: string
+      - description: The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `50`.
+        required: false
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`.
+        required: false
+        name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:asc` would sort results by the `name` field in ascending order.
+        required: false
+        name: sort
+        in: query
+        schema:
+          type: string
+      - description: Indicates whether Tenable Vulnerability Management includes deleted network objects in the response message. Deleted network objects contain the additional attributes, `deleted` and `deleted_by`, which specifies the date (in Unix time) when the network object was deleted and the UUID of the user that deleted the network object.
+        name: includeDeleted
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Returned if the list of networks was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  networks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/networks_NetworkObject'
+                  pagination:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/networks_PaginationResponse'
+              examples:
+                response:
+                  value:
+                    networks:
+                    - owner_uuid: ddbd3e11-3311-4682-9912-8e81805fd8a9
+                      created: 154474408527
+                      modified: 154474408527
+                      scanner_count: 10
+                      uuid: 00000000-0000-0000-0000-000000000000
+                      name: Default
+                      is_default: true
+                      created_by: ddbd3e11-3311-4682-9912-8e81805fd8a9
+                      modified_by: ddbd3e11-3311-4682-9912-8e81805fd8a9
+                      created_in_seconds: 1544744085
+                      modified_in_seconds: 1544744085
+                    - owner_uuid: 0e67b283-07a4-464c-a5e4-7b42576962fd
+                      created: 1557526802865
+                      modified: 1557526802865
+                      scanner_count: 1
+                      uuid: 42475f11-5e6b-4d6a-a53d-63fe494961df
+                      name: Headquarters
+                      description: Network devices at Columbia, MD location
+                      is_default: false
+                      created_by: 0f403df2-3b35-4339-9f74-1574805de203
+                      modified_by: 0f403df2-3b35-4339-9f74-1574805de203
+                      assets_ttl_days: 91
+                      created_in_seconds: 1557526802
+                      modified_in_seconds: 1557526802
+                    pagination:
+                      total: 2
+                      limit: 50
+                      offset: 0
+                      sort:
+                      - name: name
+                        order: asc
+        '400':
+          description: Returned if the query parameters in your request were invalid.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have sufficient permissions to list network objects.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+      security:
+      - networks_cloud: []
+  /networks/{network_id}:
+    get:
+      summary: Get network details
+      description: Returns the details of the specified network object.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.NETWORK.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: networks-details
+      tags:
+      - Networks
+      parameters:
+      - description: The UUID of the network object for which you want to view details.
+        required: true
+        name: network_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the details of the specified network object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_NetworkObject'
+              examples:
+                response:
+                  value:
+                    owner_uuid: 0e67b283-07a4-464c-a5e4-7b42576962fd
+                    created: 1557526802865
+                    modified: 1557526802865
+                    scanner_count: 0
+                    uuid: 42475f11-5e6b-4d6a-a53d-63fe494961df
+                    name: Headquarters
+                    description: Network devices at Columbia, MD location
+                    is_default: false
+                    created_by: 0f403df2-3b35-4339-9f74-1574805de203
+                    modified_by: 0f403df2-3b35-4339-9f74-1574805de203
+                    assets_ttl_days: 91
+                    created_in_seconds: 1557526802
+                    modified_in_seconds: 1557526802
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find a network object with the specified UUID.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+      security:
+      - networks_cloud: []
+    put:
+      summary: Update network
+      description: 'Updates the name or description of a network object.
+
+
+        **Note:** The `name` body parameter is required when updating the specified network with this endpoint. To retrieve the `name`, use the [GET /networks/{network_id}](ref:networks-details) endpoint.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.NETWORK.EDIT` custom role privilege. See [Roles](doc:roles).</div>'
+      operationId: networks-update
+      tags:
+      - Networks
+      parameters:
+      - description: The UUID of the network object you want to update. You cannot update the default network object.
+        required: true
+        name: network_id
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: The new name of the network object. This name must be unique within your Tenable Vulnerability Management instance, cannot duplicate the name of a previously deleted network, and cannot be `default`.
+                  type: string
+                description:
+                  description: The new description of the network object.
+                  type: string
+                assets_ttl_days:
+                  description: 'The number of days to wait before assets age out. Assets will be permanently deleted if they are not seen on a scan within the specified number of days.<ul><li>Minimum value: 14</li><li>Maximum value: 365</li></ul> **Warning:** If you enable this option, Tenable Vulnerability Management immediately deletes assets in the specified network that have not been seen for the specified number of days. All asset records and associated vulnerabilities are deleted and cannot be recovered. The deleted assets no longer count towards [your license](https://docs.tenable.com/early-access/tenableio/vulnerabilitymanagement/Content/GettingStarted/Licenses.htm).'
+                  type: integer
+              required:
+              - name
+      responses:
+        '200':
+          description: Returns successfully updated details of the network object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_NetworkObject'
+              examples:
+                response:
+                  value:
+                    owner_uuid: 0e67b283-07a4-464c-a5e4-7b42576962fd
+                    created: 1557526802865
+                    modified: 1557526802865
+                    scanner_count: 0
+                    uuid: 42475f11-5e6b-4d6a-a53d-63fe494961df
+                    name: Columbia office
+                    description: Network devices at Columbia, MD location
+                    is_default: false
+                    created_by: 0f403df2-3b35-4339-9f74-1574805de203
+                    modified_by: 0f403df2-3b35-4339-9f74-1574805de203
+                    assets_ttl_days: 91
+                    created_in_seconds: 1557526802
+                    modified_in_seconds: 1557526802
+        '400':
+          description: 'Returned if Tenable Vulnerability Management encounters invalid JSON in the request body, if you attempted to change the default network object, or if an invalid `assets_ttl_days` value was declared (min: 14, max: 365).'
+        '401':
+          description: Returned if Tenable Vulnerability Management cannot authenticate the user account that submitted the request.
+        '403':
+          description: Returned if you do not have permission to update the specified network object.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified network object, either because the object does not exist or because the object has been deleted.
+        '409':
+          description: Returned if a network object with the same name already exists.
+        '415':
+          description: Returned if the request payload is in an unsupported format.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+      security:
+      - networks_cloud: []
+    delete:
+      summary: Delete network
+      description: "Deletes the specified network object. Before you delete a network object, consider moving assets to a different network using the bulk asset move endpoint ([POST /api/v2/assets/bulk-jobs/move-to-network](ref:assets-bulk-move)). If you delete a network object, Tenable Vulnerability Management:\n - Returns the scanners and scanner groups associated with the deleted object to the default network object.\n - Retains any asset records for the deleted network until the assets age out of your licensed assets count. \n\n**Note:** You can view deleted network objects using the `includeDeleted` filter in a [GET /networks](ref:networks-list) request. <div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.NETWORK.DELETE` custom role privilege. See [Roles](doc:roles).</div>"
+      operationId: networks-delete
+      tags:
+      - Networks
+      parameters:
+      - description: UUID for the network object you want to delete. You cannot delete the default network object.
+        required: true
+        name: network_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the specified network object was deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if you attempted to delete the default network object.
+        '401':
+          description: Returned if Tenable Vulnerability Management cannot authenticate the user account that submitted the request.
+        '403':
+          description: Returned if you do not have sufficient permissions to delete the specified network object.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the network object you specified.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+      security:
+      - networks_cloud: []
+  /networks/{network_id}/counts/assets-not-seen-in/{num_days}:
+    get:
+      summary: Get network asset count
+      description: Returns the total number of assets in the network along with the number of assets that have not been seen for the specified number of days.<p>Requires the Scan Manager [40] user role or `VM.VM_SENSOR.NETWORK.READ` custom role privilege.</p>
+      operationId: io-networks-asset-count-details
+      tags:
+      - Networks
+      parameters:
+      - description: The UUID of the network object for which you want to view details.
+        required: true
+        name: network_id
+        in: path
+        schema:
+          type: string
+      - description: 'Return a count of assets that have not been seen for the specified number of days.<ul><li>Minimum value: 1</li><li>Maximum value: 365</li></ul> '
+        required: true
+        name: num_days
+        in: path
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Returns the total number of assets in the network along with the number of assets that have not been seen for the specified number of days.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_NetworkAssetCount'
+              examples:
+                response:
+                  value:
+                    numAssetsNotSeen: 200
+                    numAssetsTotal: 1000
+        '400':
+          description: 'Returned if the parameters in your request were invalid. For example, if `num_days` is out of range (min: 1, max: 365).'
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 400
+                    error: Bad Request
+                    message: child "days" fails because ["days" must be less than or equal to 365]
+                    validation:
+                      source: params
+                      keys:
+                      - days
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find a network object with the specified UUID.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+      security:
+      - networks_cloud: []
+  /networks/{network_id}/scanners/{scanner_uuid}:
+    post:
+      summary: Assign scanners
+      description: 'Associates a scanner or scanner group with a network object. Use this endpoint to:<ul><li>Assign a scanner or scanner group to a custom network object.</li><li>Return a scanner or scanner group to the default network object.</li></ul><div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See [Roles](doc:roles).</div>'
+      operationId: networks-assign-scanner
+      tags:
+      - Networks
+      parameters:
+      - description: The UUID of the network object where you want to assign a scanner or scanner group.
+        required: true
+        name: network_id
+        in: path
+        schema:
+          type: string
+      - description: The UUID of the scanner or scanner group you want to assign to the network object. To get UUID values, use the [GET /networks/{network_id}/assignable-scanners](ref:networks-list-assignable-scanners) endpoint.
+        required: true
+        name: scanner_uuid
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the scanner or scanner group to the network object was assigned successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if you attempt to assign an AWS scanner to the network object. For AWS assets, use network segmentation processes offered by AWS instead.
+        '401':
+          description: Returned if Tenable Vulnerability Management cannot authenticate the user account that submitted the request.
+        '403':
+          description: Returned if you do not have sufficient permissions to assign a scanner or scanner group to the specified network object.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find either the network object, the scanner object, or the scanner group object you specified.
+        '409':
+          description: "Returned if Tenable Vulnerability Management determines that assigning the scanner or scanner group causes a network conflict. A response message with this code includes a response body under the following conditions:  \n* The scanner you attempted to assign is a member of more than one scanner group.  \n* The scanner group you attempted to assign contains one or more scanners that belong to another scanner group."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conflicts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/networks_NetworkConflict'
+              examples:
+                response:
+                  value:
+                    conflicts:
+                    - scanner_uuid: c721fd3e-6490-4df7-927a-b796c8528d1cdb3eac57471272de
+                      scanner_groups:
+                      - uuid: 7c4973d5-5e16-4f19-8b23-5d3196e771e1
+                        name: Northeast sector
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+      security:
+      - networks_cloud: []
+  /networks/{network_id}/scanners:
+    get:
+      summary: List network scanners
+      description: 'Lists all scanners and scanner groups belonging to the specified network object.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>'
+      operationId: networks-list-scanners
+      tags:
+      - Networks
+      parameters:
+      - description: The UUID of the network object for which you want to list assigned scanners and scanner groups.
+        required: true
+        name: network_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a list of scanners and scanner groups for the specified network object.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: A list of scanners and scanner groups.
+                properties:
+                  scanners:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/networks_ScannerObject'
+              examples:
+                response:
+                  value:
+                    scanners:
+                    - creation_date: 1521065518
+                      distro: 2.6.32-504.8.1.el6.x86_64
+                      engine_build: '201710101'
+                      engine_version: NNM 5.4.0
+                      group: false
+                      id: 215898
+                      key: bd98a384ff0e91c8f94fa7f786f8827c1eb7b28dffcfb9895f9d85bd8f0a7d53
+                      last_connect: 1524524576
+                      last_modification_date: 1524523493
+                      linked: 1
+                      loaded_plugin_set: '201803271415'
+                      name: NNM-540
+                      num_scans: 0
+                      owner: system
+                      owner_id: 1
+                      owner_name: system
+                      owner_uuid: ddbd3e11-3311-4682-9912-8e81805fd8a9
+                      platform: LINUX
+                      pool: false
+                      report_frequency: 3600
+                      settings: {}
+                      scan_count: 0
+                      source: service
+                      status: 'off'
+                      timestamp: 1524523493
+                      type: managed_pvs
+                      uuid: 946df0af-0597-4d1e-993d-36a5c25b0d36
+                      remote_uuid: 4e7b9e29-b128-4ae5-9108-b936b35c6f1a9b9a533780bda648
+                      supports_remote_logs: false
+        '401':
+          description: Returned if Tenable Vulnerability Management cannot authenticate the user account that submitted the request.
+        '403':
+          description: Returned if you do not have sufficient permissions to list scanners and scanner groups for the specified network object.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the network object you specified.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+      security:
+      - networks_cloud: []
+    post:
+      summary: Bulk assign scanners
+      description: 'Bulk assigns scanners and scanner groups to a custom network. The data in this request payload overwrites the full list of specified scanners and scanner groups previously assigned to the specified network object. If the payload excludes scanners or scanner groups previously assigned to the specified network object, Tenable Vulnerability Management returns those scanners and scanner groups to the default network. You cannot use this endpoint to bulk return scanners and scanner groups from multiple custom networks to the default network.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See [Roles](doc:roles).</div>'
+      operationId: networks-assign-scanner-bulk
+      tags:
+      - Networks
+      parameters:
+      - description: The UUID of the network object where you want to bulk assign scanners and scanner groups.
+        required: true
+        name: network_id
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scanner_uuids:
+                  description: A list of UUIDs for the scanners and scanner groups you want to bulk move to a network object. To get values for this list, use the [GET /networks/{network_id}/assignable-scanners](ref:networks-list-assignable-scanners) endpoint.
+                  type: array
+                  items:
+                    type: string
+              required:
+              - scanner_uuids
+      responses:
+        '200':
+          description: Returned if the scanners and scanner groups were assigned to the network object successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if you attempt to assign an AWS scanner to the network object. For AWS assets, use network segmentation processes offered by AWS instead.
+        '401':
+          description: Returned if Tenable Vulnerability Management cannot authenticate the user account that submitted the request.
+        '403':
+          description: Returned if you do not have sufficient permissions to assign a scanner or scanner group to the specified network object.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find either the network object, the scanner object, or the scanner group object you specified.
+        '409':
+          description: "Returned if Tenable Vulnerability Management determines that assigning the scanner or scanner group causes a network conflict. A response message with this code includes a response body under the following conditions:  \n* A scanner you attempted to assign is a member of more than one scanner group.  \n* A scanner group you attempted to assign contains one or more scanners that belong to another scanner group."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conflicts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/networks_NetworkConflict'
+              examples:
+                response:
+                  value:
+                    conflicts:
+                    - scanner_uuid: c721fd3e-6490-4df7-927a-b796c8528d1cdb3eac57471272de
+                      scanner_groups:
+                      - uuid: 7c4973d5-5e16-4f19-8b23-5d3196e771e1
+                        name: Northeast sector
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+      security:
+      - networks_cloud: []
+  /networks/{network_id}/assignable-scanners:
+    get:
+      summary: List assignable scanners
+      description: 'Lists all scanners and scanner groups not yet assigned to a custom network object. This list includes all scanner groups within the default network AND any scanners within the default network that do not belong to a scanner group.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>'
+      operationId: networks-list-assignable-scanners
+      tags:
+      - Networks
+      parameters:
+      - description: The UUID of the default network object.
+        required: true
+        name: network_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a list of assignable scanners and scanner groups in the default network object.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: A list of scanners and scanner groups.
+                properties:
+                  scanners:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/networks_ScannerObject'
+              examples:
+                response:
+                  value:
+                    scanners:
+                    - creation_date: 1521065518
+                      distro: 2.6.32-504.8.1.el6.x86_64
+                      engine_build: '201710101'
+                      engine_version: NNM 5.4.0
+                      group: false
+                      id: 215898
+                      key: bd98a384ff0e91c8f94fa7f786f8827c1eb7b28dffcfb9895f9d85bd8f0a7d53
+                      last_connect: 1524524576
+                      last_modification_date: 1524523493
+                      linked: 1
+                      loaded_plugin_set: '201803271415'
+                      name: NNM-540
+                      num_scans: 0
+                      owner: system
+                      owner_id: 1
+                      owner_name: system
+                      owner_uuid: ddbd3e11-3311-4682-9912-8e81805fd8a9
+                      platform: LINUX
+                      pool: false
+                      report_frequency: 3600
+                      settings: {}
+                      scan_count: 0
+                      source: service
+                      status: 'off'
+                      timestamp: 1524523493
+                      type: managed_pvs
+                      uuid: 946df0af-0597-4d1e-993d-36a5c25b0d36
+                      remote_uuid: 4e7b9e29-b128-4ae5-9108-b936b35c6f1a9b9a533780bda648
+                      supports_remote_logs: false
+        '401':
+          description: Returned if Tenable Vulnerability Management cannot authenticate the user account that submitted the request.
+        '403':
+          description: Returned if you do not have sufficient permissions to list scanners and scanner groups for the default network object.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the network object you specified.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/networks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+      security:
+      - networks_cloud: []
+components:
+  schemas:
+    networks_NetworkConflict:
+      type: object
+      properties:
+        scanner_uuid:
+          type: string
+          description: The UUID of the scanner involved in the conflict.
+        scanner_groups:
+          description: A list of scanner groups involved in the conflict.
+          type: array
+          items:
+            type: object
+            properties:
+              uuid:
+                type: string
+                description: The UUID of the scanner group.
+              name:
+                type: string
+                description: The name of the scanner group.
+    networks_NetworkObject:
+      type: object
+      properties:
+        owner_uuid:
+          type: string
+          description: The UUID of the owner of the network object. The owner of the network object does not have any additional permissions above administrator permissions.
+        created:
+          type: integer
+          description: The date (in Unix milliseconds) when the network object was created.
+        modified:
+          type: integer
+          description: The date (in Unix milliseconds) when the network object was last updated.
+        uuid:
+          type: string
+          description: The UUID of the network object.
+        name:
+          type: string
+          description: The name of the network object.
+        description:
+          type: string
+          description: The description of the network object.
+        is_default:
+          type: boolean
+          description: Indicates whether the network object is the default network object. The default network object is a system-generated object that contains any scanners and scanner groups not yet assigned to a custom network object. You cannot update or delete the default network object.
+        created_by:
+          type: string
+          description: The UUID of the user who created the network object.
+        modified_by:
+          type: string
+          description: The UUID of the user who last updated the network object.
+        deleted:
+          type: integer
+          format: int64
+          description: The date (in Unix time) when the network object was deleted. This attribute is present for deleted network objects only. To view deleted network objects, use the `includeDeleted` parameter on the [GET /networks](ref:networks-list) endpoint.
+        deleted_by:
+          type: string
+          description: The UUID of the user who deleted the network object. This attribute is present for deleted network objects only. To view deleted network objects, use the `includeDeleted` parameter on the [GET /networks](ref:networks-list) endpoint.
+        assets_ttl_days:
+          type: integer
+          description: 'The number of days before assets age out. Assets are permanently deleted if they are not seen on a scan within the specified number of days.<ul><li>Minimum value: 14</li><li>Maximum value: 365</li></ul> Note: If you enable this option, Tenable Vulnerability Management immediately deletes assets in the specified network that have not been seen for the specified number of days. All asset records and associated vulnerabilities are deleted and cannot be recovered. The deleted assets no longer count towards [your license](https://docs.tenable.com/early-access/tenableio/vulnerabilitymanagement/Content/GettingStarted/Licenses.htm)'
+        created_in_seconds:
+          type: integer
+          description: The date (in Unix seconds) when the network object was created.
+        modified_in_seconds:
+          type: integer
+          description: The date (in Unix seconds) when the network object was last updated.
+    networks_ScannerObject:
+      type: object
+      properties:
+        creation_date:
+          type: integer
+          description: The date on which the scanner was linked to the Tenable Vulnerability Management instance.
+          format: int32
+        distro:
+          type: string
+          description: The scanner software distribution.
+        engine_build:
+          type: string
+          description: The build of the engine running on the scanner.
+        engine_version:
+          type: string
+          description: The version of the engine running on the scanner.
+        group:
+          type: boolean
+          description: Indicates whether the object represents a single scanner (`false`) or a scanner group (`true`).
+        id:
+          type: integer
+          description: The unique ID of the scanner.
+          format: int32
+        key:
+          type: string
+          description: An alpha-numeric sequence of characters used when linking a scanner to Tenable Vulnerability Management.
+        last_connect:
+          type: integer
+          description: The Unix timestamp when the scanner last connected to the Tenable Vulnerability Management instance.
+          format: int64
+        last_modification_date:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the scanner was last updated.
+        linked:
+          type: integer
+          description: Indicates if the scanner is enabled (`1`) or not disabled (`0`).
+        loaded_plugin_set:
+          type: string
+          description: The current plugin set on the scanner.
+        name:
+          type: string
+          description: The user-defined name of the scanner.
+        num_scans:
+          type: integer
+          description: The number of scan tasks the scanner is currently executing.
+        owner:
+          type: string
+          description: The scanner owner.
+        owner_id:
+          type: integer
+          description: The ID of the scanner owner.
+        owner_name:
+          type: string
+          description: The name of the scanner owner.
+        owner_uuid:
+          type: string
+          description: The UUID of the scanner owner.
+        platform:
+          type: string
+          description: The platform of the scanner.
+        pool:
+          type: boolean
+          description: Indicates whether the scanner is part of a scanner group.
+        report_frequency:
+          type: integer
+          description: The frequency (in seconds) at which the scanner polls the Tenable Vulnerability Management instance.
+        settings:
+          type: object
+          description: ''
+        scan_count:
+          type: integer
+          description: The current number of scans currently running on the scanner.
+        source:
+          type: string
+          description: Historical attribute. Always `service`.
+        status:
+          type: string
+          description: "The scanner's current status. Possible values are:\n - on—The scanner has connected in the last five minutes.\n - off—The scanner has not connected in the last five minutes."
+        timestamp:
+          type: integer
+          description: Equivalent to the last_modification_date.
+        type:
+          type: string
+          description: The type of scanner (local or remote).
+        uuid:
+          type: string
+          description: The UUID of the scanner.
+        remote_uuid:
+          type: string
+          description: The UUID of the Nessus installation on the scanner.
+        supports_remote_logs:
+          type: boolean
+          description: Indicates whether the scanner supports remote logging.
+    networks_NetworkAssetCount:
+      type: object
+      properties:
+        numAssetsNotSeen:
+          type: integer
+          description: The number of assets in the network not seen since the specified number of days.
+        numAssetstotal:
+          type: integer
+          description: The total number of assets in the network.
+    networks_PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    networks_PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          description: The total number of records matching your search criteria.
+          format: int32
+        limit:
+          type: integer
+          description: The number of records requested (or the default value if omitted from the request).
+          format: int32
+        offset:
+          type: integer
+          description: The starting record you requested (or zero if omitted).
+          format: int32
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/networks_PaginationResponseSortObject'
+    networks_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

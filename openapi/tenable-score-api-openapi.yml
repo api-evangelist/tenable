@@ -1,0 +1,159 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Score API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Score
+  description: The directories' scores
+paths:
+  /api/profiles/{profileId}/scores:
+    get:
+      summary: Get the directories score by profile
+      description: 'Required license type: ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Directories' scores
+                type: array
+                additionalProperties: false
+                items:
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - directoryId
+                  - score
+                  properties:
+                    directoryId:
+                      type: number
+                    score:
+                      type: number
+                      nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Score
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: profileId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: directoryIds
+        in: query
+        schema:
+          description: Directory on which to calculate score
+          oneOf:
+          - type: array
+            items:
+              type: string
+              pattern: ^[0-9]+$
+              x-patternError: should be a numerical string
+          - type: string
+            pattern: ^[0-9]+$
+            x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      - name: checkerIds
+        in: query
+        schema:
+          description: IOE to filter on each directory in score calculation
+          oneOf:
+          - type: array
+            items:
+              type: string
+              pattern: ^[0-9]+$
+              x-patternError: should be a numerical string
+          - type: string
+            pattern: ^[0-9]+$
+            x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      - name: reasonIds
+        in: query
+        schema:
+          description: IOE reason to filter on each directory in score calculation
+          oneOf:
+          - type: array
+            items:
+              type: string
+              pattern: ^[0-9]+$
+              x-patternError: should be a numerical string
+          - type: string
+            pattern: ^[0-9]+$
+            x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      security:
+      - ApiKey: []
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

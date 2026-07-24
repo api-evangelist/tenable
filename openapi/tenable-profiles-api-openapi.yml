@@ -1,0 +1,1360 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Profiles API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Profiles
+  x-displayName: Profiles
+paths:
+  /sensors/profiles/{sensor_type}:
+    post:
+      summary: Create profile
+      description: "Creates a new profile. The type of profile created depends on the `sensor_type` path parameter, which can be set to either `agent` or `scanners`. \n\n**Note:** You can assign or remove an agent from an agent profile using the [Assign or remove agent profile](ref:agent-bulk-operations-profile) endpoint. For scanners, use the [Assign to scanner profile](ref:scanner-profile-assign-bulk) and [Remove from scanner profile](ref:scanner-profile-remove-bulk) endpoints.<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+      operationId: profiles-create
+      tags:
+      - Profiles
+      parameters:
+      - $ref: '#/components/parameters/Profiles_sensor_type-path-param'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profiles_request-create-profile'
+      responses:
+        '200':
+          description: Returned if the profile was created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uuid:
+                    description: The unique identifier (UUID) of the new profile.
+                    type: string
+                    format: uuid
+              examples:
+                response:
+                  value:
+                    uuid: ed52a53d-658f-4a22-8ea7-e21d0d530e9c
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A brief description of the error.
+              examples:
+                response:
+                  value:
+                    error: Invalid sensor type scannera
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create profiles.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Profiles_cloud: []
+    get:
+      summary: List profiles
+      description: 'Returns a list of profiles. The type of profiles returned depends on the `sensor_type` path parameter, which can be set to either `agent` or `scanners`. <div class="perms-callout">Requires the Scan Operator [24] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_AGENT.READ` for agent profiles or `VM.VM_SENSOR.VM_SCANNER.READ` for scanner profiles. See [Roles](doc:roles).</div>'
+      operationId: profiles-list
+      tags:
+      - Profiles
+      parameters:
+      - $ref: '#/components/parameters/Profiles_sensor_type-path-param'
+      responses:
+        '200':
+          description: Returned if the list of profiles was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: An object containing an array of profile objects.
+                properties:
+                  profiles:
+                    $ref: '#/components/schemas/Profiles_response-profiles'
+              examples:
+                Agent Profile Response:
+                  value:
+                    profiles:
+                    - name: US-1A Sensors
+                      description: This profile targets sensors for US-1A.
+                      profile_uuid: 52cddf58-f10f-49f6-969f-d17f623171f5
+                      created: '2024-07-19T00:11:47.227483Z'
+                      updated: '2024-07-19T00:11:47.227483Z'
+                      config:
+                        version: 11.0.0
+                        immediate_plugin_update: true
+                        update_disabled: false
+                        container_public_key: '-----BEGIN PUBLIC KEY-----
+
+                          MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEArvPm3nYSduF7eHNcAp5i
+
+                          EgL0f1Pp2Kp304vAQRjaURlNN1jKUCBV8IgCVLM9IJZ5u153pEFgyk9sNVZgVq9m
+
+                          Ut3yfJ4HtWQwYYo1v5Cv4Ir7hRh18J2uDQAHhAJZXfc8rTTVZqaCh5iEh+shdPc6
+
+                          YP4Qmb0Z1d1b0CaMBHyNm3ATUfZDMb8v3tVcj6BYG7Oovx45XdF4xnW19tOFUeXH
+
+                          pGkNRvalNeWphke+GgLeAqItSKfH6sctTB8dUG6ENqXmp20ZiXE4mzTDS7MTQs/Y
+
+                          yiZYvjcLSO6isQPh9ndoCSfB2tEvbW/48MdJJ0vrHS0HWb0Ninu6MUSU6ijvA5AF
+
+                          9MMo/Rd/h2dQ71AnzKN43IxFx53PUshHyMTbTXDYCoRKTRHb4P+k9jwc3YsHjdVE
+
+                          yCQI0AyNmTY5x6qxqS45tIQO3GbFINv9GjEW3eGtFerJEXdySwiFwVoWz5A98TVO
+
+                          hcJupa4jV2Qglp2gDMoRC+zakncVTHusxo8e3aYHeVH8Rcv0aMKClc0gx0F6BgcV
+
+                          yljgQWZER6dIWfS5utbJbQhpPPdoWZ5O+4TJYhenD77Bg3wQC/HC2whDKp4nSnpb
+
+                          1r9QPlS1frdl5fLclbxHwjCHYmRMI5EHwjtzx0rTeOqYmqwL3/PzNDz6A3gLB0CB
+
+                          8hFQtVB3tUl1uQD5xQdyiwkCAwEAAQ==
+
+                          -----END PUBLIC KEY-----
+
+                          '
+                        modules:
+                          com.tenable.nessus_agent:
+                            enabled: true
+                            settings:
+                            - setting: backend_log_level
+                              value: normal
+                          com.tenable.agent_identifier_service:
+                            enabled: true
+                            open_agent_port: 5050
+                          com.tenable.fredi_module:
+                            enabled: true
+                            base_inventory_freq: 2
+                          com.tenable.tua_comm_module:
+                            enabled: true
+                        resources:
+                          cpu_quota: 30
+                    - name: Laptop sensors
+                      description: Agents installed on laptops.
+                      profile_uuid: 5aa47f9a-bc02-404a-84d1-f54a30c5c652
+                      created: '2024-07-19T02:15:26.668164Z'
+                      updated: '2024-07-19T02:15:26.668164Z'
+                      config:
+                        version: 11.0.0
+                        immediate_plugin_update: true
+                        update_disabled: false
+                        container_public_key: '-----BEGIN PUBLIC KEY-----
+
+                          MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEArvPm3nYSduF7eHNcAp5i
+
+                          EgL0f1Pp2Kp304vAQRjaURlNN1jKUCBV8IgCVLM9IJZ5u153pEFgyk9sNVZgVq9m
+
+                          Ut3yfJ4HtWQwYYo1v5Cv4Ir7hRh18J2uDQAHhAJZXfc8rTTVZqaCh5iEh+shdPc6
+
+                          YP4Qmb0Z1d1b0CaMBHyNm3ATUfZDMb8v3tVcj6BYG7Oovx45XdF4xnW19tOFUeXH
+
+                          pGkNRvalNeWphke+GgLeAqItSKfH6sctTB8dUG6ENqXmp20ZiXE4mzTDS7MTQs/Y
+
+                          yiZYvjcLSO6isQPh9ndoCSfB2tEvbW/48MdJJ0vrHS0HWb0Ninu6MUSU6ijvA5AF
+
+                          9MMo/Rd/h2dQ71AnzKN43IxFx53PUshHyMTbTXDYCoRKTRHb4P+k9jwc3YsHjdVE
+
+                          yCQI0AyNmTY5x6qxqS45tIQO3GbFINv9GjEW3eGtFerJEXdySwiFwVoWz5A98TVO
+
+                          hcJupa4jV2Qglp2gDMoRC+zakncVTHusxo8e3aYHeVH8Rcv0aMKClc0gx0F6BgcV
+
+                          yljgQWZER6dIWfS5utbJbQhpPPdoWZ5O+4TJYhenD77Bg3wQC/HC2whDKp4nSnpb
+
+                          1r9QPlS1frdl5fLclbxHwjCHYmRMI5EHwjtzx0rTeOqYmqwL3/PzNDz6A3gLB0CB
+
+                          8hFQtVB3tUl1uQD5xQdyiwkCAwEAAQ==
+
+                          -----END PUBLIC KEY-----
+
+                          '
+                        modules:
+                          com.tenable.agent_identifier_service:
+                            enabled: false
+                          com.tenable.fredi_module:
+                            enabled: true
+                            base_inventory_freq: 1
+                          com.tenable.tua_comm_module:
+                            enabled: true
+                    - name: Headquarters
+                      description: Agents on assets at headquarters.
+                      profile_uuid: 97108036-2262-4dc2-997e-2a1d0cd9904f
+                      created: '2024-07-19T02:14:47.447461Z'
+                      updated: '2024-07-19T02:14:47.447461Z'
+                      config:
+                        version: 10.6.4
+                        pluginset: '202407181903'
+                        update_disabled: false
+                        container_public_key: '-----BEGIN PUBLIC KEY-----
+
+                          MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEArvPm3nYSduF7eHNcAp5i
+
+                          EgL0f1Pp2Kp304vAQRjaURlNN1jKUCBV8IgCVLM9IJZ5u153pEFgyk9sNVZgVq9m
+
+                          Ut3yfJ4HtWQwYYo1v5Cv4Ir7hRh18J2uDQAHhAJZXfc8rTTVZqaCh5iEh+shdPc6
+
+                          YP4Qmb0Z1d1b0CaMBHyNm3ATUfZDMb8v3tVcj6BYG7Oovx45XdF4xnW19tOFUeXH
+
+                          pGkNRvalNeWphke+GgLeAqItSKfH6sctTB8dUG6ENqXmp20ZiXE4mzTDS7MTQs/Y
+
+                          yiZYvjcLSO6isQPh9ndoCSfB2tEvbW/48MdJJ0vrHS0HWb0Ninu6MUSU6ijvA5AF
+
+                          9MMo/Rd/h2dQ71AnzKN43IxFx53PUshHyMTbTXDYCoRKTRHb4P+k9jwc3YsHjdVE
+
+                          yCQI0AyNmTY5x6qxqS45tIQO3GbFINv9GjEW3eGtFerJEXdySwiFwVoWz5A98TVO
+
+                          hcJupa4jV2Qglp2gDMoRC+zakncVTHusxo8e3aYHeVH8Rcv0aMKClc0gx0F6BgcV
+
+                          yljgQWZER6dIWfS5utbJbQhpPPdoWZ5O+4TJYhenD77Bg3wQC/HC2whDKp4nSnpb
+
+                          1r9QPlS1frdl5fLclbxHwjCHYmRMI5EHwjtzx0rTeOqYmqwL3/PzNDz6A3gLB0CB
+
+                          8hFQtVB3tUl1uQD5xQdyiwkCAwEAAQ==
+
+                          -----END PUBLIC KEY-----
+
+                          '
+                        modules:
+                          com.tenable.agent_identifier_service:
+                            enabled: false
+                          com.tenable.fredi_module:
+                            enabled: true
+                            base_inventory_freq: 1
+                          com.tenable.tua_comm_module:
+                            enabled: true
+                    - name: Default
+                      description: Used for agents not assigned to a user-defined profile
+                      profile_uuid: 00000000-0000-0000-0000-000000000000
+                      created: '2024-07-19T02:15:38.879127Z'
+                      updated: '2024-07-19T02:15:38.879136Z'
+                      config: {}
+                Scanner Profile Response:
+                  value:
+                    profiles:
+                    - name: Office Scanners
+                      description: This profile targets office scanners.
+                      profile_uuid: 0b1bee7a-8bf9-4437-acff-935c1e71ee23
+                      created: '2025-10-29T20:34:47.532930Z'
+                      updated: '2025-10-29T20:34:47.532930Z'
+                      config:
+                        version: 10.10.1
+                        pluginset: latest
+                        update_disabled: false
+                    - name: Remote Scanners
+                      profile_uuid: d17eca8a-e751-4f59-a71e-1ef37db8283c
+                      created: '2025-10-29T20:36:52.247030Z'
+                      updated: '2025-10-29T20:36:52.247030Z'
+                      config:
+                        version: '10.10'
+                        pluginset: '10'
+                        update_disabled: true
+                    - name: Default
+                      description: Used for scanners not assigned to a user-defined profile
+                      profile_uuid: 00000000-0000-0000-0000-000000000000
+                      created: '2025-10-29T23:04:43.701984Z'
+                      updated: '2025-10-29T23:04:43.701992Z'
+                      config: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list profiles.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Profiles_cloud: []
+  /sensors/profiles/{sensor_type}/{profile_uuid}:
+    get:
+      summary: Get profile details
+      description: 'Retrieves details for the specified profile. The type of profile returned depends on the `sensor_type` path parameter, which can be set to either `agent` or `scanners`. <div class="perms-callout">Requires the Scan Operator [24] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_AGENT.READ` for agent profiles or `VM.VM_SENSOR.VM_SCANNER.READ` for scanner profiles. See [Roles](doc:roles).</div>'
+      operationId: profiles-details
+      tags:
+      - Profiles
+      parameters:
+      - $ref: '#/components/parameters/Profiles_sensor_type-path-param'
+      - $ref: '#/components/parameters/Profiles_profile_uuid-path-param'
+      responses:
+        '200':
+          description: Returned if the details for the specified profile were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_response-sensor-type-profile'
+              examples:
+                Agent Profile Details Response:
+                  value:
+                    name: US-1A Sensors
+                    description: This profile targets sensors for US-1A.
+                    profile_uuid: 52cddf58-f10f-49f6-969f-d17f623171f5
+                    created: '2024-07-19T00:11:47.227483Z'
+                    updated: '2024-07-19T00:11:47.227483Z'
+                    config:
+                      version: 11.0.0
+                      immediate_plugin_update: true
+                      update_disabled: false
+                      container_public_key: '-----BEGIN PUBLIC KEY-----
+
+                        MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEArvPm3nYSduF7eHNcAp5i
+
+                        EgL0f1Pp2Kp304vAQRjaURlNN1jKUCBV8IgCVLM9IJZ5u153pEFgyk9sNVZgVq9m
+
+                        Ut3yfJ4HtWQwYYo1v5Cv4Ir7hRh18J2uDQAHhAJZXfc8rTTVZqaCh5iEh+shdPc6
+
+                        YP4Qmb0Z1d1b0CaMBHyNm3ATUfZDMb8v3tVcj6BYG7Oovx45XdF4xnW19tOFUeXH
+
+                        pGkNRvalNeWphke+GgLeAqItSKfH6sctTB8dUG6ENqXmp20ZiXE4mzTDS7MTQs/Y
+
+                        yiZYvjcLSO6isQPh9ndoCSfB2tEvbW/48MdJJ0vrHS0HWb0Ninu6MUSU6ijvA5AF
+
+                        9MMo/Rd/h2dQ71AnzKN43IxFx53PUshHyMTbTXDYCoRKTRHb4P+k9jwc3YsHjdVE
+
+                        yCQI0AyNmTY5x6qxqS45tIQO3GbFINv9GjEW3eGtFerJEXdySwiFwVoWz5A98TVO
+
+                        hcJupa4jV2Qglp2gDMoRC+zakncVTHusxo8e3aYHeVH8Rcv0aMKClc0gx0F6BgcV
+
+                        yljgQWZER6dIWfS5utbJbQhpPPdoWZ5O+4TJYhenD77Bg3wQC/HC2whDKp4nSnpb
+
+                        1r9QPlS1frdl5fLclbxHwjCHYmRMI5EHwjtzx0rTeOqYmqwL3/PzNDz6A3gLB0CB
+
+                        8hFQtVB3tUl1uQD5xQdyiwkCAwEAAQ==
+
+                        -----END PUBLIC KEY-----
+
+                        '
+                      modules:
+                        com.tenable.nessus_agent:
+                          enabled: true
+                          settings:
+                          - setting: backend_log_level
+                            value: normal
+                        com.tenable.agent_identifier_service:
+                          enabled: true
+                          open_agent_port: 5050
+                        com.tenable.fredi_module:
+                          enabled: true
+                          base_inventory_freq: 2
+                        com.tenable.tua_comm_module:
+                          enabled: true
+                      resources:
+                        cpu_quota: 30
+                Scanner Profile Details Response:
+                  value:
+                    name: Office Scanners
+                    description: This profile targets office scanners.
+                    profile_uuid: 0b1bee7a-8bf9-4437-acff-935c1e71ee23
+                    created: '2025-10-29T20:34:47.532930Z'
+                    updated: '2025-10-29T20:34:47.532930Z'
+                    config:
+                      version: 10.10.1
+                      pluginset: latest
+                      update_disabled: false
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to retrieve profile details.
+        '404':
+          description: Returned if the specified profile was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A brief description of the error.
+              examples:
+                response:
+                  value:
+                    error: Profile 52cddf58-f10f-49f6-969f-d17f623171a4 not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Profiles_cloud: []
+    put:
+      summary: Update profile
+      description: 'Updates the specified profile. The type of profile to update depends on the `sensor_type` path parameter, which can be set to either `agent` or `scanners`. <div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_AGENT.EDIT` for agent profiles or `VM.VM_SENSOR.VM_SCANNER.EDIT` for scanner profiles. See [Roles](doc:roles).</div>'
+      operationId: profiles-update
+      tags:
+      - Profiles
+      parameters:
+      - $ref: '#/components/parameters/Profiles_sensor_type-path-param'
+      - $ref: '#/components/parameters/Profiles_profile_uuid-path-param'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profiles_request-create-profile'
+      responses:
+        '200':
+          description: Returned if the specified profile was updated successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A brief description of the error.
+              examples:
+                response:
+                  value:
+                    error: Invalid sensor type scannera
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create profiles.
+        '404':
+          description: Returned if the specified profile was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A brief description of the error.
+              examples:
+                response:
+                  value:
+                    error: Profile 7771248c-508a-4ef0-9934-d390eeecf84b to update not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Profiles_cloud: []
+    delete:
+      summary: Delete profile
+      description: "Deletes the specified profile. The type of profile to delete depends on the `sensor_type` path parameter, which can be set to either `agent` or `scanners`.\n\nYou can monitor the status of deletion request via the [Get agent task status](ref:bulk-task-agent-status) or [Get scanner task status](ref:scanner-task-status) endpoint. \n\n**Note:** If the agent or scanner profile has any assigned agents or scanners, they will be reassigned to the default agent or scanner profile.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_AGENT.DELETE` for agent profiles or `VM.VM_SENSOR.VM_SCANNER.DELETE` for scanner profiles. See [Roles](doc:roles).</div>"
+      operationId: profiles-delete
+      tags:
+      - Profiles
+      parameters:
+      - $ref: '#/components/parameters/Profiles_sensor_type-path-param'
+      - $ref: '#/components/parameters/Profiles_profile_uuid-path-param'
+      responses:
+        '200':
+          description: Returned if the specified profile was deleted successfully.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Profiles_response-agent-profile-deletion'
+                - $ref: '#/components/schemas/Profiles_response-scanner-profile-deletion'
+              examples:
+                Agent Profile Deletion:
+                  value:
+                    task_id: 7azae2f3-544d-497f-b0f0-447d03z7cd55
+                    container_uuid: 3cz182bb-b8ba-4025-9e59-9a81b8a64z5a
+                    status: NEW
+                    message: Deleting profile and assigning agents of the deleted profile to the default profile
+                Scanner Profile Deletion:
+                  value:
+                    message: Request has been received.
+                    request_status_id: 908ab186-e188-47b4-96f4-131cd52adfee
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A brief description of the error.
+              examples:
+                response:
+                  value:
+                    error: Invalid sensor type scannera
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to delete profiles.
+        '404':
+          description: Returned if the specified profile was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A brief description of the error.
+              examples:
+                response:
+                  value:
+                    error: Profile UUID not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Profiles_cloud: []
+  /sensors/profiles/{sensor_type}/{profile_uuid}/clone:
+    post:
+      summary: Clone profile
+      description: Creates a copy of an existing profile. The type of profile to clone depends on the `sensor_type` path parameter, which can be set to either `agent` or `scanners`. <div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: profiles-clone
+      tags:
+      - Profiles
+      parameters:
+      - $ref: '#/components/parameters/Profiles_sensor_type-path-param'
+      - $ref: '#/components/parameters/Profiles_profile_uuid-path-param'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: A name for the profile.
+                  type: string
+                  example: US-1A Sensors
+                description:
+                  description: A short description explaining the purpose or targets of the profile.
+                  type: string
+                  example: This profile targets sensors for US-1A.
+              required:
+              - name
+      responses:
+        '200':
+          description: Returned if the specified profile was successfully cloned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uuid:
+                    description: The unique identifier (UUID) of the cloned profile.
+                    type: string
+                    format: uuid
+              examples:
+                response:
+                  value:
+                    uuid: ed52a53d-658f-4a22-8ea7-e21d0d530e9c
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A brief description of the error.
+              examples:
+                response:
+                  value:
+                    error: Invalid sensor type scannera
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to clone profiles.
+        '404':
+          description: Returned if the specified profile was not found.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Source profile cd2e0d80-bc53-4eae-9142-e2e667d8b1c3 not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Profiles_cloud: []
+  /sensors/profiles/feed_versions:
+    get:
+      summary: List available plugin sets
+      description: Returns a list of the latest plugin sets made available to scanner and agent profiles from the Tenable plugin feed within the last 30 days.
+      operationId: profiles-feed-versions
+      tags:
+      - Profiles
+      responses:
+        '200':
+          description: Returned if the list of available plugin sets was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              examples:
+                response:
+                  value:
+                  - '202512101056'
+                  - '202512100821'
+                  - '202512100545'
+                  - '202512100308'
+                  - '202512100028'
+                  - '202512092148'
+                  - '202512091908'
+                  - '202512091622'
+                  - '202512091338'
+                  - '202512090719'
+                  - '202512090121'
+                  - '202512081421'
+                  - '202512080949'
+                  - '202512062106'
+                  - '202512060003'
+                  - '202512051912'
+                  - '202512051648'
+                  - '202512051422'
+                  - '202512051157'
+                  - '202512050932'
+                  - '202512050706'
+                  - '202512050439'
+                  - '202512050211'
+                  - '202512042342'
+                  - '202512042116'
+                  - '202512041846'
+                  - '202512041617'
+                  - '202512041347'
+                  - '202512041118'
+                  - '202512040849'
+                  - '202512040620'
+                  - '202512040350'
+                  - '202512040110'
+                  - '202512032009'
+                  - '202512031736'
+                  - '202512031505'
+                  - '202512031232'
+                  - '202512030947'
+                  - '202512030322'
+                  - '202512030046'
+                  - '202512022212'
+                  - '202512021931'
+                  - '202511271426'
+                  - '202511261827'
+                  - '202511261251'
+                  - '202511261007'
+                  - '202511252024'
+                  - '202511251737'
+                  - '202511251449'
+                  - '202511251201'
+                  - '202511250913'
+                  - '202511250624'
+                  - '202511250334'
+                  - '202511250044'
+                  - '202511242154'
+                  - '202511241905'
+                  - '202511241616'
+                  - '202511241324'
+                  - '202511241033'
+                  - '202511240741'
+                  - '202511240448'
+                  - '202511240155'
+                  - '202511231937'
+                  - '202511231644'
+                  - '202511231055'
+                  - '202511230804'
+                  - '202511230303'
+                  - '202511230008'
+                  - '202511222114'
+                  - '202511221821'
+                  - '202511211318'
+                  - '202511211023'
+                  - '202511210433'
+                  - '202511210137'
+                  - '202511202240'
+                  - '202511201945'
+                  - '202511201645'
+                  - '202511201346'
+                  - '202511200746'
+                  - '202511200444'
+                  - '202511200143'
+                  - '202511191938'
+                  - '202511191334'
+                  - '202511191032'
+                  - '202511190426'
+                  - '202511190122'
+                  - '202511182217'
+                  - '202511181914'
+                  - '202511181704'
+                  - '202511181131'
+                  - '202511180919'
+                  - '202511180706'
+                  - '202511180451'
+                  - '202511180237'
+                  - '202511180025'
+                  - '202511172211'
+                  - '202511171958'
+                  - '202511171744'
+                  - '202511171534'
+                  - '202511171116'
+                  - '202511170904'
+                  - '202511162114'
+                  - '202511161903'
+                  - '202511161358'
+                  - '202511161148'
+                  - '202511160940'
+                  - '202511160730'
+                  - '202511160520'
+                  - '202511160310'
+                  - '202511152204'
+                  - '202511151952'
+                  - '202511151741'
+                  - '202511151534'
+                  - '202511151322'
+                  - '202511151114'
+                  - '202511150904'
+                  - '202511150637'
+                  - '202511150425'
+                  - '202511150213'
+                  - '202511150002'
+                  - '202511142151'
+                  - '202511141940'
+                  - '202511141728'
+                  - '202511141515'
+                  - '202511141302'
+                  - '202511141048'
+                  - '202511140833'
+                  - '202511140620'
+                  - '202511140403'
+                  - '202511140148'
+                  - '202511132331'
+                  - '202511132116'
+                  - '202511131848'
+                  - '202511131630'
+                  - '202511131412'
+                  - '202511131153'
+                  - '202511130934'
+                  - '202511130716'
+                  - '202511130456'
+                  - '202511130237'
+                  - '202511130016'
+                  - '202511122157'
+                  - '202511121935'
+                  - '202511121713'
+                  - '202511121202'
+                  - '202511120940'
+                  - '202511120718'
+                  - '202511120457'
+                  - '202511120233'
+                  - '202511120009'
+                  - '202511112145'
+                  - '202511111920'
+                  - '202511111652'
+                  - '202511111423'
+                  - '202511111153'
+                  - '202511110922'
+                  - '202511110650'
+                  - '202511110416'
+                  - '202511110142'
+                  - '202511102307'
+                  - '202511102031'
+                  - '202511101801'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list available plugin sets.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Profiles_cloud: []
+components:
+  schemas:
+    Profiles_response-agent-config-object:
+      title: Agent Config Object
+      description: Configuration settings and options applied to the agent profile.
+      type: object
+      properties:
+        version:
+          description: The version applied to the members of the agent profile.
+          type: string
+          example: 10.7.1
+        pluginset:
+          description: "The plugin update plan configuration. You can specify what plugins to install on linked agents during the daily plugin update. \n\nYou can choose from the following options: <ul><li>Auto update to the latest—Specify the value `latest` to auto update to the latest.</li><li>Delay plugin updates by days—Specify a two digit number `1` to `30` indicating the number of days to delay plugin updates.</li><li>Select plugin set from last 30 days—Specify a plugin set from the last 30 days, for example `202407172302`. Plugin sets must be 12 digits."
+          type: string
+          example: '202407172302'
+        immediate_plugin_update:
+          description: Indicates whether agents assigned to this profile immediately update their plugin sets after receiving a new assignment. A value of `true` means agents update immediately, while `false` means they update during their regular check-in cycle (at least every 24 hours).
+          type: boolean
+        update_disabled:
+          description: Indicates whether or not the agents are excluded from software updates. If set to true, all agents assigned to this profile are prevented from receiving software updates. This setting overrides scheduled freeze windows.
+          type: boolean
+        container_public_key:
+          description: The public key for the agent identifier.
+          type: string
+          example: '-----BEGIN PUBLIC KEY-----
+
+            MIICIjANBgkqhkiG9w0BAQEFACbCAg8AMIICCgKCAgEAhPwbbBs6VxnrYTPNiD+Z
+
+            OZs5xkz3EHFALm1JOp05qK6x2uIM+REdV3omrUH8pKoiJ41endISwliQVzRUeHND
+
+            /LOc/SCupCiHnss9hIJ0vFWwMmA3pnDobv3bnKzNhiFOUidjwrIafWonUAArIFuw
+
+            7UVFCtdtfrKuvHcTNXlGAg0jDxzST0aGObrNPihtPTAhQrpI3UzmiD/O1BQZpXff
+
+            Qc8q8INyrbaqtmudf6je3iQq65wvL/ZD02Gtoa4PhVyGTrfYJBfD3WY9vBjjteNt
+
+            8A3elcq40XVOZL378e2eLufiOSwvmRaqNQplbo7AZko1EZvcUFzYW5KHMetsPXtn
+
+            fe/D8sPvGvPD7o6BIZPsMBPii1w36MI4xu7FvmOWZzX7GLIWHN2FV5WO+HJ4lPJk
+
+            USQzEFbP/Q2hmUeCnfrF/XBKV1ORvcj81AYTo/JwXTLq1SK99m3xcWjjurCMTy4d
+
+            OMI63KU9CZPmYCN4qHR2bUa4u0+/qbMQEnXScO27ypifhehS10PhzmmVEFF6dHyf
+
+            e/v1KkgnhSFfYXMZNokr0u/ZGVyXmLxourz7E9sC00v6WewulAkXcpaLw304RFML
+
+            zOH2c5qM1W6Z/VPldSswxnZhYw56SnbUqahbFU2CWbHEfqwFde3QZdZiOfvoqmFj
+
+            NxDFPKPMPTkiUMEk6gW7HAMCAwEAAQ==
+
+            -----END PUBLIC KEY-----
+
+            '
+        modules:
+          description: Configuration settings and options for the members of the agent profile. Nessus agent identifier service options are defined in the `com.tenable.agent_identifier_service` object, and Nessus agent settings are defined in the `com.tenable.nessus_agent` object.
+          type: object
+          properties:
+            com.tenable.nessus_agent:
+              description: Nessus agent settings.
+              type: object
+              properties:
+                enabled:
+                  description: Indicates whether or not additional agent settings are enabled. Currently, the only supported setting is `backend_log_level`.
+                  type: boolean
+                settings:
+                  type: array
+                  description: An array of objects where each object is one individual setting. Each object contains a `setting` property to specify the setting and a `value` property to specify the value for setting. For example, `{"setting":"backend_log_level","value":"debug"}`.
+                  items:
+                    type: object
+                    properties:
+                      setting:
+                        description: The setting applied to the agents in the profile.
+                        type: string
+                        default: backend_log_level
+                        enum:
+                        - backend_log_level
+                      value:
+                        description: The value for the setting.
+                        type: string
+                        enum:
+                        - normal
+                        - debug
+                        - verbose
+            com.tenable.agent_identifier_service:
+              description: Nessus agent identifier service options.
+              type: object
+              properties:
+                enabled:
+                  description: Indicates whether or not an open agent port is enabled for the agent identifier service. This setting enables Tenable network scanners to positively identity scan targets hosting Tenable agents. These hosts will appear as a single asset regardless of whether they are the target of a network scan or are generating agent scans. Note that enabling this option configures your network scanners to probe each target system on the port you select.
+                  type: boolean
+                open_agent_port:
+                  description: The port to used for the agent identifier service.
+                  type: integer
+                  example: 5050
+            com.tenable.fredi_module:
+              description: Nessus agent continuous assessment settings.
+              type: object
+              properties:
+                enabled:
+                  description: Indicates whether or not to enable continuous assessment scanning.
+                  type: boolean
+                base_inventory_freq:
+                  description: Indicates how often the agents perform a full software inventory scan via continuous assessment scanning in days. You can choose any integer between `1` and `14`.
+                  type: integer
+                  minimum: 1
+                  maximum: 14
+            com.tenable.tua_comm_module:
+              description: Tenable universal agent settings. This module ensures that continuous assessment scanning data is properly sent from agents to Tenable Vulnerability Management.
+              type: object
+              properties:
+                enabled:
+                  description: Indicates whether or not the Tenable universal agent module is enabled.
+                  type: boolean
+        resources:
+          description: Resource usage configuration currently applied to the agent.
+          type: object
+          properties:
+            cpu_quota:
+              description: 'The maximum percentage of the host''s CPU that the agent is allowed to use. Supported values range from 1 to 100. **Note:**: This setting applies only to agents running version 11.1.0 or later and is not supported on macOS hosts.'
+              type: integer
+              minimum: 1
+              maximum: 100
+              example: 30
+    Profiles_response-sensor-type-profile:
+      type: object
+      properties:
+        name:
+          description: The name of the profile.
+          type: string
+          example: US-1A Sensors
+        description:
+          description: A short description explaining the purpose or targets of the profile.
+          type: string
+          example: This profile targets sensors for US-1A.
+        profile_uuid:
+          description: The unique identifier (UUID) of the profile.
+          type: string
+          example: 52cddf58-f10f-49f6-969f-d17f623171f5
+        created:
+          description: An ISO timestamp indicating the date and time when the profile was created.
+          type: string
+          example: '2024-07-19T00:11:47.227483Z'
+        updated:
+          description: An ISO timestamp indicating the date and time when the profile was last updated.
+          type: string
+          example: 52cddf58-f10f-49f6-969f-d17f623171f5
+        config:
+          oneOf:
+          - $ref: '#/components/schemas/Profiles_response-agent-config-object'
+          - $ref: '#/components/schemas/Profiles_response-scanner-config-object'
+    Profiles_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Profiles_response-scanner-profile-deletion:
+      title: Scanner Profile Deletion
+      type: object
+      properties:
+        message:
+          type: string
+          description: A message indicating whether or not the deletion request was successfully received.
+        request_status_id:
+          type: string
+          description: The unique identifier (UUID) of the scanner profile deletion request task. You can check the status of deletion task via the [Get scanner task status](ref:scanner-task-status) endpoint.
+    Profiles_response-profiles:
+      description: An array of profile objects.
+      type: array
+      items:
+        $ref: '#/components/schemas/Profiles_response-sensor-type-profile'
+    Profiles_request-create-profile:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          description: A name for the profile.
+          type: string
+          example: US-1A Sensors
+        description:
+          description: A short description explaining the purpose or targets of the profile.
+          type: string
+          example: This profile targets sensors for US-1A.
+        config:
+          oneOf:
+          - $ref: '#/components/schemas/Profiles_request-agent-profile-config-object'
+          - $ref: '#/components/schemas/Profiles_request-scanner-profile-config-object'
+    Profiles_request-agent-profile-config-object:
+      title: Agent Profile Config
+      description: Configuration settings and options to apply to the profile.
+      type: object
+      properties:
+        version:
+          description: The version to apply to the members of the agent profile.
+          type: string
+          example: 10.7.1
+        pluginset:
+          description: "The plugin update plan configuration. You can specify what plugins to install on linked agents during the daily plugin update. \n\nYou can choose from the following options: <ul><li>Auto update to the latest—Specify the value `latest` to auto update to the latest.</li><li>Delay plugin updates by days—Specify a two digit number `1` to `30` indicating the number of days to delay plugin updates.</li><li>Select plugin set from last 30 days—Specify a plugin set from the last 30 days, for example `202407172302`. Plugin sets must be 12 digits."
+          type: string
+          example: '202407172302'
+        immediate_plugin_update:
+          description: Determines whether agents assigned to this profile accelerate plugin set updates. When set to `true`, agents immediately update their plugin sets after receiving a new plugin set assignment that replaces an earlier set assigned by the profile. When set to `false`, agents update their plugin sets during their regular check-in cycle, which occurs at least every 24 hours.
+          type: boolean
+        update_disabled:
+          description: Indicates whether or not to exclude agents from software updates. If set to true, all agents assigned to this profile are prevented from receiving software updates. This setting overrides scheduled freeze windows.
+          type: boolean
+        modules:
+          description: Configuration settings and options for the members of the profile. Nessus agent identifier service options are defined in the `com.tenable.agent_identifier_service` object, and Nessus agent settings are defined in the `com.tenable.nessus_agent` object.
+          type: object
+          properties:
+            com.tenable.nessus_agent:
+              description: Nessus agent settings.
+              type: object
+              properties:
+                enabled:
+                  description: Indicates whether or not to enable additional agent settings. Currently, the only supported setting is `backend_log_level`.
+                  type: boolean
+                settings:
+                  type: array
+                  description: An array of objects where each object is one individual setting. Each object contains a `setting` property to specify the setting and a `value` property to specify the value for setting. For example, `{"setting":"backend_log_level","value":"debug"}`.
+                  items:
+                    type: object
+                    properties:
+                      setting:
+                        description: The setting to apply to the agents in the profile.
+                        type: string
+                        default: backend_log_level
+                        enum:
+                        - backend_log_level
+                      value:
+                        description: The value for the setting.
+                        type: string
+                        enum:
+                        - normal
+                        - debug
+                        - verbose
+            com.tenable.agent_identifier_service:
+              description: Nessus agent identifier service options.
+              type: object
+              properties:
+                enabled:
+                  description: Indicates whether or not to enable an open agent port for the agent identifier service. This setting enables Tenable network scanners to positively identity scan targets hosting Tenable agents. These hosts will appear as a single asset regardless of whether they are the target of a network scan or are generating agent scans. Note that enabling this option configures your network scanners to probe each target system on the port you select.
+                  type: boolean
+                open_agent_port:
+                  description: The port to use for the agent identifier service.
+                  type: integer
+                  example: 5050
+            com.tenable.fredi_module:
+              description: 'Nessus agent continuous assessment scanning settings.
+
+
+                Continuous assessment scanning provides continuous monitoring and reporting of vulnerability status changes on your hosts. In the case of vulnerabilities that can be mitigated with software updates, continuous assessment scanning provides automatic remediation scan in near-time.'
+              type: object
+              properties:
+                enabled:
+                  description: Indicates whether or not to enable continuous assessment scanning.
+                  type: boolean
+                base_inventory_freq:
+                  description: Indicates how often the agents perform a full software inventory scan via continuous assessment scanning in days. You can choose any integer between `1` and `14`.
+                  type: integer
+                  minimum: 1
+                  maximum: 14
+        resources:
+          description: Defines resource configuration settings.
+          type: object
+          properties:
+            cpu_quota:
+              description: 'Specifies the maximum percentage of the host''s CPU that Windows and Linux agents can use. Supported values range from 1 to 100. **Note:**: This setting applies only to agents running version 11.1.0 or later and is not supported on macOS hosts.'
+              type: integer
+              minimum: 1
+              maximum: 100
+              example: 30
+    Profiles_response-agent-profile-deletion:
+      title: Agent Profile Deletion
+      type: object
+      properties:
+        task_id:
+          type: string
+          description: The unique identifier (UUID) of the agent profile deletion task. You can check the status of deletion task via the [Get agent task status](ref:bulk-task-agent-status) endpoint.
+        container_uuid:
+          type: string
+          description: The unique identifier (UUID) of the container where the task is operating.
+        status:
+          type: string
+          description: The status of the task. Possible status values are:<ul><li>`NEW`—The task was created but has not yet started running.</li><li>`RUNNING`—The task is in progress.</li><li>`COMPLETED`—The task is done.</li><li>`FAILED`—There was an error completing the task.</li><li>`STALE`—The task has not been updated in a long time.</li></ul>
+          enum:
+          - NEW
+          - RUNNING
+          - COMPLETED
+          - FAILED
+          - STALE
+        message:
+          type: string
+          description: An informative message about the state of the task.
+    Profiles_response-scanner-config-object:
+      title: Scanner Config Object
+      description: Configuration settings and options applied to the scanner profile.
+      type: object
+      properties:
+        version:
+          description: The version applied to the members of the scanner profile.
+          type: string
+          example: 10.7.1
+        pluginset:
+          description: 'The plugin update plan configuration. You can specify what plugins to install on linked scanners during the daily plugin update.
+
+
+            You can choose from the following options: <ul><li>Auto update to the latest—Specify the value `latest` to auto update to the latest.</li><li>Delay plugin updates by days—Specify a two digit number `1` to `30` indicating the number of days to delay plugin updates.</li><li>Select plugin set from last 30 days—Specify a plugin set from the last 30 days, for example `202407172302`. Plugin sets must be 12 digits.'
+          type: string
+          example: '202407172302'
+        update_disabled:
+          description: Indicates whether or not the scanners are excluded from software updates. If set to true, all scanners assigned to this profile are prevented from receiving software updates. This setting overrides scheduled freeze windows.
+          type: boolean
+    Profiles_request-scanner-profile-config-object:
+      title: Scanner Profile Config
+      description: Configuration settings and options to apply to the profile.
+      type: object
+      properties:
+        version:
+          description: The version to apply to the members of the scanner profile.
+          type: string
+          example: 10.7.1
+        pluginset:
+          description: "The plugin update plan configuration. You can specify what plugins to install on linked scanners during the daily plugin update. \n\nYou can choose from the following options: <ul><li>Auto update to the latest—Specify the value `latest` to auto update to the latest.</li><li>Delay plugin updates by days—Specify a two digit number `1` to `30` indicating the number of days to delay plugin updates.</li><li>Select plugin set from last 30 days—Specify a plugin set from the last 30 days, for example `202407172302`. Plugin sets must be 12 digits."
+          type: string
+          example: '202407172302'
+        update_disabled:
+          description: Indicates whether or not to exclude scanners from software updates. If set to true, all scanners assigned to this profile are prevented from receiving software updates. This setting overrides scheduled freeze windows.
+          type: boolean
+  parameters:
+    Profiles_profile_uuid-path-param:
+      description: The unique identifier (UUID) of the profile.
+      required: true
+      name: profile_uuid
+      in: path
+      schema:
+        type: string
+        format: uuid
+    Profiles_sensor_type-path-param:
+      description: The type of sensor. Use `agent` for agent profiles or `scanners` for scanner profiles.
+      required: true
+      name: sensor_type
+      in: path
+      schema:
+        type: string
+        enum:
+        - agent
+        - scanners
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

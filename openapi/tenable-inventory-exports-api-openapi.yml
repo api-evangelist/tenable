@@ -1,0 +1,1170 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Inventory Exports API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Inventory Exports
+  description: The Tenable Inventory Exports API enables users to export inventory assets and findings in JSON or CSV format. For more information about exporting assets and findings from Tenable Exposure Management, see [Assets](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/assets.htm) and [Findings](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/findings.htm) in the _Tenable Exposure Management User Guide_.
+  x-displayName: Inventory Exports
+paths:
+  /api/v1/t1/inventory/export/assets:
+    post:
+      summary: Export assets
+      description: 'Exports assets in your organization that match the specified search criteria.
+
+
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>'
+      operationId: inventory-export-assets
+      tags:
+      - Inventory Exports
+      parameters:
+      - description: "Specifies which asset properties to include in the export. Provide multiple properties as a comma-separated list. \n\nBy default, if no properties are provided, the export includes the following properties: `asset_name`, `asset_id`, `asset_class`, `aes`, and `asset_criticality_rating_(acr)`\n\nUse the [List assets properties](ref:inventory-asset-properties-list) endpoint to retrieve a list of valid properties for this parameter. For example, you might include `created_at`, `sources`, and `fqdns`."
+        explode: true
+        in: query
+        name: properties
+        required: false
+        schema:
+          example: prop1,prop2,prop3
+          pattern: ^[a-zA-Z0-9_]+(,[a-zA-Z0-9_]+)*$
+          type: string
+        style: form
+      - description: When set to `true`, returns the human-readable names of properties instead of internal key names.
+        explode: true
+        in: query
+        name: use_readable_name
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      - description: 'Maximum size, in bytes, for each export chunk when exporting large datasets.
+
+
+          If omitted, the default is `20971520` bytes (20 MB). The maximum value is `104857600` (100 MB) and the minimum value is `5242880` (5 MB).'
+        explode: true
+        in: query
+        name: max_chunk_file_size
+        required: false
+        schema:
+          type: integer
+          default: 20971520
+          minimum: 5242880
+          maximum: 104857600
+        style: form
+      - description: 'The property and direction to sort the results by, in the format `property:direction`. For example: `asset_name:asc` or `acr:desc`'
+        example: acr:desc
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          pattern: ^[a-zA-Z0-9_]+:(asc|desc)$
+          type: string
+          default: application:asc
+        style: form
+      - description: 'Specifies the file format for the export.
+
+
+          Defaults to `JSON` if not provided. Valid values are `CSV` and `JSON`.'
+        example: CSV
+        explode: true
+        in: query
+        name: file_format
+        required: false
+        schema:
+          $ref: '#/components/schemas/Inventory_Exports_Dataset-File-Format'
+        style: form
+      - description: "When set to `true`, the exported file is compressed using GZIP. \n\nThe compressed file retains its original format (CSV or JSON) but is smaller in size, which helps reduce download time and storage requirements. You must decompress the file with a standard GZIP tool before processing. This option is particularly useful for large exports or limited-bandwidth environments."
+        example: true
+        explode: true
+        in: query
+        name: compress
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              nullable: true
+              properties:
+                filters:
+                  description: "A set of asset properties used to filter the export results. \n\nUse the [List asset properties](ref:inventory-asset-properties-list) endpoint to view available asset properties that can be used as filters."
+                  type: array
+                  nullable: true
+                  items:
+                    $ref: '#/components/schemas/Inventory_Exports_Assets-Property-Filter'
+                query:
+                  type: object
+                  description: Filter the export results by query. A query consists of the search mode and query text.
+                  properties:
+                    mode:
+                      description: 'The mode to use for the query. You can choose either `simple` or `advanced`.
+
+                        * `simple`—A simple query enables you to search for assets by asset name or asset ID.
+
+                        * `advanced`—An advanced query enables you to build a specific query to search for assets.'
+                      type: string
+                      default: simple
+                      enum:
+                      - simple
+                      - advanced
+                    text:
+                      description: "For simple searches, either an asset name or an asset ID. For advanced searches, a query string. Advanced users can use the query builder in the user interface to create a query string.\n\nFor example, some common advanced queries are:\n\n* Cloud assets with critical severity findings—`Assets HAS sources = \"CLOUD\" WITH Weakness HAS severity = \"Critical\"` \n* Cloud assets with critical severity findings and AES score above 700—`Assets HAS sources = \"CLOUD\" AND aes >= 700 WITH Weakness HAS severity = \"Critical\"` \n* Cloud assets exposing secrets and AES score above 700—`Assets HAS sources = \"CLOUD\" AND aes >= 700 WITH Weakness HAS detection_name contains \"exposing secrets\"` \n* Account assets with critical weaknesses—`Assets as Account with weakness has severity_level >= 3` \n* Assets discovered but not scanned for weaknesses—`Assets as Device has is_licensed = false and last_observed_at > \"1988-01-01\"`"
+                      type: string
+                      example: Assets
+                  required:
+                  - mode
+                  - text
+      responses:
+        '200':
+          description: Returned if the asset export request was successfully queued.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  export_id:
+                    type: string
+                    description: The unique identifier (UUID) of the asset export.
+                    format: uuid
+              examples:
+                response:
+                  value:
+                    export_id: 7f58afba-3d63-4c6d-9693-9554497ea0f9
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponseStatus'
+              examples:
+                response:
+                  value:
+                    message: Export column 'prop1' is not supported.
+                    status: 400
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to export assets.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Inventory_Exports_cloud: []
+  /api/v1/t1/inventory/export/findings:
+    post:
+      summary: Export findings
+      description: 'Exports findings in your organization that match the specified search criteria.
+
+
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>'
+      operationId: inventory-export-findings
+      tags:
+      - Inventory Exports
+      parameters:
+      - description: "Specifies which findings properties to include in the export. Provide multiple properties as a comma-separated list. \n\nBy default, if no properties are provided, the export includes the following properties: `asset_id`, `finding_id`, `finding_name`, `severity`, and `state`\n\nUse the [List findings properties](ref:inventory-finding-properties-list) endpoint to retrieve a list of valid properties for this parameter. For example, you might include `asset_name`, `solution`, and `vpr_score` as properties."
+        explode: true
+        in: query
+        name: properties
+        required: false
+        schema:
+          example: prop1,prop2,prop3
+          pattern: ^[a-zA-Z0-9_]+(,[a-zA-Z0-9_]+)*$
+          type: string
+        style: form
+      - description: When set to `true`, returns the human-readable names of properties instead of internal key names.
+        explode: true
+        in: query
+        name: use_readable_name
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      - description: 'Maximum size, in bytes, for each export chunk when exporting large datasets.
+
+
+          If omitted, the default is `20971520` bytes (20 MB). The maximum value is `104857600` (100 MB) and the minimum value is `5242880` (5 MB).'
+        explode: true
+        in: query
+        name: max_chunk_file_size
+        required: false
+        schema:
+          type: integer
+          default: 20971520
+          minimum: 5242880
+          maximum: 104857600
+        style: form
+      - description: 'The property and direction to sort the results by, in the format `property:direction`. For example: `finding_name:asc` or `severity:desc`'
+        example: severity:desc
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          pattern: ^[a-zA-Z0-9_]+:(asc|desc)$
+          type: string
+          default: application:asc
+        style: form
+      - description: 'Specifies the file format for the export.
+
+
+          Defaults to `JSON` if not provided. Valid values are `CSV` and `JSON`.'
+        example: JSON
+        explode: true
+        in: query
+        name: file_format
+        required: false
+        schema:
+          $ref: '#/components/schemas/Inventory_Exports_Dataset-File-Format'
+        style: form
+      - description: "When set to `true`, the exported file is compressed using GZIP. \n\nThe compressed file retains its original format (CSV or JSON) but is smaller in size, which helps reduce download time and storage requirements. You must decompress the file with a standard GZIP tool before processing. This option is particularly useful for large exports or limited-bandwidth environments."
+        example: true
+        explode: true
+        in: query
+        name: compress
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              nullable: true
+              properties:
+                filters:
+                  description: "A set of asset properties used to filter the export results. \n\nUse the [List finding properties](ref:inventory-finding-properties-list) endpoint to view available finding properties that can be used as filters."
+                  type: array
+                  nullable: true
+                  items:
+                    $ref: '#/components/schemas/Inventory_Exports_Findings-Property-Filter'
+                query:
+                  type: object
+                  description: Filter the export results by query. A query consists of the search mode and query text.
+                  properties:
+                    mode:
+                      description: 'The mode to use for the query. You can choose either `simple` or `advanced`.
+
+                        * `simple`—A simple query enables you to search for findings by finding name or finding ID.
+
+                        * `advanced`—An advanced query enables you to build a specific query to search for findings.'
+                      type: string
+                      default: simple
+                      enum:
+                      - simple
+                      - advanced
+                    text:
+                      description: "For simple searches, either a finding name or a finding ID. For advanced searches, a query string. Advanced users can use the query builder in the user interface to create a query string.\n\nFor example, some common advanced queries are:\n\n* Findings with a CVSSv3 base score equal to 10—`Findings HAS finding_cvss3_base_score = 10` \n* Findings last seen after a particular date—`Findings HAS last_observed_at > \"2025-11-12\"` "
+                      type: string
+                      example: Findings
+                  required:
+                  - mode
+                  - text
+      responses:
+        '200':
+          description: Returned if the findings export request was successfully queued.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  export_id:
+                    type: string
+                    description: The unique identifier (UUID) of the findings export.
+                    format: uuid
+              examples:
+                response:
+                  value:
+                    export_id: f0b3947f-99dc-4966-b2f6-b9034f0afcad
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponseStatus'
+              examples:
+                response:
+                  value:
+                    message: Requested EXAMPLE not found
+                    status: 400
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to export findings.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Inventory_Exports_cloud: []
+  /api/v1/t1/inventory/export/assets/status:
+    get:
+      summary: List asset export jobs
+      description: Returns a list of up to 1,000 asset export jobs submitted in the last 3 days, sorted by the most recent refresh time. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>
+      operationId: inventory-export-assets-jobs
+      tags:
+      - Inventory Exports
+      parameters:
+      - $ref: '#/components/parameters/Inventory_Exports_status-query-param'
+      - $ref: '#/components/parameters/Inventory_Exports_limit-query-param'
+      responses:
+        '200':
+          description: Returned if the list of asset export jobs was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exports:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Inventory_Exports_Response-Export-Job'
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponseStatus-400'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view asset export jobs.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Inventory_Exports_cloud: []
+  /api/v1/t1/inventory/export/findings/status:
+    get:
+      summary: List finding export jobs
+      description: Returns a list of up to 1,000 findings export jobs submitted in the last 3 days, sorted by the most recent refresh time. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>
+      operationId: inventory-export-findings-jobs
+      tags:
+      - Inventory Exports
+      parameters:
+      - $ref: '#/components/parameters/Inventory_Exports_status-query-param'
+      - $ref: '#/components/parameters/Inventory_Exports_limit-query-param'
+      responses:
+        '200':
+          description: Returned if the list of findings export jobs was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exports:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Inventory_Exports_Response-Export-Job'
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponseStatus-400'
+              examples:
+                response:
+                  value:
+                    error: Bad Request
+                    message: 'Invalid status: completed. Supported values: QUEUED, PROCESSING, FINISHED, ERROR'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view findings export jobs.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Inventory_Exports_cloud: []
+  /api/v1/t1/inventory/export/{export_id}/status:
+    get:
+      summary: Get export status
+      description: 'Returns the current status of an export request.
+
+
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>'
+      operationId: inventory-export-status
+      tags:
+      - Inventory Exports
+      parameters:
+      - description: The unique identifier (UUID) of the export request whose status you want to retrieve.
+        explode: false
+        in: path
+        name: export_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        '200':
+          description: Returned if the status of the specified export request was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_Response-Export-Status'
+              examples:
+                response:
+                  value:
+                    export_id: f69b502b-f9eb-4e17-aaa8-2f68df54fc7d
+                    status: FINISHED
+                    submitted_at: '2025-07-23T22:15:25.849Z'
+                    last_refreshed_at: '2025-07-23T22:15:27.305Z'
+                    chunks_available:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                    - 6
+                    - 7
+                    - 8
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponseStatus'
+              examples:
+                response:
+                  value:
+                    message: Export column 'prop1' is not supported.
+                    status: 400
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the export status.
+        '404':
+          description: Returned if the specified export request was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponseStatus'
+              examples:
+                response:
+                  value:
+                    message: the request with id 1697e68f-7e14-41ad-9146-f2e08bd59296 was not found
+                    status: 404
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Inventory_Exports_cloud: []
+  /api/v1/t1/inventory/export/{export_id}/download/{chunk_id}:
+    get:
+      summary: Download export
+      description: 'Downloads a specific export chunk in JSON or CSV format.
+
+
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>'
+      operationId: inventory-export-download
+      tags:
+      - Inventory Exports
+      parameters:
+      - description: The unique identifier (UUID) of the export request for which you want to download a chunk.
+        explode: false
+        in: path
+        name: export_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: 'The specific chunk number to retrieve from the export request.
+
+
+          **Note:** For exports in CSV format, each chunk includes a header row.'
+        explode: false
+        in: path
+        name: chunk_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        '200':
+          description: Returned if the assets export chunk was retrieved successfully.
+          content:
+            application/octet-stream:
+              schema:
+                oneOf:
+                - title: Assets Export Chunk (JSON)
+                  description: 'The response model for asset export chunks in JSON format.
+
+
+                    **Note:** The schema below reflects the default response structure. The actual structure can vary depending on the properties specified in the asset export request.'
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Inventory_Exports_Response-Assets-Chunk-JSON'
+                - title: Assets Export Chunk (CSV)
+                  description: 'For the CSV response model of asset export chunks, see the example CSV responses.
+
+
+                    **Note:** The structure of the response can vary based on the properties specified in the asset export request.'
+                  type: string
+                - title: Findings Export Chunk (JSON)
+                  description: 'The response model for findings export chunks in JSON format.
+
+
+                    **Note:** The schema below reflects the default response structure. The actual structure can vary depending on the properties specified in the asset export request.'
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Inventory_Exports_Response-Findings-Chunk-JSON'
+                - title: Findings Export Chunk (CSV)
+                  description: 'For the CSV response model of findings export chunks, see the example CSV responses.
+
+
+                    **Note:** The structure of the response can vary based on the properties specified in the findings export request.'
+                  type: string
+              examples:
+                Assets Export Chunk (JSON):
+                  value:
+                  - aes: 947
+                    asset_class: DEVICE
+                    asset_criticality_rating_(acr): 9
+                    asset_id: 1424e7ea-0ed1-40d0-b7c7-044ddfb654d6
+                    asset_name: dc1
+                  - aes: 946
+                    asset_class: DEVICE
+                    asset_criticality_rating_(acr): 9
+                    asset_id: 063e6e49-e519-4f6f-acf1-85e973e772c0
+                    asset_name: dc
+                  - aes: 946
+                    asset_class: DEVICE
+                    asset_criticality_rating_(acr): 9
+                    asset_id: d6d4406f-18d4-4957-b499-6190193b2f02
+                    asset_name: rdc2
+                  - aes: 937
+                    asset_class: ACCOUNT
+                    asset_criticality_rating_(acr): 10
+                    asset_id: 409f87d2-9234-54a7-973f-0526600b4e91
+                    asset_name: Administrator
+                  - aes: 919
+                    asset_class: STORAGE
+                    asset_criticality_rating_(acr): 3
+                    asset_id: 164a89ce-5122-59a1-a141-b64579780893
+                    asset_name: tentorage
+                  - aes: 889
+                    asset_class: GENERAL
+                    asset_criticality_rating_(acr): 3
+                    asset_id: 5cf906a6-ada6-5532-9bbe-344dee66342e
+                    asset_name: eks-22c9ef6b-fc3e-854e-064d-ea8d43047a4d
+                  - aes: 885
+                    asset_class: CONTAINER
+                    asset_criticality_rating_(acr): 3
+                    asset_id: 510c48df-2e9d-5da6-9061-65ac3d93ba1d
+                    asset_name: vulnapplication
+                Assets Export Chunk (CSV):
+                  value: 'Asset ID,Asset Name,Asset Class,AES,Asset Criticality Rating (ACR)
+
+                    1424e7ea-0ed1-40d0-b7c7-044ddfb654d6,dc1,DEVICE,947,9
+
+                    063e6e49-e519-4f6f-acf1-85e973e772c0,dc,DEVICE,946,9
+
+                    d6d4406f-18d4-4957-b499-6190193b2f02,rdc2,DEVICE,946,9
+
+                    409f87d2-9234-54a7-973f-0526600b4e91,Administrator,ACCOUNT,937,10
+
+                    164a89ce-5122-59a1-a141-b64579780893,tenstorage,STORAGE,919,3
+
+                    5cf906a6-ada6-5532-9bbe-344dee66342e,eks-22c9ef6b-fc3e-854e-064d-ea8d43047a4d,GENERAL,889,3
+
+                    510c48df-2e9d-5da6-9061-65ac3d93ba1d,vulnapplication,CONTAINER,885,3'
+                Findings Export Chunk (JSON):
+                  value:
+                  - asset_id: be99c8e0-10d8-473f-a77a-00d0829b13e8
+                    finding_id: 0014daff-1259-460f-86d0-47de472203f4
+                    finding_name: 'MS16-051: Cumulative Security Update for Internet Explorer (3155533)'
+                    severity: CRITICAL
+                    state: ACTIVE
+                  - asset_id: f849adbf-79b9-42d6-a9d9-bf72c13bf929
+                    finding_id: 001bb032-3373-529b-ab60-54cae8dbcb89
+                    finding_name: 'KB5025288: Windows 8.1 Embedded and Windows Server 2012 R2 Security Update (April 2023)'
+                    severity: CRITICAL
+                    state: ACTIVE
+                  - asset_id: 3d3bdfdb-adf9-5ceb-86f2-b5730ef2d7c0
+                    finding_id: 0028a2d3-ffbd-52ed-b208-4b24ffaf8e16
+                    finding_name: Too many privileged accounts
+                    severity: CRITICAL
+                    state: ACTIVE
+                  - asset_id: 431691c5-169d-4c0a-bc64-558d5c9153c8
+                    finding_id: 0059bb07-5ade-4333-971a-b5e2dd8ad043
+                    finding_name: 'MS16-007: Security Update for Microsoft Windows to Address Remote Code Execution (3124901)'
+                    severity: CRITICAL
+                    state: ACTIVE
+                  - asset_id: c627104b-7262-428d-b442-97e6f6621c76
+                    finding_id: 008a02ef-a97e-457e-99e2-db8a66e8e265
+                    finding_name: 'KB5013952: Windows 10 Version 1607 and Windows Server 2016 Security Update (May 2022)'
+                    severity: CRITICAL
+                    state: ACTIVE
+                  - asset_id: 229fef29-6dae-483e-ba6f-ce1bd401aba9
+                    finding_id: 00bfbac6-25dd-4955-be7b-451f23d3f383
+                    finding_name: 'Debian DSA-4777-1 : freetype - security update'
+                    severity: CRITICAL
+                    state: ACTIVE
+                  - asset_id: f03e8a53-a1bc-487e-b1f9-7b5cfd65c710
+                    finding_id: 00d05744-4357-4fb7-8523-9f9889182f04
+                    finding_name: 'AlmaLinux 8 : kernel (ALSA-2022:7683)'
+                    severity: CRITICAL
+                    state: ACTIVE
+                  - asset_id: bfa1f788-261d-5a7f-bdfc-cb926ead8032
+                    finding_id: 00d6277b-3408-5bd1-b449-a07aa8291f47
+                    finding_name: Too many members in a privileged group
+                    severity: CRITICAL
+                    state: ACTIVE
+                Findings Export Chunk (CSV):
+                  value: 'Finding ID,Finding Name,Asset Id,State,Severity
+
+                    0014daff-1259-460f-86d0-47de472203f4,MS16-051: Cumulative Security Update for Internet Explorer (3155533),be99c8e0-10d8-473f-a77a-00d0829b13e8,ACTIVE,CRITICAL
+
+                    001bb032-3373-529b-ab60-54cae8dbcb89,KB5025288: Windows 8.1 Embedded and Windows Server 2012 R2 Security Update (April 2023),f849adbf-79b9-42d6-a9d9-bf72c13bf929,ACTIVE,CRITICAL
+
+                    0028a2d3-ffbd-52ed-b208-4b24ffaf8e16,Too many privileged accounts,3d3bdfdb-adf9-5ceb-86f2-b5730ef2d7c0,ACTIVE,CRITICAL
+
+                    0059bb07-5ade-4333-971a-b5e2dd8ad043,MS16-007: Security Update for Microsoft Windows to Address Remote Code Execution (3124901),431691c5-169d-4c0a-bc64-558d5c9153c8,ACTIVE,CRITICAL
+
+                    008a02ef-a97e-457e-99e2-db8a66e8e265,KB5013952: Windows 10 Version 1607 and Windows Server 2016 Security Update (May 2022),c627104b-7262-428d-b442-97e6f6621c76,ACTIVE,CRITICAL
+
+                    00bfbac6-25dd-4955-be7b-451f23d3f383,Debian DSA-4777-1 : freetype - security update,229fef29-6dae-483e-ba6f-ce1bd401aba9,ACTIVE,CRITICAL
+
+                    00d05744-4357-4fb7-8523-9f9889182f04,AlmaLinux 8 : kernel (ALSA-2022:7683),f03e8a53-a1bc-487e-b1f9-7b5cfd65c710,ACTIVE,CRITICAL
+
+                    00d6277b-3408-5bd1-b449-a07aa8291f47,Too many members in a privileged group,bfa1f788-261d-5a7f-bdfc-cb926ead8032,ACTIVE,CRITICAL'
+        '204':
+          description: Returned if the export request chunk is not yet ready for download.
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponseStatus'
+              examples:
+                response:
+                  value:
+                    message: Export column 'prop1' is not supported.
+                    status: 400
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to download exports.
+        '404':
+          description: Returned if the specified export request or chunk was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponseStatus'
+              examples:
+                response:
+                  value:
+                    message: The request with id 7d8a71b1-3cab-4768-8905-0040917ad451 was not found
+                    status: 404
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Inventory_Exports_cloud: []
+components:
+  schemas:
+    Inventory_Exports_Response-Findings-Chunk-JSON:
+      type: object
+      additionalProperties: true
+      properties:
+        asset_id:
+          description: The unique identifier (UUID) of the asset on which the finding was identified.
+          type: string
+        finding_id:
+          description: The unique identifier (UUID) of the finding in Tenable Exposure Management. Use this value as the unique key for the finding.
+          type: string
+        finding_name:
+          description: The name of the finding. This typically corresponds with the plugin name that detected the finding.
+          type: string
+        severity:
+          description: 'Indicates the level of risk posed to your organization. The severity of a finding, often referred to as vulnerability severity, is a classification that indicates the level of potential risk posed by a security vulnerability. It helps prioritize remediation efforts by highlighting the most critical vulnerabilities that require immediate attention.
+
+
+            Here''s a breakdown of common severity levels and their implications:
+
+
+            - **CRITICAL**—Critically severe vulnerabilities pose an immediate and significant risk to your organization. They often allow for remote code execution, complete system compromise, or data breaches.
+
+            - **HIGH**—High-severity vulnerabilities have a high likelihood of exploitation and could lead to significant damage or disruption.
+
+            - **MEDIUM**—Medium-severity vulnerabilities may not be easily exploitable but still represent a potential security risk. They might require specific conditions or user interaction to be exploited.
+
+            - **LOW**—Low-severity vulnerabilities pose a minimal risk to your organization. They might only result in minor inconveniences or limited impact.
+
+            - **INFO**—Informational findings highlight potential security issues that do not directly pose a threat but could be leveraged in future attacks.'
+          type: string
+          enum:
+          - CRITICAL
+          - HIGH
+          - MEDIUM
+          - LOW
+          - INFO
+        state:
+          description: 'The current status of the finding.
+
+
+            The state of a finding reflects the current status of a security issue or vulnerability identified within your IT environment. It helps you track the progress of remediation efforts and provides insights into the overall security posture.
+
+
+            The following are the different states for findings in Tenable Exposure Management:
+
+
+            - **ACTIVE** — The finding is new or has not yet been addressed. It requires further investigation and potential remediation.
+
+            - **RESURFACED**—The finding was fixed but got back.
+
+            - **FIXED**—The issue identified in the finding has been successfully resolved.'
+          type: string
+          enum:
+          - ACTIVE
+          - RESURFACED
+          - FIXED
+    Inventory_Exports_ErrorResponseStatus-400:
+      type: object
+      properties:
+        error:
+          type: integer
+          description: The HTTP response response status.
+        message:
+          type: string
+          description: An error message indicating the invalid parameter or value.
+    Inventory_Exports_Response-Export-Status:
+      type: object
+      properties:
+        export_id:
+          description: The unique identifier (UUID) of the export request.
+          type: string
+          format: uuid
+        submitted_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
+          format: date-time
+          type: string
+        last_refreshed_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was last checked for completion.
+          format: date-time
+          type: string
+        status:
+          description: "The status of the export request. Possible values include\n\n * `QUEUED`—Tenable Exposure Management has queued the export request until earlier requests have completed.\n * `PROCESSING`—Tenable Exposure Management is currently processing the export request. \n * `FINISHED`—Tenable Exposure Management has completed processing the export request. All chunks are available.\n * `ERROR`—An error occurred while processing the export request. Retry the request. If the error persists, contact Tenable Support."
+          type: string
+          enum:
+          - QUEUED
+          - PROCESSING
+          - FINISHED
+          - ERROR
+        chunks_available:
+          type: array
+          description: A list of completed chunk numbers available for download. Each integer represents a chunk file that can be downloaded. If no chunks are available, the list will be empty.
+          items:
+            type: integer
+    Inventory_Exports_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Inventory_Exports_Findings-Property-Filter:
+      type: object
+      required:
+      - operator
+      - property
+      - value
+      properties:
+        property:
+          description: "The finding property to filter on.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve a list of valid finding properties for filtering. For example, you might filter by `asset_name`, `solution`, or `vpr_score`."
+          type: string
+        operator:
+          type: string
+          description: "The comparison operator to apply to the filter. \n\nFor example: `=`, `!=`, `match`, etc. Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve supported comparison operators for the selected filter."
+          enum:
+          - ''
+          - '='
+          - '!='
+          - <=
+          - between
+          - match
+          - '>='
+          - <
+          - '>'
+          - contains
+          - not contains
+          - exists
+          - not exists
+          - older than
+          - newer than
+          - within last
+        value:
+          description: "The value to use for comparison in the filter.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve the supported values for the selected filter."
+          type: array
+          items:
+            type: string
+    Inventory_Exports_Dataset-File-Format:
+      default: JSON
+      enum:
+      - CSV
+      - JSON
+      type: string
+    Inventory_Exports_ErrorResponseStatus:
+      type: object
+      properties:
+        message:
+          type: string
+          description: An error message indicating the invalid parameter or value.
+        status:
+          type: integer
+          description: The HTTP response response status code.
+    Inventory_Exports_Assets-Property-Filter:
+      type: object
+      required:
+      - operator
+      - property
+      - value
+      properties:
+        property:
+          description: 'The asset property to filter on.
+
+
+            Use the [List asset properties](ref:inventory-asset-properties-list) endpoint to retrieve a list of valid asset properties for filtering. For example, you might filter by `created_at`, `sources`, or `fqdns`.'
+          type: string
+        operator:
+          type: string
+          description: "The comparison operator to apply to the filter. \n\nFor example: `=`, `!=`, `match`, etc. Use the [List asset properties](ref:inventory-asset-properties-list) endpoint to retrieve supported comparison operators for the selected filter."
+          enum:
+          - ''
+          - '='
+          - '!='
+          - <=
+          - between
+          - match
+          - '>='
+          - <
+          - '>'
+          - contains
+          - not contains
+          - exists
+          - not exists
+          - older than
+          - newer than
+          - within last
+        value:
+          description: "The value to use for comparison in the filter. \n\nUse the [List asset properties](ref:inventory-asset-properties-list) endpoint to retrieve the supported values for the selected filter."
+          type: array
+          items:
+            type: string
+    Inventory_Exports_Response-Export-Job:
+      type: object
+      properties:
+        export_id:
+          description: The unique identifier (UUID) of the export request.
+          type: string
+          format: uuid
+        submitted_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
+          format: date-time
+          type: string
+        last_refreshed_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was last checked for completion.
+          format: date-time
+          type: string
+        status:
+          description: "The status of the export request. Possible values include\n\n * QUEUED—The request is waiting for earlier requests to complete.\n * PROCESSING—The request is currently being processed. \n * FINISHED—Processing is complete, and all chunks are available.\n * ERROR—An error occurred while processing. Retry the request, and if the issue persists, contact Tenable Support."
+          type: string
+          enum:
+          - QUEUED
+          - PROCESSING
+          - FINISHED
+          - ERROR
+        export_type:
+          description: The type of export request. Possible values are `assets` or `findings`.
+          type: string
+          enum:
+          - assets
+          - findings
+    Inventory_Exports_Response-Assets-Chunk-JSON:
+      type: object
+      additionalProperties: true
+      properties:
+        aes:
+          description: The Tenable-defined Asset Exposure Score (AES) for the asset. This metric weighs an asset's [Vulnerability Priority Rating (VPR)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Vulnerability-Priority-Rating-(VPR)) and [Asset Criticality Rating (AES)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Exposure-Score-(AES)) and then assigns a number from 1 to 1000, with higher numbers for more exposed assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm) in the _Tenable Exposure Management User Guide_.
+          type: integer
+          maximum: 1000
+          minimum: 0
+        asset_class:
+          description: The class that Tenable Exposure Management has assigned to the asset. Asset classes enable users to easily separate asset data based on its type. For more information about asset classes, see [Asset Classes](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) in the Tenable Exposure Management User Guide.
+          type: string
+          enum:
+          - ACCOUNT
+          - APPLICATION
+          - CONTAINER
+          - DEVICE
+          - GENERAL
+          - GROUP
+          - IAC
+          - IDENTITY
+          - RESOURCE
+          - ROLE
+          - STORAGE
+          - UNKNOWN
+        asset_criticality_rating_(acr):
+          description: The Tenable-defined Asset Criticality Rating (ACR) for the asset. With Lumin, Tenable uses an algorithm based on the [asset class](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) to assign a metric rating the importance of an asset to your organization from 1 to 10, with higher numbers for more critical assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Criticality-Rating-(ACR)) in the _Tenable Exposure Management User Guide_.
+          type: integer
+          maximum: 10
+          minimum: 0
+        asset_id:
+          description: The unique identifier (UUID) of the asset in Tenable Exposure Management. Use this value as the unique key for the asset.
+          type: string
+        asset_name:
+          description: The name of the asset.
+          type: string
+  parameters:
+    Inventory_Exports_limit-query-param:
+      description: 'The maximum number of export jobs to return from the last 3 days.
+
+
+        **Note:** Only jobs submitted within the last 3 days are returned. The actual number of results may be less than the specified limit if fewer jobs exist.
+
+
+        If omitted, the default is `1000`. The maximum value is `1000` and the minimum value is `1`.'
+      explode: true
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        default: 1000
+        minimum: 1
+        maximum: 1000
+      style: form
+      example: 100
+    Inventory_Exports_status-query-param:
+      description: "Filters the results by export job status. \n\nSupported values include:\n\n * `QUEUED`—The request is waiting for earlier requests to complete.\n * `PROCESSING`—The request is currently being processed. \n * `FINISHED`—Processing is complete, and all chunks are available.\n * `ERROR`—An error occurred while processing. Retry the request, and if the issue persists, contact Tenable Support."
+      explode: true
+      in: query
+      name: status
+      required: false
+      schema:
+        type: string
+        enum:
+        - QUEUED
+        - PROCESSING
+        - FINISHED
+        - ERROR
+      style: form
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

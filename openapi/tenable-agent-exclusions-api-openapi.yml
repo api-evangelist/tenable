@@ -1,0 +1,558 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Agent Exclusions API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Agent Exclusions
+  x-displayName: Agent Exclusions
+paths:
+  /scanners/null/agents/exclusions:
+    post:
+      summary: Create agent exclusion
+      description: Creates a new agent exclusion.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: agent-exclusions-create
+      tags:
+      - Agent Exclusions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the exclusion.
+                description:
+                  type: string
+                  description: The description of the exclusion.
+                schedule:
+                  $ref: '#/components/schemas/agent-exclusions_schedule'
+              required:
+              - name
+              - schedule
+      responses:
+        '200':
+          description: Returned if the exclusion was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-exclusions_exclusion'
+              examples:
+                response:
+                  value:
+                    description: Router scan exclusion
+                    name: Routers
+                    uuid: 152de080-fb23-4351-8ab0-6a1fb8624039
+                    creation_date: 1543541807
+                    last_modification_date: 1543541807
+                    id: 124234
+                    core_updates_blocked: true
+                    schedule:
+                      starttime: '2018-12-31 19:35:00'
+                      endtime: '2019-12-31 19:35:00'
+                      enabled: true
+                      rrules:
+                        freq: DAILY
+                        interval: 2
+                      timezone: US/Pacific
+        '400':
+          description: Returned if an argument is missing or invalid.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create an exclusion.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - agent-exclusions_cloud: []
+    get:
+      summary: List agent exclusions
+      description: Returns the list of current agent exclusions.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: agent-exclusions-list
+      tags:
+      - Agent Exclusions
+      responses:
+        '200':
+          description: Returned if the list of exclusions was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                description: An object containing an array of exclusion objects.
+                properties:
+                  exclusions:
+                    $ref: '#/components/schemas/agent-exclusions_exclusions'
+              examples:
+                response:
+                  value:
+                    exclusions:
+                    - description: Router scan exclusion
+                      name: Routers
+                      uuid: 152de080-fb23-4351-8ab0-6a1fb8624039
+                      creation_date: 1543541807
+                      last_modification_date: 1543541807
+                      id: 124234
+                      core_updates_blocked: true
+                      schedule:
+                        starttime: '2018-12-31 19:35:00'
+                        endtime: '2019-12-31 19:35:00'
+                        enabled: true
+                        rrules:
+                          freq: DAILY
+                          interval: 8
+                          byweekday: SU,MO
+                          bymonthday: 9
+                        timezone: US/Pacific
+                    - description: Workstation scan exclusion
+                      name: Workstation
+                      uuid: 128de090-fb21-4451-8ab0-6b1fb8624123
+                      creation_date: 2543541809
+                      last_modification_date: 2543541809
+                      id: 222456
+                      core_updates_blocked: true
+                      schedule:
+                        starttime: '2018-12-31 19:35:00'
+                        endtime: '2019-12-31 19:35:00'
+                        enabled: true
+                        rrules:
+                          freq: DAILY
+                          interval: 8
+                          byweekday: TU
+                          bymonthday: 11
+                        timezone: US/Central
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the exclusions.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - agent-exclusions_cloud: []
+  /scanners/null/agents/exclusions/{exclusion_id}:
+    get:
+      summary: Get agent exclusion details
+      description: Returns details for the specified agent exclusion.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: agent-exclusions-details
+      tags:
+      - Agent Exclusions
+      parameters:
+      - description: The ID of the exclusion.
+        required: true
+        name: exclusion_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the specified exclusion's details were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-exclusions_exclusion'
+              examples:
+                response:
+                  value:
+                    description: Router scan exclusion
+                    name: Routers
+                    uuid: 152de080-fb23-4351-8ab0-6a1fb8624039
+                    creation_date: 1543541807
+                    last_modification_date: 1543541807
+                    id: 124234
+                    core_updates_blocked: true
+                    schedule:
+                      starttime: '2018-12-31 19:35:00'
+                      endtime: '2019-12-31 19:35:00'
+                      enabled: true
+                      rrules:
+                        freq: DAILY
+                        interval: 2
+                      timezone: US/Pacific
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the exclusion.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified exclusion.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - agent-exclusions_cloud: []
+    put:
+      summary: Update agent exclusion
+      description: Updates an agent exclusion.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: agent-exclusions-edit
+      tags:
+      - Agent Exclusions
+      parameters:
+      - description: The ID of the exclusion to edit.
+        required: true
+        name: exclusion_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the exclusion.
+                description:
+                  type: string
+                  description: The description of the exclusion.
+                schedule:
+                  $ref: '#/components/schemas/agent-exclusions_schedule'
+              required:
+              - schedule
+      responses:
+        '200':
+          description: Returned if the exclusion was modified successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-exclusions_exclusion'
+              examples:
+                response:
+                  value:
+                    description: Router scan exclusion
+                    name: Routers
+                    uuid: 152de080-fb23-4351-8ab0-6a1fb8624039
+                    creation_date: 1543541807
+                    last_modification_date: 1543541807
+                    id: 124234
+                    core_updates_blocked: true
+                    schedule:
+                      starttime: '2018-12-31 19:35:00'
+                      endtime: '2019-12-31 19:35:00'
+                      enabled: true
+                      rrules:
+                        freq: DAILY
+                        interval: 2
+                      timezone: US/Pacific
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to modify the exclusion.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified exclusion.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - agent-exclusions_cloud: []
+    delete:
+      summary: Delete agent exclusion
+      description: Deletes an agent exclusion.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: agent-exclusions-delete
+      tags:
+      - Agent Exclusions
+      parameters:
+      - description: The ID of the exclusion to delete.
+        required: true
+        name: exclusion_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the exclusion was deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to delete the exclusion.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified exclusion.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - agent-exclusions_cloud: []
+components:
+  schemas:
+    agent-exclusions_rrules:
+      type: object
+      required:
+      - freq
+      properties:
+        freq:
+          type: string
+          description: The frequency of the rule (ONETIME, DAILY, WEEKLY, MONTHLY, YEARLY).
+          enum:
+          - ONETIME
+          - DAILY
+          - WEEKLY
+          - MONTHLY
+          - YEARLY
+        interval:
+          type: integer
+          description: The interval of the rule.
+        byweekday:
+          type: string
+          description: A comma separated string of days to repeat a WEEKLY freq rule on (SU,MO,TU,WE,TH,FR, or SA).
+        bymonthday:
+          type: integer
+          description: The day of the month to repeat a MONTHLY freq rule on.
+    agent-exclusions_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    agent-exclusions_schedule:
+      type: object
+      required:
+      - starttime
+      - endtime
+      - rrules
+      - timezone
+      properties:
+        enabled:
+          type: boolean
+          description: If true, the exclusion is scheduled.
+        starttime:
+          type: string
+          description: The start time of the exclusion formatted as `YYYY-MM-DD HH:MM:SS`.
+        endtime:
+          type: string
+          description: The end time of the exclusion formatted as `YYYY-MM-DD HH:MM:SS`.
+        rrules:
+          $ref: '#/components/schemas/agent-exclusions_rrules'
+        timezone:
+          type: string
+          description: 'The timezone for the exclusion as returned by [scans: timezones](ref:scans-timezones).'
+    agent-exclusions_exclusion:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The description of the exclusion.
+        name:
+          type: string
+          description: The name of the exclusion.
+        uuid:
+          type: string
+          description: The unique UUID of the exclusion.
+        creation_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the creation date of the exclusion.
+        last_modification_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the last modification date for the exclusion.
+        id:
+          type: integer
+          description: The unique ID of the exclusion.
+        core_updates_blocked:
+          type: boolean
+          description: Indicates whether core updates are blocked while the exclusion is active.
+        schedule:
+          $ref: '#/components/schemas/agent-exclusions_schedule'
+    agent-exclusions_exclusions:
+      type: array
+      items:
+        $ref: '#/components/schemas/agent-exclusions_exclusion'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

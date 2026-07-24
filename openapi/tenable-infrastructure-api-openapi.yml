@@ -1,0 +1,366 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Infrastructure API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Infrastructure
+  description: A groupment of directories
+paths:
+  /api/infrastructures:
+    get:
+      summary: Retrieve all infrastructure instances.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the GET /infrastructures response
+                type: array
+                items:
+                  description: Infrastructure
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - name
+                  - directories
+                  - login
+                  properties:
+                    id:
+                      type: integer
+                      description: Unique numeric identifier of the infrastructure
+                    name:
+                      type: string
+                      description: User-defined name of the infrastructure
+                    login:
+                      type: string
+                      description: Username of the AD service account that Tenable.ad should use to connect to the infrastructure's directories
+                    directories:
+                      type: array
+                      items:
+                        type: number
+                      description: Identifiers of the directories linked to the infrastructure
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Infrastructure
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+    post:
+      summary: Create infrastructure instance.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the POST /infrastructures response
+                type: array
+                minItems: 1
+                items:
+                  description: Infrastructure
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - name
+                  - directories
+                  - login
+                  properties:
+                    id:
+                      type: integer
+                      description: Unique numeric identifier of the infrastructure
+                    name:
+                      type: string
+                      description: User-defined name of the infrastructure
+                    login:
+                      type: string
+                      description: Username of the AD service account that Tenable.ad should use to connect to the infrastructure's directories
+                    directories:
+                      type: array
+                      items:
+                        type: number
+                      description: Identifiers of the directories linked to the infrastructure
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Infrastructure
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates the POST /infrastructures request
+              type: array
+              minItems: 1
+              items:
+                type: object
+                additionalProperties: false
+                required:
+                - name
+                - login
+                - password
+                properties:
+                  name:
+                    type: string
+                  login:
+                    type: string
+                  password:
+                    type: string
+                    x-secret: true
+  /api/infrastructures/{id}:
+    get:
+      summary: Get infrastructure instance by id.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Infrastructure
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - name
+                - directories
+                - login
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  login:
+                    type: string
+                  directories:
+                    type: array
+                    items:
+                      type: number
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Infrastructure
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+    patch:
+      summary: Update infrastructure instance.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Infrastructure
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - name
+                - login
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  login:
+                    type: string
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Infrastructure
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates the PATCH /infrastructures/:id request
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                login:
+                  type: string
+                password:
+                  type: string
+                  x-secret: true
+    delete:
+      summary: Delete infrastructure instance.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '204':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Infrastructure
+                additionalProperties: false
+                nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Infrastructure
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

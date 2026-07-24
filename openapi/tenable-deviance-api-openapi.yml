@@ -1,0 +1,1914 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Deviance API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Deviance
+  description: Security deviance items
+paths:
+  /api/deviances/changed:
+    get:
+      summary: Get all deviances that has been created or resolved since an event
+      description: 'Required license type: ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the GET /deviances/changed response
+                type: object
+                properties:
+                  _embedded:
+                    type: object
+                    properties:
+                      deviance:
+                        type: array
+                        items:
+                          description: AD object deviance
+                          type: object
+                          additionalProperties: false
+                          required:
+                          - id
+                          - checkerId
+                          - directoryId
+                          - profileId
+                          - adObjectId
+                          - reasonId
+                          - createdEventId
+                          - resolvedEventId
+                          - eventDate
+                          - devianceProviderId
+                          - attributes
+                          - description
+                          properties:
+                            id:
+                              type: number
+                              description: Unique numeric identifier of the deviance
+                            directoryId:
+                              type: number
+                              description: Identifier of the directory the underlying deviant AD object belongs to
+                            checkerId:
+                              type: number
+                              description: Identifier of the checker that has emitted the deviance
+                            profileId:
+                              type: number
+                              description: Identifier of the profile for which the deviance has been emitted
+                            adObjectId:
+                              type: number
+                              description: Identifier of the AD object for which the deviance has been emitted
+                            reasonId:
+                              type: number
+                              description: Identifier of the reason for which the deviance has been emitted
+                            resolvedEventId:
+                              oneOf:
+                              - not:
+                                  nullable: true
+                                format: int64
+                                nullable: true
+                              description: Identifier of the event that fixed the deviance
+                            resolvedAt:
+                              type: string
+                              format: date-time
+                              description: Date of the event that fixed the deviance
+                              nullable: true
+                            createdEventId:
+                              format: int64
+                              description: Identifier of the event that created the deviance
+                            eventDate:
+                              type: string
+                              format: date-time
+                              description: Date of the event that created the deviance
+                            ignoreUntil:
+                              type: string
+                              format: date-time
+                              description: Date until which the deviance should be ignored
+                              nullable: true
+                            devianceProviderId:
+                              type: string
+                              description: String identifier of the deviance, unique for non-revolved deviances
+                              nullable: true
+                            attributes:
+                              type: array
+                              items:
+                                type: object
+                                additionalProperties: false
+                                required:
+                                - name
+                                - value
+                                properties:
+                                  name:
+                                    type: string
+                                    description: Name of the deviance incriminating attribute
+                                  value:
+                                    type: string
+                                    description: JSON-stringified value of the deviance incriminating attribute
+                              description: Deviance incriminating attributes data
+                            description:
+                              type: object
+                              additionalProperties: false
+                              required:
+                              - template
+                              - replacements
+                              properties:
+                                template:
+                                  type: string
+                                  description: Localized description template of the deviance
+                                replacements:
+                                  type: array
+                                  items:
+                                    type: object
+                                    additionalProperties: false
+                                    required:
+                                    - name
+                                    - valueType
+                                    properties:
+                                      name:
+                                        type: string
+                                        description: Name of the deviance incriminating attribute
+                                      valueType:
+                                        type: string
+                                        description: Type of the deviance incriminating attribute
+                                  description: Metadata about the placeholders in the template
+                              description: Deviance description data
+                    x-_links:
+                      type: object
+                      additionalProperties: true
+                      properties:
+                        next:
+                          type: string
+                          description: Url of the next batch results. If there is no result for the current call, this property will not be defined
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Deviance
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/directories/{directoryId}/deviances/{id}:
+    get:
+      summary: Get ad-object-deviance-history instance by id.
+      description: 'Required license type: ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: AD object deviance
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - checkerId
+                - directoryId
+                - profileId
+                - adObjectId
+                - reasonId
+                - createdEventId
+                - resolvedEventId
+                - eventDate
+                - devianceProviderId
+                - attributes
+                - description
+                properties:
+                  id:
+                    type: number
+                    description: Unique numeric identifier of the deviance
+                  directoryId:
+                    type: number
+                    description: Identifier of the directory the underlying deviant AD object belongs to
+                  checkerId:
+                    type: number
+                    description: Identifier of the checker that has emitted the deviance
+                  profileId:
+                    type: number
+                    description: Identifier of the profile for which the deviance has been emitted
+                  adObjectId:
+                    type: number
+                    description: Identifier of the AD object for which the deviance has been emitted
+                  reasonId:
+                    type: number
+                    description: Identifier of the reason for which the deviance has been emitted
+                  resolvedEventId:
+                    oneOf:
+                    - not:
+                        nullable: true
+                      format: int64
+                      nullable: true
+                    description: Identifier of the event that fixed the deviance
+                  resolvedAt:
+                    type: string
+                    format: date-time
+                    description: Date of the event that fixed the deviance
+                    nullable: true
+                  createdEventId:
+                    format: int64
+                    description: Identifier of the event that created the deviance
+                  eventDate:
+                    type: string
+                    format: date-time
+                    description: Date of the event that created the deviance
+                  ignoreUntil:
+                    type: string
+                    format: date-time
+                    description: Date until which the deviance should be ignored
+                    nullable: true
+                  devianceProviderId:
+                    type: string
+                    description: String identifier of the deviance, unique for non-revolved deviances
+                    nullable: true
+                  attributes:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - name
+                      - value
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the deviance incriminating attribute
+                        value:
+                          type: string
+                          description: JSON-stringified value of the deviance incriminating attribute
+                    description: Deviance incriminating attributes data
+                  description:
+                    type: object
+                    additionalProperties: false
+                    required:
+                    - template
+                    - replacements
+                    properties:
+                      template:
+                        type: string
+                        description: Localized description template of the deviance
+                      replacements:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties: false
+                          required:
+                          - name
+                          - valueType
+                          properties:
+                            name:
+                              type: string
+                              description: Name of the deviance incriminating attribute
+                            valueType:
+                              type: string
+                              description: Type of the deviance incriminating attribute
+                        description: Metadata about the placeholders in the template
+                    description: Deviance description data
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Deviance
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: directoryId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/export/profiles/{profileId}/checkers/{checkerId}:
+    get:
+      summary: Get all ad objects of a deviance in CSV rows format
+      description: 'Required license type: ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates GET /ad-object-deviance-history/rofiles/:profileId/checkers/:checkerId response
+                type: string
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Deviance
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: profileId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: checkerId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: language
+        in: query
+        schema:
+          type: string
+        required: false
+        deprecated: false
+      - name: parameters
+        in: query
+        schema:
+          type: string
+        required: false
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/infrastructures/{infrastructureId}/directories/{directoryId}/deviances:
+    get:
+      summary: Get all deviances for a directory.
+      description: 'Required license type: ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the GET /ad-object-deviance-history response
+                type: array
+                items:
+                  description: AD object deviance
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - checkerId
+                  - directoryId
+                  - profileId
+                  - adObjectId
+                  - reasonId
+                  - createdEventId
+                  - resolvedEventId
+                  - eventDate
+                  - devianceProviderId
+                  - attributes
+                  - description
+                  properties:
+                    id:
+                      type: number
+                      description: Unique numeric identifier of the deviance
+                    directoryId:
+                      type: number
+                      description: Identifier of the directory the underlying deviant AD object belongs to
+                    checkerId:
+                      type: number
+                      description: Identifier of the checker that has emitted the deviance
+                    profileId:
+                      type: number
+                      description: Identifier of the profile for which the deviance has been emitted
+                    adObjectId:
+                      type: number
+                      description: Identifier of the AD object for which the deviance has been emitted
+                    reasonId:
+                      type: number
+                      description: Identifier of the reason for which the deviance has been emitted
+                    resolvedEventId:
+                      oneOf:
+                      - not:
+                          nullable: true
+                        format: int64
+                        nullable: true
+                      description: Identifier of the event that fixed the deviance
+                    resolvedAt:
+                      type: string
+                      format: date-time
+                      description: Date of the event that fixed the deviance
+                      nullable: true
+                    createdEventId:
+                      format: int64
+                      description: Identifier of the event that created the deviance
+                    eventDate:
+                      type: string
+                      format: date-time
+                      description: Date of the event that created the deviance
+                    ignoreUntil:
+                      type: string
+                      format: date-time
+                      description: Date until which the deviance should be ignored
+                      nullable: true
+                    devianceProviderId:
+                      type: string
+                      description: String identifier of the deviance, unique for non-revolved deviances
+                      nullable: true
+                    attributes:
+                      type: array
+                      items:
+                        type: object
+                        additionalProperties: false
+                        required:
+                        - name
+                        - value
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the deviance incriminating attribute
+                          value:
+                            type: string
+                            description: JSON-stringified value of the deviance incriminating attribute
+                      description: Deviance incriminating attributes data
+                    description:
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - template
+                      - replacements
+                      properties:
+                        template:
+                          type: string
+                          description: Localized description template of the deviance
+                        replacements:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            required:
+                            - name
+                            - valueType
+                            properties:
+                              name:
+                                type: string
+                                description: Name of the deviance incriminating attribute
+                              valueType:
+                                type: string
+                                description: Type of the deviance incriminating attribute
+                          description: Metadata about the placeholders in the template
+                      description: Deviance description data
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Deviance
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: directoryId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: infrastructureId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: page
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      - name: perPage
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      - name: batchSize
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      - name: lastIdentifierSeen
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      - name: resolved
+        in: query
+        schema:
+          type: string
+          enum:
+          - '0'
+          - '1'
+        required: false
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/infrastructures/{infrastructureId}/directories/{directoryId}/deviances/{id}:
+    get:
+      summary: Get ad-object-deviance-history instance by id.
+      description: 'Required license type: ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: AD object deviance
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - checkerId
+                - directoryId
+                - profileId
+                - adObjectId
+                - reasonId
+                - createdEventId
+                - resolvedEventId
+                - eventDate
+                - devianceProviderId
+                - attributes
+                - description
+                properties:
+                  id:
+                    type: number
+                    description: Unique numeric identifier of the deviance
+                  directoryId:
+                    type: number
+                    description: Identifier of the directory the underlying deviant AD object belongs to
+                  checkerId:
+                    type: number
+                    description: Identifier of the checker that has emitted the deviance
+                  profileId:
+                    type: number
+                    description: Identifier of the profile for which the deviance has been emitted
+                  adObjectId:
+                    type: number
+                    description: Identifier of the AD object for which the deviance has been emitted
+                  reasonId:
+                    type: number
+                    description: Identifier of the reason for which the deviance has been emitted
+                  resolvedEventId:
+                    oneOf:
+                    - not:
+                        nullable: true
+                      format: int64
+                      nullable: true
+                    description: Identifier of the event that fixed the deviance
+                  resolvedAt:
+                    type: string
+                    format: date-time
+                    description: Date of the event that fixed the deviance
+                    nullable: true
+                  createdEventId:
+                    format: int64
+                    description: Identifier of the event that created the deviance
+                  eventDate:
+                    type: string
+                    format: date-time
+                    description: Date of the event that created the deviance
+                  ignoreUntil:
+                    type: string
+                    format: date-time
+                    description: Date until which the deviance should be ignored
+                    nullable: true
+                  devianceProviderId:
+                    type: string
+                    description: String identifier of the deviance, unique for non-revolved deviances
+                    nullable: true
+                  attributes:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - name
+                      - value
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the deviance incriminating attribute
+                        value:
+                          type: string
+                          description: JSON-stringified value of the deviance incriminating attribute
+                    description: Deviance incriminating attributes data
+                  description:
+                    type: object
+                    additionalProperties: false
+                    required:
+                    - template
+                    - replacements
+                    properties:
+                      template:
+                        type: string
+                        description: Localized description template of the deviance
+                      replacements:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties: false
+                          required:
+                          - name
+                          - valueType
+                          properties:
+                            name:
+                              type: string
+                              description: Name of the deviance incriminating attribute
+                            valueType:
+                              type: string
+                              description: Type of the deviance incriminating attribute
+                        description: Metadata about the placeholders in the template
+                    description: Deviance description data
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Deviance
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: infrastructureId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: directoryId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+    patch:
+      summary: Update ad-object-deviance-history instance.
+      description: 'Required license type: ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: AD object deviance
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - checkerId
+                - directoryId
+                - profileId
+                - adObjectId
+                - reasonId
+                - createdEventId
+                - resolvedEventId
+                - eventDate
+                - devianceProviderId
+                - attributes
+                - description
+                properties:
+                  id:
+                    type: number
+                    description: Unique numeric identifier of the deviance
+                  directoryId:
+                    type: number
+                    description: Identifier of the directory the underlying deviant AD object belongs to
+                  checkerId:
+                    type: number
+                    description: Identifier of the checker that has emitted the deviance
+                  profileId:
+                    type: number
+                    description: Identifier of the profile for which the deviance has been emitted
+                  adObjectId:
+                    type: number
+                    description: Identifier of the AD object for which the deviance has been emitted
+                  reasonId:
+                    type: number
+                    description: Identifier of the reason for which the deviance has been emitted
+                  resolvedEventId:
+                    oneOf:
+                    - not:
+                        nullable: true
+                      format: int64
+                      nullable: true
+                    description: Identifier of the event that fixed the deviance
+                  resolvedAt:
+                    type: string
+                    format: date-time
+                    description: Date of the event that fixed the deviance
+                    nullable: true
+                  createdEventId:
+                    format: int64
+                    description: Identifier of the event that created the deviance
+                  eventDate:
+                    type: string
+                    format: date-time
+                    description: Date of the event that created the deviance
+                  ignoreUntil:
+                    type: string
+                    format: date-time
+                    description: Date until which the deviance should be ignored
+                    nullable: true
+                  devianceProviderId:
+                    type: string
+                    description: String identifier of the deviance, unique for non-revolved deviances
+                    nullable: true
+                  attributes:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - name
+                      - value
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the deviance incriminating attribute
+                        value:
+                          type: string
+                          description: JSON-stringified value of the deviance incriminating attribute
+                    description: Deviance incriminating attributes data
+                  description:
+                    type: object
+                    additionalProperties: false
+                    required:
+                    - template
+                    - replacements
+                    properties:
+                      template:
+                        type: string
+                        description: Localized description template of the deviance
+                      replacements:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties: false
+                          required:
+                          - name
+                          - valueType
+                          properties:
+                            name:
+                              type: string
+                              description: Name of the deviance incriminating attribute
+                            valueType:
+                              type: string
+                              description: Type of the deviance incriminating attribute
+                        description: Metadata about the placeholders in the template
+                    description: Deviance description data
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Deviance
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: infrastructureId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: directoryId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates the PATCH /ad-object-deviance-history/:id request
+              type: object
+              additionalProperties: false
+              properties:
+                ignoreUntil:
+                  type: string
+                  format: date-time
+                  nullable: true
+  /api/profiles/{profileId}/infrastructures/{infrastructureId}/directories/{directoryId}/checkers/{checkerId}/deviances:
+    get:
+      summary: Get all deviances related to a single directory and checker.
+      description: 'Required license type: ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the GET /ad-object-deviance-history response
+                type: array
+                items:
+                  description: AD object deviance
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - checkerId
+                  - directoryId
+                  - profileId
+                  - adObjectId
+                  - reasonId
+                  - createdEventId
+                  - resolvedEventId
+                  - eventDate
+                  - devianceProviderId
+                  - attributes
+                  - description
+                  properties:
+                    id:
+                      type: number
+                      description: Unique numeric identifier of the deviance
+                    directoryId:
+                      type: number
+                      description: Identifier of the directory the underlying deviant AD object belongs to
+                    checkerId:
+                      type: number
+                      description: Identifier of the checker that has emitted the deviance
+                    profileId:
+                      type: number
+                      description: Identifier of the profile for which the deviance has been emitted
+                    adObjectId:
+                      type: number
+                      description: Identifier of the AD object for which the deviance has been emitted
+                    reasonId:
+                      type: number
+                      description: Identifier of the reason for which the deviance has been emitted
+                    resolvedEventId:
+                      oneOf:
+                      - not:
+                          nullable: true
+                        format: int64
+                        nullable: true
+                      description: Identifier of the event that fixed the deviance
+                    resolvedAt:
+                      type: string
+                      format: date-time
+                      description: Date of the event that fixed the deviance
+                      nullable: true
+                    createdEventId:
+                      format: int64
+                      description: Identifier of the event that created the deviance
+                    eventDate:
+                      type: string
+                      format: date-time
+                      description: Date of the event that created the deviance
+                    ignoreUntil:
+                      type: string
+                      format: date-time
+                      description: Date until which the deviance should be ignored
+                      nullable: true
+                    devianceProviderId:
+                      type: string
+                      description: String identifier of the deviance, unique for non-revolved deviances
+                      nullable: true
+                    attributes:
+                      type: array
+                      items:
+                        type: object
+                        additionalProperties: false
+                        required:
+                        - name
+                        - value
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the deviance incriminating attribute
+                          value:
+                            type: string
+                            description: JSON-stringified value of the deviance incriminating attribute
+                      description: Deviance incriminating attributes data
+                    description:
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - template
+                      - replacements
+                      properties:
+                        template:
+                          type: string
+                          description: Localized description template of the deviance
+                        replacements:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            required:
+                            - name
+                            - valueType
+                            properties:
+                              name:
+                                type: string
+                                description: Name of the deviance incriminating attribute
+                              valueType:
+                                type: string
+                                description: Type of the deviance incriminating attribute
+                          description: Metadata about the placeholders in the template
+                      description: Deviance description data
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Deviance
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: profileId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: infrastructureId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: directoryId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: checkerId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: perPage
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      - name: page
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/profiles/{profileId}/checkers/{checkerId}/deviances:
+    patch:
+      summary: Update instances matching a checkerId.
+      description: 'Required license type: ioe'
+      responses:
+        '204':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the GET /ad-object-deviance-history response
+                nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Deviance
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: profileId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: checkerId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: profileId
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: checkerId
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates the POST /checker/:checkerId/deviances request
+              type: object
+              additionalProperties: false
+              required:
+              - ignoreUntil
+              properties:
+                ignoreUntil:
+                  type: string
+                  format: date-time
+                  nullable: true
+    post:
+      summary: Get all deviances by checker.
+      description: 'Required license type: ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the GET /ad-object-deviance-history response
+                type: array
+                items:
+                  description: AD object deviance
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - checkerId
+                  - directoryId
+                  - profileId
+                  - adObjectId
+                  - reasonId
+                  - createdEventId
+                  - resolvedEventId
+                  - eventDate
+                  - devianceProviderId
+                  - attributes
+                  - description
+                  properties:
+                    id:
+                      type: number
+                      description: Unique numeric identifier of the deviance
+                    directoryId:
+                      type: number
+                      description: Identifier of the directory the underlying deviant AD object belongs to
+                    checkerId:
+                      type: number
+                      description: Identifier of the checker that has emitted the deviance
+                    profileId:
+                      type: number
+                      description: Identifier of the profile for which the deviance has been emitted
+                    adObjectId:
+                      type: number
+                      description: Identifier of the AD object for which the deviance has been emitted
+                    reasonId:
+                      type: number
+                      description: Identifier of the reason for which the deviance has been emitted
+                    resolvedEventId:
+                      oneOf:
+                      - not:
+                          nullable: true
+                        format: int64
+                        nullable: true
+                      description: Identifier of the event that fixed the deviance
+                    resolvedAt:
+                      type: string
+                      format: date-time
+                      description: Date of the event that fixed the deviance
+                      nullable: true
+                    createdEventId:
+                      format: int64
+                      description: Identifier of the event that created the deviance
+                    eventDate:
+                      type: string
+                      format: date-time
+                      description: Date of the event that created the deviance
+                    ignoreUntil:
+                      type: string
+                      format: date-time
+                      description: Date until which the deviance should be ignored
+                      nullable: true
+                    devianceProviderId:
+                      type: string
+                      description: String identifier of the deviance, unique for non-revolved deviances
+                      nullable: true
+                    attributes:
+                      type: array
+                      items:
+                        type: object
+                        additionalProperties: false
+                        required:
+                        - name
+                        - value
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the deviance incriminating attribute
+                          value:
+                            type: string
+                            description: JSON-stringified value of the deviance incriminating attribute
+                      description: Deviance incriminating attributes data
+                    description:
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - template
+                      - replacements
+                      properties:
+                        template:
+                          type: string
+                          description: Localized description template of the deviance
+                        replacements:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            required:
+                            - name
+                            - valueType
+                            properties:
+                              name:
+                                type: string
+                                description: Name of the deviance incriminating attribute
+                              valueType:
+                                type: string
+                                description: Type of the deviance incriminating attribute
+                          description: Metadata about the placeholders in the template
+                      description: Deviance description data
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Deviance
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: profileId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: checkerId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: perPage
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      - name: page
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      - name: batchSize
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      - name: lastIdentifierSeen
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates the POST /checker/:checkerId/deviances request
+              type: object
+              additionalProperties: false
+              required:
+              - expression
+              properties:
+                expression:
+                  type: object
+  /api/profiles/{profileId}/checkers/{checkerId}/ad-objects/{adObjectId}/deviances:
+    patch:
+      summary: Update the deviances emitted on a specific AD object and for a specific checker.
+      description: 'Required license type: ioe'
+      responses:
+        '204':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the PATCH /profiles/:profileId/checkers/:checkerId/ad-objects/:adObjectId/deviances response
+                nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Deviance
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: profileId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: checkerId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: adObjectId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: reasonIds
+        in: query
+        schema:
+          description: Reasons for which the deviances should have been emitted
+          oneOf:
+          - type: array
+            items:
+              type: string
+              pattern: ^[0-9]+$
+              x-patternError: should be a numerical string
+          - type: string
+            pattern: ^[0-9]+$
+            x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      - name: dateStart
+        in: query
+        schema:
+          description: The date starting from which the deviances should have been emitted
+          type: string
+          format: date-time
+        required: false
+        deprecated: false
+      - name: dateEnd
+        in: query
+        schema:
+          description: The date until which the deviances should have been emitted
+          type: string
+          format: date-time
+        required: false
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates the PATCH /profiles/:profileId/checkers/:checkerId/ad-objects/:adObjectId/deviances request payload
+              type: object
+              additionalProperties: false
+              required:
+              - ignoreUntil
+              properties:
+                ignoreUntil:
+                  type: string
+                  format: date-time
+                  nullable: true
+    post:
+      summary: Search all deviances by profile by checker by AD object
+      description: 'Required license type: ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates POST /profiles/:profileId/checkers/:checkerId/ad-objects/:adObjectId/deviances responses
+                type: array
+                items:
+                  description: AD object deviance
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - checkerId
+                  - directoryId
+                  - profileId
+                  - adObjectId
+                  - reasonId
+                  - createdEventId
+                  - resolvedEventId
+                  - eventDate
+                  - devianceProviderId
+                  - attributes
+                  - description
+                  properties:
+                    id:
+                      type: number
+                      description: Unique numeric identifier of the deviance
+                    directoryId:
+                      type: number
+                      description: Identifier of the directory the underlying deviant AD object belongs to
+                    checkerId:
+                      type: number
+                      description: Identifier of the checker that has emitted the deviance
+                    profileId:
+                      type: number
+                      description: Identifier of the profile for which the deviance has been emitted
+                    adObjectId:
+                      type: number
+                      description: Identifier of the AD object for which the deviance has been emitted
+                    reasonId:
+                      type: number
+                      description: Identifier of the reason for which the deviance has been emitted
+                    resolvedEventId:
+                      oneOf:
+                      - not:
+                          nullable: true
+                        format: int64
+                        nullable: true
+                      description: Identifier of the event that fixed the deviance
+                    resolvedAt:
+                      type: string
+                      format: date-time
+                      description: Date of the event that fixed the deviance
+                      nullable: true
+                    createdEventId:
+                      format: int64
+                      description: Identifier of the event that created the deviance
+                    eventDate:
+                      type: string
+                      format: date-time
+                      description: Date of the event that created the deviance
+                    ignoreUntil:
+                      type: string
+                      format: date-time
+                      description: Date until which the deviance should be ignored
+                      nullable: true
+                    devianceProviderId:
+                      type: string
+                      description: String identifier of the deviance, unique for non-revolved deviances
+                      nullable: true
+                    attributes:
+                      type: array
+                      items:
+                        type: object
+                        additionalProperties: false
+                        required:
+                        - name
+                        - value
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the deviance incriminating attribute
+                          value:
+                            type: string
+                            description: JSON-stringified value of the deviance incriminating attribute
+                      description: Deviance incriminating attributes data
+                    description:
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - template
+                      - replacements
+                      properties:
+                        template:
+                          type: string
+                          description: Localized description template of the deviance
+                        replacements:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            required:
+                            - name
+                            - valueType
+                            properties:
+                              name:
+                                type: string
+                                description: Name of the deviance incriminating attribute
+                              valueType:
+                                type: string
+                                description: Type of the deviance incriminating attribute
+                          description: Metadata about the placeholders in the template
+                      description: Deviance description data
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Deviance
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: profileId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: checkerId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: adObjectId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: perPage
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      - name: page
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates POST /profiles/:profileId/checkers/:checkerId/ad-objects/:adObjectId/deviances request payloads
+              type: object
+              additionalProperties: false
+              required:
+              - showIgnored
+              properties:
+                dateStart:
+                  type: string
+                  format: date-time
+                dateEnd:
+                  type: string
+                  format: date-time
+                showIgnored:
+                  type: boolean
+                  nullable: true
+  /api/profiles/{profileId}/infrastructures/{infrastructureId}/directories/{directoryId}/events/{eventId}/deviances:
+    post:
+      summary: Get all deviances by eventId.
+      description: 'Required license type: ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates POST /profiles/:profileId/infrastructures/:infrastructureId/directories/:directoryId/events/:eventId/deviances response payload
+                type: array
+                items:
+                  description: AD object deviance
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - checkerId
+                  - directoryId
+                  - profileId
+                  - adObjectId
+                  - reasonId
+                  - createdEventId
+                  - resolvedEventId
+                  - eventDate
+                  - devianceProviderId
+                  - attributes
+                  - description
+                  properties:
+                    id:
+                      type: number
+                      description: Unique numeric identifier of the deviance
+                    directoryId:
+                      type: number
+                      description: Identifier of the directory the underlying deviant AD object belongs to
+                    checkerId:
+                      type: number
+                      description: Identifier of the checker that has emitted the deviance
+                    profileId:
+                      type: number
+                      description: Identifier of the profile for which the deviance has been emitted
+                    adObjectId:
+                      type: number
+                      description: Identifier of the AD object for which the deviance has been emitted
+                    reasonId:
+                      type: number
+                      description: Identifier of the reason for which the deviance has been emitted
+                    resolvedEventId:
+                      oneOf:
+                      - not:
+                          nullable: true
+                        format: int64
+                        nullable: true
+                      description: Identifier of the event that fixed the deviance
+                    resolvedAt:
+                      type: string
+                      format: date-time
+                      description: Date of the event that fixed the deviance
+                      nullable: true
+                    createdEventId:
+                      format: int64
+                      description: Identifier of the event that created the deviance
+                    eventDate:
+                      type: string
+                      format: date-time
+                      description: Date of the event that created the deviance
+                    ignoreUntil:
+                      type: string
+                      format: date-time
+                      description: Date until which the deviance should be ignored
+                      nullable: true
+                    devianceProviderId:
+                      type: string
+                      description: String identifier of the deviance, unique for non-revolved deviances
+                      nullable: true
+                    attributes:
+                      type: array
+                      items:
+                        type: object
+                        additionalProperties: false
+                        required:
+                        - name
+                        - value
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the deviance incriminating attribute
+                          value:
+                            type: string
+                            description: JSON-stringified value of the deviance incriminating attribute
+                      description: Deviance incriminating attributes data
+                    description:
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - template
+                      - replacements
+                      properties:
+                        template:
+                          type: string
+                          description: Localized description template of the deviance
+                        replacements:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            required:
+                            - name
+                            - valueType
+                            properties:
+                              name:
+                                type: string
+                                description: Name of the deviance incriminating attribute
+                              valueType:
+                                type: string
+                                description: Type of the deviance incriminating attribute
+                          description: Metadata about the placeholders in the template
+                      description: Deviance description data
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Deviance
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: profileId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: infrastructureId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: directoryId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: eventId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: perPage
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      - name: page
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: false
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates POST /profiles/:profileId/infrastructures/:infrastructureId/directories/:directoryId/events/:eventId/deviances request payload
+              type: object
+              additionalProperties: false
+              required:
+              - checkers
+              - reasons
+              properties:
+                checkers:
+                  type: array
+                  items:
+                    type: integer
+                reasons:
+                  type: array
+                  items:
+                    type: integer
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

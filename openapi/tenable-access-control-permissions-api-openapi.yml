@@ -1,0 +1,1017 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Access Control (Permissions) API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Access Control (Permissions)
+  x-displayName: Access Control (Permissions)
+paths:
+  /api/v3/access-control/permissions:
+    post:
+      summary: Create permission
+      description: 'Creates a permission that grants the specified actions to the specified subjects on the specified objects.
+
+
+        **Note:** The `AllAssets` object type is only compatible with `CanView`, `CanScan`, or empty actions. The `Tag` and `AllTags` object types are only compatible with `CanUse` and `CanEdit` actions.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+      operationId: io-v3-access-control-permission-create
+      tags:
+      - Access Control (Permissions)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Access_Control_Permissions_Request-Permission'
+            examples:
+              tag-permission:
+                summary: Permission on specific tags
+                value:
+                  name: Security Team Tag Access
+                  actions:
+                  - CanUse
+                  - CanEdit
+                  subjects:
+                  - type: User
+                    uuid: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                    name: user@example.com
+                  - type: UserGroup
+                    uuid: 00000000-0000-0000-0000-000000000000
+                    name: All Users
+                  objects:
+                  - type: Tag
+                    uuid: b2c3d4e5-f6a7-8901-bcde-f12345678901
+                    name: Environment,Production
+                  - type: Tag
+                    uuid: c3d4e5f6-a7b8-9012-cdef-234567890abc
+                    name: Location,Headquarters
+              all-assets-permission:
+                summary: Permission on all assets
+                value:
+                  name: Scan Team All Assets
+                  actions:
+                  - CanView
+                  - CanScan
+                  subjects:
+                  - type: User
+                    uuid: d4e5f6a7-b8c9-0123-def4-567890abcdef
+                    name: scanner@example.com
+                  - type: UserGroup
+                    uuid: e5f6a7b8-c9d0-1234-ef56-7890abcdef12
+                    name: Scan Operators
+                  objects:
+                  - type: AllAssets
+      responses:
+        '200':
+          description: Returned if the permission was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_Response-Permission'
+              examples:
+                response:
+                  value:
+                    permission_uuid: f6a7b8c9-d0e1-2345-f678-90abcdef1234
+                    name: Security Team Tag Access
+                    subjects:
+                    - type: User
+                      uuid: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                      name: user@example.com
+                    - type: UserGroup
+                      uuid: 00000000-0000-0000-0000-000000000000
+                      name: All Users
+                    actions:
+                    - CanUse
+                    - CanEdit
+                    objects:
+                    - type: Tag
+                      uuid: b2c3d4e5-f6a7-8901-bcde-f12345678901
+                      name: Environment:Production
+                    - type: Tag
+                      uuid: c3d4e5f6-a7b8-9012-cdef-234567890abc
+                      name: Location:Headquarters
+                    created_at: 1784149965376
+                    created_by: admin@example.com
+        '400':
+          description: Returned if your request specified invalid parameters or was improperly formatted. For example, if the `AllAssets` object type is used with incompatible actions, if required fields are missing, or if the permission name does not meet the naming requirements.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create permissions. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '409':
+          description: Returned if a permission with the same name already exists or if the permission scope overlaps with an existing permission.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                duplicate-name:
+                  summary: Duplicate name
+                  value:
+                    message: Name already exists
+                overlapping-scope:
+                  summary: Overlapping scope
+                  value:
+                    message: Permission scope is overlapping existing permissions
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Permissions_cloud: []
+    get:
+      summary: List permissions
+      description: Lists all permissions defined for your Tenable Vulnerability Management container.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-v3-access-control-permissions-list
+      tags:
+      - Access Control (Permissions)
+      responses:
+        '200':
+          description: Returned if the list of permissions was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  permissions:
+                    type: array
+                    description: An array of permission objects.
+                    items:
+                      $ref: '#/components/schemas/Access_Control_Permissions_Response-Permission'
+              examples:
+                response:
+                  value:
+                    permissions:
+                    - permission_uuid: 00000000-0000-0000-0000-000000000000
+                      name: Administrators
+                      subjects:
+                      - type: AllAdmins
+                      actions:
+                      - CanScan
+                      - CanView
+                      - CanEdit
+                      - CanUse
+                      - CanViewMssp
+                      - CanEditMssp
+                      - CanImpersonateAdmin
+                      - CanImpersonateScanManager
+                      - CanImpersonateScanOperator
+                      objects:
+                      - type: AllObjects
+                    - permission_uuid: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                      name: All Assets [CanScan, CanView]
+                      subjects:
+                      - type: User
+                        uuid: b2c3d4e5-f6a7-8901-bcde-f12345678901
+                        name: user@example.com
+                      - type: UserGroup
+                        uuid: 00000000-0000-0000-0000-000000000000
+                        name: All Users
+                      actions:
+                      - CanView
+                      - CanScan
+                      objects:
+                      - type: AllAssets
+                      created_at: 1648122396493
+                      created_by: System
+                      updated_at: 1782106586733
+                      updated_by: admin@example.com
+                    - permission_uuid: c3d4e5f6-a7b8-9012-cdef-234567890abc
+                      name: Tag 'Location:Headquarters' owner permissions
+                      subjects:
+                      - type: User
+                        uuid: d4e5f6a7-b8c9-0123-def4-567890abcdef
+                        name: user2@example.com
+                      actions:
+                      - CanUse
+                      - CanEdit
+                      objects:
+                      - type: Tag
+                        uuid: e5f6a7b8-c9d0-1234-ef56-7890abcdef12
+                        name: Location:Headquarters
+                      created_at: 1706909726620
+                      created_by: user2@example.com
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list permissions. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Permissions_cloud: []
+  /api/v3/access-control/permissions/{permission_uuid}:
+    get:
+      summary: Get permission details
+      description: Retrieves the details for the specified permission.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-v3-access-control-permissions-details
+      tags:
+      - Access Control (Permissions)
+      parameters:
+      - description: Specifies the unique identifier (UUID) of the permission.
+        name: permission_uuid
+        in: path
+        required: true
+        schema:
+          pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the details for the specified permission were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_Response-Permission'
+              examples:
+                response:
+                  value:
+                    permission_uuid: c3d4e5f6-a7b8-9012-cdef-234567890abc
+                    name: Tag 'Location:Headquarters' owner permissions
+                    subjects:
+                    - type: User
+                      uuid: d4e5f6a7-b8c9-0123-def4-567890abcdef
+                      name: user2@example.com
+                    actions:
+                    - CanUse
+                    - CanEdit
+                    objects:
+                    - type: Tag
+                      uuid: e5f6a7b8-c9d0-1234-ef56-7890abcdef12
+                      name: Location:Headquarters
+                    created_at: 1706909726620
+                    created_by: user2@example.com
+                    updated_at: 1758613360591
+                    updated_by: admin@example.com
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to retrieve permission details. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '404':
+          description: Returned if the specified permission was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Permissions_cloud: []
+    put:
+      summary: Update permission
+      description: 'Updates the specified permission.
+
+
+        **Note:** This method overwrites the existing permission data. You must include all fields in the request body, not just the fields you want to change.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+      operationId: io-v3-access-control-permission-update
+      tags:
+      - Access Control (Permissions)
+      parameters:
+      - name: permission_uuid
+        description: Specifies the unique identifier (UUID) of the permission to update.
+        in: path
+        required: true
+        schema:
+          pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Access_Control_Permissions_Request-Permission'
+            examples:
+              request:
+                value:
+                  name: Security Team Tag Access
+                  actions:
+                  - CanUse
+                  - CanEdit
+                  subjects:
+                  - type: User
+                    uuid: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                    name: user@example.com
+                  - type: User
+                    uuid: d4e5f6a7-b8c9-0123-def4-567890abcdef
+                    name: user2@example.com
+                  objects:
+                  - type: AllTags
+                    name: ''
+      responses:
+        '200':
+          description: Returned if the specified permission was updated successfully.
+        '400':
+          description: Returned if your request specified invalid parameters or was improperly formatted. For example, if the `AllAssets` object type is used with incompatible actions, if required fields are missing, or if the permission name does not meet the naming requirements.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to update permissions. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '404':
+          description: Returned if the specified permission was not found.
+        '409':
+          description: Returned if the updated permission name conflicts with an existing permission or if the permission scope overlaps with an existing permission.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                overlapping-scope:
+                  value:
+                    message: Permission scope is overlapping existing permissions
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Permissions_cloud: []
+    delete:
+      summary: Delete permission
+      description: Deletes the specified permission.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      tags:
+      - Access Control (Permissions)
+      operationId: io-v3-access-control-permission-delete
+      parameters:
+      - name: permission_uuid
+        description: Specifies the unique identifier (UUID) of the permission to delete.
+        in: path
+        required: true
+        schema:
+          pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the permission was deleted successfully.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to delete permissions. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '404':
+          description: Returned if the specified permission was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Permissions_cloud: []
+  /api/v3/access-control/permissions/users/{user_uuid}:
+    get:
+      summary: List user permissions
+      description: 'Returns the permissions for the specified user.
+
+
+        **Note:** In the response, the `permissions_granted` array lists all permissions granted to the specified user, and the `permissions_available` array lists all permissions available but not applied to the specified user.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+      tags:
+      - Access Control (Permissions)
+      operationId: io-v3-access-control-permissions-user-list
+      parameters:
+      - name: user_uuid
+        description: Specifies the unique identifier (UUID) of the user to list permissions for.
+        in: path
+        required: true
+        schema:
+          pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the list of permissions for the specified user was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_Response-UserPermissions'
+              examples:
+                response:
+                  value:
+                    permissions_granted:
+                    - permission_uuid: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                      name: All Assets [CanScan, CanView]
+                      subjects:
+                      - type: UserGroup
+                        uuid: 00000000-0000-0000-0000-000000000000
+                        name: All Users
+                      actions:
+                      - CanView
+                      - CanScan
+                      objects:
+                      - type: AllAssets
+                      created_at: 1648122396493
+                      created_by: System
+                      updated_at: 1782106586733
+                      updated_by: admin@example.com
+                    permissions_available:
+                    - permission_uuid: c3d4e5f6-a7b8-9012-cdef-234567890abc
+                      name: Tag 'Location:Headquarters' owner permissions
+                      subjects:
+                      - type: User
+                        uuid: d4e5f6a7-b8c9-0123-def4-567890abcdef
+                        name: user2@example.com
+                      actions:
+                      - CanUse
+                      - CanEdit
+                      objects:
+                      - type: Tag
+                        uuid: e5f6a7b8-c9d0-1234-ef56-7890abcdef12
+                        name: Location:Headquarters
+                      created_at: 1706909726620
+                      created_by: user2@example.com
+                      updated_at: 1758613360591
+                      updated_by: admin@example.com
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list user permissions. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '404':
+          description: Returned if the specified user was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Permissions_cloud: []
+  /api/v3/access-control/permissions/user-groups/{user_group_uuid}:
+    get:
+      summary: List user group permissions
+      description: 'Returns the permissions for the specified user group.
+
+
+        **Note:** In the response, the `permissions_granted` array lists all permissions granted to the specified user group, and the `permissions_available` array lists all permissions available but not applied to the specified user group.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+      tags:
+      - Access Control (Permissions)
+      operationId: io-v3-access-control-permissions-user-group-list
+      parameters:
+      - name: user_group_uuid
+        description: Specifies the unique identifier (UUID) of the user group to list permissions for.
+        in: path
+        required: true
+        schema:
+          pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the list of user group permissions was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_Response-UserPermissions'
+              examples:
+                response:
+                  value:
+                    permissions_granted:
+                    - permission_uuid: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                      name: All Assets [CanScan, CanView]
+                      subjects:
+                      - type: UserGroup
+                        uuid: f6a7b8c9-d0e1-2345-f678-90abcdef1234
+                        name: Security Team
+                      actions:
+                      - CanView
+                      - CanScan
+                      objects:
+                      - type: AllAssets
+                      created_at: 1648122396493
+                      created_by: System
+                      updated_at: 1782106586733
+                      updated_by: admin@example.com
+                    permissions_available:
+                    - permission_uuid: b2c3d4e5-f6a7-8901-bcde-f12345678901
+                      name: Tag 'OS:Windows' owner permissions
+                      subjects:
+                      - type: User
+                        uuid: d4e5f6a7-b8c9-0123-def4-567890abcdef
+                        name: user2@example.com
+                      actions:
+                      - CanUse
+                      - CanEdit
+                      objects:
+                      - type: Tag
+                        uuid: a7b8c9d0-e1f2-3456-7890-abcdef123456
+                        name: OS:Windows
+                      created_at: 1778588475717
+                      created_by: user2@example.com
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list user group permissions. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '404':
+          description: Returned if the specified user group was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Permissions_cloud: []
+  /api/v3/access-control/permissions/users/me:
+    get:
+      summary: Get current user permissions
+      description: 'Returns the permissions assigned to the current user.
+
+
+        **Note:** The subjects in the response are redacted to return only the current user and the user groups the current user belongs to. The `permissions_available` array is always empty for this endpoint.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+      tags:
+      - Access Control (Permissions)
+      operationId: io-v3-access-control-permissions-current-user-list
+      responses:
+        '200':
+          description: Returned if the permissions for the current user were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_Response-UserPermissions'
+              examples:
+                response:
+                  value:
+                    permissions_granted:
+                    - permission_uuid: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                      name: All Assets [CanScan, CanView]
+                      subjects:
+                      - type: UserGroup
+                        uuid: 00000000-0000-0000-0000-000000000000
+                        name: All Users
+                      actions:
+                      - CanView
+                      - CanScan
+                      objects:
+                      - type: AllAssets
+                      created_at: 1648122396493
+                      created_by: System
+                      updated_at: 1782106586733
+                      updated_by: admin@example.com
+                    - permission_uuid: c3d4e5f6-a7b8-9012-cdef-234567890abc
+                      name: Tag 'Location:Headquarters' owner permissions
+                      subjects:
+                      - type: User
+                        uuid: d4e5f6a7-b8c9-0123-def4-567890abcdef
+                        name: user@example.com
+                      actions:
+                      - CanUse
+                      - CanEdit
+                      objects:
+                      - type: Tag
+                        uuid: e5f6a7b8-c9d0-1234-ef56-7890abcdef12
+                        name: Location:Headquarters
+                      created_at: 1706909726620
+                      created_by: user@example.com
+                    permissions_available: []
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to retrieve permissions for the current user. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Permissions_cloud: []
+components:
+  schemas:
+    Access_Control_Permissions_Request-Permission:
+      type: object
+      properties:
+        name:
+          description: 'Specifies the name of the permission.
+
+
+            **Note:** The name must be unique, 255 characters or fewer, and alphanumeric. The following special characters are allowed: underscore, dash, parenthesis, brackets, and colon.'
+          type: string
+        actions:
+          description: 'Specifies the actions to grant on the specified objects. Supported values depend on the object type:
+
+            * `CanScan` — Users assigned this permission can scan assets or targets specified in the tag.
+
+            * `CanView` — Users assigned this permission can view the assets and related vulnerabilities specified in the tag in aggregated scan results (workbenches/dashboards).
+
+            * `CanEdit` — Users assigned this permission can edit the tag value. If you assign this permission to the All Users (Default) user group, all users can edit the tag value.
+
+            * `CanUse` — Users assigned this permission can use the tag to scan the assets or targets specified in the tag and use the tag for filtering in aggregated scan results (workbenches/dashboards).
+
+            * `CanViewMssp` — Grants permission to view MSSP-related data.
+
+            * `CanEditMssp` — Grants permission to edit MSSP-related data.
+
+            * `CanImpersonateAdmin` — Grants permission to impersonate an Administrator.
+
+            * `CanImpersonateScanManager` — Grants permission to impersonate a Scan Manager.
+
+            * `CanImpersonateScanOperator` — Grants permission to impersonate a Scan Operator.'
+          type: array
+          items:
+            type: string
+            enum:
+            - CanScan
+            - CanView
+            - CanEdit
+            - CanUse
+            - CanViewMssp
+            - CanEditMssp
+            - CanImpersonateAdmin
+            - CanImpersonateScanManager
+            - CanImpersonateScanOperator
+        objects:
+          description: Specifies the objects (tags or assets) to which the permission applies.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_PermissionObject'
+        subjects:
+          description: Specifies the users or user groups to which the permission is granted.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_PermissionSubject'
+      required:
+      - name
+      - actions
+      - objects
+      - subjects
+    Access_Control_Permissions_Response-UserPermissions:
+      type: object
+      properties:
+        permissions_available:
+          description: The permissions available but not currently applied to the specified user or user group.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_Response-Permission'
+        permissions_granted:
+          description: The permissions currently granted to the specified user or user group.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_Response-Permission'
+    Access_Control_Permissions_PermissionSubject:
+      type: object
+      properties:
+        type:
+          description: 'Specifies the type of subject. Supported values are:
+
+            * `User` — A specific user. Requires `uuid` and `name`.
+
+            * `UserGroup` — A specific user group. Requires `uuid` and `name`.
+
+            * `AllUsers` — All users in the container. No `uuid` or `name` required.
+
+            * `AllAdmins` — All administrators in the container (system-generated only).'
+          type: string
+          enum:
+          - User
+          - UserGroup
+          - AllUsers
+          - AllAdmins
+        uuid:
+          description: 'Specifies the unique identifier (UUID) of the user or user group.
+
+
+            **Note:** This parameter is valid for subjects of type `User` or `UserGroup` only. This parameter is ignored for the `AllUsers` and `AllAdmins` subject types.'
+          type: string
+          format: uuid
+        name:
+          description: 'Specifies the name of the user or user group.
+
+
+            **Note:** This parameter is valid for subjects of type `User` or `UserGroup` only. This parameter is ignored for the `AllUsers` and `AllAdmins` subject types.'
+          type: string
+    Access_Control_Permissions_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Access_Control_Permissions_PermissionObject:
+      type: object
+      properties:
+        type:
+          description: 'Specifies the type of object. Supported values are:
+
+            * `Tag` — A specific tag. Requires `uuid` and `name`.
+
+            * `AllAssets` — All assets in the container. No `uuid` or `name` required.
+
+            * `AllTags` — All tags in the container. No `uuid` or `name` required.
+
+            * `AllObjects` — All objects in the container (system-generated only).'
+          type: string
+          enum:
+          - Tag
+          - AllAssets
+          - AllTags
+          - AllObjects
+        uuid:
+          description: 'Specifies the unique identifier (UUID) of the tag object.
+
+
+            **Note:** This parameter is valid for objects of type `Tag` only. This parameter is ignored for the `AllAssets`, `AllTags`, and `AllObjects` types.'
+          type: string
+          format: uuid
+        name:
+          description: 'Specifies the name of the tag object.
+
+
+            **Note:** This parameter is valid for objects of type `Tag` only. Use the format `Category,Value` when passing this parameter in a request. The system returns this value in the format `Category:Value` in responses. This parameter is ignored for the `AllAssets`, `AllTags`, and `AllObjects` types.'
+          type: string
+    Access_Control_Permissions_Response-Permission:
+      type: object
+      properties:
+        permission_uuid:
+          description: The unique identifier (UUID) of the permission.
+          type: string
+          format: uuid
+        name:
+          description: The name of the permission.
+          type: string
+        subjects:
+          description: The users or user groups to which the permission is granted.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_PermissionSubject'
+        actions:
+          description: The actions granted by the permission. User-created permissions support `CanScan`, `CanView`, `CanEdit`, and `CanUse`. System-generated administrator permissions may include additional actions such as `CanViewMssp`, `CanEditMssp`, `CanImpersonateAdmin`, `CanImpersonateScanManager`, and `CanImpersonateScanOperator`.
+          type: array
+          items:
+            type: string
+            enum:
+            - CanScan
+            - CanView
+            - CanEdit
+            - CanUse
+            - CanViewMssp
+            - CanEditMssp
+            - CanImpersonateAdmin
+            - CanImpersonateScanManager
+            - CanImpersonateScanOperator
+        objects:
+          description: The objects (tags or assets) to which the permission applies.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_PermissionObject'
+        created_at:
+          description: A timestamp in Unix milliseconds indicating when the permission was created. This property is not present on system-generated permissions (for example, the Administrators permission).
+          type: integer
+          format: int64
+        created_by:
+          description: The username of the user who created the permission, or `System` for system-generated permissions. This property is not present on system-generated permissions that predate audit tracking.
+          type: string
+        updated_at:
+          description: A timestamp in Unix milliseconds indicating when the permission was last updated. This property is only present if the permission has been updated at least once.
+          type: integer
+          format: int64
+        updated_by:
+          description: The username of the user who last updated the permission. This property is only present if the permission has been updated at least once.
+          type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

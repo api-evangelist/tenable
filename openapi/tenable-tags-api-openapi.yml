@@ -1,0 +1,3763 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Tags API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Tags
+  description: The Tenable Exposure Management tags API enables users to search for their organization's tags. Additionally, API endpoints are provided to retrieve a list of asset and tag properties that can be used as filters on endpoints that support them. For more information, see [Tagging](https://docs.tenable.com/exposure-management/Content/exposure-management/tagging/tagging.htm) in the _Tenable Exposure Management User Guide_.
+  x-displayName: Tags
+paths:
+  /api/v1/t1/tags/search:
+    post:
+      summary: Search tags
+      operationId: inventory-tag-search
+      description: 'Returns a list of tags in your organization that match the specified search criteria.
+
+
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>'
+      tags:
+      - Tags
+      parameters:
+      - description: "Specifies extra tag properties to include in the search results. You can provide multiple properties as a comma-separated list. \n\nUse the [List tag properties](ref:inventory-tag-properties-list) endpoint to retrieve a list of valid properties for this parameter. For example, you might include `tag_data_source`, `last_updated`, and `tag_created_by_id` as extra properties."
+        explode: true
+        in: query
+        name: extra_properties
+        required: false
+        schema:
+          example: prop1,prop2,prop3
+          pattern: ^[a-zA-Z0-9_]+(,[a-zA-Z0-9_]+)*$
+          type: string
+        style: form
+      - description: The starting record to retrieve. If omitted, the default value is `0`.
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          type: integer
+        style: form
+      - description: The number of records to retrieve. If omitted, the default value is `1000`. The maximum value is `1000`.
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 1000
+          maximum: 1000
+          type: integer
+        style: form
+      - description: 'The property and direction to sort the results by, in the format `property:direction`. For example: `tag_name:asc` or `last_updated:desc`'
+        example: tag_name:asc
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          pattern: ^[a-zA-Z0-9_]+:(asc|desc)$
+          type: string
+          default: total_weakness_count:desc
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Inventory_Request-Search-Tags'
+        required: true
+      responses:
+        '200':
+          description: Returned if the list of assets was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_Response-Search-Tags'
+              examples:
+                response:
+                  value:
+                    data:
+                    - id: d33ae4f1-cc87-42c0-956a-045aa73c33a6
+                      name: Office
+                      product: TENABLE_IO
+                      asset_count: 5871
+                      weakness_severity_counts:
+                        low: 890
+                        medium: 4534
+                        high: 988
+                        critical: 168
+                        total: 6580
+                      total_weakness_count: 6580
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2023-05-08T14:50:36Z'
+                        aes_average: 147
+                    - id: a48db7c1-9881-4e8c-af66-da38d7ccb7e9
+                      name: Location
+                      product: TENABLE_IO
+                      asset_count: 5871
+                      weakness_severity_counts:
+                        low: 890
+                        medium: 4534
+                        high: 988
+                        critical: 168
+                        total: 6580
+                      total_weakness_count: 6580
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2023-05-08T14:46:13Z'
+                        aes_average: 147
+                    - id: 40d64a4e-715c-4adc-9731-b957c21b7dae
+                      name: Device Type
+                      product: TENABLE_AI
+                      asset_count: 5871
+                      weakness_severity_counts:
+                        low: 890
+                        medium: 4534
+                        high: 988
+                        critical: 168
+                        total: 6580
+                      total_weakness_count: 6580
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2025-03-03T14:23:51Z'
+                        aes_average: 147
+                    - id: 1ad84339-7a44-4fa1-8ccd-3c32a181055a
+                      name: State
+                      product: TENABLE_IO
+                      asset_count: 5871
+                      weakness_severity_counts:
+                        low: 890
+                        medium: 4534
+                        high: 988
+                        critical: 168
+                        total: 6580
+                      total_weakness_count: 6580
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2023-05-08T14:25:32Z'
+                        aes_average: 147
+                    - id: c4d3a3f9-d8f2-4629-ba7b-676a48045ff2
+                      name: City
+                      product: TENABLE_IO
+                      asset_count: 5768
+                      weakness_severity_counts:
+                        low: 889
+                        medium: 4532
+                        high: 984
+                        critical: 168
+                        total: 6573
+                      total_weakness_count: 6573
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2023-05-08T14:05:13Z'
+                        aes_average: 147
+                    - id: cd9caa05-a7df-4ee2-8500-cfd7ba4c8e29
+                      name: Example 1
+                      product: TENABLE_AI
+                      asset_count: 1125
+                      weakness_severity_counts:
+                        low: 847
+                        medium: 4501
+                        high: 950
+                        critical: 168
+                        total: 6466
+                      total_weakness_count: 6466
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2025-03-06T16:46:38Z'
+                        aes_average: 117
+                    - id: c61016c3-4c0d-46ef-91bc-7e249ae3edf4
+                      name: Example 2
+                      product: TENABLE_AI
+                      asset_count: 1125
+                      weakness_severity_counts:
+                        low: 847
+                        medium: 4501
+                        high: 950
+                        critical: 168
+                        total: 6466
+                      total_weakness_count: 6466
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2025-03-06T12:49:10Z'
+                        aes_average: 117
+                    - id: c300c224-7571-4f94-b77b-d1caa334bb3e
+                      name: Example 3
+                      product: TENABLE_AI
+                      asset_count: 147
+                      weakness_severity_counts:
+                        low: 847
+                        medium: 4501
+                        high: 950
+                        critical: 168
+                        total: 6466
+                      total_weakness_count: 6466
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2025-03-12T00:31:07Z'
+                        aes_average: 117
+                    - id: aeffc767-000e-4387-b1b9-e1d3bf596895
+                      name: Example 4
+                      product: TENABLE_AI
+                      asset_count: 147
+                      weakness_severity_counts:
+                        low: 847
+                        medium: 4501
+                        high: 950
+                        critical: 168
+                        total: 6466
+                      total_weakness_count: 6466
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2025-03-13T18:15:17Z'
+                        aes_average: 117
+                    - id: 92c54cee-1b53-4466-9451-724925f50fc9
+                      name: Example 5
+                      product: TENABLE_AI
+                      asset_count: 1125
+                      weakness_severity_counts:
+                        low: 847
+                        medium: 4501
+                        high: 950
+                        critical: 168
+                        total: 6466
+                      total_weakness_count: 6466
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2025-04-30T16:45:36Z'
+                        aes_average: 117
+                    - id: 8c69ceb6-0c62-4050-9016-f872fb92cb3e
+                      name: Example 6
+                      product: TENABLE_AI
+                      asset_count: 1125
+                      weakness_severity_counts:
+                        low: 847
+                        medium: 4501
+                        high: 950
+                        critical: 168
+                        total: 6466
+                      total_weakness_count: 6466
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2025-04-30T16:34:02Z'
+                        aes_average: 117
+                    - id: 73ecd220-f3de-4451-9427-85ad007ed7fd
+                      name: Example 7
+                      product: TENABLE_AI
+                      asset_count: 147
+                      weakness_severity_counts:
+                        low: 847
+                        medium: 4501
+                        high: 950
+                        critical: 168
+                        total: 6466
+                      total_weakness_count: 6466
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2025-03-12T02:58:08Z'
+                        aes_average: 117
+                    - id: 63c2c299-34dd-46a0-be2f-286ef8d34555
+                      name: Example 8
+                      product: TENABLE_AI
+                      asset_count: 1125
+                      weakness_severity_counts:
+                        low: 847
+                        medium: 4501
+                        high: 950
+                        critical: 168
+                        total: 6466
+                      total_weakness_count: 6466
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2025-03-06T11:53:20Z'
+                        aes_average: 117
+                    - id: 401c1515-78af-4117-98b6-c36b8a8427cb
+                      name: Example 9
+                      product: TENABLE_AI
+                      asset_count: 1124
+                      weakness_severity_counts:
+                        low: 846
+                        medium: 4498
+                        high: 949
+                        critical: 167
+                        total: 6460
+                      total_weakness_count: 6460
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2025-03-17T11:54:17Z'
+                        aes_average: 101
+                    - id: 6b58f68b-06d7-431d-9df1-9764a490cc4c
+                      name: Example 10
+                      product: TENABLE_AI
+                      asset_count: 5740
+                      weakness_severity_counts:
+                        low: 849
+                        medium: 4459
+                        high: 981
+                        critical: 166
+                        total: 6455
+                      total_weakness_count: 6455
+                      type: DYNAMIC
+                      extra_properties:
+                        tag_data_source: tenable
+                        last_updated: '2025-03-31T19:19:38Z'
+                        aes_average: 481
+                    pagination:
+                      total: 100
+                      offset: 0
+                      limit: 10
+                      sort:
+                        name: total_weakness_count
+                        order: desc
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    error: Bad Request
+                    message: Invalid request payload JSON format
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to search tags.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Inventory_cloud: []
+  /api/v1/t1/tags/properties:
+    get:
+      summary: List tag properties
+      description: "Returns a list of tag properties that can be used for filters on endpoints that support them. For example, the properties that are returned by this endpoint can be used as filters for the [Search tags](ref:inventory-tag-search) endpoint.\n\n  In addition to the tag properties, the results list includes the logical operators you can use with the tag properties along with the supported values.\n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class=\"perms-callout\">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>"
+      operationId: inventory-tag-properties-list
+      tags:
+      - Tags
+      responses:
+        '200':
+          description: Returned if the list of tag properties was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                description: A list of tag properties.
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Inventory_Properties-Object'
+              examples:
+                response:
+                  value:
+                    data:
+                    - key: tag_id
+                      readable_name: Tag ID
+                      control:
+                        type: STRING
+                        multiple_allowed: true
+                        regex:
+                          hint: 01234567-abcd-ef01-2345-6789abcdef01
+                          expression: '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})*'
+                      operators:
+                      - '='
+                      - '!='
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Tag ID \n\n## A way to group assets\n\nIn Tenable Exposure Management, a Tag ID is a unique identifier associated with a Tag. Tags are user-defined labels or markers applied to assets to categorize and organize them based on specific criteria, such as function, location, department, or risk level. \n\nHere's how Tag IDs are used:\n\n- **Grouping and Filtering:** Tag IDs enable you to easily group and filter assets based on shared characteristics. For example, you could use a Tag ID for \"High Risk\" to quickly identify all assets tagged with that specific risk level.\n- **Automation and Reporting:** Tag IDs can be used in automated workflows and reporting to streamline asset management tasks. You can generate reports on assets with specific Tag IDs to gain insights into their security posture or compliance status.\n- **Dynamic Grouping:** Tags and their associated IDs provide a flexible way to group assets dynamically. As asset attributes or risk profiles change, you can easily update their tags to reflect their current status. \n"
+                    - key: tag_data_source
+                      readable_name: Tag Data Source
+                      control:
+                        type: STRING
+                        multiple_allowed: false
+                        regex:
+                          hint: ''
+                          expression: .*
+                      operators:
+                      - contains
+                      - not contains
+                      - '='
+                      - '!='
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Tag Data Source \n## Where the tag information comes from\nTag data sources represent the origin or method by which tags are applied to assets within Tenable Exposure Management. Understanding the source of your tags is crucial for managing and interpreting tag information effectively.\n\nHere's a breakdown of tag data sources:\n\n- **Manual**: Tags added manually by users through the Tenable Exposure Management interface. This allows for flexible and customized tagging based on specific needs.\n- **Integration**: Tags automatically applied based on data fetched from integrated external systems. This ensures consistency and reduces manual effort.\n- **Rule**: Tags dynamically assigned based on predefined rules and conditions within Tenable Exposure Management. This enables automated tagging based on asset attributes or behaviors.\n- **Bulk**: Tags applied in bulk to multiple assets simultaneously, often using CSV imports or API calls. This streamlines tagging for large numbers of assets. \n"
+                    - key: last_updated
+                      readable_name: Last Updated
+                      control:
+                        type: DATE
+                        multiple_allowed: false
+                        regex:
+                          hint: timestamp
+                          expression: ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+                      operators:
+                      - '='
+                      - '>'
+                      - <
+                      - between
+                      - exists
+                      - not exists
+                      - older than
+                      - newer than
+                      - within last
+                      sortable: true
+                      filterable: true
+                      description: "# Last Updated \n\n## Date of the last tag modification\n\nThe \"Last Updated\" field in Tenable Exposure Management refers to the date and time when a specific tag associated with an asset was last modified. This timestamp helps track the recency of tag-related changes and provides insights into the asset's tagging history.\n\nHere's a breakdown of its significance:\n\n- **Tracking Tag Changes**: It allows administrators to see when a particular tag was added, removed, or modified for an asset.\n- **Auditing and Compliance**: Helps in maintaining an audit trail of tag-related activities, which can be crucial for compliance reporting.\n- **Asset Management**: Provides context about the asset's categorization and management over time. \n- **Filtering and Reporting**: Enables users to filter assets based on the last updated date of specific tags, aiding in identifying recently tagged or untagged assets. \n"
+                    - key: tag_name
+                      readable_name: Tag Name
+                      control:
+                        type: STRING
+                        multiple_allowed: false
+                        regex:
+                          hint: ''
+                          expression: .*
+                      operators:
+                      - contains
+                      - not contains
+                      - '='
+                      - '!='
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Tag Name \n## A label assigned to assets for categorization\nTag Name allows users to categorize and group assets based on specific criteria, such as department, location, sensitivity of data stored, or compliance requirements.\n\nHere are some key points to understand about Tag Name in the context of Cyber Asset Management:\n\n- **Organization and Filtering**: Tag Name enables efficient organization and filtering of assets within Tenable Exposure Management, making it easier to locate and manage specific groups of assets.\n- **Contextual Information**: Tags provide valuable contextual information about assets, aiding in risk assessment, vulnerability management, and incident response efforts.\n- **Automation and Reporting**: Tags can be used to automate tasks, such as applying security policies or generating reports based on specific asset groups.\n- **Flexibility and Customization**: Tenable Exposure Management allows users to create and assign custom tags based on their organization's specific needs and terminology.\n- **Improved Asset Visibility**: By using meaningful Tag Names, organizations can gain a clearer understanding of their asset inventory and potential security risks.\n"
+                    - key: tag_description
+                      readable_name: Tag Description
+                      control:
+                        type: STRING
+                        multiple_allowed: false
+                        regex:
+                          hint: ''
+                          expression: .*
+                      operators:
+                      - contains
+                      - not contains
+                      - '='
+                      - '!='
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Tag Description \n\n## A text used to categorize Assets\n\nA tag description provides additional context and information about a specific tag used for categorizing and organizing assets within Tenable Exposure Management. It helps users understand the purpose and meaning of the tag, making it easier to search, filter, and manage assets effectively.\n\nHere are some key points to understand about tag descriptions:\n\n- **Clarity and Conciseness**: Tag descriptions should be clear, concise, and easy to understand, providing a brief explanation of the tag's purpose.\n- **Relevance**: The description should accurately reflect the tag's intended use and the types of assets it's associated with.\n- **Contextual Information**: It can include details about the tag's scope, criteria for applying the tag, or any specific conventions used.\n- **Examples**: Providing examples of assets or asset attributes that would typically receive the tag can be helpful for users. \n"
+                    - key: product
+                      readable_name: Product
+                      control:
+                        type: STRING
+                        multiple_allowed: true
+                        selection:
+                        - name: TENABLE_AI
+                          value: TENABLE_AI
+                          deprecated: false
+                        - name: TENABLE_IO
+                          value: TENABLE_IO
+                          deprecated: false
+                      operators:
+                      - contains
+                      - not contains
+                      - '='
+                      - '!='
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Product \n## A way to group assets by software\nIn Tenable Exposure Management, a Tag is a way to categorize and group assets based on shared characteristics. One type of tag is a \"Product,\" which allows you to associate assets with specific software products installed on them. \n\nHere's how it works:\n\n- **Tagging Assets:** When you discover assets in your environment, Cyber Asset Management automatically identifies the software installed on them. You can then create \"Product\" tags and assign them to assets based on the detected software.\n- **Grouping and Filtering:** Once tagged, you can easily group and filter assets based on the software products they have in common. For example, you can create a group of all assets with a specific version of a software product to identify potential vulnerabilities.\n- **Streamlining Management:** By using \"Product\" tags, you can streamline asset management tasks, such as vulnerability remediation, patch management, and software inventory. \n"
+                    - key: tag_type
+                      readable_name: Tag Type
+                      control:
+                        type: STRING
+                        multiple_allowed: false
+                        regex:
+                          hint: ''
+                          expression: .*
+                      operators:
+                      - contains
+                      - not contains
+                      - '='
+                      - '!='
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Tag Type \n\n## A label category for assets\n\nA tag type is a user-defined category or classification that helps organize and group tags within Cyber Asset Management. It provides a structured way to manage and apply tags to assets, making it easier to search, filter, and analyze asset data based on specific criteria.\n\nHere are some key points to understand about tag types:\n\n- **Organization**: Tag types bring order to your tags, preventing a chaotic and unmanageable collection.\n- **Standardization**: They enforce consistency in tagging, ensuring that similar assets are tagged uniformly.\n- **Filtering and Reporting**: Tag types simplify asset searching and filtering, allowing you to quickly locate assets with specific tags.\n- **Automation**: Tag types can be used to automate tagging processes, such as automatically applying tags based on asset attributes or events.\n- **Examples**: Common tag types include \"Environment\" (e.g., Production, Development, Testing), \"Location\" (e.g., New York, London, Tokyo), \"Department\" (e.g., Finance, Marketing, IT), and \"Compliance\" (e.g., PCI DSS, HIPAA, GDPR).\n"
+                    - key: tag_category_id
+                      readable_name: Tag Category ID
+                      control:
+                        type: STRING
+                        multiple_allowed: false
+                        regex:
+                          hint: ''
+                          expression: .*
+                      operators:
+                      - contains
+                      - not contains
+                      - '='
+                      - '!='
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Tag Category ID \n\n## A unique identifier for a group of tags.\n\nIn Tenable Exposure Management, tags are used to categorize and organize assets based on various criteria, such as function, location, or sensitivity. To manage tags effectively, they are grouped into categories. Each tag category is assigned a unique ID, known as the Tag Category ID. This ID helps in filtering and searching for assets based on specific tag categories.\n\nHere's a breakdown:\n\n- **Tag:** A label assigned to assets to categorize them based on specific criteria.\n- **Tag Category:** A group of related tags that share a common theme or purpose.\n- **Tag Category ID:** A unique identifier assigned to each tag category for efficient management and filtering. \n"
+                    - key: tag_category_name
+                      readable_name: Tag Category Name
+                      control:
+                        type: STRING
+                        multiple_allowed: false
+                        regex:
+                          hint: ''
+                          expression: .*
+                      operators:
+                      - contains
+                      - not contains
+                      - '='
+                      - '!='
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Tag Category Name \n\n## A way to organize tags\n\nIn Cyber Asset Management, a tag category serves as a container or grouping mechanism for individual tags. It helps in organizing and managing tags effectively, making it easier to apply and search for assets based on specific criteria. \n\nHere's a breakdown:\n\n- **Organization:** Tag categories bring structure to your tags, preventing a chaotic list of unrelated terms.\n- **Filtering and Searching:** They streamline the process of finding assets with specific characteristics. For instance, a \"Compliance\" category might contain tags like \"GDPR,\" \"HIPAA,\" or \"PCI DSS.\"\n- **Standardization:**  Tag categories promote consistency in tagging practices across your organization. \n"
+                    - key: tag_category_description
+                      readable_name: Tag Category Description
+                      control:
+                        type: STRING
+                        multiple_allowed: false
+                        regex:
+                          hint: ''
+                          expression: .*
+                      operators:
+                      - contains
+                      - not contains
+                      - '='
+                      - '!='
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Tag Category Description \n\n## A way to group tags in Cyber Asset Management\nTag Category Description allows users to provide a more detailed explanation or context for a specific tag category. This description helps users understand the purpose and usage of tags within that category, ensuring consistency and clarity in tag organization.\n\nHere's how Tag Category Description enhances tag management:\n\n- **Context and Purpose:** Provides a clear understanding of what the tag category represents and how it should be used.\n- **Consistency and Standardization:**  Promotes uniformity in tag naming conventions and usage across the organization.\n- **Improved Searchability:** Enables users to easily find and apply relevant tags by providing descriptive information about each category.\n- **Enhanced Reporting and Analysis:** Allows for more meaningful reporting and analysis by grouping tags into logical categories. \n"
+                    - key: tag_created_by_id
+                      readable_name: Tag Created By ID
+                      control:
+                        type: STRING
+                        multiple_allowed: false
+                        regex:
+                          hint: ''
+                          expression: .*
+                      operators:
+                      - contains
+                      - not contains
+                      - '='
+                      - '!='
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Tag Created By ID \n## The Entra ID of the user who created the tag in Tenable Exposure Management\nThis ID is a unique identifier associated with a user in your Entra ID.  It helps track who created specific tags within Cyber Asset Management, providing an audit trail for tag management. This information can be useful for:\n- **Accountability**: Knowing who created a tag can be helpful for accountability purposes, especially if a tag is used incorrectly or needs to be modified.\n- **Troubleshooting**: If there are any issues with a tag, knowing who created it can help in troubleshooting and resolving the problem.\n- **Tag Management**: Understanding tag usage patterns based on the creator can provide insights into how tags are being used and managed within the organization. \n"
+                    - key: tag_updated_by_id
+                      readable_name: Tag Updated By ID
+                      control:
+                        type: STRING
+                        multiple_allowed: false
+                        regex:
+                          hint: ''
+                          expression: .*
+                      operators:
+                      - contains
+                      - not contains
+                      - '='
+                      - '!='
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Tag Updated By ID \n## The Entra ID of the user who last updated the tag\nThis attribute identifies the specific user in your organization's Entra ID system who made the most recent changes to a particular tag within the Tenable Exposure Management application. \n\nHere's a breakdown:\n\n- **Entra ID Integration:** Tenable Exposure Management integrates with your organization's Entra ID system to manage user accounts and permissions.\n- **Tracking Tag Modifications:**  Every time a tag is created, modified, or deleted, the system records the Entra ID of the user responsible for the action.\n- **Auditing and Accountability:** This information is crucial for auditing purposes, allowing administrators to track who made what changes to tags over time. It helps ensure accountability and facilitates investigations in case of unauthorized or accidental modifications. \n"
+                    - key: tag_created_at
+                      readable_name: Tag Created At
+                      control:
+                        type: DATE
+                        multiple_allowed: false
+                        regex:
+                          hint: timestamp
+                          expression: ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+                      operators:
+                      - '='
+                      - '>'
+                      - <
+                      - between
+                      - exists
+                      - not exists
+                      - older than
+                      - newer than
+                      - within last
+                      sortable: true
+                      filterable: true
+                      description: "# Tag Created At \n## Date and time a tag was created\nThis field represents the specific date and time when a particular tag was created within the Tenable Exposure Management application. It provides a timestamp indicating the moment the tag was initially defined and added to the system. \n\nHere's why this information is valuable:\n- **Tracking Tag Usage:**  Understand when tags were introduced, potentially correlating them with specific projects, initiatives, or changes in asset management practices.\n- **Identifying Stale Tags:**  Tags created long ago but rarely used might indicate outdated categorization or an opportunity for cleanup.\n- **Auditing and Reporting:**  Provide an audit trail of tag creation, aiding in compliance efforts or investigations related to asset classification. \n"
+                    - key: asset_count
+                      readable_name: Asset Count
+                      control:
+                        type: NUMBER
+                        multiple_allowed: false
+                        regex:
+                          hint: number >= 0
+                          expression: ^\d+$
+                      operators:
+                      - '='
+                      - '>='
+                      - '>'
+                      - <=
+                      - <
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Asset Count \n\n## Number of assets associated with a specific tag.\n\nThis metric provides a count of assets grouped by tags within your IT environment. Tags are user-defined labels assigned to assets for categorization and easier management. \n\nHere's a breakdown:\n\n- **Asset**: Any resource or component within your IT infrastructure, such as devices, users, or applications.\n- **Tag**: A descriptive label assigned to assets, allowing for logical grouping and filtering.\n- **Count**: The total number of assets associated with a particular tag.\n\nFor example, you might have a tag named \"Production\" assigned to all assets critical for your production environment. The \"Asset Count\" metric for the \"Production\" tag would then display the total number of assets crucial for your production operations. This information is valuable for understanding the scale and distribution of assets based on your defined classifications. \n"
+                    - key: critical_weakness_count
+                      readable_name: Critical Weakness Count
+                      control:
+                        type: NUMBER
+                        multiple_allowed: false
+                        regex:
+                          hint: number >= 0
+                          expression: ^\d+$
+                      operators:
+                      - '='
+                      - '>='
+                      - '>'
+                      - <=
+                      - <
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Critical Weakness Count \n\n## Number of critical weaknesses for a given tag.\n\nThis metric, viewable in the **Explore** view of **Cyber Asset Management**, counts the number of critical weaknesses associated with assets grouped by a specific tag.  The higher the count, the greater the potential risk posed by those assets. Here's a breakdown:\n\n- **Critical Weakness:** A security vulnerability classified as highly severe, potentially allowing attackers to gain unauthorized access, disrupt operations, or steal data.\n- **Tag:** A label assigned to assets in Tenable Exposure Management for categorization and easier management. Tags help group assets with similar characteristics or purposes.\n- **Explore View:** A feature in Tenable Exposure Management that provides insights into asset vulnerabilities and overall security posture. It allows users to analyze data, identify trends, and prioritize remediation efforts. \n"
+                    - key: high_weakness_count
+                      readable_name: High Weakness Count
+                      control:
+                        type: NUMBER
+                        multiple_allowed: false
+                        regex:
+                          hint: number >= 0
+                          expression: ^\d+$
+                      operators:
+                      - '='
+                      - '>='
+                      - '>'
+                      - <=
+                      - <
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# High Weakness Count \n\n## A way to filter assets with a specific tag and a high number of weaknesses.\n\nThis filter allows users to identify and focus on assets that have a specific tag applied to them and also exhibit a high number of identified weaknesses. This is useful for prioritizing remediation efforts on assets that may pose a higher risk due to the combination of their tag and weakness count.\n\nHere's a breakdown:\n\n- **Tag:** Tags are user-defined labels or categories assigned to assets in Tenable Exposure Management for better organization, grouping, and filtering.\n- **Weakness Count:** This refers to the total number of vulnerabilities or security weaknesses discovered on an asset through vulnerability assessments.\n- **High Weakness Count:**  This implies a threshold set by the user to define what constitutes a \"high\" number of weaknesses. This threshold can vary based on organizational risk tolerance and security policies.\n- **Example:** A user could use this filter to find all assets tagged as \"Critical Servers\" that have a weakness count greater than 50 (`HAS Tag = Critical Servers AND HAS Weakness Count > 50`). \n"
+                    - key: medium_weakness_count
+                      readable_name: Medium Weakness Count
+                      control:
+                        type: NUMBER
+                        multiple_allowed: false
+                        regex:
+                          hint: number >= 0
+                          expression: ^\d+$
+                      operators:
+                      - '='
+                      - '>='
+                      - '>'
+                      - <=
+                      - <
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Medium Weakness Count \n## Number of vulnerabilities with medium severity for a specific tag.\nThis metric, available in Tenable Exposure Management, represents the aggregation of vulnerabilities classified as having a \"Medium\" severity level associated with assets grouped by a specific tag. In essence, it helps to quickly understand the concentration of potential security gaps within a particular category or grouping of assets defined by the tag. \n\nHere's a breakdown:\n\n- **Tag:** A user-defined label or category assigned to assets in Tenable Exposure Management for organizational and reporting purposes. \n- **Medium Severity:** A classification of vulnerabilities that present a moderate risk to your environment. These vulnerabilities might not be actively exploited but still require attention and remediation.\n- **Count:** The total number of vulnerabilities matching the specified criteria (medium severity and associated with the chosen tag). \n"
+                    - key: low_weakness_count
+                      readable_name: Low Weakness Count
+                      control:
+                        type: NUMBER
+                        multiple_allowed: false
+                        regex:
+                          hint: number >= 0
+                          expression: ^\d+$
+                      operators:
+                      - '='
+                      - '>='
+                      - '>'
+                      - <=
+                      - <
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Low Weakness Count \n\n## A tag with less than 10 weaknesses\n\nThis filter allows users to identify and focus on assets tagged with specific tags that have a relatively low number of identified weaknesses. This can be useful for prioritizing remediation efforts on assets that may be considered lower risk due to their lower weakness count.\n\nHere's how it works:\n\n- **HAS Tag**: This part of the filter specifies that the asset must have at least one tag associated with it.\n- **AS Weakness Count**: This part of the filter focuses on the number of weaknesses associated with the specified tag.\n- **< 10**: This part of the filter sets a threshold, indicating that only assets with fewer than 10 weaknesses associated with the specified tag will be included in the results. \n"
+                    - key: info_weakness_count
+                      readable_name: Info Weakness Count
+                      control:
+                        type: NUMBER
+                        multiple_allowed: false
+                        regex:
+                          hint: number >= 0
+                          expression: ^\d+$
+                      operators:
+                      - '='
+                      - '>='
+                      - '>'
+                      - <=
+                      - <
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Info Weakness Count \n## Number of informational weaknesses for a defined tag.\nThis metric, available in the context of Tenable Exposure Management, provides insights into the number of informational weaknesses associated with assets grouped by a specific tag. In essence, it helps you understand how many informational vulnerabilities exist within a defined subset of your IT environment.\n\nHere's a breakdown:\n\n- **Informational Weakness:** A type of vulnerability that doesn't directly lead to system compromise but highlights potential security risks or misconfigurations that could be exploited if combined with other vulnerabilities.\n- **Tag:**  A label assigned to assets in Tenable Exposure Management, allowing for logical grouping and categorization based on criteria like department, location, or asset type.\n- **Use Case:** This metric helps prioritize remediation efforts by identifying tags associated with a high number of informational weaknesses, indicating areas needing attention to improve overall security posture. \n"
+                    - key: total_weakness_count
+                      readable_name: Total Weakness Count
+                      control:
+                        type: NUMBER
+                        multiple_allowed: false
+                        regex:
+                          hint: number >= 0
+                          expression: ^\d+$
+                      operators:
+                      - '='
+                      - '>='
+                      - '>'
+                      - <=
+                      - <
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# Total Weakness Count \n\n## Number of weaknesses for a given tag\n\nThis metric represents the sum of weaknesses associated with assets grouped under a specific tag within Tenable Exposure Management. Tags are user-defined labels that help categorize and manage assets based on criteria such as department, location, or risk level. \n\nHere's a breakdown:\n\n- **Asset Grouping:** Tags allow you to create logical groups of assets based on shared characteristics.\n- **Weakness Association:**  Tenable Exposure Management identifies and associates vulnerabilities, misconfigurations, and other security weaknesses with individual assets.\n- **Aggregation:** The \"Total Weakness Count \" metric adds up all the weaknesses found across all assets assigned to a particular tag. \n- **Risk Insight:** This metric provides a consolidated view of risk exposure for a group of assets, enabling targeted remediation efforts. \n"
+                    - key: aes_average
+                      readable_name: AES Average
+                      control:
+                        type: NUMBER
+                        multiple_allowed: false
+                        regex:
+                          hint: number >= 0
+                          expression: ^\d+$
+                      operators:
+                      - '='
+                      - '>='
+                      - '>'
+                      - <=
+                      - <
+                      - exists
+                      - not exists
+                      sortable: true
+                      filterable: true
+                      description: "# AES Average\n## The average of all Asset Exposure Scores\nThe average AES represents the average level of cyber risk across all assets within an organization, providing a high-level view of the overall security posture.\n\nHere's a breakdown:\n- **Calculation**:  The AES Average is determined by summing the AES values of all assets and dividing by the total number of assets.\n- **Range**: AES values typically range from 0 to 100, with higher scores indicating greater exposure and potential risk.\n- **Context**:  A high average AES suggests that the organization faces a significant overall cyber risk, while a low average indicates a relatively lower risk posture.\n- **Use in Tenable Exposure Management**: You can use the AES Average to track changes in your organization's overall security posture over time and identify trends in asset exposure. For example, a sudden increase in the average AES might indicate a new vulnerability or a successful attack. \n"
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the list of tag properties.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Inventory_cloud: []
+  /tags/categories:
+    post:
+      summary: Create tag category
+      description: Creates a new tag category.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: tags-create-tag-category
+      tags:
+      - Tags
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the tag category. Note that `name` must not exceed 127 characters and must not contain colons.
+                description:
+                  type: string
+                  description: The description of the tag category. Must not exceed 3,000 characters.
+              required:
+              - name
+            example:
+              name: Location
+              description: The geographic location of the asset.
+      responses:
+        '200':
+          description: Returned if the tag category was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_Category'
+              examples:
+                response:
+                  value:
+                    uuid: 580e6703-2e60-4c8a-82ef-675fcc3f036d
+                    created_at: '2018-12-31T20:43:36.496Z'
+                    created_by: user3@example.com
+                    updated_at: '2018-12-31T20:43:36.496Z'
+                    updated_by: user3@example.com
+                    name: Location
+                    description: The geographic location of the asset.
+                    reserved: false
+        '400':
+          description: "Returned if Tenable Vulnerability Management encounters any of the following error conditions:\n - `name`—The `name` value in the request message exceeds 127 characters.\n - `description`—The description value in the request message exceeds 3,000 characters.\n - `max_entries`—Your request exceeds the maximum number of categories (100 per container).\n - `duplicate`—A category with the name you specified already exists."
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+    get:
+      summary: List tag categories
+      description: Returns a list of tag categories.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: tags-list-tag-categories
+      tags:
+      - Tags
+      parameters:
+      - description: "A filter condition in the `field:operator:value` format, for example, `f=name:match:location`. Filter conditions can include:  \n* name:eq:&lt;name>  \n* name:match:<partial\\_name>  \n* description:eq:&lt;description>  \n* description:match:<partial\\_description>  \n* updated\\_at:date-eq:<timestamp\\_as\\_int>  \n* updated\\_at:date-gt:<timestamp\\_as\\_int>  \n* updated\\_at:date-lt:<timestamp\\_as\\_int>  \n* created\\_at:date-eq:<timestamp\\_as\\_int>  \n* created\\_at:date-gt:<timestamp\\_as\\_int>  \n* created\\_at:date-lt:<timestamp\\_as\\_int>  \n* updated\\_by:eq:<user\\_uuid>"
+        required: false
+        name: f
+        in: query
+        schema:
+          type: string
+      - description: If multiple `f` parameters are present, specifies whether Tenable Vulnerability Management applies `AND` or `OR` to conditions. Supported values are `and` and `or`. If you omit this parameter when using multiple `f` parameters, Tenable Vulnerability Management applies `AND` by default.
+        required: false
+        name: ft
+        in: query
+        schema:
+          type: string
+      - description: The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `5000`.
+        required: false
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 5000
+      - description: The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`.
+        required: false
+        name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - description: 'The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.
+
+
+          If you specify multiple fields, the fields must be separated by commas. For example, `name:desc,updated_at:asc` would first sort results by the `name` field in descending order and then by the `updated_at` field in ascending order.'
+        required: false
+        name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the list of tag categories was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_CategoryListResponse'
+              examples:
+                response:
+                  value:
+                    categories:
+                    - uuid: 383825fb-9ddd-4565-adea-4f273013f65b
+                      created_at: '2018-12-31T16:37:51.097Z'
+                      created_by: user3@example.com
+                      updated_at: '2018-12-31T16:37:51.097Z'
+                      updated_by: user3@example.com
+                      name: asset_class
+                      description: Asset class
+                      reserved: false
+                    - uuid: e50a526c-966f-4b80-a641-6dd359b8202e
+                      created_at: '2018-12-31T16:10:21.412Z'
+                      created_by: user3@example.com
+                      updated_at: '2018-12-31T15:39:16.540Z'
+                      updated_by: user3@example.com
+                      name: location
+                      description: Asset location
+                      reserved: false
+                    pagination:
+                      offset: 0
+                      limit: 5000
+                      total: 4
+                      sort:
+                      - name: name
+                        order: asc
+        '400':
+          $ref: '#/components/responses/tags_400ListErrorResponse'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+  /tags/categories/{tag_category_uuid}:
+    get:
+      summary: Get category details
+      description: Returns the details for the specified category.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: tags-tag-category-details
+      tags:
+      - Tags
+      parameters:
+      - description: The unique identifier (UUID) of the tag category to return details for. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio).
+        required: true
+        name: tag_category_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the details for the specified tag category were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_Category'
+              examples:
+                response:
+                  value:
+                    uuid: 580e6703-2e60-4c8a-82ef-675fcc3f036d
+                    created_at: '2018-12-31T20:43:36.496Z'
+                    created_by: user3@example.com
+                    updated_at: '2018-12-31T20:43:36.496Z'
+                    updated_by: user3@example.com
+                    name: Location
+                    description: The geographic location of the asset.
+                    reserved: false
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if the specified tag category was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+    put:
+      summary: Update tag category
+      description: Updates the specified tag category. To update a category you must be an admin or have edit permissions on all tags within the category.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: tags-edit-tag-category
+      tags:
+      - Tags
+      parameters:
+      - description: The unique identifier (UUID) of the tag category to update. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio).
+        required: true
+        name: tag_category_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the tag category. Note that `name` must not exceed 127 characters and must not contain colons.
+                description:
+                  type: string
+                  description: The description of the category. Must not exceed 3,000 characters.
+              required:
+              - name
+            example:
+              name: location
+              description: The physical location of the asset.
+      responses:
+        '200':
+          description: Returned the specified tag category was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_Category'
+              examples:
+                response:
+                  value:
+                    uuid: 580e6703-2e60-4c8a-82ef-675fcc3f036d
+                    created_at: '2018-12-31T20:43:36.496Z'
+                    created_by: user3@sample.org
+                    updated_at: '2018-12-31T23:01:42.105Z'
+                    updated_by: user3@sample.org
+                    name: operating_system
+                    description: The operating system of the asset
+                    reserved: false
+        '400':
+          description: "Returned if Tenable Vulnerability Management encounters any of the following error conditions:\n - `name`—The `name` value in the request message exceeds 127 characters.\n - `description`—The `description` value in the request message exceeds 3,000 characters.\n - Your request message does not specify a value for the tag category name."
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have sufficient permission to edit the tag category. You either need to be an administrator or have edit permissions on all tag values within this category to have permission to update the category.
+        '404':
+          description: Returned if the specified tag category was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+    delete:
+      summary: Delete tag category
+      description: Deletes the specified category and any associated tag values. Deleting an asset tag category automatically deletes all tag values associated with that category and removes the tags from any assets where the tags were assigned. To delete a category you must be an admin or have edit permissions on all tags within the category.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: tags-delete-tag-category
+      tags:
+      - Tags
+      parameters:
+      - description: The unique identifier (UUID) of the tag category to delete. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio).
+        required: true
+        name: tag_category_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the specified tag category was deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have sufficient permission to delete the tag category. You either need to be an administrator or have edit permissions on all tag values within this category to have permission to delete the category.
+        '404':
+          description: Returned if the specified tag category was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+  /tags/values:
+    post:
+      summary: Create tag value
+      description: Creates a tag value. The tag category can be specified by UUID or name. If Tenable Vulnerability Management cannot find a category you specify by name, the system creates a new category with the specified name. To automatically apply the tag to assets, specify the rules using the `filters` property.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: tags-create-tag-value
+      tags:
+      - Tags
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category_name:
+                  type: string
+                  description: "The name of the tag category to associate with the new value.\n\nSpecify the name of a new category if you want to add both a <i>new</i> category and tag value.\n\nSpecify the name of an <i>existing</i> category if you want to add the tag value to the existing category.\n\nThe `category_name` can result in the following responses:\n\n - If the `category_name` you specify exists, and the tag value you specify already exists for that category, Tenable Vulnerability Management returns a 400 response code instead of adding the tag.\n\n - If the `category_name` you specify exists, but the tag value you specify does not yet exist for that category, Tenable Vulnerability Management adds the tag value to the existing category.\n\n - If the `category_name` you specify does not exist, Tenable Vulnerability Management creates a new tag category and adds the new tag value to that category.\n\nThis parameter is required if `category_uuid` is not present in the request message."
+                category_uuid:
+                  type: string
+                  description: 'The unique identifier (UUID) of the tag category to associate with the new value. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio).
+
+
+                    Use this parameter only if you want to add the tag value to an existing category. If the UUID you specify does not exist, Tenable Vulnerability Management does not create a new catgory. Instead, it returns a 400 (Bad Request) response code.
+
+
+                    This parameter is required if category_name is not present in the request message.'
+                category_description:
+                  type: string
+                  description: The description for the new tag category that Tenable Vulnerability Management creates if the category specified by name does not exist. Otherwise, Tenable Vulnerability Management ignores the description.
+                value:
+                  type: string
+                  description: The new tag value. Note that tag values cannot exceed 50 characters in length and must not contain commas.
+                description:
+                  type: string
+                  description: The new tag value description.
+                access_control:
+                  $ref: '#/components/schemas/tags_AccessControl'
+                filters:
+                  type: object
+                  description: The filters (conditional sets of rules) for automatically applying the tag to assets. For more information, see [Apply Dynamic Tags](doc:apply-dynamic-tags).
+                  properties:
+                    asset:
+                      type: object
+                      description: "The object containing conditional sets of rules for applying the tags. \n\n**Note:** Tenable Vulnerability Management supports a maximum of 40 rules per tag. This limit means that you can specify a maximum of 40 `and` or `or` conditions for a single tag value. Additionally, Tenable Vulnerability Management supports a maximum of 1,024 values in a comma-delimited string per individual tag rule. Note that the request body is limited to 1 MB. For more information about asset tags and their limitations, see [Manage Asset Tags](doc:manage-asset-tags-tio)."
+                      properties:
+                        and:
+                          $ref: '#/components/schemas/tags_andConditions'
+                        or:
+                          $ref: '#/components/schemas/tags_orConditions'
+              required:
+              - value
+            example:
+              category_name: Location
+              value: San Diego
+              description: San Diego - WFH
+              access_control:
+                current_user_permissions:
+                - ALL
+                - CAN_EDIT
+                - CAN_SET_PERMISSIONS
+                defined_domain_permissions:
+                - ALL
+                - CAN_EDIT
+                - CAN_SET_PERMISSIONS
+                all_users_permissions:
+                - CAN_EDIT
+                current_domain_permissions:
+                - id: 51f28c8e-dfee-4704-bcb0-45987cafb808
+                  name: user3@example.com
+                  type: USER
+                  permissions:
+                  - ALL
+                  - CAN_EDIT
+                  - CAN_SET_PERMISSIONS
+      responses:
+        '200':
+          description: Returned if the tag value was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ValueDetails'
+              examples:
+                response:
+                  value:
+                    uuid: 01ed44a1-4dbf-449a-aff9-fd9969dae1f1
+                    created_at: '2018-12-31T19:39:40.473Z'
+                    created_by: user3@example.com
+                    updated_at: '2018-12-31T19:39:40.473Z'
+                    updated_by: user3@example.com
+                    category_uuid: e50a526c-966f-4b80-a641-6dd359b8202e
+                    value: San Diego
+                    description: San Diego - WFH
+                    type: static
+                    category_name: location
+                    category_description: Asset location
+                    access_control:
+                      current_user_permissions:
+                      - ALL
+                      - CAN_EDIT
+                      - CAN_SET_PERMISSIONS
+                      defined_domain_permissions:
+                      - ALL
+                      - CAN_EDIT
+                      - CAN_SET_PERMISSIONS
+                      all_users_permissions:
+                      - CAN_EDIT
+                      current_domain_permissions:
+                      - id: 51f28c8e-dfee-4704-bcb0-45987cafb808
+                        name: user3@example.com
+                        type: USER
+                        permissions:
+                        - ALL
+                        - CAN_EDIT
+                        - CAN_SET_PERMISSIONS
+                      - id: b3dfd5a0-bd01-499e-b0ec-2882d7c67e05
+                        name: user group
+                        type: GROUP
+                        permissions:
+                        - CAN_EDIT
+                      version: 0
+        '400':
+          description: "Returned if Tenable Vulnerability Management encounters any of the following error conditions:\n - the combination of category and value you specified already exists (`duplicate`)\n - the category you specified does not exist (`not_found`)\n - your request exceeded a tag limit for your organization, which can be either the maximum of 100 categories or the maximum 100,000 tags for each category, or as configured for your organization\n - your request body is greater than 1 MB\n - you attempted to specify more than 40 rules for an individual tag (`Filter expression cannot have more than 40 conditions`)\n - your request specified an invalid filter for the dynamic tag rule, for example, `ipv 4` (`The following filter types are not valid: {string}`)."
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+    get:
+      summary: List tag values
+      description: 'Returns a list of tag values.
+
+
+        **Note:** The list can also include the tag categories that do not have any associated values.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+      operationId: tags-list-tag-values
+      tags:
+      - Tags
+      parameters:
+      - description: "A filter condition in the `field:operator:value` format, for example, `f=value:match:rhel`. Filters should match `field:op:value` format. Filter conditions can include:  \n* value:eq:&lt;value>  \n* value:match:&lt;value>  \n* category\\_name:match:<partial\\_value>  \n* category\\_name:eq:<category\\_name>  \n* category\\_name:match:<partial\\_category\\_name>  \n* description:eq:&lt;description>  \n* description:match:<partial\\_description>  \n* updated\\_at:date-eq:<timestamp\\_as\\_int>  \n* updated\\_at:date-gt:<timestamp\\_as\\_int>  \n* updated\\_at:date-lt:<timestamp\\_as\\_int>  \n* updated\\_by:eq:<user\\_uuid>"
+        name: f
+        in: query
+        schema:
+          type: string
+      - description: If multiple `f` parameters are present, specifies whether Tenable Vulnerability Management applies `AND` or `OR` to conditions. Supported values are `and` and `or`. If you omit this parameter when using multiple `f` parameters, Tenable Vulnerability Management applies `AND` by default.
+        name: ft
+        in: query
+        schema:
+          type: string
+      - description: "A comma-separated list of fields to include in the wildcard search. Provides the same functionality as a `match` condition in the `f` in parameter. For example, `f=value:match:Chi` returns the same results as `wf=value&w=Chi`. Wildcard fields include:  \n* category\\_name  \n* value  \n* description  \nUse the `w` parameter to specify the search value."
+        name: wf
+        in: query
+        schema:
+          type: string
+      - description: A single search value for the wildcard fields specified in the `wf` parameter.
+        required: false
+        name: w
+        in: query
+        schema:
+          type: string
+      - description: The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `5000`.
+        required: false
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 5000
+      - description: The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`.
+        required: false
+        name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - description: 'The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `value:desc` would sort results by the `value` field in descending order.
+
+
+          If you specify multiple fields, the fields must be separated by commas. For example, `value:desc,updated_at:asc` would first sort results by the `value` field in descending order and then by the `updated_at` field in ascending order.'
+        required: false
+        name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the list of tag values was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ValueListResponse'
+              examples:
+                response:
+                  value:
+                    values:
+                    - uuid: 76252c75-3f15-4258-82f5-6e5faed7f54a
+                      created_at: '2018-12-31T15:39:16.687Z'
+                      created_by: user3@example.com
+                      updated_at: '2018-12-31T15:39:16.687Z'
+                      updated_by: user3@example.com
+                      category_uuid: e50a526c-966f-4b80-a641-6dd359b8202e
+                      value: Seattle
+                      description: ''
+                      type: static
+                      category_name: location
+                      category_description: Asset location
+                      access_control:
+                        version: 1
+                        current_user_permissions: []
+                    - uuid: 173c3f3c-cb25-4f35-97e8-26b83f50c38d
+                      created_at: '2018-12-31T16:10:21.710Z'
+                      created_by: user3@example.com
+                      updated_at: '2018-12-31T16:12:11.901Z'
+                      updated_by: user3@example.com
+                      category_uuid: e50a526c-966f-4b80-a641-6dd359b8202e
+                      value: Chicago
+                      description: Chicago Office New
+                      type: static
+                      category_name: location
+                      category_description: Asset location
+                      access_control:
+                        version: 1
+                        current_user_permissions: []
+                    - uuid: 2e4ebc56-04b5-43ca-b90f-048ace7159cd
+                      created_at: '2018-12-31T23:27:58.579Z'
+                      created_by: user3@example.com
+                      updated_at: '2018-12-31T23:27:58.579Z'
+                      updated_by: user3@example.com
+                      category_uuid: 580e6703-2e60-4c8a-82ef-675fcc3f036d
+                      value: mac
+                      type: static
+                      category_name: operating_system
+                      category_description: The operating system of the asset
+                      access_control:
+                        version: 1
+                        current_user_permissions: []
+                    - uuid: c431d45f-b0f5-4e91-b36e-6a3cd5036f11
+                      created_at: '2018-12-31T15:40:49.110Z'
+                      created_by: user3@example.com
+                      updated_at: '2018-12-31T15:40:49.110Z'
+                      updated_by: user3@example.com
+                      category_uuid: e50a526c-966f-4b80-a641-6dd359b8202e
+                      value: New York
+                      type: static
+                      category_name: location
+                      category_description: Asset location
+                      access_control:
+                        version: 1
+                        current_user_permissions: []
+                    - uuid: 02789c98-5e8f-4ef2-91cd-212f5f3c1abd
+                      created_at: '2018-12-31T15:34:57.099Z'
+                      created_by: user3@example.com
+                      updated_at: '2018-12-31T15:34:57.099Z'
+                      updated_by: user3@example.com
+                      category_uuid: e50a526c-966f-4b80-a641-6dd359b8202e
+                      value: Austin
+                      type: static
+                      category_name: location
+                      category_description: Asset location
+                      access_control:
+                        version: 1
+                        current_user_permissions:
+                        - CAN_EDIT
+                    - uuid: 9c0ab54c-b482-4c52-86b8-2bdb3624ef0d
+                      created_at: '2018-12-31T15:54:47.830Z'
+                      created_by: user3@example.com
+                      updated_at: '2018-12-31T15:54:47.830Z'
+                      updated_by: user3@example.com
+                      category_uuid: e50a526c-966f-4b80-a641-6dd359b8202e
+                      value: Rochester
+                      type: static
+                      category_name: location
+                      category_description: Asset location
+                      access_control:
+                        version: 1
+                        current_user_permissions:
+                        - ALL
+                        - CAN_EDIT
+                        - CAN_SET_PERMISSIONS
+                    - uuid: 4b662944-a65e-4104-860f-25554f7fec95
+                      created_at: '2018-12-31T15:34:57.113Z'
+                      created_by: user3@example.com
+                      updated_at: '2018-12-31T15:34:57.113Z'
+                      updated_by: user3@example.com
+                      category_uuid: e50a526c-966f-4b80-a641-6dd359b8202e
+                      value: Portland
+                      type: static
+                      category_name: location
+                      category_description: Asset location
+                      access_control:
+                        version: 1
+                        current_user_permissions:
+                        - ALL
+                        - CAN_EDIT
+                        - CAN_SET_PERMISSIONS
+                    pagination:
+                      offset: 0
+                      limit: 5000
+                      total: 10
+                      sort:
+                      - name: category_name
+                        order: asc
+        '400':
+          $ref: '#/components/responses/tags_400ListErrorResponse'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+  /tags/values/{tag_value_uuid}:
+    get:
+      summary: Get tag value details
+      description: Returns the details for specified tag value.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: tags-tag-value-details
+      tags:
+      - Tags
+      parameters:
+      - description: The unique identifier (UUID) of the tag value. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio).
+        required: true
+        name: tag_value_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the details for the specified tag value were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ValueDetails'
+              examples:
+                response:
+                  value:
+                    uuid: fcdd2e84-a78c-4b0d-b174-d50c2fa11e4c
+                    created_at: '2019-12-31T17:11:26.492Z'
+                    created_by: user@example.com
+                    updated_at: '2019-12-31T17:11:26.492Z'
+                    updated_by: user@example.com
+                    category_uuid: 840f1877-8c63-4922-a613-5c18e8ff172c
+                    value: freebsd
+                    description: FreeBSD hosts
+                    type: dynamic
+                    category_name: unix
+                    category_description: Unix hosts
+                    access_control:
+                      current_user_permissions:
+                      - ALL
+                      - CAN_EDIT
+                      - CAN_SET_PERMISSIONS
+                      defined_domain_permissions:
+                      - ALL
+                      - CAN_EDIT
+                      - CAN_SET_PERMISSIONS
+                      all_users_permissions:
+                      - CAN_EDIT
+                      current_domain_permissions:
+                      - id: 51f28c8e-dfee-4704-bcb0-45987cafb808
+                        name: user3@example.com
+                        type: USER
+                        permissions:
+                        - ALL
+                        - CAN_EDIT
+                        - CAN_SET_PERMISSIONS
+                      version: 0
+                    filters:
+                      asset: '{"and":[{"field":"operating_system","operator":"match","value":"FreeBSD"}]}'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned i the specified tag value was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+    put:
+      summary: Update tag value
+      description: Updates the specified tag value.<div class="perms-callout">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>
+      operationId: tags-update-tag-value
+      tags:
+      - Tags
+      parameters:
+      - description: The unique identifier (UUID) of the value you want to update. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio).
+        required: true
+        name: tag_value_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: string
+                  description: The new tag value. Note that tag values cannot exceed 50 characters in length and must not contain commas.
+                description:
+                  type: string
+                  description: The new tag value description.
+                access_control:
+                  $ref: '#/components/schemas/tags_AccessControl'
+                filters:
+                  type: object
+                  description: The filters (conditional sets of rules) for automatically applying the tag to assets. For more information, see [Apply Dynamic Tags](doc:apply-dynamic-tags).
+                  properties:
+                    asset:
+                      type: object
+                      description: 'The object containing conditional sets of rules for applying the tags.
+
+
+                        **Note:** Tenable Vulnerability Management supports a maximum of 40 rules per tag. This limit means that you can specify a maximum of 40 `and` or `or` conditions for a single tag value. Additionally, Tenable Vulnerability Management supports a maximum of 1,024 values in a comma-delimited string per individual tag rule. Note that the request body is limited to 1 MB. For more information about asset tags and their limitations, see [Manage Asset Tags](doc:manage-asset-tags-tio).'
+                      properties:
+                        and:
+                          $ref: '#/components/schemas/tags_andConditions'
+                        or:
+                          $ref: '#/components/schemas/tags_orConditions'
+            example:
+              description: San Diego - Home Office
+              access_control:
+                current_user_permissions:
+                - ALL
+                - CAN_EDIT
+                - CAN_SET_PERMISSIONS
+                defined_domain_permissions:
+                - ALL
+                - CAN_EDIT
+                - CAN_SET_PERMISSIONS
+                all_users_permissions:
+                - CAN_EDIT
+                current_domain_permissions:
+                - id: 51f28c8e-dfee-4704-bcb0-45987cafb808
+                  name: user3@example.com
+                  type: USER
+                  permissions:
+                  - ALL
+                  - CAN_EDIT
+                  - CAN_SET_PERMISSIONS
+              version: 0
+      responses:
+        '200':
+          description: Returned if the specified tag value was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ValueDetails'
+              examples:
+                response:
+                  value:
+                    uuid: 01ed44a1-4dbf-449a-aff9-fd9969dae1f1
+                    created_at: '2018-12-31T19:39:40.473Z'
+                    created_by: user3@example.com
+                    updated_at: '2018-12-31T19:45:37.591Z'
+                    updated_by: user3@example.com
+                    category_uuid: e50a526c-966f-4b80-a641-6dd359b8202e
+                    value: San Diego
+                    description: San Diego - Home Office
+                    type: static
+                    category_name: location
+                    category_description: Asset location
+                    access_control:
+                      current_user_permissions:
+                      - ALL
+                      - CAN_EDIT
+                      - CAN_SET_PERMISSIONS
+                      defined_domain_permissions:
+                      - ALL
+                      - CAN_EDIT
+                      - CAN_SET_PERMISSIONS
+                      all_users_permissions:
+                      - CAN_EDIT
+                      current_domain_permissions:
+                      - id: 51f28c8e-dfee-4704-bcb0-45987cafb808
+                        name: user3@example.com
+                        type: USER
+                        permissions:
+                        - ALL
+                        - CAN_EDIT
+                        - CAN_SET_PERMISSIONS
+                      version: 1
+        '400':
+          description: "Returned if Tenable Vulnerability Management encounters any of the following error conditions:\n - the combination of category and value you specified already exists (`duplicate`)\n - the category you specified does not exist (`not_found`)\n - your request exceeded a tag limit for your organization, which can be either the maximum of 100 categories or the maximum 100,000 tags for each category, or as configured for your organization\n - your request body is greater than 1 MB\n - you attempted to specify more than 40 rules for an individual tag (`Filter expression cannot have more than 40 conditions`)\n - your request specified an invalid filter for the dynamic tag rule, for example, `ipv 4` (`The following filter types are not valid: {string}`)."
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to update tags or if you have no permissions explicitly set to update.
+        '404':
+          description: Returned if the specified tag value was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+    delete:
+      summary: Delete tag value
+      description: 'Deletes the specified tag value. If you delete an asset tag, Tenable Vulnerability Management also removes that tag from any assets where the tag was assigned.
+
+
+        **Note:** If you delete all asset tags associated with a category, Tenable Vulnerability Management retains the category. You must [delete](ref:tags-delete-tag-category) the category separately. Additionally, to delete a tag value, you must be an admin or have edit permissions on the tag value. <div class="perms-callout">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>'
+      operationId: tags-delete-tag-value
+      tags:
+      - Tags
+      parameters:
+      - description: 'The unique identifier (UUID) of the tag value you want to delete.
+
+
+          **Note:** A tag UUID is technically assigned to the tag value only (the second half of the category:value pair), but the API commands use this value to represent the whole `category:value` pair. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio).'
+        required: true
+        name: tag_value_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the tag value was deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to delete tags.
+        '404':
+          description: Returned if the specified tag value was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+  /tags/values/delete-requests:
+    post:
+      summary: Bulk delete tag values
+      description: Deletes tag values in bulk. If you delete an asset tag, Tenable Vulnerability Management also removes that tag from any assets where the tag was assigned. If you delete all asset tags associated with a category, Tenable Vulnerability Management retains the category. You must [delete](ref:tags-delete-tag-category) the category separately.<div class="perms-callout">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>
+      operationId: tags-delete-tag-values-bulk
+      tags:
+      - Tags
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                values:
+                  items:
+                    type: string
+                    format: uuid
+                  description: 'A list of the unique identifiers (UUIDs) of the tag values you want to delete.
+
+
+                    **Note:** A tag UUID is technically assigned to the tag value only (the second half of the category:value pair), but the API commands use this value to represent the whole `category:value` pair. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio).'
+                  type: array
+            example:
+              values:
+              - 173c3f3c-cb25-4f35-97e8-26b83f50c38d
+              - 6c25f771-61b6-412d-8e10-1778203f14c8
+              - 01ed44a1-4dbf-449a-aff9-fd9969dae1f1
+      responses:
+        '200':
+          description: Returned if the specified tag values were deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters, invalid tag value UUIDs, or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to delete tag values.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+  /tags/assets/assignments:
+    post:
+      summary: Add or remove asset tags
+      description: Adds or removes tags from the specified assets, and returns the UUID of the asynchronous asset update job. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: tags-assign-asset-tags
+      tags:
+      - Tags
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  description: Specifies whether to add or remove tags.
+                  enum:
+                  - add
+                  - remove
+                assets:
+                  items:
+                    type: string
+                    format: uuid
+                  description: A list of asset unique identifiers (UUIDs). For more information on determining values for this array, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio).
+                  type: array
+                tags:
+                  items:
+                    type: string
+                    format: uuid
+                  description: A list of tag value unique identifiers (UUIDs). For more information on determining values for this array, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio).
+                  type: array
+              required:
+              - action
+              - assets
+              - tags
+            example:
+              action: add
+              assets:
+              - b03d603b-bfc4-4b23-9b8e-584c12551d07
+              - 1ac4a004-33e5-43de-a679-f53cab0e61b4
+              - 9eb0d374-1e74-4d97-a07f-d88b6b237191
+              - b68c2dd8-7ced-4666-a92a-5dd6a94a909a
+              - 24a6b725-058e-4b2b-a502-c0c01786cbf9
+              tags:
+              - 173c3f3c-cb25-4f35-97e8-26b83f50c38d
+              - 6c25f771-61b6-412d-8e10-1778203f14c8
+              - 01ed44a1-4dbf-449a-aff9-fd9969dae1f1
+      responses:
+        '202':
+          description: Returned if asynchronous asset update job was queued successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_uuid:
+                    type: string
+                    format: uuid
+                    description: The unique identifier (UUID) of the asynchronous asset update job.
+              examples:
+                response:
+                  value:
+                    job_uuid: 62210d02a7056d0297f50a8ddfbd549eaef1d0bc94e1ea3fad09
+        '400':
+          description: Returned if Tenable Vulnerability Management cannot find the specified assets.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to edit tags.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Unable to modify assignment rules for assignments
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+  /tags/assets/{asset_uuid}/assignments:
+    get:
+      summary: List tags for an asset
+      description: Returns a list of assigned tags for the specified asset UUID. If no tags are assigned to the asset, Tenable Vulnerability Management returns an empty list. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: tags-list-asset-tags
+      tags:
+      - Tags
+      parameters:
+      - description: The unique identifier (UUID) of the asset.
+        required: true
+        name: asset_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the list of tags for the specified asset was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    description: An array of asset assignment objects.
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/tags_Response-List-Tags-for-Asset'
+              examples:
+                response:
+                  value:
+                    tags:
+                    - value_uuid: 173c3f3c-cb25-4f35-97e8-26b83f50c38d
+                      category_name: location
+                      asset_uuid: c712813b-ce97-4d48-b9f2-b51bfa636dd7
+                      created_at: '2018-12-31T16:29:40.606Z'
+                      source: static
+                      value: Chicago
+                      created_by: 8ba8728a-04c8-4694-bdb3-c94e04ba3ccf
+                      category_uuid: e50a526c-966f-4b80-a641-6dd359b8202e
+                    - value_uuid: 6c25f771-61b6-412d-8e10-1778203f14c8
+                      category_name: threat
+                      asset_uuid: c712813b-ce97-4d48-b9f2-b51bfa636dd7
+                      created_at: '2018-12-31T16:29:40.606Z'
+                      source: static
+                      value: wannacry
+                      created_by: 8ba8728a-04c8-4694-bdb3-c94e04ba3ccf
+                      category_uuid: c9f13d31-e9f7-40e6-9830-3c770e800675
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+  /tags/values/{tag_value_uuid}/exclusions:
+    get:
+      summary: List tag exclusions
+      description: Returns a list of assets that have been excluded from the specified dynamic tag. If no tags are assigned to the asset, Tenable Vulnerability Management returns an empty list. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: tags-list-exclusions
+      tags:
+      - Tags
+      parameters:
+      - description: The unique identifiers (UUID) of the tag value you want to list asset exclusions for. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio).
+        required: true
+        name: tag_value_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      - description: The type of target to list tag exclusions for. This value is always `assets`.
+        required: false
+        name: target_type
+        in: query
+        schema:
+          type: string
+          default: assets
+          enum:
+          - assets
+      - description: The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `100`.
+        required: false
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 100
+      - description: The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`.
+        required: false
+        name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      responses:
+        '200':
+          description: Returned if the list of tag exclusions was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  excluded_targets:
+                    description: An array of excluded assets for the specified dynamic tag.
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/tags_Response-List-Tag-Exclusions'
+                  pagination:
+                    $ref: '#/components/schemas/tags_PaginationResponseShort'
+              examples:
+                response:
+                  value:
+                    excluded_targets:
+                    - value_uuid: abecbae3-dec7-4d85-b41b-9d2d85b32b3b
+                      container_uuid: 9a42306b-3ebb-451d-a250-0a1985509880
+                      asset_uuid: 9`fbe69d-c54b-4ad5-964f-dea20d99c6cb
+                      name: example.com
+                      ipv4:
+                      - 203.0.113.78
+                      sources:
+                      - WAS
+                    pagination:
+                      offset: 0
+                      limit: 5000
+                      total: 1
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+  /tags/assets/filters:
+    get:
+      summary: List asset tag filters
+      description: 'Returns a list of filters that you can use to create the rules for applying dynamic tags. Includes the field or tag names to match, the operators that you can use with the filter, and the rules for matching the values (''control'' field), for example, a list of valid values.
+
+
+        For definitions of asset attribute filters you might use in tag rules, see [Asset Attribute Definitions](doc:common-asset-attributes#asset-attribute-definitions). <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+      operationId: tags-list-asset-filters
+      tags:
+      - Tags
+      responses:
+        '200':
+          description: Returned if the list of asset tag filters was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_filters'
+              examples:
+                response:
+                  value:
+                    filters:
+                    - control:
+                        readable_regex: e.g. 123e4567e89b12d3a456426655440000
+                        type: entry
+                        regex: .*
+                      name: tenable_uuid
+                      readable_name: Tenable UUID
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. 01:23:45:67:89:AB
+                        type: entry
+                        regex: ^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$
+                      name: mac_address
+                      readable_name: MAC Address
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. mail01
+                        type: entry
+                        regex: .*
+                      name: netbios_name
+                      readable_name: NetBIOS Name
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                    - control:
+                        readable_regex: e.g. mail01.mycompany.com
+                        type: entry
+                        regex: .*
+                      name: fqdn
+                      readable_name: DNS
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                    - control:
+                        readable_regex: e.g. Numbers 1 to 10
+                        type: entry
+                        regex: ^(10|[1-9])$
+                      name: acr.score
+                      readable_name: ACR Score
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. 1,2,3, 1-5, 23-100
+                        type: entry
+                        regex: ^\d+(-\d+)?(,\d+(-\d+)?)*$
+                      name: ports
+                      readable_name: ports
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. Windows
+                        type: entry
+                        regex: .*
+                      name: operating_system
+                      readable_name: Operating System
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                    - control:
+                        type: dropdown
+                        list:
+                        - name: Operating System
+                          value: operating_system
+                        - name: ServiceNow Sys ID
+                          value: servicenow_sysid
+                      name: property_list
+                      readable_name: Property List
+                      operators:
+                      - set-has
+                      - set-hasnot
+                    - control:
+                        type: dropdown
+                        list:
+                        - name: 7 Days Ago
+                          value: '2024-10-10T17:41:55.868Z'
+                        - name: 14 Days Ago
+                          value: '2024-10-03T17:41:55.868Z'
+                        - name: 30 Days Ago
+                          value: '2024-09-17T17:41:55.868Z'
+                        - name: 90 Days Ago
+                          value: '2024-07-19T17:41:55.868Z'
+                      name: first_scan_time
+                      readable_name: First Seen
+                      operators:
+                      - date-lt
+                      - date-gt
+                    - control:
+                        type: dropdown
+                        list:
+                        - name: 7 Days Ago
+                          value: '2024-10-10T17:41:55.868Z'
+                        - name: 14 Days Ago
+                          value: '2024-10-03T17:41:55.868Z'
+                        - name: 30 Days Ago
+                          value: '2024-09-17T17:41:55.868Z'
+                        - name: 90 Days Ago
+                          value: '2024-07-19T17:41:55.868Z'
+                      name: last_scan_time
+                      readable_name: Last Seen
+                      operators:
+                      - date-lt
+                      - date-gt
+                    - control:
+                        readable_regex: e.g. i-1234567890abcdef0
+                        type: entry
+                        regex: .*
+                      name: aws_ec2_instance_id
+                      readable_name: AWS EC2 Instance ID
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. ami-12345678
+                        type: entry
+                        regex: .*
+                      name: aws_ec2_instance_ami_id
+                      readable_name: AWS EC2 AMI ID
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. 123456789012
+                        type: entry
+                        regex: .*
+                      name: aws_owner_id
+                      readable_name: AWS Owner
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        type: dropdown
+                        list:
+                        - name: Asia Pacific (Mumbai)
+                          value: ap-south-1
+                        - name: Asia Pacific (Tokyo)
+                          value: ap-northeast-1
+                        - name: Asia Pacific (Seoul)
+                          value: ap-northeast-2
+                        - name: Asia Pacific (Singapore)
+                          value: ap-southeast-1
+                        - name: Asia Pacific (Sydney)
+                          value: ap-southeast-2
+                        - name: Asia Pacific (Jakarta)
+                          value: ap-southeast-3
+                        - name: Asia Pacific (Hong Kong)
+                          value: ap-east-1
+                        - name: Africa (Cape Town)
+                          value: af-south-1
+                        - name: South America (São Paulo)
+                          value: sa-east-1
+                        - name: EU (Frankfurt)
+                          value: eu-central-1
+                        - name: EU (Ireland)
+                          value: eu-west-1
+                        - name: EU (London)
+                          value: eu-west-2
+                        - name: EU (Paris)
+                          value: eu-west-3
+                        - name: Europe (Milan)
+                          value: eu-south-1
+                        - name: Canada (Central)
+                          value: ca-central-1
+                        - name: US East (N. Virginia)
+                          value: us-east-1
+                        - name: US East (Ohio)
+                          value: us-east-2
+                        - name: US West (N. California)
+                          value: us-west-1
+                        - name: US West (Oregon)
+                          value: us-west-2
+                        - name: Middle East (Bahrain)
+                          value: me-south-1
+                      name: aws_region
+                      readable_name: AWS Region
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        type: dropdown
+                        list:
+                        - name: us-east-1a
+                          value: us-east-1a
+                        - name: us-east-1b
+                          value: us-east-1b
+                        - name: us-east-1c
+                          value: us-east-1c
+                        - name: us-east-1d
+                          value: us-east-1d
+                        - name: us-east-1e
+                          value: us-east-1e
+                        - name: us-east-1f
+                          value: us-east-1f
+                        - name: us-east-2a
+                          value: us-east-2a
+                        - name: us-east-2b
+                          value: us-east-2b
+                        - name: us-east-2c
+                          value: us-east-2c
+                        - name: us-west-1a
+                          value: us-west-1a
+                        - name: us-west-1b
+                          value: us-west-1b
+                        - name: us-west-2a
+                          value: us-west-2a
+                        - name: us-west-2b
+                          value: us-west-2b
+                        - name: us-west-2c
+                          value: us-west-2c
+                        - name: ca-central-1a
+                          value: ca-central-1a
+                        - name: ca-central-1b
+                          value: ca-central-1b
+                        - name: eu-west-1a
+                          value: eu-west-1a
+                        - name: eu-west-1b
+                          value: eu-west-1b
+                        - name: eu-west-1c
+                          value: eu-west-1c
+                        - name: eu-west-2a
+                          value: eu-west-2a
+                        - name: eu-west-2b
+                          value: eu-west-2b
+                        - name: eu-west-3a
+                          value: eu-west-3a
+                        - name: eu-west-3b
+                          value: eu-west-3b
+                        - name: eu-west-3c
+                          value: eu-west-3c
+                        - name: eu-central-1a
+                          value: eu-central-1a
+                        - name: eu-central-1b
+                          value: eu-central-1b
+                        - name: eu-central-1c
+                          value: eu-central-1c
+                        - name: sa-east-1a
+                          value: sa-east-1a
+                        - name: sa-east-1b
+                          value: sa-east-1b
+                        - name: sa-east-1c
+                          value: sa-east-1c
+                        - name: ap-southeast-1a
+                          value: ap-southeast-1a
+                        - name: ap-southeast-1b
+                          value: ap-southeast-1b
+                        - name: ap-southeast-2a
+                          value: ap-southeast-2a
+                        - name: ap-southeast-2b
+                          value: ap-southeast-2b
+                        - name: ap-southeast-2c
+                          value: ap-southeast-2c
+                        - name: ap-northeast-1a
+                          value: ap-northeast-1a
+                        - name: ap-northeast-1c
+                          value: ap-northeast-1c
+                        - name: ap-northeast-2a
+                          value: ap-northeast-2a
+                        - name: ap-northeast-2c
+                          value: ap-northeast-2c
+                        - name: ap-south-1a
+                          value: ap-south-1a
+                        - name: ap-south-1b
+                          value: ap-south-1b
+                      name: aws_availability_zone
+                      readable_name: AWS Availability Zone
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. vpc-f4fbc091
+                        type: entry
+                        regex: .*
+                      name: aws_vpc_id
+                      readable_name: AWS VPC ID
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        type: dropdown
+                        list:
+                        - g2.8xlarge
+                        - g3.4xlarge
+                        - g3.8xlarge
+                        - g3.16xlarge
+                        - hs1.8xlarge
+                        - c1.medium
+                        - c1.xlarge
+                        - cc2.8xlarge
+                        - cg1.4xlarge
+                        - m2.xlarge
+                        - m2.2xlarge
+                        - m2.4xlarge
+                        - cr1.8xlarge
+                        - hi1.4xlarge
+                        - t2.nano
+                        - t2.micro
+                        - t2.small
+                        - t2.medium
+                        - t2.large
+                        - t2.xlarge
+                        - t2.2xlarge
+                        - m1.small
+                        - m1.medium
+                        - m1.large
+                        - m1.xlarge
+                        - m4.large
+                        - m4.xlarge
+                        - m4.2xlarge
+                        - m4.4xlarge
+                        - m4.10xlarge
+                        - m4.16xlarge
+                        - m3.medium
+                        - m3.large
+                        - m3.xlarge
+                        - m3.2xlarge
+                        - c4.large
+                        - c4.xlarge
+                        - c4.2xlarge
+                        - c4.4xlarge
+                        - c4.8xlarge
+                        - c3.large
+                        - c3.xlarge
+                        - c3.2xlarge
+                        - c3.4xlarge
+                        - c3.8xlarge
+                        - r3.large
+                        - r3.xlarge
+                        - r3.2xlarge
+                        - r3.4xlarge
+                        - r3.8xlarge
+                        - r4.large
+                        - r4.xlarge
+                        - r4.2xlarge
+                        - r4.4xlarge
+                        - r4.8xlarge
+                        - r4.16xlarge
+                        - x1.16xlarge
+                        - x1.32xlarge
+                        - d2.xlarge
+                        - d2.2xlarge
+                        - d2.4xlarge
+                        - d2.8xlarge
+                        - i2.xlarge
+                        - i2.2xlarge
+                        - i2.4xlarge
+                        - i2.8xlarge
+                        - i3.large
+                        - i3.xlarge
+                        - i3.2xlarge
+                        - i3.4xlarge
+                        - i3.8xlarge
+                        - i3.16xlarge
+                        - f1.2xlarge
+                        - f1.16xlarge
+                        - p2.xlarge
+                        - p2.8xlarge
+                        - p2.16xlarge
+                        - g2.2xlarge
+                      name: aws_ec2_instance_type
+                      readable_name: AWS Instance Type
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        type: dropdown
+                        list:
+                        - pending
+                        - rebooting
+                        - running
+                        - shutting-down
+                        - stopped
+                        - stopping
+                        - terminated
+                      name: aws_ec2_instance_state_name
+                      readable_name: AWS Instance State
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. sg-edcd9784
+                        type: entry
+                        regex: .*
+                      name: aws_ec2_instance_group_name
+                      readable_name: AWS Security Group
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. subnet-ae552f1b
+                        type: entry
+                        regex: .*
+                      name: aws_subnet_id
+                      readable_name: AWS Subnet ID
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. amzn-ami-hvm-2016.03.0.x86_64-ebs
+                        type: entry
+                        regex: .*
+                      name: aws_ec2_product_code
+                      readable_name: AWS EC2 Product Code
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. aws-server1
+                        type: entry
+                        regex: .*
+                      name: aws_ec2_name
+                      readable_name: AWS EC2 Name
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. 5cff7d6e-0f3d-4bd8-a09f-2c654a0d8947,63e28077-2511-4165-b747-dd05978431e9
+                        type: entry
+                        regex: .*
+                      name: azure_vm_id
+                      readable_name: Azure VM ID
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. /subscriptions/63e28077-2511-4165-b747-dd05978431e9/resourceGroups/my-resource-group/providers/Microsoft.Compute/virtualMachines/vm-name
+                        type: entry
+                        regex: .*
+                      name: azure_resource_id
+                      readable_name: Azure Resource ID
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                    - control:
+                        readable_regex: e.g. sample-project-12345
+                        type: entry
+                        regex: .*
+                      name: gcp_project_id
+                      readable_name: Google Cloud Project ID
+                      operators:
+                      - eq
+                    - control:
+                        type: dropdown
+                        list:
+                        - name: asia-east1-a
+                          value: asia-east1-a
+                        - name: asia-east1-b
+                          value: asia-east1-b
+                        - name: asia-east1-c
+                          value: asia-east1-c
+                        - name: asia-northeast1-a
+                          value: asia-northeast1-a
+                        - name: asia-northeast1-b
+                          value: asia-northeast1-b
+                        - name: asia-northeast1-c
+                          value: asia-northeast1-c
+                        - name: asia-south1-a
+                          value: asia-south1-a
+                        - name: asia-south1-b
+                          value: asia-south1-b
+                        - name: asia-south1-c
+                          value: asia-south1-c
+                        - name: asia-southeast1-a
+                          value: asia-southeast1-a
+                        - name: asia-southeast1-b
+                          value: asia-southeast1-b
+                        - name: asia-southeast1-c
+                          value: asia-southeast1-c
+                        - name: australia-southeast1-a
+                          value: australia-southeast1-a
+                        - name: australia-southeast1-b
+                          value: australia-southeast1-b
+                        - name: australia-southeast1-c
+                          value: australia-southeast1-c
+                        - name: europe-north1-a
+                          value: europe-north1-a
+                        - name: europe-north1-b
+                          value: europe-north1-b
+                        - name: europe-north1-c
+                          value: europe-north1-c
+                        - name: europe-west1-b
+                          value: europe-west1-b
+                        - name: europe-west1-c
+                          value: europe-west1-c
+                        - name: europe-west1-d
+                          value: europe-west1-d
+                        - name: europe-west2-a
+                          value: europe-west2-a
+                        - name: europe-west2-b
+                          value: europe-west2-b
+                        - name: europe-west2-c
+                          value: europe-west2-c
+                        - name: europe-west3-a
+                          value: europe-west3-a
+                        - name: europe-west3-b
+                          value: europe-west3-b
+                        - name: europe-west3-c
+                          value: europe-west3-c
+                        - name: europe-west4-a
+                          value: europe-west4-a
+                        - name: europe-west4-b
+                          value: europe-west4-b
+                        - name: europe-west4-c
+                          value: europe-west4-c
+                        - name: northamerica-northeast1-a
+                          value: northamerica-northeast1-a
+                        - name: northamerica-northeast1-b
+                          value: northamerica-northeast1-b
+                        - name: northamerica-northeast1-c
+                          value: northamerica-northeast1-c
+                        - name: southamerica-east1-a
+                          value: southamerica-east1-a
+                        - name: southamerica-east1-b
+                          value: southamerica-east1-b
+                        - name: southamerica-east1-c
+                          value: southamerica-east1-c
+                        - name: us-central1-a
+                          value: us-central1-a
+                        - name: us-central1-b
+                          value: us-central1-b
+                        - name: us-central1-c
+                          value: us-central1-c
+                        - name: us-central1-f
+                          value: us-central1-f
+                        - name: us-east1-b
+                          value: us-east1-b
+                        - name: us-east1-c
+                          value: us-east1-c
+                        - name: us-east1-d
+                          value: us-east1-d
+                        - name: us-east4-a
+                          value: us-east4-a
+                        - name: us-east4-b
+                          value: us-east4-b
+                        - name: us-east4-c
+                          value: us-east4-c
+                        - name: us-west1-a
+                          value: us-west1-a
+                        - name: us-west1-b
+                          value: us-west1-b
+                        - name: us-west1-c
+                          value: us-west1-c
+                        - name: us-west2-a
+                          value: us-west2-a
+                        - name: us-west2-b
+                          value: us-west2-b
+                        - name: us-west2-c
+                          value: us-west2-c
+                      name: gcp_zone
+                      readable_name: Google Cloud Zone
+                      operators:
+                      - eq
+                    - control:
+                        readable_regex: e.g. 359889107416955862
+                        type: entry
+                        regex: .*
+                      name: gcp_instance_id
+                      readable_name: Google Cloud Instance ID
+                      operators:
+                      - eq
+                    - control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: is_licensed
+                      readable_name: Is Licensed (VM)
+                      operators:
+                      - eq
+                      - eq-hide
+                    - control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: is_public
+                      readable_name: Is Public (VM)
+                      operators:
+                      - eq
+                      - eq-hide
+                    - control:
+                        readable_regex: e.g. 1111111,2222222
+                        type: entry
+                        regex: ^\d+(,\d+)*$
+                      name: qualys_asset_id
+                      readable_name: Qualys Asset ID
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. 1111111,2222222
+                        type: entry
+                        regex: ^\d+(,\d+)*$
+                      name: qualys_host_id
+                      readable_name: Qualys Host ID
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        readable_regex: e.g. 9d385017c611228701d22104cc95c371
+                        type: entry
+                        regex: .*
+                      name: servicenow_sysid
+                      readable_name: ServiceNow Sys ID
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: has_plugin_results
+                      readable_name: Has Plugin Results
+                      operators:
+                      - eq
+                    - control:
+                        readable_regex: e.g. 192.168.0.1, 10.0.0.0/24, 201.15.99.100-201.15.99.199
+                        type: entry
+                        regex: ^(\s*((?=\d+\.\d+\.\d+\.\d+(?:\/|-|\s*,|$))(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.?){4})(?:(?:\/(?:3[0-2]|[12]+\d|[1-9]))|((?:-(?=\d+\.\d+\.\d+\.\d+)(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.?){4})|(?:\s*,(?:\s*)))?)+)+$
+                      name: ipv4
+                      readable_name: IPv4 Address
+                      operators:
+                      - eq
+                    - control:
+                        readable_regex: e.g. cpe:/a:nginx:nginx:0.3.18
+                        type: entry
+                        regex: ^.{2,}$
+                      name: installed_software
+                      readable_name: Installed Software
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                    - control:
+                        readable_regex: e.g. 47e6:7c92:cbb6:3de4:8070:2319:2fd5:f650, 2002:cb0a:3cdd:1::1
+                        type: entry
+                        regex: (([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))+[,\s*+]*
+                      name: ipv6
+                      readable_name: IPv6 Address
+                      operators:
+                      - eq
+                    - control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: asset_assessed
+                      readable_name: Asset Assessed
+                      operators:
+                      - eq
+                    - control:
+                        type: dropdown_multi
+                        list:
+                        - name: 'true'
+                          value: 'true'
+                      name: tag.hostname-tag
+                      readable_name: hostname-tag
+                      operators:
+                      - set-has
+                      - set-hasnot
+                    - control:
+                        type: dropdown_multi
+                        list:
+                        - name: 'true'
+                          value: 'true'
+                      name: tag.lab
+                      readable_name: lab
+                      operators:
+                      - set-has
+                      - set-hasnot
+                    - control:
+                        type: dropdown_multi
+                        list:
+                        - name: 'yes'
+                          value: 'yes'
+                      name: tag.new-again-tag
+                      readable_name: new-again-tag
+                      operators:
+                      - set-has
+                      - set-hasnot
+                    - control:
+                        type: dropdown_multi
+                        list:
+                        - name: 'yes'
+                          value: 'yes'
+                      name: tag.new-tag
+                      readable_name: new-tag
+                      operators:
+                      - set-has
+                      - set-hasnot
+                    - control:
+                        type: dropdown_multi
+                        list:
+                        - name: Default
+                          value: 00000000-0000-0000-0000-000000000000
+                      name: network_id
+                      readable_name: Network Name
+                      operators:
+                      - eq
+                      - neq
+                    - control:
+                        type: dropdown_multi
+                        list:
+                        - name: nessus_agent
+                          value: nessus_agent
+                        - name: nessus_scan
+                          value: nessus_scan
+                        - name: nessusagentscanenrichment
+                          value: nessusagentscanenrichment
+                      name: sources
+                      readable_name: Source
+                      operators:
+                      - set-has
+                      - set-hasnot
+                      - set-hasonly
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - tags_cloud: []
+components:
+  responses:
+    tags_400ListErrorResponse:
+      description: "Returned if your request specifies invalid or malformed query parameters. Tenable Vulnerability Management can encounter the following error conditions:\n - `invalidvalue`—The query parameter format is incorrect, for example, uses an invalid operator as in this example: `f=name:invalid_operator:some_value`.\n- `unknownproperty`—The query parameter format is correct, but it references a field that does not exist, for example `sort=non_existing_property:desc`."
+      content:
+        application/json:
+          examples:
+            response:
+              value:
+                errors:
+                - property: filter
+                  rule: invalidvalue
+                  message: '''Filter'' does not have a valid value'
+                error: '''Filter'' does not have a valid value'
+  schemas:
+    tags_rule:
+      type: object
+      description: A rule for applying the tag to assets by matching asset properties or other tags. Includes a field or tag name, an operator, and a value.
+      properties:
+        property:
+          type: string
+          description: The asset attribute or tag to match. To find supported asset attributes, use the [List asset tag filters](ref:tags-list-asset-filters) endpoint.
+        operator:
+          type: string
+          description: The operator to apply to the matched value, for example, equals, does not equal, or contains. To find supported operators for the associated asset attribute, use the [List asset tag filters](ref:tags-list-asset-filters) endpoint.
+        value:
+          description: "The asset attribute value or tag to match. For example, `192.0.2.57`. \n\nSelect **single string value** when you have a single input value, for example, a single IP address. Select **multiple string values** to use an array of strings when you have multiple input values, for example, when you have multiple IP addresses."
+          oneOf:
+          - title: Single String Value
+            type: string
+          - title: Multiple String Values
+            type: array
+            items:
+              type: string
+    tags_Response-List-Tag-Exclusions:
+      type: object
+      properties:
+        value_uuid:
+          description: 'The unique identifier (UUID) of the tag value.
+
+
+            **Note:** A tag UUID is technically assigned to the tag value only (the second half of the category:value pair), but the API commands use this value to represent the whole `category:value` pair.'
+          type: string
+          format: uuid
+        container_uuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the customer container.
+        asset_uuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the asset for which the dynamic tag is excluded.
+        ipv4:
+          description: A list of IPv4 addresses associated with the asset.
+          type: array
+          items:
+            type: string
+        sources:
+          type: array
+          description: A list of sources that identified the asset.
+          items:
+            type: string
+    Inventory_Request-Search-Tags:
+      description: An object containing a query and/or filters to search for tags.
+      type: object
+      properties:
+        query:
+          type: object
+          description: The search mode and query text.
+          properties:
+            mode:
+              description: The mode to use for the query. Currently, the tag search only supports the `simple` mode.
+              type: string
+              default: simple
+              enum:
+              - simple
+            text:
+              description: 'The tag category or tag value to search for. This parameter value can be left empty to search all tags, for example `"text": ""`'
+              type: string
+              example: Microsoft
+          required:
+          - mode
+          - text
+        filters:
+          description: "A set of tag properties used to filter the search results. \n\nUse the [List tag properties](ref:inventory-tag-properties-list) endpoint to view available tag properties that can be used as filters."
+          type: array
+          items:
+            type: object
+            required:
+            - operator
+            - property
+            - value
+            properties:
+              property:
+                description: "The tag property to filter on.\n\n Use the [List tag properties](ref:inventory-tag-properties-list) endpoint to retrieve a list of valid tag properties for filtering. For example, you might filter by `tag_data_source`, `last_updated`, or `tag_created_by_id`."
+                type: string
+              operator:
+                type: string
+                description: "The comparison operator to apply to the filter.\n\n For example: `=`, `!=`, `match`, etc. Use the [List tag properties](ref:inventory-tag-properties-list) endpoint to retrieve supported comparison operators for the selected filter."
+                enum:
+                - '='
+                - '!='
+                - <=
+                - between
+                - match
+                - '>='
+                - <
+                - '>'
+                - contains
+                - not contains
+                - exists
+                - not exists
+                - older than
+                - newer than
+                - within last
+              value:
+                description: "The value to use for comparison in the filter.\n\n Use the [List tag properties](ref:inventory-software-properties-list) endpoint to retrieve the supported values for the selected filter."
+                type: array
+                items:
+                  type: string
+    tags_filter:
+      type: object
+      description: A filter definition. Includes the field to be matched, the operators that you can use with the filter, and the rules for matching the values (`control` field), for example, a list of valid values.
+      properties:
+        name:
+          type: string
+          description: The name of the asset attribute or tag.
+        readable_name:
+          type: string
+          description: The asset attribute name displayed in the user interface.
+        control:
+          type: object
+          properties:
+            readable_regex:
+              type: string
+              description: Provides a human-readable "hint" to guide users creating tag rules in the user interface.
+            type:
+              type: string
+              description: The type of UI control that represents the filter in the user interface.
+            regex:
+              type: string
+              description: A regular expression that Tenable Vulnerability Management user interface uses to validate input.
+        operators:
+          description: The comparison operators that can be used for the filter. To find supported operators, use the [GET /tags/assets/filters](ref:tags-list-asset-filters) endpoint.
+          type: array
+          items:
+            type: string
+    Inventory_Control:
+      type: object
+      properties:
+        type:
+          description: Indicates the data type of the property's value.
+          type: string
+          enum:
+          - STRING
+          - NUMBER
+          - DATE
+          - BOOLEAN
+          - ARRAY
+          - OBJECT
+        multiple_allowed:
+          description: Indicates whether or not the property can have multiple values.
+          type: boolean
+        selection:
+          description: A list of possible values for the property if the property if multiple values are allowed.
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                description: The human-readable name of the value.
+                type: string
+              value:
+                description: One possible value for the property.
+                type: string
+              deprecated:
+                description: Indicates whether or not the value is deprecated.
+                type: boolean
+              third_party:
+                description: Indicates whether or not the value is sourced from a third party.
+                type: boolean
+        regex:
+          type: object
+          properties:
+            hint:
+              description: An example value.
+              type: string
+            expression:
+              description: Defines a regular expression matching the property's possible values.
+              type: string
+    tags_PaginationResponseShort:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+    tags_Category:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: The unique identifier (UUID) of the category.
+        name:
+          type: string
+          description: The name of the category. The name must be unique within a Tenable Vulnerability Management instance.
+        description:
+          type: string
+          description: The description of the category.
+        created_at:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the category was created, for example, `2018-12-31T13:51:17.243Z`.
+        created_by:
+          type: string
+          description: The name of the user who created the category.
+        updated_at:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the category was last updated, for example, `2018-12-31T13:51:17.243Z`.
+        updated_by:
+          type: string
+          description: The name of the user who last updated the category.
+        reserved:
+          type: boolean
+          description: Indicates whether the tags in this category are reserved (cannot be updated). This is a read-only field set by the system.
+    Inventory_Properties-Object:
+      type: object
+      properties:
+        key:
+          description: The unique property that can be used as a filter.
+          type: string
+        readable_name:
+          description: The human-readable property name.
+          type: string
+        control:
+          $ref: '#/components/schemas/Inventory_Control'
+        operators:
+          type: array
+          description: The logical operators that be used for the property filter.
+          items:
+            type: string
+          enum:
+          - '='
+          - '!='
+          - <=
+          - between
+          - match
+          - '>='
+          - <
+          - '>'
+          - contains
+          - not contains
+          - exists
+          - not exists
+          - older than
+          - newer than
+          - within last
+        sortable:
+          description: Indicates whether or not the property is sortable.
+          type: boolean
+        filterable:
+          description: Indicates whether or not the property is filterable.
+          type: boolean
+        description:
+          description: An AI-generated description of the property.
+          type: string
+    tags_ValueDetails:
+      type: object
+      properties:
+        uuid:
+          description: The unique identifier (UUID) of the tag value. Use this value to assign the tag to assets.
+          type: string
+        created_at:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the tag value was created, for example, `2018-12-31T13:51:17.243Z`.
+        created_by:
+          type: string
+          description: The name of the user who created the tag value.
+        updated_at:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the tag value was last updated, for example, `2018-12-31T13:51:17.243Z`. When you create a tag value, this date matches the `created_at` date.
+        updated_by:
+          type: string
+          description: The name of the user who last updated the tag value. When you create a tag value, this name matches the `created_by` name.
+        category_uuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the category associated with the tag value. Use this value to create future tags in the same category.
+        value:
+          description: The tag value. Must be unique within the category.
+          type: string
+        description:
+          type: string
+          description: The description of the tag value.
+        type:
+          type: string
+          description: "The tag type:\n - static—A user must manually apply the tag to assets.\n - dynamic—Tenable Vulnerability Management automatically applies the tag based on asset attribute rules."
+        category_name:
+          type: string
+          description: The name of the category associated with the tag value.
+        category_description:
+          type: string
+          description: The description of the category associated with the tag value.
+        access_control:
+          $ref: '#/components/schemas/tags_AccessControl'
+        filters:
+          type: object
+          description: For dynamic tags, asset selection rules.
+          properties:
+            asset:
+              type: string
+              description: Tag rule definitions represented as a JSON-formatted string.
+    tags_orConditions:
+      type: array
+      description: 'To apply the tag to assets that match any of the rules, specify the rules inside the `or` object.
+
+
+        **Note:** The value you specify for the rule attribute is not case sensitive. For example, if you type the hostname "hostx," the rule matches to assets with hostname "HOSTX" and "hostx."'
+      items:
+        $ref: '#/components/schemas/tags_rule'
+    tags_filters:
+      type: array
+      description: A list of available filters that you can use to define the rules for applying tags to assets.
+      items:
+        $ref: '#/components/schemas/tags_filter'
+    tags_Response-List-Tags-for-Asset:
+      type: object
+      properties:
+        product:
+          description: The Tenable product in which the tag was created.
+          type: string
+        value_uuid:
+          description: 'The unique identifier (UUID) of the tag value.
+
+
+            **Note:** A tag UUID is technically assigned to the tag value only (the second half of the category:value pair), but the API commands use this value to represent the whole `category:value` pair.'
+          type: string
+          format: uuid
+        category_name:
+          type: string
+          description: The tag category name (the first half of the category:value pair).
+        container_uuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the customer container.
+        asset_uuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the asset where the tag is assigned.
+        created_at:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the was assigned to an asset, for example, `2018-12-31T13:51:17.243Z`.
+        source:
+          type: string
+          description: "The tag type:\n - static—A user must manually apply the tag to assets.\n - dynamic—Tenable Vulnerability Management automatically applies the tag based on asset attribute rules."
+        value:
+          type: string
+          description: The tag value (the second half of the category:value pair).
+        created_by:
+          type: string
+          description: The name of the user who assigned the tag to the asset.
+        category_uuid:
+          description: The unique identifier (UUID) of the tag category. Use this value to create future tags in the same category.
+          type: string
+          format: uuid
+    tags_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    tags_PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/tags_PaginationResponseSortObject'
+    tags_ListValueDetails:
+      type: object
+      properties:
+        uuid:
+          description: The unique identifier (UUID) of the tag value. Use this value to assign the tag to assets.
+          type: string
+        created_at:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the tag value was created, for example, `2018-12-31T13:51:17.243Z`.
+        created_by:
+          type: string
+          description: The name of the user who created the tag value.
+        updated_at:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the tag value was last updated, for example, `2018-12-31T13:51:17.243Z`. When you create a tag value, this date matches the `created_at` date.
+        updated_by:
+          type: string
+          description: The name of the user who last updated the tag value. When you create a tag value, this name matches the `created_by` name.
+        category_uuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the category associated with the tag value. Use this value to create future tags in the same category.
+        value:
+          description: The tag value. Must be unique within the category.
+          type: string
+        description:
+          type: string
+          description: The description of the tag value.
+        type:
+          type: string
+          description: "The tag type:\n - static—A user must manually apply the tag to assets.\n - dynamic—Tenable Vulnerability Management automatically applies the tag based on asset attribute rules."
+        category_name:
+          type: string
+          description: The name of the category associated with the tag value.
+        category_description:
+          type: string
+          description: The description of the category associated with the tag value.
+        access_control:
+          $ref: '#/components/schemas/tags_AccessControl'
+    tags_DomainPermission:
+      type: object
+      properties:
+        id:
+          description: The unique identifier (UUID) of a user or group.
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: The name of the user or group.
+        type:
+          type: string
+          description: The type of permission.
+          enum:
+          - USER
+          - GROUP
+          - ROLE
+        permissions:
+          type: array
+          description: The permissions associated with the user or group.
+          items:
+            type: string
+    Inventory_Response-Search-Tags:
+      description: The tag search results.
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Inventory_Response-Search-Tags-Object'
+        pagination:
+          description: An object containing pagination information for the current result set.
+          properties:
+            total:
+              description: The total number of tags included in the result set of the search.
+              type: integer
+            offset:
+              description: The requested starting record of the result set to retrieve. Offsets are used to paginate through the result set. If this parameter is omitted, Tenable Exposure Management uses the default value of `0`.
+              type: integer
+              format: int32
+            limit:
+              description: The requested number of records to retrieve from the result set. The maximum value is `1000`. If this parameter is omitted, Tenable Exposure Management uses the default value of `1000`.
+              type: integer
+              format: int32
+              default: 1000
+            sort:
+              $ref: '#/components/schemas/Inventory_Public-Sort-Object'
+          required:
+          - limit
+          - offset
+          - total
+          - sort
+          type: object
+    tags_andConditions:
+      type: array
+      description: 'To apply the tag to assets that match all of the rules, specify the rules inside the `and` object.
+
+
+        **Note:** The value you specify for the rule attribute is not case sensitive. For example, if you type the hostname "hostx," the rule matches to assets with hostname "HOSTX" and "hostx."'
+      items:
+        $ref: '#/components/schemas/tags_rule'
+    tags_CategoryListResponse:
+      type: object
+      properties:
+        categories:
+          description: A collection of category objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/tags_Category'
+        pagination:
+          $ref: '#/components/schemas/tags_PaginationResponse'
+    tags_PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    tags_ValueListResponse:
+      type: object
+      properties:
+        values:
+          description: An array of tag value objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/tags_ListValueDetails'
+        pagination:
+          $ref: '#/components/schemas/tags_PaginationResponse'
+    tags_AccessControl:
+      type: object
+      description: 'Determines what the user can do with the tag value.
+
+
+        **Caution:** Most customers have been migrated to role-based access control and should use the [POST /api/v3/access-control/permissions](ref:io-v3-access-control-permission-create) endpoint to assign permissions to tag objects. The `access_control` body parameter object only works for customers whose containers have not yet been migrated to role-based access control.'
+      properties:
+        current_user_permissions:
+          type: array
+          description: List of all permissions for the current user on the current tag. Possible values are `ALL`, `CAN_EDIT`, and `CAN_SET_PERMISSIONS`.
+          items:
+            type: string
+          enum:
+          - ALL
+          - CAN_EDIT
+          - CAN_SET_PERMISSIONS
+        defined_domain_permissions:
+          type: array
+          description: List of all defined permissions for objects of type tag. Possible values are `ALL`, `CAN_EDIT`, and `CAN_SET_PERMISSIONS`. Note that in responses, this field is only returned for administrators and tag owners.
+          items:
+            type: string
+          enum:
+          - ALL
+          - CAN_EDIT
+          - CAN_SET_PERMISSIONS
+        all_users_permissions:
+          type: array
+          description: List of the minimum set of permissions all users have on the current tag. Possible values are `ALL`, `CAN_EDIT`, and `CAN_SET_PERMISSIONS`. Note that in responses, this field is only returned for administrators and tag owners.
+          items:
+            type: string
+          enum:
+          - ALL
+          - CAN_EDIT
+          - CAN_SET_PERMISSIONS
+        current_domain_permissions:
+          type: array
+          description: List of user and group-specific permissions for the current tag.
+          items:
+            $ref: '#/components/schemas/tags_DomainPermission'
+        version:
+          type: integer
+          description: Optional, user-defined value. This value must be incremented each time the permissions are updated. Set to `1` by default.
+          format: int64
+    Inventory_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Inventory_Public-Sort-Object:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          description: The property used to sort the results.
+          type: string
+        order:
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+          type: string
+          enum:
+          - asc
+          - desc
+    Inventory_Response-Search-Tags-Object:
+      type: object
+      properties:
+        id:
+          description: The unique ID (UUID) of the tag.
+          type: string
+          format: uuid
+        name:
+          description: The name of the tag.
+          type: string
+        product:
+          description: The Tenable product associated with the tag.
+          type: string
+          enum:
+          - TENABLE_IO
+          - TENABLE_AD
+          - TENABLE_AI
+          - TENABLE_WAS
+          - TENABLE_CS
+          - TENABLE_APA
+        asset_count:
+          description: The total number of assets that are associated with the tag.
+          type: integer
+          format: int32
+        weakness_severity_counts:
+          description: The total number of weaknesses associated with the tag by severity levels. This structure is applicable only for Tenable Vulnerability Management, Tenable Web App Scanning, Tenable Cloud Security, Tenable Identity Exposure, and Tenable OT Security assets.
+          type: object
+          properties:
+            low:
+              description: The total number of low severity weaknesses.
+              format: int32
+              type: integer
+            medium:
+              description: The total number of medium severity weaknesses.
+              format: int32
+              type: integer
+            high:
+              description: The total number of high severity weaknesses.
+              format: int32
+              type: integer
+            critical:
+              description: The total number of critical severity weaknesses.
+              format: int32
+              type: integer
+            total:
+              description: The total number of all weaknesses.
+              format: int32
+              type: integer
+        total_weakness_count:
+          description: The total number of weaknesses.
+          format: int32
+          type: integer
+        type:
+          description: The type of tag, either `DYNAMIC` or `STATIC`. Dynamic tags are tags that are automatically applied to assets based on defined tag rules. Static tags are tags that are applied manually.
+          type: string
+        extra_properties:
+          description: "Additional information about the software as requested in the `extra_properties` parameter of the search request. \n\nYou can use the [List tag properties](ref:inventory-tag-properties-list) endpoint to retrieve a list of properties that can be used as values for the `extra_properties` parameter. For example, you may want to include `tag_data_source`, `last_updated`, and `tag_created_by_id` as extra properties."
+          type: object
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

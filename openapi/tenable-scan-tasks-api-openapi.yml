@@ -1,0 +1,923 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Scan Tasks API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Scan Tasks
+  x-displayName: Scan Tasks
+paths:
+  /scans/{scan_id}/schedule:
+    put:
+      summary: Enable schedule
+      description: Enables or disables a scan schedule.<div class="perms-callout">Requires the Scan Operator [24] user role and Can Execute [32] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: scans-schedule
+      tags:
+      - Scan Tasks
+      parameters:
+      - description: The unique identifier for the scan you want to enable or disable. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`.
+        required: true
+        name: scan_id
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+                  description: Enables or disables the scan schedule.
+              required:
+              - enabled
+      responses:
+        '200':
+          description: Returned if the scan schedule was enabled or disabled successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  enabled:
+                    type: boolean
+                    description: If `true`, the schedule for the scan is enabled.
+                  control:
+                    type: boolean
+                    description: If `true`, the scan has a schedule and can be launched.
+                  rrules:
+                    $ref: '#/components/schemas/Scan_Tasks_settings-rrules'
+                  starttime:
+                    type: string
+                    description: 'For one-time scans, the starting date and time for the scan. For recurrent scans, the first date on which the scan schedule is active and the time that recurring scans launch based on the `rrules` parameter.
+
+
+                      This attribute has the following format: `YYYYMMDDTHHMMSS`.'
+                  timezone:
+                    type: string
+                    description: The timezone of the scheduled start time for the scan.
+              examples:
+                response:
+                  value:
+                    control: true
+                    enabled: false
+                    rrules: FREQ=DAILY;INTERVAL=1
+                    timezone: US/Central
+                    starttime: 20181206T230000
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified scan.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Error message
+                properties:
+                  error:
+                    type: string
+                    description: A brief description of the cause of the error.
+              examples:
+                response:
+                  value:
+                    info:
+                      error: The requested file was not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Tasks_cloud: []
+  /scans/{scan_id}/copy:
+    post:
+      summary: Copy scan
+      description: Copies the specified scan.<div class="perms-callout">Requires the Scan Operator [24] user role and Can Edit [64] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: scans-copy
+      tags:
+      - Scan Tasks
+      parameters:
+      - description: The identifier for the scan you want to copy. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`.
+        required: true
+        name: scan_id
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                folder_id:
+                  type: integer
+                  description: The ID of the destination folder. If you don't specify a folder ID, Tenable Vulnerability Management creates the copy in the same folder as the original.
+                  format: int32
+                name:
+                  type: string
+                  description: The name of the copied scan. If you don't specify a name, Tenable Vulnerability Management uses the same name as the original with "Copy of" prefix.
+      responses:
+        '200':
+          description: Returns the copied scan object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_Response-Scan-Object'
+              examples:
+                response:
+                  value:
+                    timezone: US/Central
+                    enabled: false
+                    last_modification_date: 1544207231
+                    id: 28
+                    status: empty
+                    user_permissions: 128
+                    owner: user@example.com
+                    starttime: null
+                    control: true
+                    uuid: fcb652c3-8567-4b3c-a8d1-1926196cbef415c4912d35e1c64c
+                    rrules: null
+                    creation_date: 1544145190
+                    read: false
+                    shared: false
+                    name: Copy of Basic Network Scan - Daily
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified scan.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Tasks_cloud: []
+  /scans/{scan_id}/credentials/{credentials_id}/upgrade:
+    post:
+      summary: Convert credentials
+      description: Converts scan-specific credentials to managed credentials. For more information, see [Convert Scan-specific Credentials to Managed Credentials](doc:convert-scan-specific-credentials-to-managed-credentials). <div class="perms-callout">Requires the Scan Manager [40] user role and Can Edit [64] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: io-scans-credentials-convert
+      tags:
+      - Scan Tasks
+      parameters:
+      - description: The ID of the scan where the scan-specific credentials are currently stored.
+        required: true
+        name: scan_id
+        in: path
+        schema:
+          type: integer
+      - description: The ID of the scan-specific credentials. For more information about determining this ID, see [Convert Scan-specific Credentials to Managed Credentials](doc:convert-scan-specific-credentials-to-managed-credentials).
+        required: true
+        name: credentials_id
+        in: path
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: The name of the managed credentials. This name must be unique within your Tenable Vulnerability Management instance.
+                  type: string
+                settings:
+                  $ref: '#/components/schemas/Scan_Tasks_CredentialSettingsRequestObject'
+                type:
+                  description: The system name that uniquely identifies the credentials type, for example, `Windows`.
+                  type: string
+                category:
+                  description: The system name that uniquely identifies the credentials category, for example `Host`.
+                  type: string
+                ad_hoc:
+                  type: boolean
+                  description: A value specifying whether the credentials are scan-specific (`true`) or managed (`false`). You must use `false` for this request body attribute to convert scan-specific to managed credentials.
+                permissions:
+                  description: A list of user permissions for the managed credentials. If a request message omits this parameter, Tenable Vulnerability Management automatically creates a `permissions` object for the user account that submits the request.
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Scan_Tasks_ManagedCredentialPermissions'
+              required:
+              - name
+              - type
+              - category
+              - ad_hoc
+              - settings
+      responses:
+        '200':
+          description: Returned if the scan-specific credentials were converted to managed credentials successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                    description: The UUID of the new managed credentials.
+              examples:
+                response:
+                  value:
+                    uuid: aa57ae93-45e5-4316-8e16-501ebce4ecb7
+        '400':
+          description: Returned if Tenable Vulnerability Management encounters invalid JSON in request body.
+        '401':
+          description: Returned if Tenable Vulnerability Management cannot authenticate the user account that submitted the request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: string
+                    description: The HTTP status code.
+                  error:
+                    type: integer
+                    description: The HTTP status text.
+                  message:
+                    type: string
+                    description: A brief message describing the error Tenable Vulnerability Management encountered.
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to convert scan-specific credentials to managed credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the scan-specific credentials you want to convert.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A message describing the error condition Tenable Vulnerability Management encountered.
+              examples:
+                response:
+                  value:
+                    error: No credential found by that ID for this scan
+        '409':
+          description: Returned if managed credentials with the same name already exist.
+        '415':
+          description: Returned if the request payload is in an unsupported format.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: string
+                    description: The HTTP status code.
+                  error:
+                    type: integer
+                    description: The HTTP status text.
+                  message:
+                    type: string
+                    description: A brief message describing the error Tenable Vulnerability Management encountered.
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+      security:
+      - Scan_Tasks_cloud: []
+  /scans/import:
+    post:
+      summary: Import uploaded scan
+      description: "Import an existing scan that was previously uploaded using the [POST /file/upload](ref:file-upload) endpoint. Tenable Vulnerability Management supports scan imports up to 4 GB in size. \n\n**Note:** You cannot import results from scans run more than 15 months ago.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: scans-import
+      tags:
+      - Scan Tasks
+      parameters:
+      - description: Specifies whether to include the imported scan data in the vulnerabilities dashboard views. To include, use `1`. To exclude, use `0`. If you don't specify the include_aggregate parameter, the data does not appear in the dashboard.
+        required: false
+        name: include_aggregate
+        in: query
+        schema:
+          type: integer
+          enum:
+          - 0
+          - 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  description: The name of the file to import as provided by the response from [Upload File](ref:file-upload) endpoint.
+                folder_id:
+                  type: integer
+                  description: The ID of the destination folder. If you omit this parameter, Tenable Vulnerability Management stores the imported scan in the default folder.
+                  format: int32
+                password:
+                  type: string
+                  description: The password for the file to import (required for nessus.db).
+                  format: password
+              required:
+              - file
+      responses:
+        '200':
+          description: Returns the scan object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_Response-Scan-Object'
+              examples:
+                response:
+                  value:
+                    scan:
+                      timezone: null
+                      id: 38
+                      last_modification_date: 1544219402
+                      status: imported
+                      user_permissions: 128
+                      folder_id: null
+                      owner: user2@example.com
+                      control: null
+                      starttime: null
+                      uuid: e192840b-e7cc-4586-a482-4495758ed8560e3fa8eea4c7cb27
+                      rrules: null
+                      creation_date: 1544219402
+                      read: false
+                      name: KitchenSinkScan
+                      shared: false
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '409':
+          description: Returned if you attempt to import results from scans run more than 15 months ago.
+          content:
+            text/html:
+              examples:
+                response:
+                  value:
+                    error: '{"error":"Scans older than 06/01/2018 cannot be imported."}'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Tasks_cloud: []
+  /scans/count:
+    get:
+      summary: Get scan count
+      description: Returns the total number of scans in your container. You can use the `active` query parameter to return only the number of active scans. <div class="perms-callout">Requires the Basic [16] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: io-scans-count
+      tags:
+      - Scan Tasks
+      parameters:
+      - description: If `true`, only active scans are counted. If `false`, all active and inactive scans are counted. If this parameter is omitted, Tenable Vulnerability Management defaults to `false`.
+        name: active
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Returned if the number of scans was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: The number of active and inactive scans in your container. If the `active` query parameter is set to `true` then the count only includes active scans.
+              examples:
+                response:
+                  value:
+                    count: 5140
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the number of scans in the container.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Tasks_cloud: []
+  /scans/timezones:
+    get:
+      summary: Get timezones
+      description: 'Returns the timezones list for creating a recurring scan. For more information, see [Example Assessment Scan: Recurring](doc:example-assessment-scan-recurring).<div class="perms-callout">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>'
+      operationId: scans-timezones
+      tags:
+      - Scan Tasks
+      responses:
+        '200':
+          description: Returns the timezone list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_timezones'
+              examples:
+                response:
+                  value:
+                    timezones:
+                    - name: Africa/Abidjan
+                      value: Africa/Abidjan
+                    - name: Europe/Tiraspol
+                      value: Europe/Tiraspol
+                    - name: UCT
+                      value: UCT
+                    - name: US/Alaska
+                      value: US/Alaska
+                    - name: US/Aleutian
+                      value: US/Aleutian
+                    - name: US/Arizona
+                      value: US/Arizona
+                    - name: US/Central
+                      value: US/Central
+                    - name: US/East-Indiana
+                      value: US/East-Indiana
+                    - name: US/Eastern
+                      value: US/Eastern
+                    - name: US/Hawaii
+                      value: US/Hawaii
+                    - name: US/Indiana-Starke
+                      value: US/Indiana-Starke
+                    - name: US/Michigan
+                      value: US/Michigan
+                    - name: US/Mountain
+                      value: US/Mountain
+                    - name: US/Pacific
+                      value: US/Pacific
+                    - name: US/Pacific-New
+                      value: US/Pacific-New
+                    - name: US/Samoa
+                      value: US/Samoa
+                    - name: UTC
+                      value: UTC
+                    - name: Universal
+                      value: Universal
+                    - name: W-SU
+                      value: W-SU
+                    - name: WET
+                      value: WET
+                    - current: true
+                      name: Zulu
+                      value: Zulu
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view timezones.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Tasks_cloud: []
+  /scans/check-auto-targets:
+    post:
+      summary: Test scan routes
+      description: Evaluates a list of targets and/or tags against the scan route configuration of scanner groups. Returns the list of missed targets (if any) and the list of matched scanner groups (if any).<div class="perms-callout">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>
+      operationId: io-scans-check-auto-targets
+      tags:
+      - Scan Tasks
+      parameters:
+      - description: Limit the number of missed targets returned in the response.
+        required: false
+        name: limit
+        in: query
+        schema:
+          type: integer
+          example: '5'
+          default: null
+          format: int32
+      - description: Limit the number of matched resource UUIDs returned in the response.
+        required: false
+        name: matched_resource_limit
+        in: query
+        schema:
+          type: integer
+          example: '5'
+          default: null
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                network_uuid:
+                  type: string
+                  description: Specify a value as follows:<ul><li>If your scans involve separate environments with overlapping IP ranges, specify the UUID of the [network](doc:manage-networks-tio) you want to associate with the results of the auto-routed scan. This value must match the network where you have assigned the scanner groups that you configured for scan routing.</li><li>Otherwise, specify the default network (00000000-0000-0000-0000-000000000000).</li></ul>
+                  example: 00000000-0000-0000-0000-000000000000
+                tags:
+                  type: array
+                  description: A list of asset tags UUIDs.
+                  items:
+                    type: string
+                    description: The UUID of an asset tag. When you submit this request, Tenable Vulnerability Management resolves this tag to a list of zero or more targets. For more information about asset tags, see [Manage Asset Tags](doc:manage-asset-tags-tio).
+                    example: 5c251613-4305-4378-ad64-bd97730e0c59
+                target_list:
+                  type: string
+                  description: A comma-delimited list of targets to scan. For a full list of supported target formats, see the [Tenable Vulnerability Management User Guide](https://docs.tenable.com/vulnerability-management/Content/Scans/AboutScanTargets.htm).
+                  example: example.com, example.net, localhost
+              required:
+              - network_uuid
+      responses:
+        '200':
+          description: Returned if the list of targets or tags was evaluated against the scan route configuration successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_Response-Check-Targets'
+              examples:
+                response:
+                  value:
+                    missed_targets:
+                    - example.com
+                    - localhost
+                    total_missed_targets: 2
+                    matched_resource_uuids:
+                    - 4d636d44-76ba-4f81-bfc6-6b9a0de66ee9
+                    total_matched_resource_uuids: 1
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Tasks_cloud: []
+components:
+  schemas:
+    Scan_Tasks_timezones:
+      type: array
+      items:
+        $ref: '#/components/schemas/Scan_Tasks_timezone'
+    Scan_Tasks_settings-rrules:
+      type: string
+      description: 'The interval at which the scan repeats. The interval is formatted as a string of three values delimited by semi-colons. These values are: the frequency (FREQ=ONETIME or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). For a scan that runs every three weeks on Monday Wednesday and Friday, the string would be `FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR`. If the scan is not scheduled to recur, this attribute is `null`. For more information, see [rrules Format](doc:example-assessment-scan-recurring#rrules-format).
+
+
+        **Note:** To set the `rrules` parameter for an agent scan, the request must also include the following body parameters:<ul><li>The `uuid` parameter must specify an agent scan template. For more information, see [Tenable-Provided Agent Templates](https://docs.tenable.com/vulnerability-management/Content/Scans/AgentTemplates.htm) and the [List templates](ref:editor-list-templates) endpoint.</li><li>The `agent_group_id` parameter must specify an agent group. For more information, see [Agent Groups](ref:agent-groups).</li></ul>For an example request body for an agent scan, see [Example Agent Scan: Recurring](doc:example-agent-scan-recurring).'
+    Scan_Tasks_ManagedCredentialPermissions:
+      type: object
+      properties:
+        grantee_uuid:
+          type: string
+          description: "The UUID of the user or user group granted permissions for managed credentials. \n\nThis parameter is required when assigning CAN USE [32] or CAN EDIT [64] permissions for managed credentials."
+        type:
+          type: string
+          description: "A value specifying whether the grantee is a user (`user`) or a user group (`group`).  \n\nThis parameter is required when assigning CAN USE [32] or CAN EDIT [64] permissions for  managed credentials."
+          enum:
+          - user
+          - group
+        permissions:
+          type: integer
+          description: "A value specifying the permissions granted to the user or user group for the managed credentials. Possible values are:\n - 32—The user can view credentials information and use the credentials in scans. Corresponds to the **Can Use** permission in the user interface.\n - 64—The user can view and edit credential settings, delete the credentials, and use the credentials in scans. Corresponds to the **Can Edit** permission in the user interface.  \n\nThis parameter is required when assigning CAN USE [32] or CAN EDIT [64] permissions for managed credentials."
+        name:
+          type: string
+          description: "The name of the user or user group that you want to grant permissions for the managed credentials.  \n\nThis parameter is optional when assigning CAN USE [32] or CAN EDIT [64] permissions for the managed credentials."
+    Scan_Tasks_Response-Check-Targets:
+      type: object
+      properties:
+        missed_targets:
+          type: array
+          items:
+            type: string
+          description: The list of targets that did not match a route in any scanner group.
+        total_missed_targets:
+          type: integer
+          description: The total count of missed targets, before being truncated by the optional `limit` parameter.
+        matched_resource_uuids:
+          type: array
+          items:
+            type: string
+          description: A list of UUIDs for scanner groups where configured scan routes matched at least one of the specified targets.
+        total_matched_resource_uuids:
+          type: integer
+          description: The count of matched resource UUIDs, before being truncated by the optional `matched_resource_limit` parameter.
+    Scan_Tasks_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Scan_Tasks_Response-Scan-Object:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the scan.
+        status:
+          type: string
+          description: The status of the scan. For a list of possible values, see [Scan Status](doc:scan-status-tio).
+        id:
+          type: integer
+          description: The unique ID of the scan.
+        last_modification_date:
+          type: integer
+          description: For newly-created scans, the date on which the scan configuration was created. For scans that have been launched at least once, this attribute does not represent the date on which the scan configuration was last modified. Instead, it represents the date on which the scan was last launched, in Unix time format. Tenable Vulnerability Management updates this attribute each time the scan launches.
+          format: int64
+        uuid:
+          type: string
+          description: The UUID of the scan.
+        type:
+          type: string
+          description: The type of scan (local, remote, or agent).
+        owner:
+          type: string
+          description: The owner of the scan.
+        enabled:
+          type: boolean
+          description: If `true`, the schedule for the scan is enabled.
+        read:
+          type: boolean
+          description: If `true`, the scan has been read.
+        shared:
+          type: boolean
+          description: If `1`, the scan is shared with users other than the scan owner. The level of sharing is specified in the `acls` attribute of the scan details.
+        user_permissions:
+          type: integer
+          description: The sharing permissions for the scan.
+        creation_date:
+          type: integer
+          format: int64
+          description: The creation date for the scan in Unix time.
+        control:
+          type: boolean
+          description: If `true`, the scan has a schedule and can be launched.
+        starttime:
+          type: string
+          description: 'For one-time scans, the starting date and time for the scan. For recurrent scans, the first date on which the scan schedule is active and the time that recurring scans launch based on the `rrules` attribute.
+
+
+            This attribute has the following format: `YYYYMMDDTHHMMSS`.'
+        timezone:
+          type: string
+          description: The timezone of the scheduled start time for the scan.
+        rrules:
+          $ref: '#/components/schemas/Scan_Tasks_settings-rrules'
+        schedule_uuid:
+          type: string
+          description: The UUID for a specific instance in the scan schedule.
+    Scan_Tasks_timezone:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The readable name of the timezone.
+        value:
+          type: string
+          description: The system value for the timezone.
+    Scan_Tasks_CredentialSettingsRequestObject:
+      description: 'The configuration settings for the credentials. The parameters of this object vary depending on the credentials type. For more information, see [Determine Settings for a Credential Type](doc:determine-settings-for-credential-type).
+
+
+        **Note:** This form displays limited parameters that support a Windows type of credentials that uses password authentication.'
+      type: object
+      properties:
+        domain:
+          type: string
+          description: The Windows domain to which the username belongs.
+        username:
+          type: string
+          description: The username on the target system.
+        auth_method:
+          type: string
+          description: The name for the authentication method. This value corresponds to the credentials[].types[].configuration[].options[].id attribute in the response message for the [GET /credentials/types](ref:credentials-list-credential-types) endpoint.
+          enum:
+          - Password
+        password:
+          type: string
+          description: The user password on the target system.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

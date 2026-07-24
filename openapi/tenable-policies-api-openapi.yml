@@ -1,0 +1,1015 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Policies API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Policies
+  x-displayName: Policies
+paths:
+  /policies:
+    post:
+      summary: Create policy
+      description: 'Creates a policy (scan template).
+
+
+        **Note:** Policies are referred to as scan templates in the user interface. The term policy is only used by the API. The two terms refer to the same feature. <div class="perms-callout">Requires the Standard [32] user role or the `VM.VM_SCAN.VM_SCAN_USER_TEMPLATE.CREATE` custom role privilege. See [Roles](doc:roles).</div>'
+      operationId: policies-create
+      tags:
+      - Policies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - uuid
+              - settings
+              properties:
+                uuid:
+                  type: string
+                  description: The UUID for the editor template to use.
+                  example: 18c7e401-b2bc-4924-881a-fa1359485c404e51e1f403febe40
+                settings:
+                  type: object
+                  required:
+                  - uuid
+                  - name
+                  properties:
+                    name:
+                      type: string
+      responses:
+        '200':
+          description: Returned if the policy (scan template) was created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  policy_id:
+                    type: integer
+                  policy_name:
+                    type: string
+              examples:
+                response:
+                  value:
+                    policy_id: 69
+                    policy_name: example-scan-template
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 400
+                    error: Bad Request
+                    message: Invalid request payload JSON format
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have the required permissions to create a policy (scan template).
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - policies_cloud: []
+    get:
+      summary: List policies
+      description: 'Returns a list of policies (scan templates).
+
+
+        **Note:** Policies are referred to as scan templates in the user interface. The term policy is only used by the API. The two terms refer to the same feature. <div class="perms-callout">Requires the Standard [32] user role or the `VM.VM_SCAN.VM_SCAN_USER_TEMPLATE.READ` custom role privilege. See [Roles](doc:roles).</div>'
+      operationId: policies-list
+      tags:
+      - Policies
+      responses:
+        '200':
+          description: Returned if the list of policies (scan templates) was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_policies'
+              examples:
+                response:
+                  value:
+                    policies:
+                    - no_target: 'false'
+                      template_uuid: d684f1a6-bcf1-4a24-9bac-4a3b9bab086bd24bd260ef5f9e66
+                      description: An example policy.
+                      name: Test Policy 1
+                      owner: api@api.demo
+                      visibility: shared
+                      shared: 1
+                      user_permissions: 128
+                      last_modification_date: 1545938690
+                      creation_date: 1545938690
+                      owner_id: 3
+                      id: 43
+                    - no_target: 'false'
+                      template_uuid: 41df2f51-8214-4a9e-b0e9-cd560ad1949f08a510a44374a167
+                      description: An example policy using the Shellshock template.
+                      name: Test Policy 2
+                      owner: api@api.demo
+                      visibility: shared
+                      shared: 1
+                      user_permissions: 128
+                      last_modification_date: 1545938735
+                      creation_date: 1545938735
+                      owner_id: 3
+                      id: 44
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have the required permissions to view the policy (scan template) list.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - policies_cloud: []
+  /policies/{policy_id}/copy:
+    post:
+      summary: Copy policy
+      description: 'Copies a policy (scan template).
+
+
+        **Note:** Policies are referred to as scan templates in the user interface. The term policy is only used by the API. The two terms refer to the same feature. <div class="perms-callout">Requires the Standard [32] user role and the Can Execute [32] scan template (policy) permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN_USER_TEMPLATE.CREATE` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+      operationId: policies-copy
+      tags:
+      - Policies
+      parameters:
+      - description: The id of the policy to copy.
+        required: true
+        name: policy_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the policy (scan template) was copied successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value:
+                    name: Copy of Test Policy 1
+                    id: 45
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have the required permissions to copy the policy (scan template).
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified policy (scan template).
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - policies_cloud: []
+  /policies/import:
+    post:
+      summary: Import policy
+      description: 'Imports an existing policy (scan template) that was uploaded using the [POST /file/upload](ref:file-upload) endpoint. Only policies (scan templates) in .nessus format can be imported.
+
+
+        **Note:** Policies are referred to as scan templates in the user interface. The term policy is only used by the API. The two terms refer to the same feature. <div class="perms-callout">Requires the Standard [32] user role or the `VM.VM_SCAN.VM_SCAN_USER_TEMPLATE.CREATE` custom role privilege. See [Roles](doc:roles).</div>'
+      operationId: policies-import
+      tags:
+      - Policies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  description: The name of the file to import as provided by the response from file-upload.
+              required:
+              - file
+      responses:
+        '200':
+          description: Returned if the specified policy (scan template) was imported successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  private:
+                    type: integer
+                  no_target:
+                    type: string
+                  template_uuid:
+                    type: string
+                  description:
+                    type: string
+                  name:
+                    type: string
+                  owner:
+                    type: string
+                  shared:
+                    type: integer
+                  user_permissions:
+                    type: integer
+                  last_modification_date:
+                    type: integer
+                  creation_date:
+                    type: integer
+                  owner_id:
+                    type: integer
+                  id:
+                    type: integer
+              examples:
+                response:
+                  value:
+                    private: 0
+                    no_target: 'false'
+                    template_uuid: 731a8e52-3ea6-a291-ec0a-d2ff0619c19d7bd788d6be818b65
+                    description: null
+                    name: test-policy-2_01
+                    owner: example@example.com
+                    shared: 0
+                    user_permissions: 128
+                    last_modification_date: 1676667445
+                    creation_date: 1676667445
+                    owner_id: 2248974
+                    id: 72
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Parse error (this might not be a valid .nessus file)
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have the required permissions to import the policy (scan template).
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - policies_cloud: []
+  /policies/{policy_id}/export:
+    get:
+      summary: Export policy
+      description: 'Exports the specified policy (scan template) in nessus format.
+
+
+        **Note:** Policies are referred to as scan templates in the user interface. The term policy is only used by the API. The two terms refer to the same feature.<div class="perms-callout">Requires the Standard [32] user role and the Can Execute [32] scan template (policy) permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+      operationId: policies-export
+      tags:
+      - Policies
+      parameters:
+      - description: The ID of the policy to export.
+        required: true
+        name: policy_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the policy (scan template) was exported successfully.
+          content:
+            text/xml:
+              schema:
+                type: string
+              examples:
+                response:
+                  value: "<NessusClientData_v2>\n <Policy>\n    <policyComments></policyComments>\n   <visibility>private</visibility>\n    <policyOwner>example.user@example.com</policyOwner>\n   <Preferences>\n     <PluginsPreferences>\n        <item>\n          <pluginId>10180</pluginId>\n          <pluginName>Ping the remote host</pluginName>\n         <fullName>Ping the remote host[checkbox]:Interpret ICMP unreach from gateway</fullName>\n         <preferenceType>checkbox</preferenceType>\n         <preferenceName>Interpret ICMP unreach from gateway</preferenceName>\n          <preferenceValues>no</preferenceValues>\n         <selectedValue>no</selectedValue>\n       </item>\n     </PluginsPreferences>\n     <ServerPreferences>\n       <preference>\n          <name>template_policy</name>\n          <value>yes</value>\n        </preference>\n       <preference>\n          <name>wizard_uuid</name>\n          <value>731a8e52-3ea6-a291-ec0a-d2ff0619c19d7bd788d6be818b65</value>\n       </preference>\n       <preference>\n          <name>local_portscan.snmp</name>\n          <value>yes</value>\n        </preference>\n       <preference>\n          <name>portscan.ping</name>\n          <value>yes</value>\n        </preference>\n       <preference>\n          <name>local_portscan.netstat_wmi</name>\n         <value>yes</value>\n        </preference>\n       <preference>\n          <name>port_range</name>\n         <value>default</value>\n        </preference>\n       <preference>\n          <name>reverse_lookup</name>\n         <value>no</value>\n       </preference>\n       <preference>\n          <name>plugin_selection.individual_plugin.34220</name>\n         <value>enabled</value>\n        </preference>\n       <preference>\n          <name>network_scanners.udp</name>\n         <value>no</value>\n       </preference>\n       <preference>\n          <name>checks_read_timeout</name>\n          <value>5</value>\n        </preference>\n       <preference>\n          <name>name</name>\n         <value>example-test-policy</value>\n        </preference>\n       <preference>\n          <name>local_portscan.netstat_ssh</name>\n         <value>yes</value>\n        </preference>\n       <preference>\n          <name>silent_dependencies</name>\n          <value>yes</value>\n        </preference>\n       <preference>\n          <name>plugin_selection.individual_plugin.14272</name>\n         <value>enabled</value>\n        </preference>\n       <preference>\n          <name>discovery_mode</name>\n         <value>portscan_common</value>\n        </preference>\n       <preference>\n          <name>network_scanners.tcp</name>\n         <value>no</value>\n       </preference>\n       <preference>\n          <name>plugin_selection.individual_plugin.11219</name>\n         <value>enabled</value>\n        </preference>\n       <preference>\n          <name>max_checks</name>\n         <value>4</value>\n        </preference>\n       <preference>\n          <name>max_hosts</name>\n          <value>30</value>\n       </preference>\n       <preference>\n          <name>assessment_mode</name>\n          <value>default</value>\n        </preference>\n       <preference>\n          <name>host_tagging</name>\n         <value>yes</value>\n        </preference>\n       <preference>\n          <name>advanced_mode</name>\n          <value>default</value>\n        </preference>\n       <preference>\n          <name>network_scanners.syn</name>\n         <value>yes</value>\n        </preference>\n       <preference>\n          <name>plugin_selection.individual_plugin.14274</name>\n         <value>enabled</value>\n        </preference>\n       <preference>\n          <name>unscanned_closed</name>\n         <value>no</value>\n       </preference>\n       <preference>\n          <name>scan.enable_utf8_output</name>\n          <value>no</value>\n       </preference>\n       <preference>\n          <name>plugin_selection.individual_plugin.10180</name>\n         <value>enabled</value>\n        </preference>\n     </ServerPreferences>\n    </Preferences>\n    <FamilySelection>\n     <FamilyItem>\n        <FamilyName>SMTP problems</FamilyName>\n        <Status>enabled</Status>\n      </FamilyItem>\n     <FamilyItem>\n        <FamilyName>Rocky Linux Local Security Checks</FamilyName>\n        <Status>enabled</Status>\n      </FamilyItem>\n     <FamilyItem>\n        <FamilyName>Backdoors</FamilyName>\n        <Status>enabled</Status>\n      </FamilyItem>\n     <FamilyItem>\n        <FamilyName>Ubuntu Local Security Checks</FamilyName>\n       <Status>enabled</Status>\n      </FamilyItem>\n     <FamilyItem>\n        <FamilyName>RPC</FamilyName>\n        <Status>enabled</Status>\n      </FamilyItem>\n     <FamilyItem>\n        <FamilyName>Gentoo Local Security Checks</FamilyName>\n       <Status>enabled</Status>\n      </FamilyItem>\n     <FamilyItem>\n        <FamilyName>Oracle Linux Local Security Checks</FamilyName>\n       <Status>enabled</Status>\n      </FamilyItem>\n     <FamilyItem>\n        <FamilyName>Brute force attacks</FamilyName>\n        <Status>enabled</Status>\n      </FamilyItem>\n   </FamilySelection>\n    <policyName>example-test-policy</policyName>\n    <IndividualPluginSelection>\n     <PluginItem>\n        <PluginName>Netstat Portscanner (WMI)</PluginName>\n        <Status>enabled</Status>\n        <Family>Port scanners</Family>\n        <PluginId>34220</PluginId>\n      </PluginItem>\n     <PluginItem>\n        <PluginName>Netstat Portscanner (SSH)</PluginName>\n        <Status>enabled</Status>\n        <Family>Port scanners</Family>\n        <PluginId>14272</PluginId>\n      </PluginItem>\n     <PluginItem>\n        <PluginName>Nessus SYN scanner</PluginName>\n       <Status>enabled</Status>\n        <Family>Port scanners</Family>\n        <PluginId>11219</PluginId>\n      </PluginItem>\n     <PluginItem>\n        <PluginName>Ping the remote host</PluginName>\n       <Status>enabled</Status>\n        <Family>Port scanners</Family>\n        <PluginId>10180</PluginId>\n      </PluginItem>\n   </IndividualPluginSelection>\n  </Policy>\n</NessusClientData_v2>"
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have the required permissions to export the policy (scan template).
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified policy (scan template).
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: The requested file was not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - policies_cloud: []
+  /policies/{policy_id}:
+    get:
+      summary: List policy details
+      description: 'Returns the details for the specified policy (scan template).
+
+
+        **Note:** Policies are referred to as scan templates in the user interface. The term policy is only used by the API. The two terms refer to the same feature. <div class="perms-callout">Requires the Standard [32] user role and the Can View [16] scan template (policy) permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN_USER_TEMPLATE.READ` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+      operationId: policies-details
+      tags:
+      - Policies
+      parameters:
+      - description: The ID of the policy to retrieve.
+        required: true
+        name: policy_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the details for the specified policy were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                    description: The UUID of the Tenable-provided template used to create this policy.
+                  audits:
+                    type: object
+                  credentials:
+                    type: object
+                  plugins:
+                    type: object
+                  scap:
+                    type: object
+                  settings:
+                    type: object
+              examples:
+                response:
+                  value:
+                    plugins:
+                      SMTP problems:
+                        status: enabled
+                      Backdoors:
+                        status: enabled
+                      Ubuntu Local Security Checks:
+                        status: enabled
+                      Gentoo Local Security Checks:
+                        status: enabled
+                      Oracle Linux Local Security Checks:
+                        status: enabled
+                      RPC:
+                        status: enabled
+                      Brute force attacks:
+                        status: enabled
+                      Gain a shell remotely:
+                        status: enabled
+                      Service detection:
+                        status: enabled
+                      DNS:
+                        status: enabled
+                      Mandriva Local Security Checks:
+                        status: enabled
+                      Junos Local Security Checks:
+                        status: enabled
+                      Misc.:
+                        status: enabled
+                      FTP:
+                        status: enabled
+                      Slackware Local Security Checks:
+                        status: enabled
+                      Default Unix Accounts:
+                        status: enabled
+                      AIX Local Security Checks:
+                        status: enabled
+                      SNMP:
+                        status: enabled
+                      OracleVM Local Security Checks:
+                        status: enabled
+                      CGI abuses:
+                        status: enabled
+                      Settings:
+                        status: enabled
+                      CISCO:
+                        status: enabled
+                      Firewalls:
+                        status: enabled
+                      Databases:
+                        status: enabled
+                      Debian Local Security Checks:
+                        status: enabled
+                      Fedora Local Security Checks:
+                        status: enabled
+                      Netware:
+                        status: enabled
+                      Huawei Local Security Checks:
+                        status: enabled
+                      'Windows : User management':
+                        status: enabled
+                      VMware ESX Local Security Checks:
+                        status: enabled
+                      Virtuozzo Local Security Checks:
+                        status: enabled
+                      CentOS Local Security Checks:
+                        status: enabled
+                      Peer-To-Peer File Sharing:
+                        status: enabled
+                      General:
+                        status: enabled
+                      Policy Compliance:
+                        status: enabled
+                      Amazon Linux Local Security Checks:
+                        status: enabled
+                      Solaris Local Security Checks:
+                        status: enabled
+                      F5 Networks Local Security Checks:
+                        status: enabled
+                      Denial of Service:
+                        status: enabled
+                      'Windows : Microsoft Bulletins':
+                        status: enabled
+                      SuSE Local Security Checks:
+                        status: enabled
+                      Palo Alto Local Security Checks:
+                        status: enabled
+                      Red Hat Local Security Checks:
+                        status: enabled
+                      PhotonOS Local Security Checks:
+                        status: enabled
+                      HP-UX Local Security Checks:
+                        status: enabled
+                      Mobile Devices:
+                        status: enabled
+                      'CGI abuses : XSS':
+                        status: enabled
+                      FreeBSD Local Security Checks:
+                        status: enabled
+                      Windows:
+                        status: enabled
+                      MacOS X Local Security Checks:
+                        status: enabled
+                      Scientific Linux Local Security Checks:
+                        status: enabled
+                      Web Servers:
+                        status: enabled
+                      SCADA:
+                        status: enabled
+                    settings:
+                      cisco_offline_configs: ''
+                      apm_force_updates: 'yes'
+                      region_hkg_pref_name: 'yes'
+                      http_login_max_redir: '0'
+                      portscan_range: default
+                      icmp_unreach_means_host_down: 'no'
+                      start_cotp_tsap: '8'
+                      ssh_port: '22'
+                      av_grace_period: '0'
+                      http_login_auth_regex_nocase: 'no'
+                      snmp_port: '161'
+                      enable_admin_shares: 'no'
+                      arista_offline_configs: ''
+                      icmp_ping_retries: '2'
+                      syn_firewall_detection: Automatic (normal)
+                      snmp_scanner: 'yes'
+                      sonicos_offline_configs: ''
+                      slice_network_addresses: 'no'
+                      patch_audit_over_rsh: 'no'
+                      aws_verify_ssl: 'yes'
+                      was_http_request_timeout: '5'
+                      tcp_ping: 'yes'
+                      additional_snmp_port3: '161'
+                      dell_f10_offline_configs: ''
+                      test_default_oracle_accounts: 'no'
+                      only_portscan_if_enum_failed: 'yes'
+                      apm_update_timeout: '5'
+                      ssl_prob_ports: Known SSL ports
+                      ping_the_remote_host: 'yes'
+                      office365filecontents_max_cumulative_size: ''
+                      attempt_least_privilege: 'no'
+                      region_dfw_pref_name: 'yes'
+                      modbus_start_reg: '0'
+                      max_simult_tcp_sessions_per_scan: ''
+                      scan_network_printers: 'no'
+                      stop_scan_on_disconnect: 'no'
+                      report_verbosity: Normal
+                      was_plugins_rate_limiter_requests_per_second: '25'
+                      fast_network_discovery: 'no'
+                      udp_ping: 'no'
+                      scan_malware: 'no'
+                      never_send_win_creds_in_the_clear: 'yes'
+                      log_live_hosts: 'no'
+                      enum_domain_users_start_uid: '1000'
+                      name: Test Policy 1
+                      description: An example policy.
+                      tcp_scanner: 'no'
+                      watchguard_offline_configs: ''
+                      office365filecontents_modified_within_x_days: ''
+                      http_login_invert_auth_regex: 'no'
+                      smtp_from: nobody@example.com
+                      smtp_domain: example.com
+                      thorough_tests: 'no'
+                      office365filecontents_exclude_paths: ''
+                      scan_webapps: 'no'
+                      dont_use_ntlmv1: 'yes'
+                      reverse_lookup: 'no'
+                      smtp_to: postmaster@[AUTO_REPLACED_IP]
+                      adtran_aos_offline_configs: ''
+                      procurve_config_to_audit: Saved/(show config)
+                      microsoft_azure_subscriptions_ids: ''
+                      max_hosts_per_scan: '80'
+                      region_syd_pref_name: 'yes'
+                      start_remote_registry: 'no'
+                      patch_audit_over_telnet: 'no'
+                      aws_use_https: 'yes'
+                      stop_cotp_tsap: '8'
+                      unscanned_closed: 'no'
+                      scan_netware_hosts: 'no'
+                      ssh_client_banner: OpenSSH_5.0
+                      enumerate_all_ciphers: 'yes'
+                      netapp_offline_configs: ''
+                      office365filecontents_file_extensions: ''
+                      use_kernel_congestion_detection: 'no'
+                      was_http_request_concurrency: '10'
+                      wol_wait_time: '5'
+                      huawei_offline_configs: ''
+                      report_paranoia: Normal
+                      http_login_auth_regex_on_headers: 'no'
+                      wmi_netstat_scanner: 'yes'
+                      provided_creds_only: 'yes'
+                      wol_mac_addresses: ''
+                      region_lon_pref_name: 'yes'
+                      cert_expiry_warning_days: '60'
+                      bluecoat_proxysg_offline_configs: ''
+                      display_unreachable_hosts: 'no'
+                      verify_open_ports: 'no'
+                      enum_local_users_end_uid: '1200'
+                      udp_scanner: 'no'
+                      was_plugins_autothrottle: 'yes'
+                      ssh_known_hosts: ''
+                      safe_checks: 'yes'
+                      patch_audit_over_rexec: 'no'
+                      fortios_offline_configs: ''
+                      brocade_offline_configs: ''
+                      allow_post_scan_editing: 'yes'
+                      report_superseded_patches: 'yes'
+                      max_simult_tcp_sessions_per_host: ''
+                      region_iad_pref_name: 'yes'
+                      tcp_ping_dest_ports: built-in
+                      enum_domain_users_end_uid: '1200'
+                      max_checks_per_host: '5'
+                      junos_offline_configs: ''
+                      check_crl: 'no'
+                      svc_detection_on_all_ports: 'yes'
+                      scan_ot_devices: 'no'
+                      syn_scanner: 'yes'
+                      cisco_config_to_audit: Saved/(show config)
+                      detect_ssl: 'yes'
+                      request_windows_domain_info: 'yes'
+                      network_receive_timeout: '5'
+                      aws_ui_region_type: Rest of the World
+                      additional_snmp_port1: '161'
+                      additional_snmp_port2: '161'
+                      reduce_connections_on_congestion: 'no'
+                      icmp_ping: 'yes'
+                      network_type: Mixed (use RFC 1918)
+                      checkpoint_gaia_offline_configs: ''
+                      office365filecontents_max_size: ''
+                      procurve_offline_configs: ''
+                      was_browser_cluster_job_timeout: '10'
+                      arp_ping: 'yes'
+                      region_ord_pref_name: 'yes'
+                      enum_local_users_start_uid: '1000'
+                      fireeye_offline_configs: ''
+                      extremeos_offline_configs: ''
+                      http_login_method: POST
+                      ssh_netstat_scanner: 'yes'
+                      silent_dependencies: 'yes'
+                      enable_plugin_debugging: 'no'
+                      http_reauth_delay: 0
+                      timeout_abort_threshold: '100'
+                      office365filecontents_include_paths: ''
+                      modbus_end_reg: '16'
+                      host_tagging: 'yes'
+                    uuid: d684f1a6-bcf1-4a24-9bac-4a3b9bab086bd24bd260ef5f9e66
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have the required permissions to list the policy (scan template) details.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified policy (scan template).
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: The requested file was not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - policies_cloud: []
+    put:
+      summary: Update policy
+      description: "Updates an existing policy (scan template). \n\n**Note:** Policies are referred to as scan templates in the user interface. The term policy is only used by the API. The two terms refer to the same feature.<div class=\"perms-callout\">Requires the Standard [32] user role and the Can Execute [32] scan template (policy) permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN_USER_TEMPLATE.EDIT` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: policies-configure
+      tags:
+      - Policies
+      parameters:
+      - description: The ID of the policy to change.
+        required: true
+        name: policy_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the configuration of the specified policy (scan template) was updated successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 400
+                    error: Bad Request
+                    message: Invalid request payload JSON format
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have the required permissions to update the policy (scan template).
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified policy (scan template).
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: The requested file was not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - policies_cloud: []
+    delete:
+      summary: Delete policy
+      description: "Deletes a policy (scan template). \n\n**Note:** Policies are referred to as scan templates in the user interface. The term policy is only used by the API. The two terms refer to the same feature.<div class=\"perms-callout\">Requires the Standard [32] user role and the Can Execute [32] scan template (policy) permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN_USER_TEMPLATE.DELETE` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: policies-delete
+      tags:
+      - Policies
+      parameters:
+      - description: The ID of the policy to delete.
+        required: true
+        name: policy_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the policy was deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have the required permissions to delete the policy (scan template).
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified policy (scan template).
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: The requested file was not found
+        '405':
+          description: Returned if the policy (scan template) is currently in use by a scan.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policies_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - policies_cloud: []
+components:
+  schemas:
+    policies_policy:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of the policy.
+        template_uuid:
+          type: string
+          description: The UUID for the Tenable-provided template used to create the policy.
+        name:
+          type: string
+          description: The name of the policy.
+        description:
+          type: string
+          description: The description of the policy.
+        owner_id:
+          type: string
+          description: The unique ID of the owner of the policy.
+        owner:
+          type: string
+          description: The username for the owner of the policy.
+        shared:
+          type: integer
+          description: The shared status of the policy (`1` if shared with users other than owner, `0` if not shared).
+        user_permissions:
+          type: integer
+          description: The sharing permissions for the policy.
+        creation_date:
+          type: integer
+          format: int64
+          description: The creation date of the policy in Unix time format.
+        last_modification_date:
+          type: integer
+          format: int64
+          description: The last modification date for the policy in Unix time format.
+        visibility:
+          type: integer
+          description: The visibility of the target (`private` or `shared`).
+        no_target:
+          type: boolean
+          description: If `true`, the policy configuration does not include targets.
+    policies_policies:
+      type: array
+      items:
+        $ref: '#/components/schemas/policies_policy'
+    policies_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

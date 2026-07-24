@@ -1,0 +1,718 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Exclusions API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Exclusions
+  x-displayName: Exclusions
+paths:
+  /exclusions:
+    post:
+      summary: Create exclusion
+      description: Creates a new exclusion.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.CREATE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: exclusions-create
+      tags:
+      - Exclusions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/exclusions_exclusion-request-body'
+      responses:
+        '200':
+          description: Returned if the exclusion was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_exclusion-response'
+              examples:
+                response:
+                  value:
+                    uuid: 84a77c2f-b4db-4bd5-9bd3-d3cb078875aa
+                    members: host.domain.com, 192.0.2.1, 192.0.2.1-192.0.2.255
+                    name: My-Exclusion-2
+                    description: My description.
+                    id: 1000107
+                    schedule:
+                      enabled: true
+                      starttime: '2023-09-01 00:00:00'
+                      endtime: '2023-09-02 00:00:00'
+                      rrules:
+                        freq: MONTHLY
+                        bymonthday: 4
+                      timezone: America/Chicago
+                    creation_date: 1745959227
+                    last_modification_date: 1745959227
+                    network_id: 00000000-0000-0000-0000-000000000000
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create an exclusion. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - exclusions_cloud: []
+    get:
+      summary: List exclusions
+      description: Returns a list of exclusions for your Tenable Vulnerability Management scans.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: exclusions-list
+      tags:
+      - Exclusions
+      parameters:
+      - name: limit
+        in: query
+        description: Specifies the maximum number of exclusions to return in the response. If omitted, the system uses the default value of `200`. The maximum allowed value is `500`.
+        required: false
+        schema:
+          type: integer
+          default: 200
+          maximum: 500
+      - name: offset
+        in: query
+        description: Specifies the number of records to skip for offset-based pagination. If omitted, the system uses the default value of `0`. The API does not enforce a maximum limit on the offset value.
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: sort
+        in: query
+        description: 'Specifies the property and direction used to sort the results. The format is `<property>:<direction>`. Supported properties:
+
+
+          * `name` — The descriptive name of the exclusion.
+
+          * `type` — The operational type of the exclusion, derived from the `schedule.enabled` property. If `schedule.enabled` is `false`, the type evaluates to `Always On`. If `schedule.enabled` is `true`, the type evaluates to `Scheduled`.
+
+          * `last_modification_date` — The date and time the exclusion was last modified.'
+        required: false
+        schema:
+          type: string
+          example: last_modification_date:desc
+      responses:
+        '200':
+          description: Returned if the list of exclusions was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: A paginated list of exclusions.
+                properties:
+                  exclusions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/exclusions_exclusion-response'
+                  pagination:
+                    $ref: '#/components/schemas/exclusions_pagination'
+              examples:
+                response:
+                  value:
+                    exclusions:
+                    - uuid: bb988de8-ab1f-4fd5-a5ea-6fcef8e49df6
+                      members: host.domain.com,192.0.2.1,192.0.2.1-192.0.2.255
+                      name: My-Exclusion
+                      description: My description.
+                      id: 1000106
+                      schedule:
+                        enabled: true
+                        starttime: '2023-09-01 00:00:00'
+                        endtime: '2023-09-02 00:00:00'
+                        rrules:
+                          freq: WEEKLY
+                          interval: 1
+                          byweekday: TU,SU,MO,WE,TH
+                        timezone: America/New_York
+                      creation_date: 1745957754
+                      last_modification_date: 1745957754
+                      network_id: 00000000-0000-0000-0000-000000000000
+                    - uuid: 84a77c2f-b4db-4bd5-9bd3-d3cb078875aa
+                      members: host.domain.com,192.0.2.1,192.0.2.1-192.0.2.255
+                      name: My-Exclusion-2
+                      description: My description.
+                      id: 1000107
+                      schedule:
+                        enabled: true
+                        starttime: '2023-09-01 00:00:00'
+                        endtime: '2023-09-02 00:00:00'
+                        rrules:
+                          freq: MONTHLY
+                          bymonthday: 4
+                        timezone: America/Chicago
+                      creation_date: 1745959227
+                      last_modification_date: 1745959227
+                      network_id: 00000000-0000-0000-0000-000000000000
+                    pagination:
+                      total: 1379
+                      limit: 200
+                      offset: 1000
+                      sort: last_modification_date:desc
+        '400':
+          description: 'Returned if your request specified invalid parameters or if your request was improperly formatted. Possible causes include:
+
+
+            * `sort` — The parameter does not use the required `<property>:<direction>` format (for example, `name:asc`).
+
+            * `offset` — The parameter value is less than `0`.
+
+            * `limit` — The parameter value is less than `0` or greater than `500`.'
+          content:
+            application/json:
+              examples:
+                invalid-sort:
+                  summary: Invalid sort format
+                  value:
+                    statusCode: 400
+                    error: Bad Request
+                    message: 'Sort query parameter is invalid. It should be in format: sortField:direction'
+                invalid-offset:
+                  summary: Invalid offset
+                  value:
+                    statusCode: 400
+                    error: Bad Request
+                    message: Offset query parameter is invalid.
+                invalid-limit:
+                  summary: Invalid limit
+                  value:
+                    statusCode: 400
+                    error: Bad Request
+                    message: Limit query parameter is invalid. It must be between 0 and 500.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list exclusions.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - exclusions_cloud: []
+  /exclusions/import:
+    post:
+      summary: Import exclusion
+      description: "Imports exclusions from the [exclusion import file](doc:import-file-formats) provided in your request and returns a list of saved exclusions. \n\n**Note:** This endpoint does not support the `network_id` attribute in exclusion objects for import. Tenable Vulnerability Management automatically assigns imported exclusions to the default network object. To assign imported exclusions to a custom network, use the [Update exclusion](ref:exclusions-edit) endpoint after import. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).<div class=\"perms-callout\">Requires the Standard [32] user role or one of the following custom role privileges: `VM.VM_SCAN.VM_SCAN_EXCLUSION.CREATE`, `VM.VM_SCAN.VM_SCAN_EXCLUSION.EDIT`, or `VM.VM_SCAN.VM_SCAN_EXCLUSION.DELETE`. See [Roles](doc:roles).</div>"
+      operationId: exclusions-import
+      tags:
+      - Exclusions
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The [exclusion import file](doc:import-file-formats).
+              required:
+              - file
+      responses:
+        '200':
+          description: Returned if the exclusion file was imported successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/exclusions_exclusion-response'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - exclusions_cloud: []
+  /exclusions/{exclusion_id}:
+    get:
+      summary: Get exclusion details
+      description: Returns the details for the specified exclusion.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: exclusions-details
+      tags:
+      - Exclusions
+      parameters:
+      - $ref: '#/components/parameters/exclusions_exclusion_id_param'
+      responses:
+        '200':
+          description: Returned if the details for the specified exclusion were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_exclusion-response'
+              examples:
+                response:
+                  value:
+                    uuid: 84a77c2f-b4db-4bd5-9bd3-d3cb078875aa
+                    members: host.domain.com,192.0.2.1,192.0.2.1-192.0.2.255
+                    name: My-Exclusion-2
+                    description: My description.
+                    id: 1000107
+                    schedule:
+                      enabled: true
+                      starttime: '2023-09-01 00:00:00'
+                      endtime: '2023-09-02 00:00:00'
+                      rrules:
+                        freq: MONTHLY
+                        bymonthday: 4
+                      timezone: America/Chicago
+                    creation_date: 1745959227
+                    last_modification_date: 1745959227
+                    network_id: 00000000-0000-0000-0000-000000000000
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to retrieve exclusion details.
+        '404':
+          description: Returned if the specified exclusion was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - exclusions_cloud: []
+    put:
+      summary: Update exclusion
+      description: Updates the specified exclusion.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.EDIT` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: exclusions-edit
+      tags:
+      - Exclusions
+      parameters:
+      - $ref: '#/components/parameters/exclusions_exclusion_id_param'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/exclusions_exclusion-request-body'
+      responses:
+        '200':
+          description: Returned if the specified exclusion was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_exclusion-response'
+              examples:
+                response:
+                  value:
+                    uuid: 84a77c2f-b4db-4bd5-9bd3-d3cb078875aa
+                    members: host.domain.com, 192.0.2.1, 192.0.2.1-192.0.2.255
+                    name: My-Exclusion-2
+                    description: My description.
+                    id: 1000107
+                    schedule:
+                      enabled: true
+                      starttime: '2023-09-01 00:00:00'
+                      endtime: '2023-09-02 00:00:00'
+                      rrules:
+                        freq: MONTHLY
+                        bymonthday: 4
+                      timezone: America/Chicago
+                    creation_date: 1745959227
+                    last_modification_date: 1745959227
+                    network_id: 00000000-0000-0000-0000-000000000000
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to update exclusions.
+        '404':
+          description: Returned if the specified exclusion was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - exclusions_cloud: []
+    delete:
+      summary: Delete exclusion
+      description: Deletes the specified exclusion.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.DELETE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: exclusions-delete
+      tags:
+      - Exclusions
+      parameters:
+      - $ref: '#/components/parameters/exclusions_exclusion_id_param'
+      responses:
+        '200':
+          description: Returned if the specified profile was deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to delete exclusions.
+        '404':
+          description: Returned if the specified exclusion was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exclusions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - exclusions_cloud: []
+components:
+  parameters:
+    exclusions_exclusion_id_param:
+      description: The ID of the exclusion. The value can be either the integer ID or the exclusion UUID.
+      required: true
+      name: exclusion_id
+      in: path
+      schema:
+        type: string
+  schemas:
+    exclusions_pagination:
+      type: object
+      description: The pagination metadata for the response results.
+      properties:
+        total:
+          type: integer
+          description: The total number of exclusions available across all pages that match the request criteria.
+          example: 1379
+        limit:
+          type: integer
+          description: The maximum number of exclusions returned in the current response page.
+          example: 200
+        offset:
+          type: integer
+          description: The number of records skipped for offset-based pagination.
+          example: 1000
+        sort:
+          type: string
+          description: The property and direction used to sort the results, formatted as `<property>:<direction>`.
+          example: last_modification_date:desc
+    exclusions_exclusion-request-body:
+      type: object
+      required:
+      - name
+      - members
+      properties:
+        name:
+          type: string
+          description: The name of the exclusion.
+          example: My-Exclusion
+        description:
+          type: string
+          description: The description of the exclusion.
+          example: My description.
+        members:
+          type: string
+          description: "The targets that you want excluded from scans. Specify multiple targets as a comma-separated string. Targets can be in the following formats:\n - An individual IPv4 address (`192.0.2.1`)\n - A range of IPv4 addresses (`192.0.2.1-192.0.2.255`)\n - CIDR notation (`192.0.2.0/24`)\n - A fully-qualified domain name (FQDN) (`host.domain.com`)"
+          example: host.domain.com, 192.0.2.1, 192.0.2.1-192.0.2.255
+        schedule:
+          $ref: '#/components/schemas/exclusions_schedule'
+        network_id:
+          type: string
+          description: The ID of the network object associated with scanners where Tenable Vulnerability Management applies the exclusion. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+          example: 00000000-0000-0000-0000-000000000000
+    exclusions_exclusion-response:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: The UUID of the exclusion.
+          example: 3584b24b-7f26-4684-b644-a2a92103d6c2
+        members:
+          type: string
+          description: "The targets that you want excluded from scans. Specify multiple targets as a comma-separated string. Targets can be in the following formats:\n - An individual IPv4 address (`192.0.2.1`)\n - A range of IPv4 addresses (`192.0.2.1-192.0.2.255`)\n - CIDR notation (`192.0.2.0/24`)\n - A fully-qualified domain name (FQDN) (`host.domain.com`)"
+          example: host.domain.com, 192.0.2.1, 192.0.2.1-192.0.2.255
+        name:
+          type: string
+          description: The name of the exclusion.
+          example: My-Exclusion
+        description:
+          type: string
+          nullable: true
+          description: The description of the exclusion.
+          example: My description.
+        id:
+          type: integer
+          description: The unique ID of the exclusion.
+          example: 1
+        schedule:
+          $ref: '#/components/schemas/exclusions_schedule'
+        creation_date:
+          type: integer
+          format: int64
+          description: The creation date of the exclusion in Unix time.
+          example: 1561643735
+        last_modification_date:
+          type: integer
+          format: int64
+          description: The last modification date for the exclusion in Unix time.
+          example: 1561643785
+        network_id:
+          type: string
+          description: The ID of the network object associated with scanners where Tenable Vulnerability Management applies the exclusion. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+          example: 00000000-0000-0000-0000-000000000000
+    exclusions_rrules:
+      type: object
+      description: The recurrence rules for the exclusion.
+      properties:
+        freq:
+          type: string
+          description: The frequency of the rule (`ONETIME`, `DAILY`, `WEEKLY`, `MONTHLY`, `YEARLY`).
+          enum:
+          - ONETIME
+          - DAILY
+          - WEEKLY
+          - MONTHLY
+          - YEARLY
+          example: WEEKLY
+        interval:
+          type: integer
+          description: The interval of the rule. For example, every 4 days, every 2 months, every 3 years, etc.
+          example: 1
+        byweekday:
+          type: string
+          description: A comma-separated string of days to repeat a WEEKLY freq rule on (SU,MO,TU,WE,TH,FR, or SA).
+          example: TU,SU,MO,WE,TH
+        bymonthday:
+          type: integer
+          description: The day of the month to repeat a MONTHLY freq rule on.
+          example: 1
+    exclusions_schedule:
+      type: object
+      description: The schedule parameters for the exclusion. When `enabled` is `false` (Always On), only the `enabled` field is returned.
+      properties:
+        enabled:
+          type: boolean
+          description: If `true`, the exclusion schedule is active (Scheduled). If `false`, the exclusion is always active (Always On).
+          example: true
+        starttime:
+          type: string
+          description: The start time for the exclusion formatted as `YYYY-MM-DD HH:MM:SS` (ISO 8601 format).
+          example: '2023-09-01 00:00:00'
+        endtime:
+          type: string
+          description: The end time for the exclusion formatted as `YYYY-MM-DD HH:MM:SS` (ISO 8601 format).
+          example: '2023-09-02 00:00:00'
+        rrules:
+          $ref: '#/components/schemas/exclusions_rrules'
+        timezone:
+          type: string
+          description: The timezone for the exclusion. You can retrieve a list of timezones from the [Get timezones](ref:scans-timezones) endpoint.
+          example: America/New_York
+    exclusions_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

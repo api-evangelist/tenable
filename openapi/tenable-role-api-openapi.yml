@@ -1,0 +1,729 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Role API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Role
+  description: Groupment of permissions that may be assigned to several users
+paths:
+  /api/roles:
+    get:
+      summary: Retrieve all role instances.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the get /roles response
+                type: array
+                items:
+                  description: Role
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - name
+                  - description
+                  - permissions
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    permissions:
+                      type: array
+                      items:
+                        description: Permission
+                        type: object
+                        additionalProperties: false
+                        required:
+                        - entityIds
+                        - action
+                        - entityName
+                        properties:
+                          entityName:
+                            type: string
+                          action:
+                            type: string
+                          entityIds:
+                            type: array
+                            items:
+                              type: string
+                            nullable: true
+                          dynamicId:
+                            type: string
+                            enum:
+                            - self-user-id
+                            - null
+                            default: null
+                            nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Role
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+    post:
+      summary: Create role instance.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the get /roles response
+                type: array
+                minItems: 1
+                items:
+                  description: Role
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - name
+                  - description
+                  - permissions
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    permissions:
+                      type: array
+                      items:
+                        description: Permission
+                        type: object
+                        additionalProperties: false
+                        required:
+                        - entityIds
+                        - action
+                        - entityName
+                        properties:
+                          entityName:
+                            type: string
+                          action:
+                            type: string
+                          entityIds:
+                            type: array
+                            items:
+                              type: string
+                            nullable: true
+                          dynamicId:
+                            type: string
+                            enum:
+                            - self-user-id
+                            - null
+                            default: null
+                            nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Role
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates the POST /roles request
+              type: array
+              minItems: 1
+              items:
+                type: object
+                additionalProperties: false
+                required:
+                - name
+                - description
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
+  /api/roles/user-creation-defaults:
+    get:
+      summary: Return the default roles for user creation
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the get /roles response
+                type: array
+                items:
+                  description: Role
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - name
+                  - description
+                  - permissions
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    permissions:
+                      type: array
+                      items:
+                        description: Permission
+                        type: object
+                        additionalProperties: false
+                        required:
+                        - entityIds
+                        - action
+                        - entityName
+                        properties:
+                          entityName:
+                            type: string
+                          action:
+                            type: string
+                          entityIds:
+                            type: array
+                            items:
+                              type: string
+                            nullable: true
+                          dynamicId:
+                            type: string
+                            enum:
+                            - self-user-id
+                            - null
+                            default: null
+                            nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Role
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/roles/{id}:
+    get:
+      summary: Get role instance by id.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Role
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - name
+                - description
+                properties:
+                  id:
+                    type: number
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  permissions:
+                    type: array
+                    items:
+                      description: Permission
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - entityIds
+                      - action
+                      - entityName
+                      properties:
+                        entityName:
+                          type: string
+                        action:
+                          type: string
+                        entityIds:
+                          type: array
+                          items:
+                            type: string
+                          nullable: true
+                        dynamicId:
+                          type: string
+                          enum:
+                          - self-user-id
+                          - null
+                          default: null
+                          nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Role
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+    patch:
+      summary: Update role instance.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Role
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - name
+                - description
+                - permissions
+                properties:
+                  id:
+                    type: number
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  permissions:
+                    type: array
+                    items:
+                      description: Permission
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - entityIds
+                      - action
+                      - entityName
+                      properties:
+                        entityName:
+                          type: string
+                        action:
+                          type: string
+                        entityIds:
+                          type: array
+                          items:
+                            type: string
+                          nullable: true
+                        dynamicId:
+                          type: string
+                          enum:
+                          - self-user-id
+                          - null
+                          default: null
+                          nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Role
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Role
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+    delete:
+      summary: Delete role instance.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '204':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Role
+                nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Role
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/roles/from/{fromId}:
+    post:
+      summary: Creates a new role from another one
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '204':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the POST /roles/from/{fromId} response
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - name
+                - description
+                - permissions
+                properties:
+                  id:
+                    type: number
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  permissions:
+                    type: array
+                    items:
+                      description: Permission
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - entityIds
+                      - action
+                      - entityName
+                      properties:
+                        entityName:
+                          type: string
+                        action:
+                          type: string
+                        entityIds:
+                          type: array
+                          items:
+                            type: string
+                          nullable: true
+                        dynamicId:
+                          type: string
+                          enum:
+                          - self-user-id
+                          - null
+                          default: null
+                          nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Role
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: fromId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Role copy from
+              type: object
+              additionalProperties: false
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+  /api/roles/{id}/permissions:
+    put:
+      summary: Replace permission list for a role
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the POST /roles/{id}/permissions response
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - name
+                - description
+                - permissions
+                properties:
+                  id:
+                    type: number
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  permissions:
+                    type: array
+                    items:
+                      description: Permission
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - entityIds
+                      - action
+                      - entityName
+                      properties:
+                        entityName:
+                          type: string
+                        action:
+                          type: string
+                        entityIds:
+                          type: array
+                          items:
+                            type: string
+                          nullable: true
+                        dynamicId:
+                          type: string
+                          enum:
+                          - self-user-id
+                          - null
+                          default: null
+                          nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Role
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Role add-permission
+              type: array
+              items:
+                description: Permission
+                type: object
+                additionalProperties: false
+                required:
+                - entityIds
+                - action
+                - entityName
+                properties:
+                  entityName:
+                    type: string
+                  action:
+                    type: string
+                  entityIds:
+                    type: array
+                    items:
+                      type: string
+                    nullable: true
+                  dynamicId:
+                    type: string
+                    enum:
+                    - self-user-id
+                    - null
+                    default: null
+                    nullable: true
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

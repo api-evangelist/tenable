@@ -1,0 +1,314 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About License API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: License
+  description: Product license
+paths:
+  /api/license:
+    get:
+      summary: Get license singleton.
+      description: 'Required license type: none'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - customerName
+                - maxActiveUserCount
+                - expirationDateUTC
+                - inAppEula
+                - type
+                - features
+                - containerUuid
+                - activationCode
+                properties:
+                  customerName:
+                    type: string
+                  maxActiveUserCount:
+                    type: integer
+                  currentActiveUserCount:
+                    type: integer
+                    nullable: true
+                  expirationDateUTC:
+                    type: string
+                    format: date-time
+                  inAppEula:
+                    type: boolean
+                  type:
+                    enum:
+                    - POC
+                    - PROD
+                    - INTERNAL
+                    - NFR
+                  features:
+                    type: array
+                    items:
+                      enum:
+                      - ioe
+                      - ioa
+                      - ioaPreview
+                  containerUuid:
+                    type: string
+                    format: uuid
+                    nullable: true
+                  activationCode:
+                    type: string
+                    nullable: true
+                  productAssociation:
+                    type: string
+                    nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - License
+      x-tenablead-required-product-license-type: []
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+    post:
+      summary: Create new license singleton
+      description: 'Required license type: none'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - customerName
+                - maxActiveUserCount
+                - expirationDateUTC
+                - inAppEula
+                - type
+                - features
+                - containerUuid
+                - activationCode
+                properties:
+                  customerName:
+                    type: string
+                  maxActiveUserCount:
+                    type: integer
+                  currentActiveUserCount:
+                    type: integer
+                    nullable: true
+                  expirationDateUTC:
+                    type: string
+                    format: date-time
+                  inAppEula:
+                    type: boolean
+                  type:
+                    enum:
+                    - POC
+                    - PROD
+                    - INTERNAL
+                    - NFR
+                  features:
+                    type: array
+                    items:
+                      enum:
+                      - ioe
+                      - ioa
+                      - ioaPreview
+                  containerUuid:
+                    type: string
+                    format: uuid
+                    nullable: true
+                  activationCode:
+                    type: string
+                    nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - License
+      x-tenablead-required-product-license-type: []
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: license payload
+              type: object
+              additionalProperties: false
+              required:
+              - license
+              properties:
+                license:
+                  type: string
+  /api/license/product-association:
+    get:
+      summary: Get product association in the License
+      description: 'Required license type: none'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  productAssociation:
+                    type: string
+                    nullable: true
+        '500':
+          description: Internal server error
+      tags:
+      - License
+      x-tenablead-required-product-license-type: []
+  /mssp/license:
+    get:
+      tags:
+      - License
+      summary: Get license details
+      description: Returns license details for the account associated with the user's API credentials. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-license-details
+      responses:
+        '200':
+          description: Returned if the license details were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  license_used:
+                    type: string
+                    description: The number of licenses in use.
+                  license_purchased:
+                    type: string
+                    description: The number of licenses purchased.
+              examples:
+                response:
+                  value:
+                    license_used: '195484'
+                    license_purchased: '0'
+        '400':
+          description: Returned if you specify invalid input parameters.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

@@ -1,0 +1,1323 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Attack Path Exports API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Attack Path Exports
+  description: The Tenable Attack Path Exports API enables users to export top attack paths, attack technique data, and MITRE ATT&CK heatmap data in JSON or CSV format. MITRE heatmap exports in JSON conform to the MITRE ATT&CK Navigator layer schema, allowing direct import into Navigator. For more information about attack paths and attack techniques, see [Attack Path](https://docs.tenable.com/exposure-management/Content/exposure-management/attack-path/attack-path.htm) in the _Tenable Exposure Management User Guide_.
+  x-displayName: Attack Path Exports
+paths:
+  /api/v1/export/attack-path:
+    post:
+      summary: Export top attack paths
+      description: Submits an export request for top attack paths that match the specified search criteria. Returns an export ID used to check the status of the export and download the results. <div class="perms-callout">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: apa-export-attack-path
+      tags:
+      - Attack Path Exports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Attack_Path_Exports_Request-Export-Attack-Paths'
+            examples:
+              basic_export:
+                summary: Export vectors as CSV
+                value:
+                  file_format: CSV
+                  sort:
+                    property: priority
+                    direction: desc
+              filtered_export:
+                summary: Export specific vectors with filter
+                value:
+                  file_format: JSON
+                  filters:
+                    operator: and
+                    value:
+                    - property: priority
+                      operator: eq
+                      value: critical
+                  vector_ids:
+                  - CC5A96068E61D0B1E5DB5D1FD9394813
+                  columns:
+                  - path_name
+                  - priority
+                  - sequence_chain
+      responses:
+        '202':
+          description: Returned if the attack path export request was successfully queued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ExportRequestId'
+              examples:
+                response:
+                  value:
+                    export_id: 7f58afba-3d63-4c6d-9693-9554497ea0f9
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponseStatus'
+              examples:
+                response:
+                  value:
+                    message: Invalid file_format. Must be CSV or JSON.
+                    status: 400
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to export attack paths.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if the attack path export feature is not enabled for your account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Attack path export is not enabled for this account.
+      security:
+      - Attack_Path_Exports_cloud: []
+  /api/v1/export/attack-technique:
+    post:
+      summary: Export attack techniques
+      description: Submits an export request for attack technique data that matches the specified search criteria. Returns an export ID used to check the status of the export and download the results. <div class="perms-callout">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: apa-export-attack-technique
+      tags:
+      - Attack Path Exports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Attack_Path_Exports_Request-Export-Attack-Techniques'
+            examples:
+              basic_export:
+                summary: Export attack techniques as CSV
+                value:
+                  file_format: CSV
+                  sort:
+                    property: priority
+                    direction: desc
+              filtered_export:
+                summary: Export specific attack techniques with filter
+                value:
+                  file_format: JSON
+                  filters:
+                    operator: ==
+                    key: priority
+                    value: high
+                  attack_technique_ids:
+                  - technique-id-1
+                  - technique-id-2
+      responses:
+        '202':
+          description: Returned if the attack technique export request was successfully queued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ExportRequestId'
+              examples:
+                response:
+                  value:
+                    export_id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponseStatus'
+              examples:
+                response:
+                  value:
+                    message: Invalid file_format. Must be CSV or JSON.
+                    status: 400
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to export attack techniques.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if the attack path export feature is not enabled for your account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Attack path export is not enabled for this account.
+      security:
+      - Attack_Path_Exports_cloud: []
+  /api/v1/export/mitre-heatmap:
+    post:
+      summary: Export MITRE ATT&CK heatmap
+      description: Submits an export request for MITRE ATT&CK heatmap data that matches the specified filter criteria. JSON exports conform to the [MITRE ATT&CK Navigator](https://mitre-attack.github.io/attack-navigator/) layer schema, enabling direct import into Navigator. CSV exports return a flat table of technique data. Returns an export ID used to check the status of the export and download the results. <div class="perms-callout">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: apa-export-mitre-heatmap
+      tags:
+      - Attack Path Exports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Attack_Path_Exports_Request-Export-Mitre-Heatmap'
+            examples:
+              basic_export:
+                summary: Export the MITRE heatmap as a Navigator layer (JSON)
+                value:
+                  file_format: JSON
+                  filter:
+                    matrix: enterprise
+              filtered_export:
+                summary: Export only Windows techniques with high or critical severity
+                value:
+                  file_format: JSON
+                  filter:
+                    matrix: enterprise
+                    platform: Windows
+                    severities:
+                    - high
+                    - critical
+                    show_all_techniques: false
+                  file_name: windows_critical_heatmap
+              csv_export:
+                summary: Export the MITRE heatmap as CSV
+                value:
+                  file_format: CSV
+                  filter:
+                    matrix: enterprise
+      responses:
+        '202':
+          description: Returned if the MITRE heatmap export request was successfully queued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ExportRequestId'
+              examples:
+                response:
+                  value:
+                    export_id: b9c1f2e8-4a7d-4f5b-9e2c-1d3a5b7c9e1f
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponseStatus'
+              examples:
+                response:
+                  value:
+                    message: Invalid file_format. Must be CSV or JSON.
+                    status: 400
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to export MITRE heatmap data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if the MITRE heatmap export feature is not enabled for your account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: MITRE heatmap export is not enabled for this account.
+      security:
+      - Attack_Path_Exports_cloud: []
+  /api/v1/export/{export_id}/status:
+    get:
+      summary: Get export status
+      description: Retrieves the current status of an attack path, attack technique, or MITRE heatmap export request. <div class="perms-callout">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: apa-export-status
+      tags:
+      - Attack Path Exports
+      parameters:
+      - description: Specifies the unique identifier (UUID) of the export request.
+        explode: false
+        in: path
+        name: export_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        '200':
+          description: Returned if the status of the specified export request was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_Response-Export-Status'
+              examples:
+                queued:
+                  summary: Export is queued
+                  value:
+                    export_id: 7f58afba-3d63-4c6d-9693-9554497ea0f9
+                    status: QUEUED
+                    submitted_at: '2025-07-23T22:15:25.849Z'
+                    last_refreshed_at: '2025-07-23T22:15:25.849Z'
+                finished:
+                  summary: Export is finished
+                  value:
+                    export_id: 7f58afba-3d63-4c6d-9693-9554497ea0f9
+                    status: FINISHED
+                    submitted_at: '2025-07-23T22:15:25.849Z'
+                    last_refreshed_at: '2025-07-23T22:15:27.305Z'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the export status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+        '404':
+          description: Returned if specified export request was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponseStatus'
+              examples:
+                response:
+                  value:
+                    message: The request with id 1697e68f-7e14-41ad-9146-f2e08bd59296 was not found
+                    status: 404
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if the attack path export feature is not enabled for your account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Attack path export is not enabled for this account.
+      security:
+      - Attack_Path_Exports_cloud: []
+  /api/v1/export/{export_id}/download:
+    get:
+      summary: Download export
+      description: Downloads the results of a completed attack path, attack technique, or MITRE heatmap export request. The response format depends on the `file_format` specified in the original export request. MITRE heatmap exports in JSON format conform to the [MITRE ATT&CK Navigator](https://mitre-attack.github.io/attack-navigator/) layer schema. <div class="perms-callout">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: apa-export-download
+      tags:
+      - Attack Path Exports
+      parameters:
+      - description: Specifies the unique identifier (UUID) of the export request.
+        explode: false
+        in: path
+        name: export_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        '200':
+          description: Returned if the specified export file was retrieved successfully.
+          content:
+            application/octet-stream:
+              schema:
+                oneOf:
+                - title: Attack Path Export (JSON)
+                  description: The response model for attack path exports in JSON format.
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Attack_Path_Exports_AttackPathExportRecord'
+                - title: Attack Path Export (CSV)
+                  description: For the CSV response model of attack path exports, see the example CSV response.
+                  type: string
+                - title: Attack Technique Export (JSON)
+                  description: The response model for attack technique exports in JSON format.
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Attack_Path_Exports_AttackTechniqueExportRecord'
+                - title: Attack Technique Export (CSV)
+                  description: For the CSV response model of attack technique exports, see the example CSV response.
+                  type: string
+                - title: MITRE Heatmap Export (JSON)
+                  description: The response model for MITRE heatmap exports in JSON format. The document conforms to the MITRE ATT&CK Navigator layer schema, allowing direct import into Navigator.
+                  $ref: '#/components/schemas/Attack_Path_Exports_MitreHeatmapNavigatorLayer'
+                - title: MITRE Heatmap Export (CSV)
+                  description: For the CSV response model of MITRE heatmap exports, see the example CSV response.
+                  type: string
+              examples:
+                Attack Path Export (JSON):
+                  value:
+                  - path_name: Domain Admin Compromise via Kerberoasting
+                    priority_rating: Critical
+                    source_nes: 8.5
+                    target_acr: 9.2
+                    sequence_chain: Workstation-01 → Kerberoasting (T1558.003) → DC-01
+                    enablers: Weak service account password; SPN configured on privileged account
+                    asset_ids: a1b2c3d4-0001-0001-0001-000000000001;a1b2c3d4-0001-0001-0001-000000000002
+                  - path_name: Lateral Movement to File Server
+                    priority_rating: High
+                    source_nes: 7.1
+                    target_acr: 8
+                    sequence_chain: Laptop-05 → Pass-the-Hash (T1550.002) → FileServer-02
+                    enablers: Cached credentials; Local admin reuse
+                    asset_ids: a1b2c3d4-0002-0002-0002-000000000001;a1b2c3d4-0002-0002-0002-000000000002
+                Attack Path Export (CSV):
+                  value: 'path_name,priority_rating,source_nes,target_acr,sequence_chain,enablers,asset_ids
+
+                    Domain Admin Compromise via Kerberoasting,Critical,8.5,9.2,Workstation-01 → Kerberoasting (T1558.003) → DC-01,Weak service account password; SPN configured on privileged account,a1b2c3d4-0001-0001-0001-000000000001;a1b2c3d4-0001-0001-0001-000000000002
+
+                    Lateral Movement to File Server,High,7.1,8.0,Laptop-05 → Pass-the-Hash (T1550.002) → FileServer-02,Cached credentials; Local admin reuse,a1b2c3d4-0002-0002-0002-000000000001;a1b2c3d4-0002-0002-0002-000000000002'
+                Attack Technique Export (JSON):
+                  value:
+                  - mitre_id: T1558.003
+                    technique_name: Kerberoasting
+                    priority: Critical
+                    status: To Do
+                    state: Open
+                    through: Weak service account password
+                    source_names: Workstation-01;Laptop-05
+                    source_classes: Windows;Windows
+                    source_ids: a1b2c3d4-0001-0001-0001-000000000001;a1b2c3d4-0002-0002-0002-000000000001
+                    target_names: DC-01;DC-02
+                    target_classes: Windows;Windows
+                    target_ids: a1b2c3d4-0001-0001-0001-000000000002;a1b2c3d4-0003-0003-0003-000000000001
+                    tactics: Credential Access
+                    data_sources: Active Directory
+                    top_attack_path_count: 5
+                    critical_assets_count: 3
+                Attack Technique Export (CSV):
+                  value: 'mitre_id,technique_name,priority,status,state,through,source_names,source_classes,source_ids,target_names,target_classes,target_ids,tactics,data_sources,top_attack_path_count,critical_assets_count
+
+                    T1558.003,Kerberoasting,Critical,To Do,Open,Weak service account password,Workstation-01;Laptop-05,Windows;Windows,a1b2c3d4-0001-0001-0001-000000000001;a1b2c3d4-0002-0002-0002-000000000001,DC-01;DC-02,Windows;Windows,a1b2c3d4-0001-0001-0001-000000000002;a1b2c3d4-0003-0003-0003-000000000001,Credential Access,Active Directory,5,3'
+                MITRE Heatmap Export (JSON):
+                  value:
+                    name: Tenable APA MITRE Heatmap
+                    versions:
+                      attack: '14'
+                      navigator: 4.9.5
+                      layer: '4.5'
+                    domain: enterprise-attack
+                    description: Heatmap of MITRE ATT&CK techniques observed in your environment, scored by Tenable Attack Path Analysis.
+                    techniques:
+                    - techniqueID: T1558.003
+                      tactic: credential-access
+                      score: 92
+                      color: '#a50026'
+                      comment: '12 active findings; highest severity: Critical'
+                      enabled: true
+                    - techniqueID: T1550.002
+                      tactic: lateral-movement
+                      score: 71
+                      color: '#f46d43'
+                      comment: '5 active findings; highest severity: High'
+                      enabled: true
+                    gradient:
+                      colors:
+                      - '#a6d96a'
+                      - '#fee08b'
+                      - '#a50026'
+                      minValue: 0
+                      maxValue: 100
+                MITRE Heatmap Export (CSV):
+                  value: 'techniqueID,tactic,score,color,comment,enabled
+
+                    T1558.003,credential-access,92,#a50026,12 active findings; highest severity: Critical,true
+
+                    T1550.002,lateral-movement,71,#f46d43,5 active findings; highest severity: High,true'
+        '204':
+          description: Returned if the specified export is not yet ready for download.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to download exports.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+        '404':
+          description: Returned if the specified export request was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponseStatus'
+              examples:
+                response:
+                  value:
+                    message: The request with id 7d8a71b1-3cab-4768-8905-0040917ad451 was not found
+                    status: 404
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if the attack path export feature is not enabled for your account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_Exports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Attack path export is not enabled for this account.
+      security:
+      - Attack_Path_Exports_cloud: []
+components:
+  schemas:
+    Attack_Path_Exports_FileFormat:
+      description: Specifies the file format for the exported data.
+      enum:
+      - CSV
+      - JSON
+      type: string
+    Attack_Path_Exports_ErrorResponseStatus:
+      type: object
+      properties:
+        message:
+          type: string
+          description: An error message indicating the invalid parameter or value.
+        status:
+          type: integer
+          description: The HTTP response status code.
+    Attack_Path_Exports_Attack-Technique-Multiple-Filters-Nested:
+      description: Defines a nested logical operator used within a compound filter. This enables deep filtering logic while preventing circular references.
+      type: object
+      properties:
+        operator:
+          type: string
+          description: Specifies the logical operator used to combine the nested conditions.
+          enum:
+          - and
+          - or
+        value:
+          type: array
+          description: Contains an array of single filter conditions.
+          items:
+            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Technique-Single-Filter'
+      required:
+      - value
+    Attack_Path_Exports_AttackPathExportRecord:
+      type: object
+      description: A single attack path record in the export results.
+      properties:
+        path_name:
+          type: string
+          description: The name assigned to the attack path. For many paths, the system uses generative AI to create a descriptive name based on the potential threat.
+        priority_rating:
+          type: string
+          description: The priority level assigned to the attack path. Possible values include `Critical`, `High`, `Medium`, and `Low`.
+        source_nes:
+          type: number
+          description: The Node Exposure Score (NES) of the starting node in the attack path.
+        target_acr:
+          type: number
+          description: The Asset Criticality Rating (ACR) of the final destination asset in the attack path.
+        sequence_chain:
+          type: string
+          description: The structured progression of the attack path, showing the sequence of assets and techniques from source to destination.
+        enablers:
+          type: string
+          description: A semicolon-separated list of the primary security gaps or configurations (enablers) that facilitate the attack path.
+        asset_ids:
+          type: string
+          description: A semicolon-separated list of the unique identifiers (UUIDs) for all assets involved in the attack path, listed in order of progression.
+    Attack_Path_Exports_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Attack_Path_Exports_Attack-Technique-Multiple-Filters:
+      description: Defines a compound filter that combines multiple conditions using logical operators.
+      type: object
+      properties:
+        operator:
+          type: string
+          description: Specifies the logical operator used to combine multiple filter conditions.
+          enum:
+          - and
+          - or
+        value:
+          type: array
+          description: Contains an array of filter objects. Each item can be a single filter condition or a nested operator object.
+          items:
+            oneOf:
+            - title: Single Filter
+              $ref: '#/components/schemas/Attack_Path_Exports_Attack-Technique-Single-Filter'
+            - title: Multiple Filters
+              $ref: '#/components/schemas/Attack_Path_Exports_Attack-Technique-Multiple-Filters-Nested'
+      required:
+      - operator
+      - value
+      title: AttackTechniqueFilterOperator
+    Attack_Path_Exports_MitreHeatmapTechniqueRecord:
+      type: object
+      description: A single technique entry in the MITRE heatmap export. CSV exports represent the same fields flattened to one row per technique.
+      properties:
+        techniqueID:
+          type: string
+          description: The MITRE ATT&CK technique identifier (for example, `T1078` or `T1078.004`).
+        tactic:
+          type: string
+          description: The MITRE ATT&CK tactic slug associated with this technique entry (for example, `initial-access`).
+        score:
+          type: number
+          description: The exposure score for this technique in your environment. Derived from the count and severity of active findings mapped to this technique. Higher values indicate greater exposure.
+        color:
+          type: string
+          description: The hex color code Navigator renders for this technique, derived from the score and the layer gradient definition.
+        comment:
+          type: string
+          description: A pipe-delimited summary of the key metrics driving this technique's score, including the top attack technique count, top attack path count, and critical asset count.
+        enabled:
+          type: boolean
+          description: Indicates whether Navigator highlights this technique. The system sets this to `true` for techniques with active findings, and `false` for techniques included only because `show_all_techniques` is `true`.
+        metadata:
+          type: array
+          description: A list of structured key-value metadata entries that surface the same metrics as the `comment` field, suitable for programmatic access in Navigator.
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: 'The name of the metadata metric. Supported values: `Top Attack Technique Count`, `Top Attack Path Count`, `Critical Asset Count`.'
+              value:
+                type: string
+                description: The value of the metadata metric.
+    Attack_Path_Exports_Request-Export-Attack-Paths:
+      type: object
+      required:
+      - file_format
+      properties:
+        file_format:
+          $ref: '#/components/schemas/Attack_Path_Exports_FileFormat'
+        filters:
+          description: Specifies filter conditions for the export. Accepts a single condition or multiple conditions combined with a logical operator.
+          oneOf:
+          - title: Single Filter
+            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Single-Filter'
+          - title: Multiple Filters
+            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Multiple-Filters'
+        vector_ids:
+          description: Specifies an optional list of attack path vector IDs (UUIDs) to export. If specified, the system only exports the vectors matching these IDs. If omitted, the system exports all vectors matching the filter criteria.
+          type: array
+          items:
+            type: string
+        columns:
+          description: Specifies the columns to include in the export. If omitted, the system includes all available columns.
+          type: array
+          example:
+          - path_name
+          items:
+            type: string
+            enum:
+            - path_name
+            - priority
+            - source_nes
+            - target_acr
+            - sequence_chain
+            - enabler_list
+            - asset_ids
+        file_name:
+          description: Specifies a custom name for the exported file. If omitted, the system generates a default name.
+          type: string
+          maxLength: 100
+        sort:
+          $ref: '#/components/schemas/Attack_Path_Exports_ExportSortParams'
+    Attack_Path_Exports_Request-Export-Attack-Techniques:
+      type: object
+      required:
+      - file_format
+      properties:
+        file_format:
+          $ref: '#/components/schemas/Attack_Path_Exports_FileFormat'
+        filters:
+          description: Specifies filter conditions for the export. Accepts a single condition or multiple conditions combined with a logical operator.
+          oneOf:
+          - title: Single Filter
+            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Technique-Single-Filter'
+          - title: Multiple Filters
+            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Technique-Multiple-Filters'
+        attack_technique_ids:
+          description: Specifies an optional list of attack technique UUIDs to export. If specified, the system only exports the techniques matching these IDs. If omitted, the system exports all techniques matching the filter criteria.
+          type: array
+          items:
+            type: string
+        columns:
+          description: Specifies the columns to include in the export. If omitted, the system includes all available columns.
+          type: array
+          example:
+          - mitre_id
+          items:
+            type: string
+            enum:
+            - mitre_id
+            - technique_name
+            - priority
+            - status
+            - state
+            - through
+            - source_names
+            - source_classes
+            - source_ids
+            - target_names
+            - target_classes
+            - target_ids
+            - tactics
+            - data_sources
+            - top_attack_path_count
+            - critical_assets_count
+        file_name:
+          description: Specifies a custom name for the exported file. If omitted, the system generates a default name.
+          type: string
+          maxLength: 100
+        sort:
+          $ref: '#/components/schemas/Attack_Path_Exports_ExportSortParams'
+    Attack_Path_Exports_Attack-Path-Multiple-Filters-Nested:
+      description: Defines a nested logical operator used within a compound filter. This enables deep filtering logic while preventing circular references.
+      type: object
+      properties:
+        operator:
+          type: string
+          description: Specifies the logical operator used to combine the nested conditions.
+          enum:
+          - and
+          - or
+          default: and
+        value:
+          type: array
+          description: Contains an array of single filter conditions.
+          items:
+            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Single-Filter'
+      required:
+      - value
+    Attack_Path_Exports_Attack-Technique-Single-Filter:
+      description: Defines a single filter condition used to narrow the search results for attack techniques.
+      type: object
+      properties:
+        property:
+          type: string
+          description: 'Specifies the property used to filter the results. For example: `priority`, `name`, or `last_updated_at`.'
+          enum:
+          - priority
+          - state
+          - status
+          - name
+          - procedureName
+          - mitre_id
+          - tactics
+          - target
+          - source
+          - cause
+          - last_updated_at
+          - created
+          - serial_id
+        operator:
+          type: string
+          description: 'Specifies the comparison operator applied to the property filter. For example: `eq` (equals), `ne` (not equals), or `contains`.'
+          enum:
+          - eq
+          - ne
+          - gt
+          - gte
+          - lt
+          - lte
+          - contains
+          - not_contains
+          - in
+          - not_in
+        value:
+          description: Defines the specific value or values to match against the property. This can be a single value or an array of values depending on the operator used.
+          oneOf:
+          - title: Single String Value
+            type: string
+          - title: Multiple String Values
+            type: array
+            items:
+              type: string
+          - title: Single Integer Value
+            type: integer
+          - title: Multiple Integer Values
+            type: array
+            items:
+              type: integer
+          - title: Single Boolean Value
+            type: boolean
+            enum:
+            - true
+            - false
+    Attack_Path_Exports_AttackTechniqueExportRecord:
+      type: object
+      description: A single attack technique record in the export results.
+      properties:
+        mitre_id:
+          type: string
+          description: The MITRE ATT&CK technique identifier (for example, `T1003`).
+        technique_name:
+          type: string
+          description: The descriptive name of the attack technique.
+        priority:
+          type: string
+          description: The priority level assigned to the attack technique. Possible values include `Critical`, `High`, `Medium`, and `Low`.
+        status:
+          type: string
+          description: The current workflow status of the attack technique. Possible values include `to_do`, `in_progress`, `in_review`, `done`, and `accepted`.
+        state:
+          type: string
+          description: The operational state of the attack technique. Possible values include `open` and `archive`.
+        through:
+          type: string
+          description: The primary security gap or enabler that facilitates this technique.
+        source_names:
+          type: string
+          description: A semicolon-separated list of names for the originating source assets.
+        source_classes:
+          type: string
+          description: A semicolon-separated list of asset classes for the originating source assets.
+        source_ids:
+          type: string
+          description: A semicolon-separated list of the unique identifiers (UUIDs) for the originating source assets.
+        target_names:
+          type: string
+          description: A semicolon-separated list of names for the destination target assets.
+        target_classes:
+          type: string
+          description: A semicolon-separated list of asset classes for the destination target assets.
+        target_ids:
+          type: string
+          description: A semicolon-separated list of the unique identifiers (UUIDs) for the destination target assets.
+        tactics:
+          type: string
+          description: A semicolon-separated list of the associated MITRE ATT&CK tactics.
+        data_sources:
+          type: string
+          description: A semicolon-separated list of the data sources that provided information for this technique.
+        top_attack_path_count:
+          type: integer
+          description: The total number of top attack paths in which this technique appears.
+        critical_assets_count:
+          type: integer
+          description: The total number of critical assets that could be compromised using this technique.
+    Attack_Path_Exports_ExportSortParams:
+      type: object
+      description: Defines the sort order applied to the exported results.
+      required:
+      - property
+      - direction
+      properties:
+        property:
+          description: Specifies the property used to sort the results.
+          type: string
+        direction:
+          description: Specifies the sort direction, either ascending (`asc`) or descending (`desc`).
+          type: string
+          enum:
+          - asc
+          - desc
+    Attack_Path_Exports_Response-Export-Status:
+      type: object
+      properties:
+        export_id:
+          description: The unique identifier (UUID) for the export request. Use this ID to check the status of the export and download the results.
+          type: string
+          format: uuid
+        status:
+          description: 'The current status of the export request. Possible values include:
+
+
+            * `QUEUED` — The request is waiting for earlier requests to complete.
+
+            * `PROCESSING` — The system is currently processing the export request.
+
+            * `FINISHED` — The system has completed processing the export request. The file is available for download.
+
+            * `ERROR` — An error occurred while processing the export request. Retry the request; if the error persists, contact Tenable Support.
+
+            * `CANCELLED` — The export request was cancelled.'
+          type: string
+          enum:
+          - QUEUED
+          - PROCESSING
+          - FINISHED
+          - ERROR
+          - CANCELLED
+        submitted_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
+          format: date-time
+          type: string
+        last_refreshed_at:
+          description: A timestamp in ISO 8601 format indicating when the export status was last updated. Compare this value with `submitted_at` to gauge total processing time.
+          format: date-time
+          type: string
+    Attack_Path_Exports_Attack-Path-Multiple-Filters:
+      description: Defines a compound filter that combines multiple conditions using logical operators.
+      type: object
+      properties:
+        operator:
+          type: string
+          description: Specifies the logical operator used to combine multiple filter conditions.
+          enum:
+          - and
+          - or
+          default: and
+        value:
+          type: array
+          description: Contains an array of filter objects. Each item can be a single filter condition or a nested operator object.
+          items:
+            oneOf:
+            - title: Single Filter
+              $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Single-Filter'
+            - title: Multiple Filters
+              $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Multiple-Filters-Nested'
+      required:
+      - value
+    Attack_Path_Exports_ExportRequestId:
+      type: object
+      properties:
+        export_id:
+          description: The unique identifier (UUID) for the export request. Use this ID to check the status of the export and download the results.
+          type: string
+          format: uuid
+    Attack_Path_Exports_Attack-Path-Single-Filter:
+      description: Defines a single filter condition used to narrow the search results for attack paths.
+      type: object
+      properties:
+        property:
+          type: string
+          description: 'Specifies the property used to filter the results. For example: `priority`, `name`, or `technique`.'
+          enum:
+          - priority
+          - name
+          - summary
+          - steps
+          - asset_exposure
+          - blast_radius
+          - asset_id
+          - freetext
+          - finding_id
+          - technique
+          - weakness_id
+          - critical_asset
+          - data_source
+          - apa_aes
+          - acr
+          - path_status
+        operator:
+          type: string
+          description: 'Specifies the comparison operator applied to the property filter. For example: `eq` (equals), `ne` (not equals), or `contains`.'
+          enum:
+          - eq
+          - ne
+          - gt
+          - gte
+          - lt
+          - lte
+          - contains
+          - not_contains
+          - in
+          - not_in
+        value:
+          description: Defines the specific value or values to match against the property. This can be a single value or an array of values depending on the operator used.
+          oneOf:
+          - title: Single String Value
+            type: string
+          - title: Multiple String Values
+            type: array
+            items:
+              type: string
+          - title: Single Integer Value
+            type: integer
+          - title: Multiple Integer Values
+            type: array
+            items:
+              type: integer
+          - title: Single Boolean Value
+            type: boolean
+            enum:
+            - true
+            - false
+    Attack_Path_Exports_MitreHeatmapNavigatorLayer:
+      type: object
+      description: The MITRE ATT&CK Navigator layer document returned for JSON exports. Conforms to the [official Navigator layer format](https://github.com/mitre-attack/attack-navigator/blob/master/layers/spec/v4.5/layerformat.md), enabling direct import into Navigator.
+      properties:
+        name:
+          type: string
+          description: The display name of the Navigator layer (for example, `Tenable APA MITRE Heatmap`).
+        versions:
+          type: object
+          description: The ATT&CK, Navigator, and layer schema versions used to generate this layer.
+          properties:
+            attack:
+              type: string
+              description: The MITRE ATT&CK content version (for example, `14`).
+            navigator:
+              type: string
+              description: The minimum Navigator version required to render this layer (for example, `4.9.5`).
+            layer:
+              type: string
+              description: The Navigator layer schema version (for example, `4.5`).
+        domain:
+          type: string
+          description: The ATT&CK domain for this layer (for example, `enterprise-attack` or `ics-attack`).
+        description:
+          type: string
+          description: A human-readable summary of the layer content.
+        filters:
+          type: object
+          description: The platform filters applied to the layer. Navigator uses these to restrict which techniques are visible based on the platforms they apply to.
+          properties:
+            platforms:
+              type: array
+              description: A list of platforms included in the layer view. Only techniques applicable to at least one of the listed platforms are displayed.
+              items:
+                type: string
+        sorting:
+          type: integer
+          description: 'The sort order applied to techniques in the Navigator view. Supported values:
+
+
+            * `0` — Default order.
+
+            * `1` — Ascending alphabetically by technique name.
+
+            * `2` — Ascending by score.
+
+            * `3` — Descending by score.'
+        layout:
+          type: object
+          description: The visual layout configuration for the Navigator layer.
+          properties:
+            layout:
+              type: string
+              description: 'The layout mode used to render techniques. Supported values: `side` (sub-techniques displayed beside their parent), `flat` (all techniques displayed inline), `mini` (compact view).'
+            aggregateFunction:
+              type: string
+              description: 'The aggregation function applied when a technique appears under multiple tactics. Supported values: `average`, `min`, `max`, `sum`.'
+            showID:
+              type: boolean
+              description: Indicates whether technique IDs are displayed in Navigator cells.
+            showName:
+              type: boolean
+              description: Indicates whether technique names are displayed in Navigator cells.
+            showAggregateScores:
+              type: boolean
+              description: Indicates whether aggregate scores are displayed in Navigator cells.
+            countUnscored:
+              type: boolean
+              description: Indicates whether unscored techniques are counted when calculating aggregate scores.
+        hideDisabled:
+          type: boolean
+          description: Indicates whether techniques with `enabled` set to `false` are hidden from the Navigator view. When `false`, disabled techniques are shown greyed out.
+        techniques:
+          type: array
+          description: A list of technique entries scored and annotated for this layer.
+          items:
+            $ref: '#/components/schemas/Attack_Path_Exports_MitreHeatmapTechniqueRecord'
+        gradient:
+          type: object
+          description: The color gradient configuration applied to technique scores when rendered in Navigator.
+          properties:
+            colors:
+              type: array
+              description: An ordered list of hex color strings defining the gradient. Colors are distributed evenly across the score range from `minValue` to `maxValue`.
+              items:
+                type: string
+            minValue:
+              type: number
+              description: The minimum score value mapped to the first color in the gradient.
+            maxValue:
+              type: number
+              description: The maximum score value mapped to the last color in the gradient.
+        legendItems:
+          type: array
+          description: A list of entries displayed in the Navigator legend, describing the color-to-severity mapping used in this layer.
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                description: The severity label for this legend entry (for example, `Critical` or `High`).
+              color:
+                type: string
+                description: The hex color code associated with this legend entry.
+    Attack_Path_Exports_Mitre-Heatmap-Filter:
+      type: object
+      description: Defines the filter criteria used to narrow the MITRE ATT&CK heatmap export. All fields are optional. If omitted entirely, the system returns the full heatmap for the default `enterprise` matrix.
+      properties:
+        matrix:
+          type: string
+          description: 'Specifies the MITRE ATT&CK matrix to export. Supported values: `enterprise` (Enterprise matrix) or `ics` (Industrial Control Systems matrix). If omitted, the system uses the default value of `enterprise`.'
+          enum:
+          - enterprise
+          - ics
+        platform:
+          type: string
+          description: "Specifies the platform used to filter techniques. Only techniques applicable to the specified platform are included in the export. \n\nSupported platforms:\n\n* `Windows`\n* `Linux`\n* `macOS`\n* `Network`\n* `PRE`\n* `Containers`\n* `Office Suite` — Cloud platform.\n* `Identity Provider` — Cloud platform.\n* `SaaS` — Cloud platform.\n* `IaaS` — Cloud platform."
+        query:
+          type: string
+          description: Specifies a search string used to filter techniques by name. The system performs a case-insensitive substring match against technique names.
+        show_all_techniques:
+          type: boolean
+          description: Specifies whether to include all techniques in the matrix, regardless of active findings. When `true`, the export includes techniques with no findings in your environment. If omitted, the system uses the default value of `false`, returning only techniques with at least one active finding.
+        severities:
+          type: array
+          description: 'Specifies the severity levels used to filter techniques. Only techniques with at least one finding at the specified severity levels are included. Supported values: `info`, `low`, `medium`, `high`, `critical`.'
+          items:
+            type: string
+            enum:
+            - info
+            - low
+            - medium
+            - high
+            - critical
+    Attack_Path_Exports_Request-Export-Mitre-Heatmap:
+      type: object
+      required:
+      - file_format
+      properties:
+        file_format:
+          $ref: '#/components/schemas/Attack_Path_Exports_FileFormat'
+        filter:
+          $ref: '#/components/schemas/Attack_Path_Exports_Mitre-Heatmap-Filter'
+        columns:
+          description: Specifies the columns to include in the export. Applies to the CSV format only; the JSON (Navigator Layer) format ignores this field. If omitted, the system includes all available columns.
+          type: array
+          example:
+          - technique_id
+          - tactic
+          - technique_name
+          - max_priority
+          items:
+            type: string
+            enum:
+            - technique_id
+            - tactic
+            - technique_name
+            - max_priority
+            - critical_assets_count
+            - top_attack_technique_count
+            - top_attack_path_count
+            - link
+        file_name:
+          description: Specifies a custom name for the exported file. If omitted, the system uses a default name in the format `Tenable_APA_MITRE_YYYY-MM-DD`.
+          type: string
+          maxLength: 100
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

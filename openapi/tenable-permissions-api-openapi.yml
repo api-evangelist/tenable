@@ -1,0 +1,286 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Permissions API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Permissions
+  x-displayName: Permissions
+paths:
+  /permissions/{object_type}/{object_id}:
+    get:
+      summary: Get object permissions
+      description: "Returns the object's permissions.<div class=\"perms-callout\">Requires the Basic [16] user role, or a custom role with one of the following privileges depending on the object type: \n* **Scanner objects** — `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ` \n* **Scanner-pool objects** — `VM.VM_SENSOR.SCANNER_GROUP.READ` \n* **Agent-group objects** — `VM.VM_SENSOR.AGENT_GROUP.READ` \n\nSee [Roles](doc:roles).</div>"
+      operationId: permissions-list
+      tags:
+      - Permissions
+      parameters:
+      - description: The type of object.
+        required: true
+        name: object_type
+        in: path
+        schema:
+          type: string
+          enum:
+          - agent-group
+          - policy
+          - scan
+          - scanner
+      - description: The unique ID of the object.
+        required: true
+        name: object_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returns the object permissions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/permissions_ACL_Response'
+              examples:
+                response:
+                  value:
+                    acls:
+                    - type: user
+                      id: 1
+                      uuid: 1035e55d-a984-4b1c-acc7-fd2d472126f1
+                      name: system
+                      display_name: system
+                      permissions: 128
+                      owner: 1
+                    - type: default
+                      permissions: 16
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the object.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified object.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - permissions_cloud: []
+    put:
+      summary: Update object permissions
+      description: "Updates the permissions for a Tenable Vulnerability Management object.<div class=\"perms-callout\">Requires the Basic [16] user role, or a custom role with one of the following privileges depending on the object type: \n* **Scanner objects** — `VM.VM_SENSOR.VM_SCANNER.EDIT` \n* **Scanner-pool objects** — `VM.VM_SENSOR.SCANNER_GROUP.EDIT` \n* **Agent-group objects** — `VM.VM_SENSOR.AGENT_GROUP.EDIT` \n\nSee [Roles](doc:roles).</div>"
+      operationId: permissions-change
+      tags:
+      - Permissions
+      parameters:
+      - description: The type of object.
+        required: true
+        name: object_type
+        in: path
+        schema:
+          type: string
+          enum:
+          - agent-group
+          - policy
+          - scan
+          - scanner
+      - description: The unique ID of the object (for example, scanner).
+        required: true
+        name: object_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                acls:
+                  $ref: '#/components/schemas/permissions_ACL_Request'
+      responses:
+        '200':
+          description: Returned if the object permissions were updated successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to edit the object.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified object.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/permissions_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - permissions_cloud: []
+components:
+  schemas:
+    permissions_ACL_Request:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of permission (default, user, group).
+          enum:
+          - default
+          - user
+          - group
+        id:
+          type: integer
+          description: The unique ID of the user or group.
+        permissions:
+          type: integer
+          description: The permission value to grant access as described in [Permissions](doc:permissions).
+          format: int32
+    permissions_ACL_Response:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of permission (default, user, group).
+          enum:
+          - default
+          - user
+          - group
+        id:
+          type: integer
+          description: The unique ID of the user or group.
+        uuid:
+          type: string
+          description: The UUID of the owner of the object.
+        name:
+          type: string
+          description: The name of the user or group.
+        display_name:
+          type: string
+          description: The display-friendly name of the user or group.
+        permissions:
+          type: integer
+          description: The permission value to grant access as described in [Permissions](doc:permissions).
+          format: int32
+        owner:
+          type: integer
+          description: The ID of the owner of the object.
+    permissions_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

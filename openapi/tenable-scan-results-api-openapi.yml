@@ -1,0 +1,551 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Scan Results API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Scan Results
+  x-displayName: Scan Results
+paths:
+  /scans/{scan_uuid}/hosts/{host_id}:
+    get:
+      summary: Get host details
+      description: "Returns details for the specified host. \n\n**Note:** This endpoint can only return scan results that are younger than 35 days. For scan results that are older than 35 days, use the [POST /scans/{scan_id}/export](ref:scans-export-request) endpoint instead.<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: scans-host-details
+      tags:
+      - Scan Results
+      parameters:
+      - description: The identifier for the scan. This identifier can be the either the `schedule_uuid` or the numeric `id` attribute for the scan. We recommend that you use `schedule_uuid`.
+        required: true
+        name: scan_uuid
+        in: path
+        schema:
+          type: string
+      - description: The ID of the host to retrieve.
+        required: true
+        name: host_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: 'The unique identifier of the historical data that you want Tenable Vulnerability Management to return. This identifier corresponds to the `history.id` attribute of the response message from the [GET /scans/{scan_id}/history](ref:scans-history) endpoint. '
+        name: history_id
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The UUID of the historical data that you want Tenable Vulnerability Management to return. This identifier corresponds to the `history.scan_uuid` attribute of the response message from the [GET /scans/{scan_id}/history](ref:scans-history) endpoint.
+        name: history_uuid
+        in: query
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returns the host details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  info:
+                    type: object
+                  compliance:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Scan_Results_host_compliance'
+                  vulnerabilities:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Scan_Results_host_vulnerability'
+              examples:
+                response:
+                  value:
+                    info:
+                      mac-address: null
+                      host-fqdn: matrixcentos5_matrix
+                      host-ip: 192.0.2.57
+                      operating-system:
+                      - Linux Kernel 2.6.18-274.el5PAE on CentOS release 5.7 (Final)
+                      host_end: Fri Dec 7 21:46:59 2018
+                      host_start: Fri Dec 7 21:46:59 2018
+                    vulnerabilities:
+                    - count: 7
+                      host_id: 9
+                      hostname: 192.0.2.57
+                      plugin_family: Port scanners
+                      plugin_id: 14272
+                      plugin_name: Netstat Portscanner (SSH)
+                      severity: 0
+                      severity_index: 0
+                      vuln_index: 0
+                    - count: 7
+                      host_id: 9
+                      hostname: 192.0.2.57
+                      plugin_family: Service detection
+                      plugin_id: 25221
+                      plugin_name: Remote listeners enumeration (Linux / AIX)
+                      severity: 0
+                      severity_index: 0
+                      vuln_index: 0
+                    - count: 4
+                      host_id: 9
+                      hostname: 192.0.2.57
+                      plugin_family: Service detection
+                      plugin_id: 11111
+                      plugin_name: RPC Services Enumeration
+                      severity: 0
+                      severity_index: 0
+                      vuln_index: 0
+                    compliance:
+                    - count: 1
+                      host_id: 9
+                      hostname: 192.0.2.57
+                      plugin_family: Unix Compliance Checks
+                      plugin_id: 0042cf05a8358f531c68c8bd249a4874
+                      plugin_name: 'BSI-100-2: S 4.105: Telnet should be replaced by SSH.'
+                      severity: 1
+                      severity_index: 0
+                    - count: 1
+                      host_id: 9
+                      hostname: 192.0.2.57
+                      plugin_family: Unix Compliance Checks
+                      plugin_id: 0483f10c66f3ecf1f2ec55cf47365416
+                      plugin_name: 'BSI-100-2: S 4.105: /usr/X11R6/bin/startx - `xhost +` should never be used.'
+                      severity: 3
+                      severity_index: 1
+                    - count: 1
+                      host_id: 9
+                      hostname: 192.0.2.57
+                      plugin_family: Unix Compliance Checks
+                      plugin_id: 04a999b7e2dbe28fc1c76b15237a39a2
+                      plugin_name: Red Hat 6 is not installed on target
+                      severity: 2
+                      severity_index: 2
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Results_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: "Returned under the following conditions:\n - Tenable Vulnerability Management cannot find the specified scan.\n - The requested scan results are older than 35 days. Use the [POST /scans/{scan_id}/export](ref:scans-export-request) endpoint instead."
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Results_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Results_cloud: []
+  /scans/{scan_uuid}/hosts/{host_id}/plugins/{plugin_id}:
+    get:
+      summary: Get plugin output
+      description: 'Returns the output for a specified plugin.
+
+
+        **Caution:** This endpoint is deprecated. Tenable recommends that you use the [Export scan](ref:scans-export-request) endpoint instead. Please update any existing integrations that your organization has since this endpoint will be removed.
+
+
+        **Note:** This endpoint can only return scan results that are younger than 35 days. For scan results that are older than 35 days, use the [POST /scans/{scan_id}/export](ref:scans-export-request) endpoint instead. Output for an individual plugin is limited to 1,024 KB (1 MB). Additionally, this endpoint has a rate limit of 4 requests per minute. For more information, see [Rate Limiting](doc:rate-limiting).<div class="perms-callout">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+      operationId: scans-plugin-output
+      deprecated: true
+      tags:
+      - Scan Results
+      parameters:
+      - description: The identifier for the scan. This identifier can be the either the `schedule_uuid` or the numeric `id` attribute for the scan. We recommend that you use `schedule_uuid`.
+        required: true
+        name: scan_uuid
+        in: path
+        schema:
+          type: string
+      - description: The ID of the host to retrieve.
+        required: true
+        name: host_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: The ID of the plugin to retrieve.
+        required: true
+        name: plugin_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: 'The unique identifier of the historical data that you want Tenable Vulnerability Management to return. This identifier corresponds to the `history.id` attribute of the response message from the [GET /scans/{scan_id}/history](ref:scans-history) endpoint. '
+        name: history_id
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The UUID of the historical data that you want Tenable Vulnerability Management to return. This identifier corresponds to the `history.scan_uuid` attribute of the response message from the [GET /scans/{scan_id}/history](ref:scans-history) endpoint.
+        name: history_uuid
+        in: query
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returns the plugin output.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  output:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Scan_Results_plugin_output'
+                  info:
+                    type: object
+                    properties:
+                      host-fqdn:
+                        type: string
+                        description: The host's fully qualified domain name; optional.
+                      host_fqdn:
+                        type: string
+                        description: The FQDN of the host. Normally, this is populated with the value used to scan the host in the target list of the last scan that was ran where it was seen; always present.
+                      host-ip:
+                        type: string
+                        description: The host's IPv4 address; optional.
+                      host-uuid:
+                        type: string
+                        description: The host's UUID generated by Tenable Vulnerability Management for identification purposes; always present.
+                      host_start:
+                        type: string
+                        description: The last time a scan was started for this host as an ISO 8601 timestamp; always present.
+                      host_end:
+                        type: string
+                        description: The last time a scan was completed for this host as an ISO 8601 timestamp; always present.
+                      mac-address:
+                        type: string
+                        description: The host's mac addresses in a newline-separated list; optional.
+              examples:
+                response:
+                  value:
+                    outputs:
+                    - ports:
+                        22 /TCP / ssh:
+                        - hostname: 192.0.2.57
+                      has_attachment: 0
+                      severity: 0
+                      plugin_output: An SSH server is running on this port.
+                      hosts: null
+                      custom_description: null
+                    - ports:
+                        80 / TCP / www:
+                        - hostname: 192.0.2.57
+                      has_attachment: 0
+                      severity: 0
+                      plugin_output: A web server is running on this port.
+                      hosts: null
+                      custom_description: null
+                    info:
+                      plugindescription:
+                        severity: 0
+                        pluginname: Service Detection
+                        pluginattributes:
+                          risk_information:
+                            risk_factor: None
+                          plugin_information:
+                            plugin_version: '1.194'
+                            plugin_id: 22964
+                            plugin_type: remote
+                            plugin_family: Service detection
+                            plugin_publication_date: '2007-08-19T00:00:00Z'
+                            plugin_modification_date: '2024-03-26T00:00:00Z'
+                          has_patch: false
+                          synopsis: The remote service could be identified.
+                          description: Nessus was able to identify the remote service by its banner or by looking at the error message it sends when it receives an HTTP request.
+                          solution: null
+                        pluginfamily: Service detection
+                        pluginid: '22964'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Results_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: "Returned under the following conditions:\n - Tenable Vulnerability Management cannot find the specified scan.\n - The requested scan results are older than 35 days. Use the [POST /scans/{scan_id}/export](ref:scans-export-request) endpoint instead."
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Results_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Results_cloud: []
+  /scans/{scan_id}/attachments/{attachment_id}:
+    get:
+      summary: Get scan attachment file
+      description: 'Gets the requested scan attachment file.
+
+
+        **Note:** Scan attachments are not available if the scan results are older than 60 days. To retrieve scan data in `.nessus` and `.csv` format, use the [POST /scans/{scan_id}/export](ref:scans-attachments) endpoint.<div class="perms-callout">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+      operationId: scans-attachments
+      tags:
+      - Scan Results
+      parameters:
+      - description: The unique identifier for the scan containing the attachment. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`.
+        required: true
+        name: scan_id
+        in: path
+        schema:
+          type: string
+      - description: The ID of the scan attachment.
+        required: true
+        name: attachment_id
+        in: path
+        schema:
+          type: string
+      - description: The attachment access token if applicable.
+        name: key
+        in: query
+        schema:
+          type: string
+      - description: The accept header to use with the request. Use `application/json` for most cases. Use `application/octet-stream` if the scan attachment file is a binary file.
+        in: header
+        name: accept
+        required: true
+        schema:
+          type: string
+          default: application/json
+          enum:
+          - application/json
+          - application/octet-stream
+      responses:
+        '200':
+          description: Returned if the specified scan attachment was retrieved successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+            application/octet-stream:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Results_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: 'Returned if Tenable Vulnerability Management cannot find the specified attachment file.
+
+
+            **Note:** Scan attachments are not available if the scan results are older than 60 days. To retrieve scan data in `.nessus` and `.csv` format, use the [POST /scans/{scan_id}/export](ref:scans-attachments) endpoint.'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Results_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Results_cloud: []
+components:
+  schemas:
+    Scan_Results_host_vulnerability:
+      type: object
+      properties:
+        host_id:
+          type: integer
+          description: The unique ID of the host.
+        hostname:
+          type: string
+          description: The name of the host.
+        plugin_id:
+          type: integer
+          description: The unique ID of the vulnerability plugin.
+        plugin_name:
+          type: string
+          description: The name of the vulnerability plugin.
+        plugin_family:
+          type: string
+          description: The parent family of the vulnerability plugin.
+        count:
+          type: integer
+          description: The number of vulnerabilities found.
+        vuln_index:
+          type: integer
+          description: The index of the vulnerability plugin.
+        severity_index:
+          type: integer
+          description: The severity index order of the plugin.
+        severity:
+          type: integer
+          description: The severity of plugin.
+    Scan_Results_host_compliance:
+      type: object
+      properties:
+        host_id:
+          type: integer
+          description: The unique ID of the host.
+        hostname:
+          type: string
+          description: The name of the host.
+        plugin_id:
+          type: integer
+          description: The unique ID of the vulnerability plugin.
+        plugin_name:
+          type: string
+          description: The name of the vulnerability plugin.
+        plugin_family:
+          type: string
+          description: The parent family of the vulnerability plugin.
+        count:
+          type: integer
+          description: The number of vulnerabilities found.
+        severity_index:
+          type: integer
+          description: The severity index order of the plugin.
+        severity:
+          type: integer
+          description: The severity of plugin.
+    Scan_Results_plugin_output:
+      type: object
+      properties:
+        ports:
+          type: object
+          properties: {}
+        has_attachment:
+          type: integer
+          description: If the value is 1, the plugin output contains files that may be exported.
+        custom_description:
+          type: string
+          description: A custom description of the plugin.
+        plugin_output:
+          type: string
+          description: The text of the plugin output.
+        hosts:
+          type: string
+          description: Other hosts with the same output.
+        severity:
+          type: integer
+          description: The severity the output.
+    Scan_Results_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

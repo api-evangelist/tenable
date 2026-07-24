@@ -1,0 +1,2302 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Exports (Vulnerabilities) API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Exports (Vulnerabilities)
+  x-displayName: Exports (Vulnerabilities)
+paths:
+  /vulns/export:
+    post:
+      summary: Export vulnerabilities
+      description: "Exports vulnerabilities that match the request criteria. \n\nUsers need at least the Basic [16] user permission or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. The Can View access control permission can be set for all assets with the `All Assets` object. Administrator [64] users can export without the explicit Can View access control permission. \n\nFor more information about this endpoint, see guidelines and limitations described in [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio). For request examples, see [Refine Vulnerability Export Requests](doc:refine-vulnerability-export-requests). \n\n **Caution**: The `vpr_v2_score` filter parameter is scheduled for deprecation on July 1, 2026 as part of the transition to VPR v2. To ensure continued functionality, update all integrations to use the `vpr_score` filter parameter. On the deprecation date, the system will update `vpr_score` to support the new VPR model. For more information, see [Vulnerability Priority Rating: Transition to VPR Version 2](changelog:vulnerability-priority-rating-transition-to-version-2). \n\n**Note:** There are limits for concurrent export requests. For more information, see [Concurrency Limiting](doc:concurrency-limiting) and [Rate Limiting](doc:rate-limiting). <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. Administrator [64] users can export without the explicit Can View access control permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: exports-vulns-request-export
+      tags:
+      - Exports (Vulnerabilities)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                num_assets:
+                  type: integer
+                  description: Specifies the number of assets used to chunk the vulnerabilities. The vulnerabilities export is split up by number of asset IDs in a chunk. The exported data of a chunk is the sum of all the vulnerabilities for each asset in that chunk. The range for number of assets in a chunk is a minimum of 50 (the default size) to a maximum of 5,000. If you specify a value outside this range, the system uses the upper or lower-bound value.
+                  format: int32
+                  default: 50
+                  minimum: 50
+                  maximum: 5000
+                include_unlicensed:
+                  type: boolean
+                  default: false
+                  description: Specifies whether or not to include unlicensed assets. The default is `false` when no parameter is specified.
+                include_software_vulns:
+                  type: boolean
+                  default: false
+                  description: Specifies whether to include software package attribution data in the export output. If set to `true`, the system populates each vulnerability record with a `software_vulns` array containing details such as the package identifier, version, vendor, available fixes, and confidence classification. If omitted, the system uses the default value of `false` and excludes this data.
+                filters:
+                  type: object
+                  description: 'Specifies filters to apply to the vulnerabilities export.
+
+
+                    **Note:** By default, vulnerability exports will only include accepted and non-accepted vulnerabilities found or fixed within the last 30 days if no time-based filters are submitted with the request.'
+                  properties:
+                    since:
+                      type: integer
+                      description: "The start date for the range of data you want to export. The date must be provided as a 10-digit Unix timestamp (in seconds). Use this filter in conjunction with the state filter as follows:\n - If the state filter is set to `OPEN` or `REOPENED`, the export includes data for vulnerabilities that were seen on or after the since date you specify.\n - If the state filter is set to `FIXED`, the export includes data for vulnerabilities that were fixed on or after the since date you specify.\n - If you do not include the `state` filter in your request, the export includes data for `OPEN` and `REOPENED` vulnerabilities that were seen on or after the since date you specify, and `FIXED` vulnerabilities that were fixed on or after the since date you specify.\n\n**Note:** This filter cannot be used in conjunction with the `first_found`, `first_seen`, `last_found`, `last_seen`, or `last_fixed` filters."
+                      format: int64
+                    first_found:
+                      type: integer
+                      description: 'Returns vulnerabilities first discovered on or after the specified date. The date must be provided as a 10-digit Unix timestamp (in seconds).
+
+
+                        **Note:** This filter parameter is functionally equivalent to `first_seen`. You can use either one.'
+                      format: int64
+                    first_seen:
+                      type: integer
+                      description: 'Returns vulnerabilities first discovered on or after the specified date. The date must be provided as a 10-digit Unix timestamp (in seconds).
+
+
+                        **Note:** This filter parameter is functionally equivalent to `first_found`. You can use either one.'
+                      format: int64
+                    last_found:
+                      type: integer
+                      description: 'Returns vulnerabilities last found on or after the specified date. The date must be provided as a 10-digit Unix timestamp (in seconds).
+
+
+                        **Note:** This filter parameter is functionally equivalent to `last_seen`. You can use either one.'
+                      format: int64
+                    last_seen:
+                      type: integer
+                      description: 'Returns vulnerabilities last found on or after the specified date. The date must be provided as a 10-digit Unix timestamp (in seconds).
+
+
+                        **Note:** This filter parameter is functionally equivalent to `last_found`. You can use either one.'
+                      format: int64
+                    indexed_at:
+                      type: integer
+                      description: Returns vulnerabilities that were indexed in Tenable Vulnerability Management on the specified date. The date must be provided as a 10-digit Unix timestamp (in seconds).
+                      format: int64
+                    last_fixed:
+                      type: integer
+                      description: Returns vulnerabilities that were last fixed between the specified date and the present. The date must be provided as a 10-digit Unix timestamp (in seconds).
+                      format: int64
+                    time_taken_to_fix:
+                      $ref: '#/components/schemas/Export_Vulnerabilities_time_taken_to_fix_filter'
+                    resurfaced_date:
+                      description: Returns vulnerabilities that resurfaced between the specified date and the present. The date must be provided as a 10-digit Unix timestamp (in seconds).
+                      type: integer
+                      format: int64
+                    cidr_range:
+                      description: Restricts search for vulnerabilities to assets assigned an IP address within the specified CIDR range. For example, 0.0.0.0/0 restricts the search to 0.0.0.1 and 255.255.255.254.
+                      type: string
+                    cve_id:
+                      description: Filters results to vulnerabilities matching the specified Common Vulnerabilities and Exposures (CVE) ID(s). Accepts a maximum of 200 IDs.
+                      type: array
+                      maxItems: 200
+                      items:
+                        type: string
+                        example: CVE-2026-10289
+                    cve_category:
+                      description: "Returns vulnerabilities that match the specified CVE category. For more information about categories, see [Vulnerability Categories](https://docs.tenable.com/vulnerability-management/Content/vulnerability-intelligence/vulnerability-categories.htm) in the *Tenable Vulnerability Management User Guide*. Supported category values are:\n - `cisa known exploitable`—Vulnerabilities that appear in the [CISA Known Exploited Vulnerabilities Catalog](https://www.cisa.gov/known-exploited-vulnerabilities-catalog).\n - `emerging threats`—Vulnerabilities actively monitored by Tenable and that are currently being publicly discussed.\n - `in the news`—Vulnerabilities that are widely reported in the press with notable coverage over the past 30 days.\n - `persistently exploited`—Vulnerabilities leveraged by threat actors over an extended period of time in targeted attacks, ransomware, or malware campaigns.\n - `ransomware`—Vulnerabilities used in current or historical ransomware attacks.\n - `recent active exploitation`—Vulnerabilities for which Tenable has evidence of active exploitation and that have notable coverage in the press over the past 30 days.\n - `top 50 vpr`—Vulnerabilities included in Tenable's top 50 vulnerabilities according to the Vulnerability Priority Rating (VPR). For more information about VPR, see [Vulnerability Priority Rating](https://docs.tenable.com/vulnerability-management/Content/Explore/Findings/RiskMetrics.htm#Vulnerability-Priority-Rating-) in the *Tenable Vulnerability Management User Guide*."
+                      type: array
+                      items:
+                        type: string
+                    cvss4_base_score:
+                      $ref: '#/components/schemas/Export_Vulnerabilities_cvss4_filter'
+                    epss_score:
+                      $ref: '#/components/schemas/Export_Vulnerabilities_epss_filter'
+                    exploit_maturity:
+                      description: "Returns vulnerabilities that match the specified exploit maturity. Tenable assigns exploit maturity values to vulnerabilities based on availability and sophistication of exploit code. Supported values are:\n - `high`—Exploit code is widely available, reliable, and easy to use.\n - `functional`—Exploit code exists but may require some skill.\n - `poc`—Exploit code exists but is not reliable.\n - `unproven`—There is no known exploit code."
+                      type: array
+                      items:
+                        type: string
+                    initiative_id:
+                      type: string
+                      format: uuid
+                      description: "The unique identifier (UUID) of the Exposure Response initiative for which to retrieve associated vulnerabilities. This filter enables scoping results to a specific initiative within the Exposure Response workflow. For more information, see [Exposure Response](https://docs.tenable.com/vulnerability-management/Content/exposure-response/exposure-response-intro.htm) in the _Tenable Vulnerability Management User Guide_. \n\n**Note:** This filter can only be used in combination with one or more of the following filters: `indexed_at`, `since`, `severity`, `state` or `severity_modification_type`."
+                    network_id:
+                      type: string
+                      format: uuid
+                      description: The ID of the network associated with the scanners that detected the vulnerabilities you want to export. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+                    plugin_family:
+                      items:
+                        type: string
+                      description: A list of plugin families for which you want to filter the vulnerabilities returned in the vulnerability export. This filter is case-sensitive. If your request omits this parameter, the export includes all vulnerabilities regardless of plugin family. For a list of supported plugin family values, use the [GET /plugins/families](ref:io-plugins-families-list) endpoint.
+                      type: array
+                    plugin_id:
+                      items:
+                        type: integer
+                      description: A list of plugin IDs for which you want to filter the vulnerabilities returned in the vulnerability export. If your request omits this parameter, the export includes all vulnerabilities regardless of plugin ID.
+                      type: array
+                    plugin_type:
+                      description: The plugin type for which you want to filter the vulnerabilities returned in the vulnerability export. For example, `remote`, `local`, `combined`, etc. If your request omits this parameter, the export includes all vulnerabilities regardless of plugin type.
+                      type: string
+                    scan_uuid:
+                      type: string
+                      format: uuid
+                      description: The UUID of the scan that most recently discovered the vulnerabilities to be exported.
+                    severity:
+                      description: "Returns vulnerabilities with the specified severity. Defaults to all severity levels. The severity of a vulnerability is defined using the Common Vulnerability Scoring System (CVSS) base score. Supported array values are:\n - info—The vulnerability has a CVSS score of 0.\n - low—The vulnerability has a CVSS score between 0.1 and 3.9.\n - medium—The vulnerability has a CVSS score between 4.0 and 6.9.\n - high—The vulnerability has a CVSS score between 7.0 and 9.9.\n - critical—The vulnerability has a CVSS score of 10.0."
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                        - info
+                        - low
+                        - medium
+                        - high
+                        - critical
+                    severity_modification_type:
+                      items:
+                        type: string
+                        enum:
+                        - NONE
+                        - RECASTED
+                        - ACCEPTED
+                      description: "Returns vulnerabilities with the specified severity modification type. This filter can be used to return vulnerabilities with a modified severity due to a recast or accept rule. Supported case-sensitive values are:\n - NONE—No modification to the severity has been made.\n - RECASTED—A user has recast the risk associated with the vulnerability.\n - ACCEPTED—A user has accepted the risk associated with the vulnerability."
+                      type: array
+                    software_vulns_potential:
+                      type: boolean
+                      description: 'Filters results based on the confirmation status of the software vulnerabilities. If set to `true`, the export includes only potential vulnerabilities where presence cannot be confirmed with certainty. If set to `false`, the export includes only confirmed vulnerabilities. If omitted, the system includes both types.
+
+
+                        **Note:** This parameter cannot be set to `false` when the request includes the `software_vulns_potential_reasons` parameter.'
+                    software_vulns_potential_reasons:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: string
+                        enum:
+                        - Managed
+                        - Component
+                        - Config Required
+                        - Low Fidelity
+                        - Incomplete Version
+                        - Backported
+                      description: 'Filters results to software vulnerabilities classified as potential for the specified reasons. When used without the `software_vulns_potential` parameter, the export includes matching vulnerabilities across both confirmed and potential results. Supported values include `Managed`, `Component`, `Config Required`, `Low Fidelity`, `Incomplete Version`, and `Backported`.
+
+
+                        **Note:** This parameter cannot be used if `software_vulns_potential` is set to `false`.'
+                    source:
+                      items:
+                        type: string
+                      description: "Returns vulnerabilities identified by the specified source. A source is the entity that reported the vulnerability details. Sources can include sensors, connectors, and API imports. If your request specifies multiple sources, Tenable Vulnerability Management returns all vulnerabilities seen by any of the specified sources.\n\n The items in the `source` array must correspond to the names of the sources as defined in your organization's implementation of Tenable Vulnerability Management. Commonly used source names include:\n - AGENT—The vulnerability data was obtained from a Tenable Nessus Agent scan.\n - NNM—The vulnerability data was obtained from a Tenable Nessus Network Monitor (NNM) scan.\n - NESSUS—The vulnerability data was obtained from a Tenable Nessus scan."
+                      type: array
+                    state:
+                      description: "Returns vulnerabilities with the specified state. Supported, case-insensitive values are:\n - OPEN—The vulnerability is currently present on a host.\n - REOPENED—The vulnerability was previously marked as fixed on a host but has returned.\n - FIXED—The vulnerability was present on a host but is no longer detected.\n\nThis parameter is required if your request includes `first_found`, `last_found`, or `last_fixed` parameters. If your request omits this parameter, the export includes default states `OPEN` and `REOPENED` only.\n\nNote that the API uses different terms for vulnerability states than the user interface. The `new` and `active` states in the user interface map to the `OPEN` state in the API. The `resurfaced` state in the user interface maps to the `REOPENED` state in the API. The `FIXED` state is the same."
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                        - OPEN
+                        - REOPENED
+                        - FIXED
+                    tag.<category>:
+                      type: array
+                      items:
+                        type: string
+                      description: "Returns vulnerabilities on assets with the specified asset tags. \n\nThe tag filter format is defined as \"tag\", a period (\".\"), and then tag category name. For example, `tag.Location`. You can specify multiple tag categories and multiple tag values. When multiple tag categories are provided, the logical operation applied to the tag categories is an `AND` operation. When multiple tag values are provided, the logical operation applied to the values is an `OR` operation. For examples using the tag filter, see the examples listed in the [Refine Vulnerability Export Requests](doc:refine-vulnerability-export-requests) documentation. \n\n<span style=\"color:red\">**Caution:** Due to the limitations of OpenAPI, this parameter does not work with the \"Try It!\" button in the developer portal. If your request includes this parameter you must replace the `<category>` keyword with your actual tag category and manually run the request. For examples using the tag filter, see the examples listed in the [Refine Vulnerability Export Requests](doc:refine-vulnerability-export-requests) documentation.</span> \n\nFor more information about tags, see the <a href=\"https://docs.tenable.com/vulnerability-management/Content/Settings/Tagging/Tags.htm\" target=\"_blank\">Tags</a> in the Tenable Vulnerability Management User Guide."
+                    vpr_score:
+                      $ref: '#/components/schemas/Export_Vulnerabilities_vpr_filter'
+                    vpr_v2_score:
+                      $ref: '#/components/schemas/Export_Vulnerabilities_vpr_v2_filter'
+                    vpr_threat_intensity:
+                      description: Returns vulnerabilities that match the specified threat intensity. The threat intensity of a vulnerability is based on the number and frequency of recently observed threat events. Supported values include `very high`, `high`, `medium`, `low`, or `very low`.
+                      type: array
+                      items:
+                        type: string
+                    weaponization:
+                      description: "Returns vulnerabilities that match the specified weaponization. Weaponized vulnerabilities are vulnerabilities that are ready for use in a particular type of cyberattack. Supported values are:\n - `apt` (advanced persistent threat)\n - `botnet`\n - `malware` \n - `ransomware`\n - `rootkit`"
+                      type: array
+                      items:
+                        type: string
+                    zero_day:
+                      description: Filters vulnerabilities by zero-day status. If omitted, both zero-day and non–zero-day vulnerabilities are included in the export results. Zero-day vulnerabilities are those for which no official patch or fix was available at the time of disclosure.
+                      type: boolean
+      responses:
+        '200':
+          description: Returned if a vulnerability export request was queued successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  export_uuid:
+                    type: string
+                    description: The UUID of the vulnerabilities export job.
+              examples:
+                response:
+                  value:
+                    export_uuid: bf765455-53aa-4e70-9ef3-87cfca1d2be0
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to export vulnerabilities.
+        '409':
+          description: Returned if your request was a duplicate of an ongoing export that was already submitted. Tenable Vulnerability Management prevents duplicate exports from running concurrently. For example, export requests with the same filters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  active_job_id:
+                    type: string
+                    description: The UUID of ongoing vulnerabilities export job that was already submitted.
+                  failure_reason:
+                    type: string
+                    description: A description of the conflict.
+              examples:
+                response:
+                  value:
+                    active_job_id: 1f3381e3-a551-4b9b-9c17-b019412cc35c
+                    failure_reason: The request could not be completed due to a conflict with the ongoing export
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting) and [Concurrency Limiting](doc:concurrency-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Export_Vulnerabilities_cloud: []
+  /vulns/export/{export_uuid}/status:
+    get:
+      summary: Get vulnerability export status
+      description: "Returns the status of a vulnerability export request. Tenable Vulnerability Management processes the chunks in parallel so the chunks may not complete in order, and the chunk IDs may not be arranged sequentially in the completed output.\n\n **Note:** Output for an individual plugin is limited to 1,024 KB (1 MB). <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>"
+      operationId: exports-vulns-export-status
+      tags:
+      - Exports (Vulnerabilities)
+      parameters:
+      - description: The UUID for the vulnerabilities export request to retrieve the status for.
+        required: true
+        name: export_uuid
+        in: path
+        schema:
+          type: string
+          description: The unique identifier of an export request. This value corresponds to the value returned in the [/vulns/export](ref:exports-vulns-request-export) response message.
+      responses:
+        '200':
+          description: Returned if the status for the specified vulnerabilities export was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Vulnerabilities_response-vulns-export-status'
+              examples:
+                response:
+                  value:
+                    uuid: 1d896500-2f92-467c-aa4d-6fe8d007b127
+                    status: FINISHED
+                    chunks_available:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                    - 6
+                    - 7
+                    - 8
+                    - 9
+                    - 10
+                    chunks_failed: []
+                    chunks_cancelled: []
+                    total_chunks: 10
+                    chunks_available_count: 10
+                    empty_chunks_count: 0
+                    finished_chunks: 10
+                    filters:
+                      severity:
+                      - CRITICAL
+                      state:
+                      - OPEN
+                      tags:
+                        tag.Location:
+                        - Dallas
+                      since: 0
+                      first_found: 1540350772
+                      last_found: 0
+                      last_fixed: 0
+                      first_seen: 0
+                      last_seen: 0
+                      indexed_at: 0
+                      indexed_at_end_value: 0
+                      cve_id:
+                      - CVE-2025-44228
+                      - CVE-2025-0589
+                      resurfaced_date: 0
+                      cve_category:
+                      - in_the_news
+                      - persistently_exploited
+                      - ransomware
+                      exploit_maturity:
+                      - unproven
+                      - poc
+                      vpr_threat_intensity:
+                      - Low
+                      - Medium
+                      - Very Low
+                      weaponization:
+                      - botnet
+                      - apt
+                      - malware
+                    num_assets_per_chunk: 50
+                    created: 1732582396387
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the vulnerabilities export status.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified vulnerabilities export job.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Export_Vulnerabilities_cloud: []
+  /vulns/export/status:
+    get:
+      summary: List vuln export jobs
+      description: Retrieves a list of vulnerability export jobs. This list includes the 1,000 most recent export jobs regardless of status. However, this list includes completed jobs only if the job completed in the previous three days. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: exports-vulns-export-status-recent
+      tags:
+      - Exports (Vulnerabilities)
+      responses:
+        '200':
+          description: Returned if the list of vulnerability export jobs was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exports:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Export_Vulnerabilities_response-vulns-export-jobs'
+              examples:
+                response:
+                  value:
+                    exports:
+                    - uuid: 5a56a9b1-447e-4aa1-aba1-deaacb38a9cf
+                      status: FINISHED
+                      total_chunks: 0
+                      chunks_available_count: 0
+                      empty_chunks_count: 0
+                      finished_chunks: 0
+                      filters:
+                        state:
+                        - OPEN
+                        - REOPENED
+                        tags:
+                          tag.Location:
+                          - Dallas
+                        since: 1611102529
+                        first_found: 0
+                        last_found: 0
+                        last_fixed: 0
+                        first_seen: 0
+                        last_seen: 0
+                        indexed_at: 0
+                      num_assets_per_chunk: 50
+                      created: 1613694529186
+                    - uuid: 69c201d1-9afd-4a4a-8acf-43c367ab03bf
+                      status: FINISHED
+                      total_chunks: 0
+                      chunks_available_count: 0
+                      empty_chunks_count: 0
+                      finished_chunks: 0
+                      filters:
+                        state:
+                        - OPEN
+                        - REOPENED
+                        tags:
+                          tag.Device:
+                          - Laptop
+                        since: 1611102552
+                        first_found: 0
+                        last_found: 0
+                        last_fixed: 0
+                        first_seen: 0
+                        last_seen: 0
+                        indexed_at: 0
+                      num_assets_per_chunk: 50
+                      created: 1613694552649
+                    - uuid: 95eae0fe-1272-4495-a63b-639bd2a2f4f2
+                      status: ERROR
+                      total_chunks: 0
+                      chunks_available_count: 0
+                      empty_chunks_count: 0
+                      finished_chunks: 0
+                      filters:
+                        severity:
+                        - LOW
+                        state:
+                        - FIXED
+                        plugin_family:
+                        - string
+                        tags:
+                          tag.Location:
+                          - Dallas
+                        cidr_range: 192.0.2.1/24
+                        network_id: 00000000-0000-0000-0000-000000000000
+                        since: 0
+                        first_found: 0
+                        last_found: 0
+                        last_fixed: 0
+                        first_seen: 0
+                        last_seen: 0
+                        indexed_at: 0
+                        vpr_score:
+                          eq:
+                          - 2
+                          neq:
+                          - 3
+                          gt: 0
+                          gte: 0
+                          lt: 0
+                          lte: 0
+                        vpr_v2_score:
+                          eq:
+                          - 3
+                          neq:
+                          - 1
+                          gt: 0
+                          gte: 0
+                          lt: 0
+                          lte: 0
+                        epss_score:
+                          eq:
+                          - 10
+                          neq:
+                          - 20
+                          gt: 30
+                          gte: 40
+                          lt: 90
+                          lte: 80
+                        cvss4_base_score:
+                          eq:
+                          - 5
+                          neq:
+                          - 2
+                          gt: 0
+                          gte: 0
+                          lt: 0
+                          lte: 0
+                        plugin_ids:
+                        - 0
+                      num_assets_per_chunk: 50
+                      created: 1614377678711
+                    - uuid: 162166e6-0fde-454b-a19b-49cc10760dee
+                      status: FINISHED
+                      total_chunks: 0
+                      chunks_available_count: 0
+                      empty_chunks_count: 0
+                      finished_chunks: 0
+                      filters:
+                        severity:
+                        - LOW
+                        state:
+                        - FIXED
+                        plugin_family:
+                        - string
+                        tags:
+                          tag.Location:
+                          - Columbia
+                        cidr_range: 192.0.2.1/24
+                        network_id: 00000000-0000-0000-0000-000000000000
+                        since: 0
+                        first_found: 0
+                        last_found: 0
+                        last_fixed: 0
+                        first_seen: 0
+                        last_seen: 0
+                        indexed_at: 0
+                        vpr_score:
+                          eq:
+                          - 2
+                          neq:
+                          - 3
+                          gt: 0
+                          gte: 0
+                          lt: 0
+                          lte: 0
+                        vpr_v2_score:
+                          eq:
+                          - 2
+                          neq:
+                          - 3
+                          gt: 0
+                          gte: 0
+                          lt: 0
+                          lte: 0
+                        epss_score:
+                          eq:
+                          - 10
+                          neq:
+                          - 20
+                          gt: 30
+                          gte: 40
+                          lt: 90
+                          lte: 80
+                        cvss4_base_score:
+                          eq:
+                          - 5
+                          neq:
+                          - 2
+                          gt: 0
+                          gte: 0
+                          lt: 0
+                          lte: 0
+                        plugin_ids:
+                        - 0
+                      num_assets_per_chunk: 50
+                      created: 1614378523499
+                    - uuid: b22a7871-7d5c-479e-a326-93af37cc285d
+                      status: FINISHED
+                      total_chunks: 0
+                      chunks_available_count: 0
+                      empty_chunks_count: 0
+                      finished_chunks: 0
+                      filters:
+                        state:
+                        - OPEN
+                        - REOPENED
+                        tags: {}
+                        since: 1519025683
+                        first_found: 0
+                        last_found: 0
+                        last_fixed: 0
+                        first_seen: 0
+                        last_seen: 0
+                        indexed_at: 0
+                      num_assets_per_chunk: 50
+                      created: 1616117745174
+                    - uuid: 83996ca1-8ab5-4d20-9b09-0ab6db6fd00f
+                      status: FINISHED
+                      total_chunks: 0
+                      chunks_available_count: 0
+                      empty_chunks_count: 0
+                      finished_chunks: 0
+                      filters:
+                        since: 0
+                        first_found: 0
+                        last_found: 0
+                        last_fixed: 0
+                        first_seen: 0
+                        last_seen: 0
+                        indexed_at: 0
+                      num_assets_per_chunk: 50
+                      created: 1616117188947
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions list vulnerability export jobs.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Export_Vulnerabilities_cloud: []
+  /vulns/export/{export_uuid}/chunks/{chunk_id}:
+    get:
+      summary: Download vulnerabilities chunk
+      description: 'Downloads a specific vulnerabilities export chunk. The response content type is `application/octet-stream`.
+
+
+        Chunks are available for download for up to 24 hours after they have been created. Tenable Vulnerability Management returns a 404 message for expired chunks. Export chunks do not include an attribute if that attribute is empty in the vulnerability record.
+
+
+        A successful response message contains attributes that correspond to CVSS metrics; these metrics are described fully in the following documents:<ul><li>[A Complete Guide to the Common Vulnerability Scoring System, Version 2.0](https://www.first.org/cvss/v2/guide)</li><li>[Common Vulnerability Scoring System v3.0: Specification Document](https://www.first.org/cvss/specification-document)</li></ul><div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>'
+      operationId: exports-vulns-download-chunk
+      tags:
+      - Exports (Vulnerabilities)
+      x-readme:
+        explorer-enabled: false
+      parameters:
+      - description: The unique identifier (UUID) of the export request for which you want to download a chunk.
+        required: true
+        name: export_uuid
+        in: path
+        schema:
+          type: string
+      - description: The specific chunk number to retrieve from the export request.
+        required: true
+        name: chunk_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the vulnerabilities export chunk was retrieved successfully.
+          content:
+            application/octet-stream:
+              schema:
+                description: ''
+                type: array
+                items:
+                  $ref: '#/components/schemas/Export_Vulnerabilities_response-vulns-chunk'
+              examples:
+                response:
+                  value:
+                  - asset:
+                      bios_uuid: 1fa02642-5b8e-8f27-42a9-debde798d957
+                      device_type: general-purpose
+                      fqdn: sharepoint2016.target.example.com
+                      hostname: sharepoint2016
+                      uuid: 53ed0fa2-ccd5-4d2e-92ee-c072635889e3
+                      ipv4: 203.0.113.71
+                      ipv6: 2001:db8:199e:6fb9:2edd:67f0:3f30:c7
+                      last_authenticated_results: '2023-05-04T05:03:13.737Z'
+                      mac_address: 00:50:56:a6:22:93
+                      netbios_name: SHAREPOINT2016
+                      operating_system:
+                      - Microsoft Windows Server 2016 Standard
+                      serial_number: C137B8E58B6
+                      network_id: 00000000-0000-0000-0000-000000000000
+                      tracked: true
+                    output: "\n\n  Produact : Microsoft SharePoint Enterprise Server 2016\n  KB : 5002113\n  - C:\\Program Files\\Microsoft Office Servers\\16.0\\bin\\ascalc.dll has not been patched.\n    Remote version : 16.0.4342.1000\n    Should be      : 16.0.5266.1000\n\n"
+                    plugin:
+                      bid:
+                      - 156641
+                      checks_for_default_account: false
+                      checks_for_malware: false
+                      cpe:
+                      - cpe:/a:microsoft:sharepoint_server
+                      cvss3_base_score: 8.8
+                      cvss3_temporal_score: 7.7
+                      cvss3_temporal_vector:
+                        exploitability: Unproven
+                        remediation_level: Official Fix
+                        report_confidence: Confirmed
+                        raw: E:U/RL:O/RC:C
+                      cvss3_vector:
+                        access_complexity: Low
+                        access_vector: Network
+                        availability_impact: High
+                        confidentiality_impact: High
+                        integrity_impact: High
+                        raw: AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H
+                      cvss4_base_score: 6.9
+                      cvss4_vector:
+                        attack_vector: Network
+                        attack_complexity: Low
+                        attack_requirements: Present
+                        privileges_required: High
+                        user_interaction: None
+                        vulnerable_system_confidentiality: None
+                        vulnerable_system_integrity: None
+                        vulnerable_system_availability: High
+                        subsequent_system_confidentiality: None
+                        subsequent_system_integrity: None
+                        subsequent_system_availability: High
+                        raw: AV:N/AC:L/AT:P/PR:H/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:H
+                      cvss4_threat_vector:
+                        threat_score: 3.6
+                        exploit_maturity: Unreported
+                        raw: CVSS:4.0/E:U
+                      cvss_base_score: 9
+                      cvss_temporal_score: 6.7
+                      cvss_temporal_vector:
+                        exploitability: Unproven
+                        remediation_level: Official Fix
+                        report_confidence: Confirmed
+                        raw: E:U/RL:OF/RC:C
+                      cvss_vector:
+                        access_complexity: Low
+                        access_vector: Network
+                        authentication: Single
+                        availability_impact: Complete
+                        confidentiality_impact: Complete
+                        integrity_impact: Complete
+                        raw: AV:N/AC:L/Au:S/C:C/I:C/A:C
+                      description: The Microsoft SharePoint Server 2013 installation on the remote host is missing security updates. It is, therefore, affected by a remote code execution vulnerability. An attacker can exploit this to bypass authentication and execute unauthorized arbitrary commands. (CVE-2022-21837, CVE-2022-21840, CVE-2022-21842)
+                      exploit_available: false
+                      exploit_framework_canvas: false
+                      exploit_framework_core: false
+                      exploit_framework_d2_elliot: false
+                      exploit_framework_exploithub: false
+                      exploit_framework_metasploit: false
+                      exploitability_ease: No known exploits are available
+                      exploited_by_malware: false
+                      exploited_by_nessus: false
+                      family: 'Windows : Microsoft Bulletins'
+                      family_id: 41
+                      has_patch: true
+                      id: 156641
+                      in_the_news: false
+                      ms_bulletin:
+                      - '5002113'
+                      name: Security Updates for Microsoft SharePoint Server 2016 (January 2022)
+                      patch_publication_date: '2022-01-11T00:00:00Z'
+                      modification_date: '2022-05-06T00:00:00Z'
+                      publication_date: '2022-01-12T00:00:00Z'
+                      risk_factor: high
+                      see_also:
+                      - https://support.microsoft.com/en-us/help/5002113
+                      solution: Microsoft has released security update KB5002113 to address this issue.
+                      stig_severity: I
+                      synopsis: The Microsoft SharePoint Server 2016 installation on the remote host is missing security updates.
+                      unsupported_by_vendor: false
+                      version: '1.6'
+                      vuln_publication_date: '2022-01-11T00:00:00Z'
+                      xrefs:
+                      - type: CVE
+                        id: 2022-21837
+                      - type: CVE
+                        id: 2022-21840
+                      - type: CVE
+                        id: 2022-21842
+                      - type: IAVA
+                        id: 2022-A-0007-S
+                      - type: MSFT
+                        id: MS22-5002113
+                      - type: MSKB
+                        id: '5002113'
+                      vpr:
+                        score: 6.7
+                        drivers:
+                          age_of_vuln:
+                            lower_bound: 731
+                          exploit_code_maturity: UNPROVEN
+                          cvss_impact_score_predicted: false
+                          cvss3_impact_score: 5.9
+                          threat_intensity_last28: VERY_LOW
+                          threat_sources_last28:
+                          - No recorded events
+                          product_coverage: LOW
+                        updated: '2024-02-04T06:03:56Z'
+                      vpr_v2:
+                        score: 4.9
+                        vpr_percentile: 56.16
+                        vpr_severity: MEDIUM
+                        exploit_probability: 0.001
+                        cve_id: CVE-2010-0049
+                        exploit_code_maturity: FUNCTIONAL
+                        on_cisa_kev: false
+                        in_the_news_intensity_last30: VERY_LOW
+                        in_the_news_recency: NO_RECORDED_EVENTS
+                        malware_observations_intensity_last30: VERY_LOW
+                        malware_observations_recency: NO_RECORDED_EVENTS
+                      epss_score: 10.647
+                      workaround: "F5 lists a workaround with instructions listed at https://my.f5.com/manage/s/article/K000137595 that can be achieved using the following steps:\n\n    1. Install the latest PI IM package\n    2. Disable signatures with excessive Total Hit Count value\n\n    Note that Tenable always advises that you upgrade a system if possible, \n    and all steps listed here are mitigation steps provided by F5. \n    Tenable is not responsible for any negative effects that may occur from enacting this workaround."
+                      workaround_type: disable service
+                      workaround_published: '2024-02-14T00:00:00Z'
+                      vendor_unpatched: true
+                      has_workaround: true
+                      vendor_severity: Important
+                      cve:
+                      - CVE-2022-21837
+                      - CVE-2022-21840
+                      - CVE-2022-21842
+                      type: local
+                    port:
+                      port: 445
+                      protocol: TCP
+                      service: cifs
+                    scan:
+                      schedule_uuid: 461e4ebc-b309-face-6fa1-afa4ba163cb6d84b9dc0a0dc5020
+                      started_at: '2023-05-03T14:14:02.387Z'
+                      last_scan_target: 192.0.2.58
+                      uuid: 270b911b-1fe6-4760-8c49-88d315cb764e
+                    severity: high
+                    severity_id: 3
+                    severity_default_id: 3
+                    severity_modification_type: NONE
+                    first_found: '2022-11-08T19:18:10.472Z'
+                    last_found: '2023-05-04T05:03:13.737Z'
+                    state: OPEN
+                    indexed: '2023-05-04T05:13:40.809406Z'
+                    source: NESSUS
+                    finding_id: 02716af9-1adb-4057-b4d5-dcb0c36b290c
+                    resurfaced_date: '2024-11-27T11:56:24.384Z'
+                    time_taken_to_fix: '3045760'
+                    software_vulns:
+                    - fix_available: true
+                      identifier: cpe:2.3:a:apache:http_server:2.4.58.0:*:*:*:*:*:*:*
+                      path: C:\xampp\apache\bin\httpd.exe
+                      product: Http Server
+                      product_type: Application
+                      version: 2.4.58.0
+                      vendor: Apache
+                      categories:
+                      - WEB
+                      vulnerabilities:
+                      - CVE-2023-38709
+                      - CVE-2024-24795
+                      - CVE-2024-27316
+                      fixes:
+                      - fix_type: version
+                        value: 2.4.59
+                      potential: true
+                      potential_reasons:
+                      - Component
+                  - asset:
+                      device_type: hypervisor
+                      fqdn: vcsa8.target.example.com
+                      hostname: vcsa8.target.example.com
+                      uuid: 1babf006-b1f0-4dee-86a1-7a55888336c3
+                      ipv4: 192.0.2.246
+                      operating_system:
+                      - VMware vCenter Server 8.0.0 build-20037386
+                      serial_number: HIJ39D9
+                      network_id: 00000000-0000-0000-0000-000000000000
+                      tracked: true
+                    output: "\nThe following pages do not set a Content-Security-Policy frame-ancestors response header or set a permissive policy:\n\n  - https://vcsa8.target.example.com/\n  - https://vcsa8.target.example.com/ui/\n"
+                    plugin:
+                      bid:
+                      - 50344
+                      checks_for_default_account: false
+                      checks_for_malware: false
+                      cpe: []
+                      description: 'The remote web server in some responses sets a permissive Content-Security-Policy (CSP) frame-ancestors response header or does not set one at all.
+
+
+                        The CSP frame-ancestors header has been proposed by the W3C Web Application Security Working Group as a way to mitigate cross-site scripting and clickjacking attacks.'
+                      exploit_available: false
+                      exploit_framework_canvas: false
+                      exploit_framework_core: false
+                      exploit_framework_d2_elliot: false
+                      exploit_framework_exploithub: false
+                      exploit_framework_metasploit: false
+                      exploited_by_malware: false
+                      exploited_by_nessus: false
+                      family: CGI abuses
+                      family_id: 3
+                      has_patch: false
+                      id: 50344
+                      in_the_news: false
+                      name: Missing or Permissive Content-Security-Policy frame-ancestors HTTP Response Header
+                      modification_date: '2021-01-19T00:00:00Z'
+                      publication_date: '2010-10-26T00:00:00Z'
+                      risk_factor: info
+                      see_also:
+                      - http://www.nessus.org/u?55aa8f57
+                      - http://www.nessus.org/u?07cc2a06
+                      - https://content-security-policy.com/
+                      - https://www.w3.org/TR/CSP2/
+                      solution: Set a non-permissive Content-Security-Policy frame-ancestors header for all requested resources.
+                      synopsis: The remote web server does not take steps to mitigate a class of web application vulnerabilities.
+                      unsupported_by_vendor: false
+                      version: '1.6'
+                      xrefs: []
+                      type: remote
+                    port:
+                      port: 443
+                      protocol: TCP
+                      service: www
+                    scan:
+                      schedule_uuid: 16cf08d3-3f94-79f4-8038-996376eabd4f186741fe15533e70
+                      started_at: '2023-05-03T14:13:56.983Z'
+                      last_scan_target: 192.0.2.58
+                      uuid: e86252a3-8dc0-43b6-8ddd-afb219d040ed
+                    severity: info
+                    severity_id: 0
+                    severity_default_id: 0
+                    severity_modification_type: NONE
+                    first_found: '2022-11-08T06:12:27.940Z'
+                    last_found: '2023-05-04T09:39:26.415Z'
+                    state: OPEN
+                    indexed: '2023-05-04T09:44:55.673359Z'
+                    source: NESSUS
+                    finding_id: 12ab3af9-1adb-4057-b4d5-dcb0c36b294d
+                    resurfaced_date: '2024-12-27T11:57:24.384Z'
+                    time_taken_to_fix: '4045860'
+        '400':
+          description: Returned if your request specified invalid parameters, if your request was improperly formatted, or if the vulnerabilities chunk was not ready for download.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to download vulnerabilities chunks.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find a chunk with the specified UUID or if the chunk with the specified UUID has expired.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Export_Vulnerabilities_cloud: []
+  /vulns/export/{export_uuid}/cancel:
+    post:
+      summary: Cancel vuln export
+      description: Cancels the specified vulnerability export job. If you cancel an export job, Tenable Vulnerability Management finishes any chunk that is currently processing, terminates the processing of any unprocessed chunks, and updates the job status to `CANCELLED`. If a canceled job includes completed chunks, you can download those chunks for three days after cancellation. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: exports-vulns-export-cancel
+      tags:
+      - Exports (Vulnerabilities)
+      parameters:
+      - description: The UUID for the vulnerabilities export request to cancel.
+        required: true
+        name: export_uuid
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the specified export job was canceled successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Text describing the export job status, `CANCELLED`.
+              examples:
+                response:
+                  value:
+                    status: CANCELLED
+        '400':
+          description: Returned if your request specified invalid parameters, if your request was improperly formatted, or if Tenable Vulnerability Management could not cancel the vulnerability export job.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to cancel vulnerability export jobs.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified vulnerabilities export job.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Export_Vulnerabilities_cloud: []
+components:
+  schemas:
+    Export_Vulnerabilities_software-vuln-fix:
+      type: object
+      description: Fix information for a vulnerable software package.
+      properties:
+        fix_type:
+          type: string
+          description: The fix type. For package manager-based software, this is the package manager type (for example, `rpm`). For application software, this is `version`.
+        value:
+          type: string
+          description: The fix value. For package manager fix types, this is the package URL (purl) of the fixed version. For `version` fix types, this is the fixed version number.
+    Export_Vulnerabilities_response-vulns-export-jobs:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: The UUID of the vulnerability export request.
+        status:
+          type: string
+          description: "The status of the vulnerabilities export request. Possible values include:\n - QUEUED—Tenable Vulnerability Management has queued the export request until other requests currently in process are completed.\n - PROCESSING—Tenable Vulnerability Management has started processing the export request.\n - FINISHED—Tenable Vulnerability Management has completed processing the export request. The list of chunks is complete.\n - CANCELLED—An administrator has cancelled the export request.\n - ERROR—Tenable Vulnerability Management encountered an error while processing the export request. Tenable recommends that you retry the request. If the status persists on retry, contact Tenable Support."
+        reason:
+          type: string
+          description: "The reason the export failed or completed with errors. This property is only present when the export status is `ERROR` or `FINISHED` with failed chunks. Possible values include:\n - \"The export request timed out. Try again.\"\n - \"An unexpected error occurred while processing the export. Try again later.\"\n - \"The export could not be completed. If this issue persists, please contact support.\"\n - \"{N} of {M} chunks failed to process. The remaining chunks are available for download.\""
+        total_chunks:
+          type: integer
+          description: The total number of chunks associated with the export job as a whole.
+        chunks_available_count:
+          type: integer
+          description: The total number of completed chunks available for download.
+        empty_chunks_count:
+          type: integer
+          description: The total number of empty chunks.
+        finished_chunks:
+          type: integer
+          description: The number of chunks that have been processed and are available for download.
+        filters:
+          type: object
+          description: The filters used in the vulnerability export job request. For a list of possible filters, see the filters available for the [Export vulnerabilities](ref:exports-vulns-request-export) endpoint.
+          properties: {}
+        num_assets_per_chunk:
+          type: integer
+          description: The number of assets contained in each export chunk.
+        created:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time on which the exports job was created.
+    Export_Vulnerabilities_vpr_filter:
+      description: 'Filters vulnerabilities based on their Vulnerability Priority Rating (VPR) version 1 score. You can define score ranges using properties such as `gte` (greater than or equal to) and `lte` (less than or equal to). For example, to match vulnerabilities with VPR scores between 9.0 and 9.9, include `{ "gte": 9.0, "lte": 9.9 }` in the filter.
+
+
+
+
+        For details about VPR, see [Vulnerability Priority Rating](https://docs.tenable.com/vulnerability-management/Content/Explore/Findings/RiskMetrics.htm#Vulnerability-Priority-Rating-) in the _Tenable Vulnerability Management User Guide_.'
+      type: object
+      properties:
+        eq:
+          description: Returns vulnerabilities with a VPR exactly equal to the specified score or scores. This property _cannot_ be used in combination with `lt`, `gt`, `lte`, or `gte`.
+          type: array
+          items:
+            type: number
+            format: float
+            minimum: 0.1
+            maximum: 10
+        neq:
+          description: Returns vulnerabilities with a VPR _not_ equal to the specified score or scores. This property can be combined with the `eq` property.
+          type: array
+          items:
+            type: number
+            format: float
+            minimum: 0.1
+            maximum: 10
+        gt:
+          description: Returns vulnerabilities with a VPR _greater than_ the specified score. This property cannot be combined with the `eq` property.
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 10
+        gte:
+          description: Returns vulnerabilities with a VPR _greater than or equal to_ the specified score. This property cannot be combined with the `eq` property.
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 10
+        lt:
+          description: Returns vulnerabilities with a VPR _less than_ the specified score. This property cannot be combined with the `eq` property.
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 10
+        lte:
+          description: Returns vulnerabilities with a VPR _less than or equal to_ the specified score. This property cannot be combined with the `eq` property.
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 10
+    Export_Vulnerabilities_software-vuln-item:
+      type: object
+      description: Software package attribution data for a vulnerability finding.
+      properties:
+        fix_available:
+          type: boolean
+          description: Indicates whether a fix is available for the vulnerability in this package.
+        identifier:
+          type: string
+          description: The identifier that uniquely identifies the affected software package. The format is either a package URL (purl) for package manager-based software (for example, `pkg:rpm/centos/vim-common@8.0.1763`) or a CPE 2.3 string for application software (for example, `cpe:2.3:a:apache:http_server:2.4.58.0:*:*:*:*:*:*:*`).
+        path:
+          type: string
+          description: The file system path to the software executable or binary detected on the asset.
+        product:
+          type: string
+          description: The name of the affected software package.
+        product_type:
+          type: string
+          description: The type of software package. For example, `Package` or `Application`.
+        version:
+          type: string
+          description: The installed version of the affected software package.
+        vendor:
+          type: string
+          description: The vendor or distribution that provides the software package.
+        categories:
+          type: array
+          description: A list of software categories associated with the package. For example, `WEB` or `Development Tools`.
+          items:
+            type: string
+        vulnerabilities:
+          type: array
+          description: A list of CVE identifiers associated with the vulnerability in this package.
+          items:
+            type: string
+        fixes:
+          type: array
+          description: A list of available fixes for the vulnerability in this package.
+          items:
+            $ref: '#/components/schemas/Export_Vulnerabilities_software-vuln-fix'
+        potential:
+          type: boolean
+          description: Indicates whether the vulnerability association with this package is confirmed or potential. A value of `true` indicates the association cannot be confirmed with certainty. A value of `false` indicates a confirmed association.
+        potential_reasons:
+          type: array
+          description: 'A list of reasons that classify the vulnerability association as potential rather than confirmed. Only present when `potential` is `true`. Supported values: `Managed`, `Component`, `Config Required`, `Low Fidelity`, `Incomplete Version`, `Backported`.'
+          items:
+            type: string
+            enum:
+            - Managed
+            - Component
+            - Config Required
+            - Low Fidelity
+            - Incomplete Version
+            - Backported
+    Export_Vulnerabilities_cvss3_vector:
+      type: object
+      description: Additional CVSSv3 metrics for the vulnerability.
+      properties:
+        access_vector:
+          type: string
+          description: "The CVSSv2 Attack Vector (AV) metric for the vulnerability the plugin covers. Possible values include:\n - Network—Corresponds to the Network (N) value for the AV metric. \n - Adjacent Network—Corresponds to the Adjacent Network (A) value for the AV metric. \n - Local—Corresponds to the Local (L) value for the AV metric"
+        access_complexity:
+          type: string
+          description: "The CVSSv3 Access Complexity (AC) metric for the vulnerability the plugin covers. Possible values include: \n - H—High\n - M—Medium\n - L—Low"
+        authentication:
+          type: string
+          description: "The CVSSv2 Authentication (Au) metric for the vulnerability the plugin covers. Possible values include:\n - None required—Corresponds to the None (N) value for the Au metric. \n - Requires-single-instance—Corresponds to the Single (S) value for the Au metric. \n - Requires-multiple-instances—Corresponds to the Multiple (M) value for the Au metric"
+        confidentiality_impact:
+          type: string
+          description: "The CVSSv3 confidentiality impact metric of the vulnerability the plugin covers to the vulnerable component. Possible values include: \n - H—High\n - L—Low\n - N—None"
+        integrity_impact:
+          type: string
+          description: "The CVSSv3 integrity impact metric for the vulnerability the plugin covers. Possible values include:\n - H—High\n - L—Low\n - N—None"
+        availability_impact:
+          type: string
+          description: "The CVSSv2 availability impact metric for the vulnerability the plugin covers. Possible values include: \n - H—High\n - L—Low\n - N—None"
+        raw:
+          type: string
+          description: The complete `cvss3_vector` metrics and result values for the vulnerability the plugin covers in a condensed and coded format. For example, `AV:N/AC:M/Au:N/C:C/I:C/A:C`.
+    Export_Vulnerabilities_cvss_vector:
+      type: object
+      description: Additional CVSSv2 metrics for the vulnerability.
+      properties:
+        access_vector:
+          type: string
+          description: "The CVSSv2 Access Vector (AV) metric for the vulnerability the plugin covers. Possible values include: \n - L—Local\n - A—Adjacent Network\n - N—Network"
+        access_complexity:
+          type: string
+          description: "The CVSSv2 Access Complexity (AC) metric for the vulnerability the plugin covers. Possible values include:\n - H—High\n - M—Medium\n - L—Low"
+        authentication:
+          type: string
+          description: "The CVSSv2 Authentication (Au) metric for the vulnerability the plugin covers. Possible values include: \n - N—None\n - S—Single\n - M—Multiple"
+        confidentiality_impact:
+          type: string
+          description: "The CVSSv2 confidentiality impact metric for the vulnerability the plugin covers. Possible values include: \n - N—None\n - P—Partial\n - C—Complete"
+        integrity_impact:
+          type: string
+          description: "The CVSSv2 integrity impact metric for the vulnerability the plugin covers. Possible values include: \n - N—None\n - P—Partial\n - C—Complete"
+        availability_impact:
+          type: string
+          description: "The CVSSv2 availability impact metric for the vulnerability the plugin covers. Possible values include: \n - N—None\n - P—Partial\n - C—Complete"
+        raw:
+          type: string
+          description: The complete `cvss_vector` metrics and result values for the vulnerability the plugin covers in a condensed and coded format. For example, `AV:N/AC:M/Au:N/C:C/I:C/A:C`.
+    Export_Vulnerabilities_cvss4_threat_vector:
+      type: object
+      description: An object representing the CVSS v4.0 Threat metrics for the vulnerability. These metrics provide context on current, observed threat activity in the wild, such as evidence of exploitation or the presence of available exploit code. Threat metrics can help refine the severity and prioritization of vulnerabilities beyond their intrinsic characteristics. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+      properties:
+        threat_score:
+          type: number
+          format: float
+          description: The CVSS v4.0 threat score (CVSS-T), which adjusts the base score by incorporating real-world threat intelligence, such as the presence of active exploitation, exploit code availability, or observed malware activity. This score reflects the current threat landscape for the vulnerability. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+        exploit_maturity:
+          type: string
+          description: The CVSS v4.0 Exploit Maturity (E) metric, indicating the current development status of exploit techniques or code for the vulnerability. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - Not Defined
+          - Attacked
+          - Proof-of-Concept
+          - Unreported
+        raw:
+          type: string
+          description: The complete `cvss4_threat_vector` metrics and their result values for the vulnerability, expressed as a concise, coded string. This threat vector is typically appended to the CVSSv4 Base vector. For example, `CVSS:4.0/E:U`. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+    Export_Vulnerabilities_scan-information:
+      description: Information about the latest scan that detected the vulnerability.
+      type: object
+      properties:
+        schedule_uuid:
+          type: string
+          description: The schedule UUID for the scan that found the vulnerability.
+        started_at:
+          type: string
+          description: The ISO timestamp when the scan started.
+        last_scan_target:
+          type: string
+          description: The IP address or fully qualified domain name (FQDN) of the asset targeted in the last scan.
+        uuid:
+          type: string
+          description: The UUID of the scan that found the vulnerability.
+    Export_Vulnerabilities_epss_filter:
+      description: "Filters vulnerabilities by their Exploit Prediction Scoring System (EPSS) score, expressed as a percentage from 0 to 100. You can combine properties to define value ranges. For example, use `gte: 50` and `lte: 80` to return vulnerabilities with EPSS scores between 50 and 80 inclusive. \n\nFor more information, see FIRST's [Exploit Prediction Scoring System (EPSS)](https://www.first.org/epss/)."
+      type: object
+      properties:
+        eq:
+          description: Returns vulnerabilities with an EPSS score exactly equal to the specified value(s). Cannot be combined with `lt`, `gt`, `lte`, or `gte`.
+          type: array
+          items:
+            type: number
+            format: float
+            minimum: 0
+            maximum: 100
+        neq:
+          description: Returns vulnerabilities with an EPSS score _not_ equal to the specified value(s). Can be combined with `eq`.
+          type: array
+          items:
+            type: number
+            format: float
+            minimum: 0
+            maximum: 100
+        gt:
+          description: Returns vulnerabilities with an EPSS score _greater than_ the specified value. Cannot be combined with `eq`.
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+        gte:
+          description: Returns vulnerabilities with an EPSS score _greater than or equal to_ the specified value. Cannot be combined with `eq`.
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+        lt:
+          description: Returns vulnerabilities with an EPSS score _less than_ the specified value. Cannot be combined with `eq`.
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+        lte:
+          description: Returns vulnerabilities with an EPSS score _less than or equal to_ the specified value. Cannot be combined with `eq`.
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+    Export_Vulnerabilities_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Export_Vulnerabilities_time_taken_to_fix_filter:
+      description: Returns vulnerabilities based on how long (in seconds) that it took your organization to fix. Your export results will only include vulnerabilities in the fixed state if this filter is included. Note that this value must be specified in seconds.
+      type: object
+      properties:
+        gte:
+          type: integer
+          format: int64
+          description: Returns vulnerabilities with a time taken to fix greater than or equal to the specified amount of seconds.
+        lte:
+          type: integer
+          format: int64
+          description: Returns vulnerabilities with a time taken to fix lesser than or equal to the specified amount of seconds.
+    Export_Vulnerabilities_cvss3_temporal_vector:
+      type: object
+      description: CVSSv3 temporal metrics for the vulnerability.
+      properties:
+        exploitability:
+          type: string
+          description: "The CVSSv3 Exploit Maturity Code (E) for the vulnerability the plugin covers. Possible values include: \n - Unproven—Corresponds to the Unproven (U) value for the E metric\n - Proof-of-concept—Corresponds to the Proof-of-Concept (POC) value for the E metric\n - Functional—Corresponds to the Functional (F) value for the E metric\n - High—Corresponds to the High (H) value for the E metric\n - Not-defined—Corresponds to the Not Defined (ND) value for the E metric"
+        remediation_level:
+          type: string
+          description: "The CVSSv3 Remediation Level (RL) temporal metric for the vulnerability the plugin covers. Possible values include: \n - O—Official Fix\n - T—Temporary Fix\n - W—Workaround\n - U—Unavailable\n - X—Not Defined"
+        report_confidence:
+          type: string
+          description: "The CVSSv3 Report Confidence (RC) temporal metric for the vulnerability the plugin covers. Possible values include: \n - U—Unknown\n - R—Reasonable\n - C—Confirmed\n - X—Not Defined"
+        raw:
+          type: string
+          description: The complete `cvss3_temporal_vector` metrics and result values for the vulnerability the plugin covers in a condensed and coded format. For example, `E:U/RL:OF/RC:C`.
+    Export_Vulnerabilities_response-vulns-export-status:
+      description: Information about the specified vulnerabilities export job.
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: The UUID of the vulnerabilities export request.
+        status:
+          type: string
+          description: "The status of the vulnerabilities export request. Possible values include:\n - QUEUED—Tenable Vulnerability Management has queued the export request until earlier requests have completed.\n - PROCESSING—Tenable Vulnerability Management is currently processing the export request.\n - FINISHED—Tenable Vulnerability Management has completed processing the export request. All chunks are available.\n - CANCELLED—An administrator has cancelled the export request.\n - ERROR—An error occurred while processing the export request. Retry the request. If the error persists on retry, contact Tenable Support."
+        reason:
+          type: string
+          description: "The reason the export failed or completed with errors. This property is only present when the export status is `ERROR` or `FINISHED` with failed chunks. Possible values include:\n - \"The export request timed out. Try again.\"\n - \"An unexpected error occurred while processing the export. Try again later.\"\n - \"The export could not be completed. If this issue persists, please contact support.\"\n - \"{N} of {M} chunks failed to process. The remaining chunks are available for download.\""
+        chunks_available:
+          type: array
+          description: A list of completed chunks available for download.
+          items:
+            type: integer
+            format: int32
+        chunks_failed:
+          type: array
+          description: A list of chunks for which the export process failed. If a chunk fails processing, submit the export request again. If the chunk continues to fail, contact Tenable Support.
+          items:
+            type: integer
+            format: int32
+        chunks_cancelled:
+          type: array
+          description: A list of chunks for which the export process was cancelled. If a chunk fails processing, Tenable Vulnerability Management automatically cancels all subsequent chunks queued for export in the same request.
+          items:
+            type: integer
+            format: int32
+        total_chunks:
+          type: integer
+          description: The total number of chunks associated with the export job as a whole.
+        chunks_available_count:
+          type: integer
+          description: The total number of completed chunks available for download.
+        empty_chunks_count:
+          type: integer
+          description: The total number of empty chunks.
+        finished_chunks:
+          type: integer
+          description: The number of chunks that have been processed and are available for download.
+        filters:
+          type: object
+          description: The filters used in the vulnerability export job request. For a list of possible filters, see the filters available for the [Export vulnerabilities](ref:exports-vulns-request-export) endpoint.
+          properties: {}
+        num_assets_per_chunk:
+          type: integer
+          description: The number of assets contained in each export chunk.
+        created:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time on which the exports job was created.
+    Export_Vulnerabilities_vpr_v2_filter:
+      description: "Filters vulnerabilities based on their Vulnerability Priority Rating (VPR) version 2 score. This enhanced version is labeled **VPR (Beta)** in the user interface. You can define score ranges using properties such as `gte` (greater than or equal to) and `lte` (less than or equal to). For example, to match vulnerabilities with VPR scores between 9.0 and 9.9, include `{ \"gte\": 9.0, \"lte\": 9.9 }` in the filter. \n\n**Caution**: The `vpr_v2_score` filter parameter is scheduled for deprecation on July 1, 2026 as part of the transition to VPR v2. To ensure continued functionality, update all integrations to use the `vpr_score` filter parameter. On the deprecation date, the system will update `vpr_score` to support the new VPR model. For more information, see [Vulnerability Priority Rating: Transition to VPR Version 2](changelog:vulnerability-priority-rating-transition-to-version-2).\n\nFor details about VPR, see [Vulnerability Priority Rating](https://docs.tenable.com/vulnerability-management/Content/Explore/Findings/RiskMetrics.htm#Vulnerability-Priority-Rating-) in the _Tenable Vulnerability Management User Guide_. To learn about the enhancements introduced in VPR v2, refer to the whitepaper [Enhancements to Tenable Vulnerability Priority Rating (VPR)](https://www.tenable.com/whitepapers/enhancements-to-tenable-vulnerability-priority-rating-vpr)."
+      type: object
+      properties:
+        eq:
+          description: Returns vulnerabilities with a VPR exactly equal to the specified score or scores. This property _cannot_ be used in combination with `lt`, `gt`, `lte`, or `gte`.
+          type: array
+          items:
+            type: number
+            format: float
+            minimum: 0.1
+            maximum: 10
+        neq:
+          description: Returns vulnerabilities with a VPR _not_ equal to the specified score or scores. This property can be combined with the `eq` property.
+          type: array
+          items:
+            type: number
+            format: float
+            minimum: 0.1
+            maximum: 10
+        gt:
+          description: Returns vulnerabilities with a VPR _greater than_ the specified score. This property cannot be combined with the `eq` property.
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 10
+        gte:
+          description: Returns vulnerabilities with a VPR _greater than or equal to_ the specified score. This property cannot be combined with the `eq` property.
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 10
+        lt:
+          description: Returns vulnerabilities with a VPR _less than_ the specified score. This property cannot be combined with the `eq` property.
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 10
+        lte:
+          description: Returns vulnerabilities with a VPR _less than or equal to_ the specified score. This property cannot be combined with the `eq` property.
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 10
+    Export_Vulnerabilities_response-vulns-chunk:
+      type: object
+      description: A chunk of vulnerabilities.
+      properties:
+        asset:
+          $ref: '#/components/schemas/Export_Vulnerabilities_response-vulns-export-chunk-asset'
+        output:
+          type: string
+          description: The text output of the Nessus scanner.
+        plugin:
+          $ref: '#/components/schemas/Export_Vulnerabilities_plugin'
+        port:
+          $ref: '#/components/schemas/Export_Vulnerabilities_port'
+        recast_reason:
+          type: string
+          description: The text that appears in the Comment field of the recast rule in the Tenable Vulnerability Management user interface.
+        recast_rule_uuid:
+          type: string
+          description: The UUID of the recast rule that applies to the plugin.
+        scan:
+          $ref: '#/components/schemas/Export_Vulnerabilities_scan-information'
+        severity:
+          type: string
+          description: The severity of the vulnerability as defined using the Common Vulnerability Scoring System (CVSS) base score. Possible values include `info` (CVSS score of 0), `low` (CVSS score between 0.1 and 3.9), `medium` (CVSS score between 4.0 and 6.9), `high` (CVSS score between 7.0 and 9.9), and `critical` (CVSS score of 10.0).
+        severity_id:
+          type: integer
+          format: int32
+          description: "The code for the severity assigned when a user recast the risk associated with the vulnerability. Possible values include: \n - 0—The vulnerability has a CVSS score of 0, which corresponds to the \"info\" severity level.\n - 1—The vulnerability has a CVSS score between 0.1 and 3.9, which corresponds to the \"low\" severity level.\n - 2—The vulnerability has a CVSS score between 4.0 and 6.9, which corresponds to the \"medium\" severity level.\n - 3—The vulnerability has a CVSS score between 7.0 and 9.9, which corresponds to the \"high\" severity level.\n - 4—The vulnerability has a CVSS score of 10.0, which corresponds to the \"critical\" severity level."
+        severity_default_id:
+          type: integer
+          format: int32
+          description: The code for the severity originally assigned to a vulnerability before a user recast the risk associated with the vulnerability. Possible values are the same as for the `severity_id` attribute.
+        severity_modification_type:
+          type: string
+          description: "The type of modification a user made to the vulnerability's severity. Possible values include: \n - none—No modification has been made.\n - recasted—A user in the Vulnerability Management user interface has recast the risk associated with the vulnerability. \n - accepted—A user in the vulnerability Management user interface has accepted the risk associated with the vulnerability. \n\nFor more information about recast and accept rules, see the [Recast/Accept Rules](https://docs.tenable.com/vulnerability-management/Content/Settings/Recast/AboutRecastRules.htm) in the Tenable Vulnerability Management User Guide."
+        first_found:
+          type: string
+          description: An ISO timestamp indicating the date and time when a scan first detected the finding on the asset.
+        last_fixed:
+          type: string
+          description: An ISO timestamp indicating the date and time when a scan no longer detects the previously detected finding on the asset.
+        last_found:
+          type: string
+          description: An ISO timestamp indicating the date and time when a scan last detected the finding on the asset.
+        indexed:
+          type: integer
+          format: int64
+          description: The date and time (in Unix time) when the vulnerability was indexed into Tenable Vulnerability Management.
+        state:
+          type: string
+          description: "The state of the vulnerability as determined by the Tenable Vulnerability Management state service. Possible values include: \n - OPEN—The vulnerability is currently present on an asset. \n - REOPENED—The vulnerability was previously marked as fixed on an asset, but has been detected again by a new scan. \n - FIXED—The vulnerability was present on an asset, but is no longer detected.\n\nNote that the API uses different terms for vulnerability states than the user interface. The `new` and `active` states in the user interface map to the `open` state in the API. The `resurfaced` state in the user interface maps to the `reopened` state in the API. The `fixed` state is the same."
+        source:
+          type: string
+          description: "The source of the scans that identified the vulnerability. Sources can include sensors, connectors, and API imports. The values in the `source` field correspond to the names of the sources as defined in your organization's implementation of Tenable Vulnerability Management.\n\n Commonly used source names include:\n - AGENT—The vulnerability data was obtained from a Tenable Nessus Agent scan.\n - NNM—The vulnerability data was obtained from a Tenable Nessus Network Monitor (NNM) scan.\n - NESSUS—The vulnerability data was obtained from a Tenable Nessus scan."
+        finding_id:
+          type: string
+          format: uuid
+          description: The unique identifier for the finding.
+        resurfaced_date:
+          type: string
+          description: An ISO timestamp indicating the date and time the vulnerability resurfaced. Only the most recent date appears if a vulnerability has resurfaced multiple times.
+        time_taken_to_fix:
+          type: integer
+          format: int64
+          description: The length of time (in seconds) it took for your organization to fix the vulnerability. This property only appears for fixed vulnerabilities.
+        software_vulns:
+          type: array
+          description: A list of software packages associated with the vulnerability, including package-level attribution and confidence classification data. This property is only present when `include_software_vulns` parameter is set to `true` in the export request.
+          items:
+            $ref: '#/components/schemas/Export_Vulnerabilities_software-vuln-item'
+    Export_Vulnerabilities_response-vulns-export-chunk-asset:
+      type: object
+      description: Information about the asset where the scan detected the vulnerability.
+      properties:
+        agent_uuid:
+          type: string
+          description: The UUID of the agent that performed the scan where the vulnerability was found.
+        bios_uuid:
+          type: string
+          description: The BIOS UUID of the asset where the vulnerability was found.
+        device_type:
+          type: string
+          description: The type of asset where the vulnerability was found.
+        fqdn:
+          type: string
+          description: The fully-qualified domain name of the asset where a scan found the vulnerability.
+        hostname:
+          type: string
+          description: The host name of the asset where a scan found the vulnerability.
+        uuid:
+          type: string
+          description: The UUID of the asset where a scan found the vulnerability.
+        ipv4:
+          type: string
+          description: The IPv4 address of the asset where a scan found the vulnerability.
+        ipv6:
+          type: string
+          description: The IPv6 address of the asset where a scan found the vulnerability.
+        last_authenticated_results:
+          type: string
+          description: The last date credentials were used successfully to scan the asset.
+        last_unauthenticated_results:
+          type: string
+          description: The last date when the asset was scanned without using credentials
+        mac_address:
+          type: string
+          description: The MAC address of the asset where a scan found the vulnerability.
+        netbios_name:
+          type: string
+          description: The NETBIOS name of the asset where a scan found the vulnerability.
+        netbios_workgroup:
+          type: string
+          description: The NETBIOS workgroup of the asset where a scan found the vulnerability.
+        operating_system:
+          type: array
+          description: The operating system of the asset where a scan found the vulnerability.
+          items:
+            type: string
+        serial_number:
+          type: string
+          description: The unique identifier of the asset as assigned by the manufacturer. This property is only available for network devices.
+        network_id:
+          type: string
+          description: The ID of the network associated with the scanners that identified the asset. The default network ID is `00000000-0000-0000-0000-000000000000`. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        tracked:
+          type: boolean
+          description: A value specifying whether Tenable Vulnerability Management tracks the asset in the asset management system. Tenable Vulnerability Management still assigns untracked assets identifiers in scan results, but these identifiers change with each new scan of the asset. This parameter is relevant to PCI-type scans and in certain cases where there is not enough information in a scan to identify the asset. Untracked assets appear in the scan history, but do not appear in workbenches or reports.
+    Export_Vulnerabilities_cvss_temporal_vector:
+      description: CVSSv2 temporal metrics for the vulnerability.
+      type: object
+      properties:
+        exploitability:
+          type: string
+          description: "The CVSSv2 Exploitability (E) temporal metric for the vulnerability the plugin covers. Possible values include:\n - U—Unproven\n - POC—Proof-of-Concept\n - F—Functional\n - H—High\n - ND—Not Defined"
+        remediation_level:
+          type: string
+          description: "The CVSSv2 Remediation Level (RL) temporal metric for the vulnerability the plugin covers. Possible values include: \n - OF—Official Fix\n - TF—Temporary Fix\n - W—Workaround\n - U—Unavailable\n - ND—Not Defined"
+        report_confidence:
+          type: string
+          description: "The CVSSv2 Report Confidence (RC) temporal metric for the vulnerability the plugin covers. Possible values include: \n - UC—Unconfirmed\n - UR—Uncorroborated\n - C—Confirmed\n - ND—Not Defined"
+        raw:
+          type: string
+          description: The complete `cvss_temporal_vector` metrics and result values for the vulnerability the plugin covers in a condensed and coded format. For example, `E:U/RL:OF/RC:C`.
+    Export_Vulnerabilities_cvss4_vector:
+      type: object
+      description: An object representing the full set of CVSS v4.0 base metrics for the vulnerability. These metrics define the intrinsic characteristics of the vulnerability, including how it can be exploited (e.g., attack vector, privileges required) and the potential impacts to both the vulnerable system and subsequent systems (e.g., confidentiality, integrity, availability). For the complete specification, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+      properties:
+        attack_vector:
+          type: string
+          description: The CVSSv4 Attack Vector (AV) metric, which describes the context by which the vulnerability can be exploited. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - Network
+          - Adjacent
+          - Local
+          - Physical
+        attack_complexity:
+          type: string
+          description: The CVSSv4 Attack Complexity (AC) metric, which indicates the conditions beyond the attacker's control that must exist to exploit the vulnerability. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - Low
+          - High
+        attack_requirements:
+          type: string
+          description: The CVSSv4 Attack Requirements (AR) metric specifies prerequisite conditions of the vulnerable component that must be met for an attack to succeed. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - None
+          - Present
+        privileges_required:
+          type: string
+          description: The CVSSv4 Privileges Required (PR) metric indicates the level of privileges an attacker must have to successfully exploit the vulnerability. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - None
+          - Low
+          - High,
+        user_interaction:
+          type: string
+          description: The CVSSv4 User Interaction (UI) metric describes the level of user interaction required for an attack to succeed. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - None
+          - Passive
+          - Active
+        vulnerable_system_confidentiality:
+          type: string
+          description: The CVSSv4 Vulnerable System Confidentiality (VC) metric measures the impact on the confidentiality of information on the vulnerable system. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - High
+          - Low
+          - None
+        vulnerable_system_integrity:
+          type: string
+          description: The CVSSv4 Vulnerable System Integrity (VI) metric measures the impact on the integrity of information on the vulnerable system. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - High
+          - Low
+          - None
+        vulnerable_system_availability:
+          type: string
+          description: The CVSSv4 Vulnerable System Availability (VA) metric measures the impact on the availability of the vulnerable system. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - High
+          - Low
+          - None
+        subsequent_system_confidentiality:
+          type: string
+          description: The CVSSv4 Subsequent System Confidentiality (SC) metric measures the impact on the confidentiality of information on systems _subsequent_ to the vulnerable component. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - High
+          - Low
+          - None
+        subsequent_system_integrity:
+          type: string
+          description: The CVSSv4 Subsequent System Integrity (SI) metric measures the impact on the integrity of information on systems *subsequent* to the vulnerable component. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - High
+          - Low
+          - None
+        subsequent_system_availability:
+          type: string
+          description: The CVSSv4 Subsequent System Availability (SA) metric measures the impact on the availability of systems _subsequent_ to the vulnerable component. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - High
+          - Low
+          - None
+        raw:
+          type: string
+          description: The complete CVSSv4 Base vector string representing all metric values in a compact, standardized format. This includes metrics such as Attack Vector, Attack Complexity, Privileges Required, and others. For example, `AV:N/AC:L/AT:P/PR:H/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:H`. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+    Export_Vulnerabilities_cvss4_filter:
+      description: 'Filters vulnerabilities based on their CVSS version 4 (CVSSv4) base score. You can specify score ranges using the provided comparison properties. For example, to retrieve vulnerabilities with a CVSSv4 score between 7.0 and 9.9, include `{ "gte": 7.0, "lte": 9.9 }` in your filter.
+
+
+        For more details about CVSSv4, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).'
+      type: object
+      properties:
+        eq:
+          description: Returns vulnerabilities with a CVSSv4 score exactly equal to the specified value(s). Cannot be combined with `lt`, `gt`, `lte`, or `gte`.
+          type: array
+          items:
+            type: number
+            format: float
+            minimum: 0
+            maximum: 10
+        neq:
+          description: Returns vulnerabilities with a CVSSv4 score _not_ equal to the specified value(s). Can be combined with eq.
+          type: array
+          items:
+            type: number
+            format: float
+            minimum: 0
+            maximum: 10
+        gt:
+          description: Returns vulnerabilities with a CVSSv4 score _greater than_ the specified value. Cannot be combined with `eq`.
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+        gte:
+          description: Returns vulnerabilities with a CVSSv4 score _greater than or equal to_ the specified value. Cannot be combined with `eq`.
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+        lt:
+          description: Returns vulnerabilities with a CVSSv4 score _less than_ the specified value. Cannot be combined with `eq`.
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+        lte:
+          description: Returns vulnerabilities with a CVSSv4 score _less than or equal to_ the specified value. Cannot be combined with `eq`.
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+    Export_Vulnerabilities_plugin:
+      type: object
+      description: Information about the plugin that detected the vulnerability.
+      properties:
+        bid:
+          type: array
+          description: The Bugtraq ID for the plugin.
+          items:
+            type: integer
+        canvas_package:
+          type: string
+          description: The name of the CANVAS exploit pack that includes the vulnerability.
+        checks_for_default_account:
+          type: boolean
+          description: A value specifying whether the plugin checks for default accounts.
+        checks_for_malware:
+          type: boolean
+          description: A value specifying whether the plugin checks for malware.
+        cpe:
+          type: array
+          description: The Common Platform Enumeration (CPE) number for the plugin.
+          items:
+            type: string
+        cvss4_base_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+          description: The CVSS version 4 (CVSSv4) base score, representing the intrinsic and fundamental characteristics of a vulnerability that remain constant over time and across different user environments. The score ranges from 0 to 10, with higher values indicating greater severity. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+        cvss3_base_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+          description: The CVSSv3 base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
+        cvss3_temporal_score:
+          type: number
+          format: float
+          description: The CVSSv3 temporal score (characteristics of a vulnerability that change over time but not among user environments).
+        cvss4_vector:
+          $ref: '#/components/schemas/Export_Vulnerabilities_cvss4_vector'
+        cvss4_threat_vector:
+          $ref: '#/components/schemas/Export_Vulnerabilities_cvss4_threat_vector'
+        cvss3_temporal_vector:
+          $ref: '#/components/schemas/Export_Vulnerabilities_cvss3_temporal_vector'
+        cvss3_vector:
+          $ref: '#/components/schemas/Export_Vulnerabilities_cvss3_vector'
+        cvss_base_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+          description: The CVSSv2 base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
+        cvss_temporal_score:
+          type: number
+          format: float
+          description: The CVSSv2 temporal score (characteristics of a vulnerability that change over time but not among user environments).
+        cvss_temporal_vector:
+          $ref: '#/components/schemas/Export_Vulnerabilities_cvss_temporal_vector'
+        cvss_vector:
+          $ref: '#/components/schemas/Export_Vulnerabilities_cvss_vector'
+        description:
+          type: string
+          description: Full text description of the vulnerability.
+        d2_elliot_name:
+          type: string
+          description: The name of the exploit in the D2 Elliot Web Exploitation framework.
+        exploit_available:
+          type: boolean
+          description: A value specifying whether a public exploit exists for the vulnerability.
+        exploit_framework_canvas:
+          type: boolean
+          description: A value specifying whether an exploit exists in the Immunity CANVAS framework.
+        exploit_framework_core:
+          type: boolean
+          description: A value specifying whether  an exploit exists in the CORE Impact framework.
+        exploit_framework_d2_elliot:
+          type: boolean
+          description: A value specifying whether  an exploit exists in the D2 Elliot Web Exploitation framework.
+        exploit_framework_exploithub:
+          type: boolean
+          description: A value specifying whether  an exploit exists in the ExploitHub framework.
+        exploit_framework_metasploit:
+          type: boolean
+          description: A value specifying whether  an exploit exists in the Metasploit framework.
+        exploitability_ease:
+          type: string
+          description: Description of how easy it is to exploit the issue.
+        exploited_by_malware:
+          type: boolean
+          description: The vulnerability discovered by this plugin is known to be exploited by malware.
+        exploited_by_nessus:
+          type: boolean
+          description: A value specifying whether Nessus exploited the vulnerability during the process of identification.
+        exploithub_sku:
+          type: string
+          description: The SKU number of the exploit in the ExploitHub framework.
+        family:
+          type: string
+          description: The family to which plugin belongs.
+        family_id:
+          type: integer
+          description: The ID of the plugin family.
+        has_patch:
+          type: boolean
+          description: A value specifying whether the vendor has published a patch for the vulnerability.
+        id:
+          type: integer
+          description: The ID of the plugin that identified the vulnerability.
+        in_the_news:
+          type: boolean
+          description: A value specifying whether this plugin has received media attention (for example, ShellShock, Meltdown).
+        metasploit_name:
+          type: string
+          description: The name of the related exploit in the Metasploit framework.
+        ms_bulletin:
+          type: string
+          description: The Microsoft security bulletin that the plugin covers.
+        name:
+          type: string
+          description: The name of the plugin that identified the vulnerability.
+        patch_publication_date:
+          type: string
+          description: A timestamp in ISO 8601 format indicating the date and time the vendor published a patch for the vulnerability.
+        modification_date:
+          type: string
+          description: A timestamp in ISO 8601 format indicating the date and time the plugin was last updated.
+        publication_date:
+          type: string
+          description: A timestamp in ISO 8601 format indicating the date and time the plugin was first published.
+        risk_factor:
+          type: string
+          description: 'The risk factor of the vulnerability associated with the plugin. The risk factor is determined based on the calculation of the CVSS score, possible values are: <ul><li>`Low`—The vulnerability has a CVSS score between 0.1 and 3.9</li><li>`Medium`—The vulnerability has a CVSS score between 4.0 and 6.9</li><li>`High`—The vulnerability has a CVSS score between 7.0 and 9.9</li><li>`Critical`—The vulnerability has a CVSS score of 10.0</li></ul>'
+        see_also:
+          type: array
+          description: Links to external websites that contain helpful information about the vulnerability.
+          items:
+            type: string
+        solution:
+          type: string
+          description: Remediation information for the vulnerability.
+        stig_severity:
+          type: string
+          description: Security Technical Implementation Guide (STIG) severity code for the vulnerability.
+        synopsis:
+          type: string
+          description: Brief description of the plugin or vulnerability.
+        type:
+          type: string
+          description: The general type of plugin check (for example, `local` or `remote`).
+        unsupported_by_vendor:
+          type: boolean
+          description: Software found by this plugin is unsupported by the software's vendor (for example, Windows 95 or Firefox 3).
+        usn:
+          type: string
+          description: Ubuntu security notice that the plugin covers.
+        version:
+          type: string
+          description: The version of the plugin used to perform the check.
+        vuln_publication_date:
+          type: string
+          description: A timestamp in ISO 8601 format indicating the date and time the vulnerability was first publicly disclosed. This represents the initial public availability of information about the vulnerability.
+        xrefs:
+          type: array
+          description: References to third-party information about the vulnerability, exploit, or update associated with the plugin. Each reference includes a type and an ID. For example, 'FEDORA' and '2003-047'.
+          items:
+            type: string
+        vpr:
+          type: object
+          description: 'Information about the Vulnerability Priority Rating (VPR) for the vulnerability.
+
+
+            To learn more about VPR, see [Vulnerability Priority Rating](https://docs.tenable.com/vulnerability-management/Content/Explore/Findings/RiskMetrics.htm#Vulnerability-Priority-Rating-) in the _Tenable Vulnerability Management User Guide_. To learn about the enhancements introduced in VPR v2, refer to the whitepaper [Enhancements to Tenable Vulnerability Priority Rating (VPR)](https://www.tenable.com/whitepapers/enhancements-to-tenable-vulnerability-priority-rating-vpr).'
+          properties:
+            score:
+              type: number
+              format: float
+              description: "The Vulnerability Priority Rating (VPR) for the vulnerability. If a plugin is designed to detect multiple vulnerabilities, the VPR represents the highest value calculated for a vulnerability associated with the plugin. \n\nFor details about VPR, see [Vulnerability Priority Rating](https://docs.tenable.com/vulnerability-management/Content/Explore/Findings/RiskMetrics.htm#Vulnerability-Priority-Rating-) in the _Tenable Vulnerability Management User Guide_."
+            drivers:
+              type: object
+              description: The key drivers Tenable uses to calculate a vulnerability's VPR. For more information, see [Vulnerability Priority Rating Drivers](doc:vpr-drivers-tio).
+              properties:
+                age_of_vuln:
+                  type: object
+                  description: 'A range representing the number of days since the National Vulnerability Database (NVD) published the vulnerability. Ranges include: <ul><li>0-7 days</li><li>7-30 days</li><li>30-60 days</li><li>60-180 days</li><li>180-365 days</li><li>365-730 days</li><li>More than 730 days (+731)</li></ul>'
+                  properties:
+                    lower_bound:
+                      type: integer
+                      description: The lower bound of the range. For example, for the 0-7 days range, this attribute is `0`. For the highest range (more than 730 days), this value is `731`.
+                    upper_bound:
+                      type: integer
+                      description: The upper bound of the range. For example, for the 0-7 days range, this attribute is `7`. For the highest range (more than 730 days), this value is `0`, which signifies that there is no higher category.
+                exploit_code_maturity:
+                  type: string
+                  description: The relative maturity of a possible exploit for the vulnerability based on the existence, sophistication, and prevalence of exploit intelligence from internal and external sources (for example, Reversinglabs, Exploit-db, Metasploit, etc.). The possible values (`High`, `Functional`, `PoC`, or `Unproven`) parallel the CVSS Exploit Code Maturity categories.
+                cvss_impact_score_predicted:
+                  type: boolean
+                  description: A value specifying whether Tenable predicted the CVSSv3 impact score for the vulnerability because NVD did not provide one (`true`) or used the NVD-provided CVSSv3 impact score (`false`) when calculating the VPR.
+                cvss3_impact_score:
+                  type: number
+                  format: float
+                  description: The NVD-provided CVSSv3 impact score for the vulnerability. If the NVD did not provide a score, Vulnerability Management displays a Tenable-predicted score.
+                threat_intensity_last28:
+                  type: string
+                  description: ' The relative intensity based on the number and frequency of recently observed threat events related to this vulnerability: `Very Low`, `Low`, `Medium`, `High`, or `Very High`.'
+                threat_sources_last28:
+                  type: array
+                  description: A list of all sources (for example, social media channels, the dark web, etc.) where threat events related to this vulnerability occurred.
+                  items:
+                    type: string
+                product_coverage:
+                  type: string
+                  description: 'The relative number of unique products affected by the vulnerability: `Low`, `Medium`, `High`, or `Very High`.'
+                threat_recency:
+                  type: object
+                  description: 'A range representing the number of days since a threat event occurred for the vulnerability. Ranges include: <ul><li>0-7 days</li><li>7-30 days</li><li>30-120 days</li><li>120-365 days</li><li>More than 365 days (+365)</li></ul>'
+                  properties:
+                    lower_bound:
+                      type: integer
+                      description: The lower bound of the range. For example, for the 0-7 days range, this attribute is `0`. For the highest range (more than 365 days), this value is `366`.
+                    upper_bound:
+                      type: integer
+                      description: The upper bound of the range. For example, for the 0-7 days range, this attribute is `7`. For the highest range (more than 730 days), this value is `0`, which signifies that there is no higher category.
+            updated:
+              type: string
+              description: The ISO timestamp when Tenable Vulnerability Management last imported the VPR for this vulnerability. Tenable Vulnerability Management imports a VPR value the first time you scan a vulnerability on your network. Then, Tenable Vulnerability Management automatically re-imports new and updated VPR values daily.
+        vpr_v2:
+          type: object
+          description: "Details about the Vulnerability Priority Rating (VPR) version 2 for the vulnerability. This enhanced version is labeled **VPR (Beta)** in the user interface. \n\n**Caution**: The `plugin.vpr_v2` response property is scheduled for deprecation on July 1, 2026 as part of the transition to VPR v2. To ensure continued functionality, update all integrations to use the `plugin.vpr` property. On the deprecation date, the system will begin populating `plugin.vpr` with data from the updated VPR model. For more information, see [Vulnerability Priority Rating: Transition to VPR Version 2](changelog:vulnerability-priority-rating-transition-to-version-2).\n\nTo learn more about VPR, see [Vulnerability Priority Rating](https://docs.tenable.com/vulnerability-management/Content/Explore/Findings/RiskMetrics.htm#Vulnerability-Priority-Rating-) in the _Tenable Vulnerability Management User Guide_. To learn about the enhancements introduced in VPR v2, refer to the whitepaper [Enhancements to Tenable Vulnerability Priority Rating (VPR)](https://www.tenable.com/whitepapers/enhancements-to-tenable-vulnerability-priority-rating-vpr)."
+          properties:
+            score:
+              description: 'The Vulnerability Priority Rating (VPR) version 2 score assigned to the vulnerability. This enhanced version is labeled **VPR (Beta)** in the user interface. If a plugin detects multiple vulnerabilities, this score reflects the highest VPR among them.
+
+
+                For details about VPR, see [Vulnerability Priority Rating](https://docs.tenable.com/vulnerability-management/Content/Explore/Findings/RiskMetrics.htm#Vulnerability-Priority-Rating-) in the _Tenable Vulnerability Management User Guide_. For details on improvements introduced in VPR v2, see the whitepaper [Enhancements to Tenable Vulnerability Priority Rating (VPR)](https://www.tenable.com/whitepapers/enhancements-to-tenable-vulnerability-priority-rating-vpr).'
+              type: number
+              format: float
+              minimum: 0.1
+              maximum: 10
+            vpr_percentile:
+              type: number
+              format: float
+              description: The percentile ranking of the Vulnerability Priority Rating (VPR) v2 score, indicating how the vulnerability compares in severity to all other scored vulnerabilities.
+            vpr_severity:
+              type: string
+              description: The severity level associated with the Vulnerability Priority Rating (VPR) v2 score. This label reflects the relative risk of the vulnerability based on its VPR score.
+              enum:
+              - CRITICAL
+              - MEDIUM
+              - HIGH
+              - LOW
+              - NONE
+            exploit_probability:
+              type: number
+              format: float
+              description: 'The likelihood (as a decimal value between 0 and 1) that this vulnerability will be exploited in the wild, as determined by the VPR v2 model. This value contributes to the overall VPR score and reflects real-world exploit potential based on threat intelligence and predictive analytics. '
+            cve_id:
+              type: string
+              description: The Common Vulnerability and Exposure (CVE) identifier associated with the vulnerability that the Vulnerability Priority Rating (VPR) V2 score is based on. This standardized identifier allows for consistent reference across security tools and databases.
+            exploit_code_maturity:
+              type: string
+              description: The maturity level of publicly available exploit code for the vulnerability, as factored into the Vulnerability Priority Rating (VPR) V2. This metric helps assess how likely it is for the vulnerability to be actively exploited.
+            on_cisa_kev:
+              type: boolean
+              description: Indicates whether the vulnerability is listed in the Cybersecurity and Infrastructure Security Agency's (CISA) Known Exploited Vulnerabilities (KEV) catalog. Presence on the KEV list highlights critical vulnerabilities that are actively exploited and prioritized for remediation.
+            exploit_chain:
+              type: array
+              description: A list of Common Vulnerability and Exposure (CVE) identifiers representing vulnerabilities that are part of an exploit chain involving this vulnerability.
+              items:
+                type: string
+            in_the_news_intensity_last30:
+              type: string
+              description: Indicates the frequency and prominence of news coverage related to this vulnerability over the past 30 days. This metric reflects the level of public and media attention, which can correlate with increased exploitability and urgency for remediation.
+              enum:
+              - VERY_HIGH
+              - HIGH
+              - MEDIUM
+              - LOW
+              - VERY_LOW
+            in_the_news_recency:
+              type: string
+              description: Indicates how recently this vulnerability has appeared in news coverage or public discussions. A more recent mention suggests increased current attention and potential exploitation risk.
+              enum:
+              - 0_7_DAYS
+              - 7_14_DAYS
+              - 14_30_DAYS
+              - 30_60_DAYS
+              - 60_180_DAYS
+              - NO_RECORDED_EVENTS
+            in_the_news_sources_last30:
+              type: array
+              description: A list of source categories from trending vulnerability data where this CVE has been mentioned in the past 30 days.
+              items:
+                type: string
+              enum:
+              - Academic & Research Institutions
+              - Blogs & Individual Researchers
+              - Code Repositories
+              - Cyber News & Media
+              - Cybersecurity Vendors
+              - Forums & Community Platforms
+              - Government & Regulatory
+              - Mainstream News & Media
+              - Other
+              - Security Research
+              - Technology Companies
+              - Tools & Resources
+            malware_observations_intensity_last30:
+              type: string
+              description: The intensity level of malware observations related to this vulnerability in the past 30 days. This metric reflects how actively malware exploiting this vulnerability has been detected during that period.
+              enum:
+              - VERY_HIGH
+              - HIGH
+              - MEDIUM
+              - LOW
+              - VERY_LOW
+            malware_observations_recency:
+              type: string
+              description: Indicates how recently malware exploiting this vulnerability has been observed. This value reflects the freshness of malware activity related to the vulnerability.
+              enum:
+              - 0_7_DAYS
+              - 7_14_DAYS
+              - 14_30_DAYS
+              - 30_60_DAYS
+              - 60_180_DAYS
+              - NO_RECORDED_EVENTS
+            targeted_industries:
+              type: array
+              description: A list of industries that have been targeted for exploitation via this CVE.
+              items:
+                type: string
+              enum:
+              - Agriculture
+              - Apparel
+              - Banking
+              - Biotechnology
+              - Business Services
+              - Chemicals
+              - Communications
+              - Construction
+              - Consulting
+              - Education
+              - Electronics
+              - Energy
+              - Engineering
+              - Entertainment
+              - Environmental
+              - Finance
+              - Food & Beverage
+              - Government - Federal
+              - Government - State/Local
+              - Government
+              - Healthcare
+              - Hospitality
+              - Insurance
+              - Legal Services
+              - Machinery
+              - Manufacturing
+              - Media
+              - Not For Profit
+              - Other
+              - Recreation
+              - Retail
+              - Shipping
+              - Software & Internet
+              - Technology
+              - Telecommunications
+              - Transportation
+              - Utilities
+            targeted_regions:
+              type: array
+              description: A list of geographic regions where this CVE has been targeted for exploitation.
+              items:
+                type: string
+              enum:
+              - Africa
+              - Asia
+              - Asia-Pacific
+              - Australia
+              - Belarus
+              - Brazil
+              - Canada
+              - Caribbean
+              - Central America
+              - Central Asia
+              - China
+              - East Asia
+              - Eastern Europe
+              - Europe
+              - France
+              - Germany
+              - Hong Kong
+              - India
+              - Iran
+              - Israel
+              - Italy
+              - Japan
+              - Latin America
+              - Middle East
+              - Netherlands
+              - Nigeria
+              - North America
+              - Northern Europe
+              - Russia
+              - Singapore
+              - South America
+              - South Asia
+              - South Korea
+              - Southeast Asia
+              - Southern Europe
+              - Spain
+              - Sweden
+              - Taiwan
+              - Ukraine
+              - United Arab Emirates
+              - United Kingdom
+              - United States
+              - Western Europe
+            threat_summary:
+              type: object
+              description: Summary information about the threat posed by the vulnerability, including relevant details that contribute to its Vulnerability Priority Rating (VPR) v2 score.
+            remediation:
+              type: object
+              description: 'Information and recommended actions for mitigating or resolving the vulnerability. This may include patches, configuration changes, or other remediation guidance. '
+        workaround:
+          type: string
+          description: A description that explains a workaround for remediating the vulnerability.
+        workaround_type:
+          type: string
+          description: "The workaround action required to remediate the vulnerability. Possible workaround types include: \n - `Configuration Change` — You must alter the configuration of software on the asset.\n - `Disable Service` — You must disable a service on the asset."
+          enum:
+          - Configuration Change
+          - Disable Service
+        workaround_published:
+          type: string
+          description: An ISO timestamp indicating the date and time when the workaround was published.
+        vendor_unpatched:
+          type: boolean
+          description: Indicates if the vulnerability has an available patch from the vendor.
+        has_workaround:
+          type: boolean
+          description: Indicates if a workaround exists for the vulnerability.
+        vendor_severity:
+          type: string
+          description: The severity of a vulnerability as assigned by a CVE Numbering Authority (CNA). Unlike a National Vulnerability Database (NVD) score, which reflects the worst-case scenario, this rating accounts for mitigations.
+        cve:
+          type: array
+          description: The Common Vulnerability and Exposure (CVE) ID for the plugin.
+          items:
+            type: string
+        epss_score:
+          type: number
+          format: float
+          description: The Exploit Prediction Scoring System (EPSS) score estimates the likelihood (as a percentage) that a software vulnerability will be exploited in the wild within the next 30 days. The score ranges from 0 to 100, with higher values indicating a greater probability of exploitation. For more information, see FIRST's [Exploit Prediction Scoring System (EPSS)](https://www.first.org/epss/).
+          minimum: 0
+          maximum: 100
+    Export_Vulnerabilities_port:
+      type: object
+      description: Information about the port the scanner used to connect to the asset.
+      properties:
+        port:
+          type: integer
+          description: The port the scanner used to communicate with the asset.
+        protocol:
+          type: string
+          description: The protocol the scanner used to communicate with the asset.
+        service:
+          type: string
+          description: The service the scanner used to communicate with the asset.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

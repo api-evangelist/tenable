@@ -1,0 +1,1100 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Attack Path API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Attack Path
+  description: The Tenable Attack Path API enables users to retrieve details about attack path findings and attack path vectors. A Finding is an attack technique that exists in one or more attack paths that lead to one or more critical assets. The Findings tab in Attack Path Analysis takes your data and pairs it with advanced graph analytics and the MITRE ATT&CK® Framework to create Findings, which enables you to understand and act on the unknowns that enable and amplify threat impact on your assets and information. For more information about findings, see [Attack Path](https://docs.tenable.com/exposure-management/Content/exposure-management/attack-path/attack-path.htm) in the _Tenable Exposure Management User Guide._
+  x-displayName: Attack Path
+paths:
+  /api/v1/t1/apa/top-attack-paths/search:
+    post:
+      summary: Search attack paths
+      description: 'Returns a list of the top attack paths leading to critical assets. The response includes details about each attack path, such as associated techniques, nodes, and metadata. This endpoint enables you to use advanced search capabilities, including filtering, sorting, and pagination.
+
+
+        **Note:** Attack paths inherit their status from underlying techniques. To prioritize active threats, the system excludes the following statuses by default:
+
+        - `chain_prevented` — The attack chain is partially fixed.
+
+        - `accepted` — The risk is accepted.
+
+        - `done` — Remediation is complete.
+
+
+        To retrieve all paths regardless of status, set the `exclude_resolved` parameter to `false`.
+
+
+        For more information, see [Top Attack Paths](https://docs.tenable.com/exposure-management/Content/attack-path/top-attack-paths.htm) in the _Exposure Management User Guide_. <div class="perms-callout">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.QUERY.SEARCH` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+      operationId: apa-attack-paths-search
+      tags:
+      - Attack Path
+      parameters:
+      - name: limit
+        description: The number of attack path records to retrieve. If omitted, the default value is `1000`. The minimum value is `100` and the maximum value is `10000`.
+        required: false
+        in: query
+        schema:
+          type: integer
+          default: 1000
+          minimum: 100
+          maximum: 10000
+      - name: offset
+        description: The number of records to skip for offset-based pagination. If omitted, the default value is `0`.
+        required: false
+        in: query
+        schema:
+          type: integer
+          default: 0
+          minimum: 0
+      - name: sort
+        description: "The property and direction to sort the results by, in the format `property:direction`. For example: `name:asc`, `priority:desc`, or `path_status:asc`. \n\nSupported properties for sorting include `name`, `priority`, and `path_status`."
+        required: false
+        in: query
+        schema:
+          type: string
+          pattern: ^[a-zA-Z_]+:(asc|desc)$
+        example: priority:desc
+      - name: run_ai_summarization
+        description: "Indicates whether or not to run the AI summarization for missing paths. \n\nGenerative AI enables users to better understand attack paths and their associated risk, and it provides additional insight into the assets affected by the attack paths. \n\nNote that enabling the AI summarization results in slower response times."
+        required: false
+        in: query
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+          default: 'false'
+      - name: exclude_resolved
+        description: 'Excludes resolved attack paths from the results. When `true` (default), the system filters out paths with the following `path_status` values:
+
+
+          * `done` — Remediation is complete.
+
+          * `chain_prevented` — The attack chain is partially broken.
+
+          * `accepted` — The risk is accepted.
+
+
+          Set to `false` to include all attack paths regardless of status.'
+        required: false
+        in: query
+        schema:
+          type: boolean
+          default: true
+      requestBody:
+        description: Filter conditions for searching attack paths. Filter operators can include nested conditions and operators to create complex filtering logic.
+        required: false
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - title: Single Filter
+                $ref: '#/components/schemas/Attack_Path_Attack-Path-Single-Filter'
+              - title: Multiple Filters
+                $ref: '#/components/schemas/Attack_Path_Attack-Path-Multiple-Filters'
+            examples:
+              high_priority_filter:
+                summary: Filter for high-priority attack paths
+                description: This filter enables you to isolate attack paths that pose the greatest risk by targeting those with a priority score of 8 or higher that lead to critical assets.
+                value:
+                  operator: AND
+                  value:
+                  - property: priority
+                    operator: gte
+                    value: 8
+                  - property: critical_asset
+                    operator: eq
+                    value: true
+              path_status_filter:
+                summary: Filter by actionable path status
+                description: 'This filter enables you to retrieve actionable attack paths (to_do, in_progress, in_review). By default, the system excludes the following statuses:
+
+                  - `done` — Remediation is complete.
+
+                  - `chain_prevented` — The attack chain is broken.
+
+                  - `accepted` — The risk is accepted.'
+                value:
+                  property: path_status
+                  operator: in
+                  value:
+                  - to_do
+                  - in_progress
+                  - in_review
+      responses:
+        '200':
+          description: Returned if the attack path search results were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_DiscoverPageTableResponse'
+              examples:
+                response:
+                  summary: Sample response with attack paths
+                  description: Example response showing attack paths with detailed information
+                  value:
+                    data:
+                    - vectorId: vec_123
+                      name: High Priority Attack Path
+                      priority: 9
+                      path:
+                        nodes:
+                        - name: Source Asset
+                          full_name: source.example.com
+                          asset_id: asset-123
+                          id: 1001
+                          labels:
+                          - Computer
+                          - WindowsObject
+                        - name: Target Asset
+                          full_name: target.example.com
+                          asset_id: asset-456
+                          id: 1002
+                          labels:
+                          - Computer
+                          - CriticalAsset
+                        relationships:
+                        - type: ATTACKS
+                          source: 1001
+                          target: 1002
+                      techniques:
+                      - name: Initial Access
+                        full_name: Initial Access Technique
+                        asset_id: asset-123
+                        id: 2001
+                        labels:
+                        - Procedure
+                        procedure_uuid: uuid-123
+                      summary: Attack path description showing the route from source to critical asset
+                      firstAES: 8
+                      lastACR: 9
+                      path_status: to_do
+                    total: 1
+                null_path_example:
+                  summary: Response with null path field
+                  description: Example showing when the path field may be null
+                  value:
+                    data:
+                    - vectorId: vec_456
+                      name: Processing Attack Path
+                      priority: 7
+                      path: null
+                      techniques: []
+                      summary: This attack path is still being processed
+                      firstAES: 6
+                      lastACR: 7
+                      path_status: in_progress
+                    total: 1
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 400
+                    error: Bad Request
+                    message: Invalid limit parameter. Must be between 100 and 10000.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to search attack paths.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_ErrorResponse'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Attack_Path_cloud: []
+  /api/v1/t1/apa/top-attack-techniques/search:
+    post:
+      summary: Search attack techniques
+      description: 'Returns a paginated list of the top attack techniques identified within your organization that match the specified search criteria. This endpoint supports advanced filtering, sorting, and metadata enrichment, including MITRE ATT&CK framework mappings and recommended mitigations.
+
+
+        **Note:** To prioritize actionable data, this endpoint applies default filters to results:
+
+        - **Excluded Statuses** — `done`, `accepted`
+
+        - **Excluded States** — `archive`
+
+
+        To retrieve all techniques, including archived or resolved items, set the `exclude_resolved` parameter to `false`.
+
+
+        For more information, see [Top Attack Techniques](https://docs.tenable.com/exposure-management/Content/attack-path/top-attack-techniques.htm) in the _Exposure Management User Guide_. <div class="perms-callout">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.QUERY.SEARCH` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+      operationId: apa-attack-techniques-search
+      tags:
+      - Attack Path
+      parameters:
+      - name: limit
+        description: The number of attack technique records to retrieve. If omitted, the default value is `1000`. The minimum value is `100` and the maximum value is `10000`.
+        required: false
+        in: query
+        schema:
+          type: integer
+          default: 1000
+          minimum: 100
+          maximum: 10000
+      - name: offset
+        description: The number of records to skip for offset-based pagination. If omitted, the default value is `0`.
+        required: false
+        in: query
+        schema:
+          type: integer
+          default: 0
+          minimum: 0
+      - name: sort
+        description: "The property and direction to sort the results by, in the format `property:direction`. For example: `name:asc` or `priority:desc`. \n\nSupported properties for sorting include `last_updated_at`, `priority`, `mitre_id`, `name`, `technique_name`, `status`, `state`, and `vector_ount`."
+        required: false
+        in: query
+        schema:
+          type: string
+          pattern: ^[a-zA-Z_]+:(asc|ASC|ascending|ASCENDING|Ascending|desc|DESC|descending|DESCENDING|Descending)$
+        example: priority:desc
+      - name: exclude_resolved
+        description: "Excludes resolved attack techniques from the results. When `true` (default), the system filters out techniques with the following values:\n\n* Status — `done`, `accepted` \n* State — `archive` \n\nSet to `false` to include all techniques regardless of status or state."
+        required: false
+        in: query
+        schema:
+          type: boolean
+          default: true
+      requestBody:
+        description: Filter conditions for searching attack techniques. Filter operators can include nested conditions and operators to create complex filtering logic.
+        required: false
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - title: Single Filter
+                $ref: '#/components/schemas/Attack_Path_Attack-Technique-Single-Filter'
+              - title: Multiple Filters
+                $ref: '#/components/schemas/Attack_Path_Attack-Technique-Multiple-Filters'
+            examples:
+              priority_filter:
+                summary: Filter by priority
+                value:
+                  operator: ==
+                  property: priority
+                  value: high
+              complex_filter:
+                summary: Complex filter with AND operator
+                value:
+                  operator: and
+                  value:
+                  - operator: ==
+                    property: priority
+                    value: high
+                  - operator: ==
+                    property: state
+                    value: open
+              nested_filter:
+                summary: Nested filter with complex logic (2 levels deep)
+                value:
+                  operator: and
+                  value:
+                  - operator: ==
+                    property: priority
+                    value: high
+                  - operator: or
+                    value:
+                    - operator: ==
+                      property: state
+                      value: open
+                    - operator: ==
+                      property: status
+                      value: in_progress
+      responses:
+        '200':
+          description: Returned if the attack technique search results were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_AttackTechniquesSearchResponse'
+              examples:
+                response:
+                  value:
+                    data:
+                    - mitre_id: attack-pattern--1ecfdab8-7d59-4c98-95d4-dc41970f57fc
+                      mitigations:
+                      - Privileged Account Management
+                      - User Training
+                      - Password Policies
+                      malwares:
+                      - CosmicDuke
+                      - IceApple
+                      tools:
+                      - Impacket
+                      - Pupy
+                      - CrackMapExec
+                      - gsecdump
+                      - Mimikatz
+                      - LaZagne
+                      - AADInternals
+                      name: Remote Desktop Protocol
+                      procedureName: Network Sniffing-10931
+                      priority: high
+                      state: open
+                      status: to_do
+                      tactics:
+                      - Lateral Movement
+                      - Persistence
+                      target: ARCHIE
+                      source: WORKSTATION-01
+                      cause: Weak Authentication
+                      created: '2024-06-01T10:30:00.000Z'
+                      last_updated_at: '2024-06-02T11:29:12.498763Z'
+                      serial_id: RDP-001
+                    pagination:
+                      total: 1
+                      offset: 0
+                      limit: 1000
+                      sort:
+                        field: priority
+                        order: desc
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 400
+                    error: Bad Request
+                    message: Invalid limit parameter. Must be between 100 and 10000.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to search attack techniques.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_ErrorResponse'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attack_Path_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Attack_Path_cloud: []
+components:
+  schemas:
+    Attack_Path_Attack-Path-Multiple-Filters:
+      description: A filter operator that combines multiple filter conditions for attack paths. The value array can contain both filter conditions and nested filter operators to create complex filtering logic.
+      type: object
+      properties:
+        operator:
+          type: string
+          description: The logical operator to combine conditions
+          enum:
+          - AND
+          - OR
+          default: AND
+        value:
+          type: array
+          description: Array of filter conditions or operators. This can contain a mix of Attack-Path-Single-Filter objects and nested filter operators to create complex nested filtering logic.
+          items:
+            oneOf:
+            - title: Single Filter
+              $ref: '#/components/schemas/Attack_Path_Attack-Path-Single-Filter'
+            - title: Multiple Filters
+              $ref: '#/components/schemas/Attack_Path_Attack-Path-Multiple-Filters-Nested'
+      required:
+      - value
+    Attack_Path_GraphPath:
+      description: Graph path information associated with the vector row, including the starting node, ending node, and the segments comprising the graph path.
+      type: object
+      properties:
+        start:
+          $ref: '#/components/schemas/Attack_Path_AbstractNodeGraphNode'
+        end:
+          $ref: '#/components/schemas/Attack_Path_AbstractNodeGraphNode'
+        segments:
+          description: Segments comprising the graph path.
+          type: array
+          items:
+            $ref: '#/components/schemas/Attack_Path_GraphPathSegment'
+    Attack_Path_ProcedureGraphNode:
+      description: The procedure node representing the method used in the attack technique.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the procedure.
+        uuid:
+          type: string
+          description: The unique identifier of the procedure.
+        vector_count:
+          type: number
+          description: The number of attack vectors associated with the procedure.
+        status:
+          type: string
+          description: The current status of the procedure.
+          enum:
+          - to_do
+          - in_progress
+          - in_review
+          - done
+          - accepted
+        state:
+          type: string
+          description: The current state of the procedure.
+          enum:
+          - open
+          - archive
+        metadata:
+          type: object
+          description: Metadata associated with the procedure.
+        priority_score:
+          type: number
+          description: The priority score assigned to the procedure.
+        source_information:
+          type: string
+          description: Information about the sources related to the procedure.
+        _updated:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the procedure was last updated.
+    Attack_Path_NodeInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        fullname:
+          type: string
+        id:
+          type: string
+        labels:
+          items:
+            type: string
+          type: array
+        isCrownJewel:
+          type: boolean
+          default: false
+        vulnerability_id:
+          type: string
+        asset_id:
+          type: string
+    Attack_Path_AttackTechniquesSearchResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attack_Path_AttackTechniqueSearchResult'
+          description: Array of attack techniques
+        pagination:
+          $ref: '#/components/schemas/Attack_Path_AttackTechniquePaginationInfo'
+      required:
+      - data
+      - pagination
+      title: AttackTechniquesSearchResponse
+      description: Response model for attack techniques search endpoint
+    Attack_Path_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Attack_Path_AbstractRelationship:
+      description: Information about the relationship between the starting and ending nodes.
+      type: object
+      properties:
+        id:
+          type: number
+          description: The unique identifier of the relationship.
+        start:
+          type: number
+          description: The identifier of the starting node.
+        end:
+          type: number
+          description: The identifier of the ending node.
+        type:
+          type: string
+          description: Type of the relationship.
+        properties:
+          description: Properties associated with the relationship.
+          type: object
+    Attack_Path_VectorRow:
+      type: object
+      properties:
+        is_new:
+          type: boolean
+          description: Indicates whether the vector is new or not.
+        vector_id:
+          type: string
+          description: The unique identifier for the vector.
+        path:
+          $ref: '#/components/schemas/Attack_Path_GraphPath'
+        techniques:
+          description: An array of attack techniques associated with the vector row.
+          type: array
+          items:
+            $ref: '#/components/schemas/Attack_Path_AttackTechnique'
+        nodes:
+          description: An array of nodes associated with the vector.
+          type: array
+          items:
+            type: object
+        findings_names:
+          type: array
+          description: A list of findings associated with the vector.
+          items:
+            type: string
+        name:
+          type: string
+          description: The name of the vector.
+        summary:
+          type: string
+          description: A short summary of the vector.
+        first_aes:
+          type: number
+          description: The AES (Asset Exposure Score) of the first node associated with the vector.
+        last_acr:
+          type: number
+          description: The ACR (Asset Criticality Score) of the last node associated with the vector row.
+        path_status:
+          type: string
+          description: 'The calculated lifecycle status of the attack path, derived from the statuses of its underlying techniques. This enables you to track remediation progress across the entire attack chain. The statuses are defined as follows:
+
+            - `done` — All techniques are done.
+
+            - `chain_prevented` — At least one technique is done or accepted, but not all.
+
+            - `accepted` — All techniques are accepted.
+
+            - Otherwise, the status reflects the least-advanced technique.'
+          enum:
+          - to_do
+          - in_progress
+          - in_review
+          - done
+          - chain_prevented
+          - accepted
+    Attack_Path_Attack-Path-Multiple-Filters-Nested:
+      description: Specifies a compound filter that combines multiple conditions. Use this structure to create complex, multi-level filtering logic using logical operators.
+      type: object
+      properties:
+        operator:
+          type: string
+          description: Specifies the logical operator used to combine multiple filter conditions.
+          enum:
+          - AND
+          - OR
+          default: AND
+        value:
+          type: array
+          description: Contains an array of single filter conditions.
+          items:
+            $ref: '#/components/schemas/Attack_Path_Attack-Path-Single-Filter'
+      required:
+      - value
+    Attack_Path_AttackTechniquePaginationInfo:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of attack techniques that match the search criteria
+        offset:
+          type: integer
+          description: Number of items skipped for pagination
+        limit:
+          type: integer
+          description: Number of items per page
+        sort:
+          $ref: '#/components/schemas/Attack_Path_AttackTechniqueSortInfo'
+      required:
+      - total
+      - offset
+      - limit
+      - sort
+      title: AttackTechniquePaginationInfo
+      description: Pagination information for attack techniques search
+    Attack_Path_Attack-Technique-Single-Filter:
+      description: Defines a single filter condition used to narrow the search results for attack techniques.
+      type: object
+      properties:
+        property:
+          type: string
+          description: 'Specifies the property used to filter the results. For example: `priority`, `name`, or `last_updated_at`.'
+          enum:
+          - priority
+          - state
+          - status
+          - name
+          - procedureName
+          - mitre_id
+          - tactics
+          - target
+          - source
+          - cause
+          - last_updated_at
+          - created
+          - serial_id
+        operator:
+          type: string
+          description: 'Specifies the comparison operator applied to the property filter. For example: `eq` (equals), `ne` (not equals), or `contains`.'
+          enum:
+          - eq
+          - ne
+          - gt
+          - gte
+          - lt
+          - lte
+          - contains
+          - not_contains
+          - in
+          - not_in
+        value:
+          description: Defines the specific value or values to match against the property. This can be a single value or an array of values depending on the operator used.
+          oneOf:
+          - title: Single String Value
+            type: string
+          - title: Multiple String Values
+            type: array
+            items:
+              type: string
+          - title: Single Integer Value
+            type: integer
+          - title: Multiple Integer Values
+            type: array
+            items:
+              type: integer
+          - title: Single Boolean Value
+            type: boolean
+            enum:
+            - true
+            - false
+    Attack_Path_Attack-Technique-Multiple-Filters:
+      description: Specifies a compound filter that combines multiple conditions. Use this structure to create complex, multi-level filtering logic using logical operators.
+      type: object
+      properties:
+        operator:
+          type: string
+          description: Specifies the logical operator used to combine multiple filter conditions.
+          enum:
+          - and
+          - or
+        value:
+          type: array
+          description: Contains an array of filter objects. Each item can be a single filter condition or a nested operator object.
+          items:
+            oneOf:
+            - title: Single Filter
+              $ref: '#/components/schemas/Attack_Path_Attack-Technique-Single-Filter'
+            - title: Multiple Filters
+              $ref: '#/components/schemas/Attack_Path_Attack-Technique-Multiple-Filters-Nested'
+      required:
+      - operator
+      - value
+      title: AttackTechniqueFilterOperator
+    Attack_Path_Attack-Path-Single-Filter:
+      description: Defines a single filter condition used to narrow the search results for attack paths.
+      type: object
+      properties:
+        property:
+          type: string
+          description: 'Specifies the property used to filter the results. For example: `priority`, `name`, or `technique`.'
+          enum:
+          - priority
+          - name
+          - summary
+          - steps
+          - asset_exposure
+          - blast_radius
+          - asset_id
+          - freetext
+          - finding_id
+          - technique
+          - weakness_id
+          - critical_asset
+          - data_source
+          - apa_aes
+          - acr
+          - path_status
+        operator:
+          type: string
+          description: 'Specifies the comparison operator applied to the property filter. For example: `eq` (equals), `ne` (not equals), or `contains`.'
+          enum:
+          - eq
+          - ne
+          - gt
+          - gte
+          - lt
+          - lte
+          - contains
+          - not_contains
+          - in
+          - not_in
+        value:
+          description: Defines the specific value or values to match against the property. This can be a single value or an array of values depending on the operator used.
+          oneOf:
+          - title: Single String Value
+            type: string
+          - title: Multiple String Values
+            type: array
+            items:
+              type: string
+          - title: Single Integer Value
+            type: integer
+          - title: Multiple Integer Values
+            type: array
+            items:
+              type: integer
+          - title: Single Boolean Value
+            type: boolean
+            enum:
+            - true
+            - false
+    Attack_Path_Attack-Technique-Multiple-Filters-Nested:
+      description: Defines a nested logical operator used within a compound filter. This enables deep filtering logic while preventing circular references.
+      type: object
+      properties:
+        operator:
+          type: string
+          description: Specifies the logical operator used to combine the nested conditions.
+          enum:
+          - and
+          - or
+        value:
+          type: array
+          description: Contains an array of single filter conditions.
+          items:
+            $ref: '#/components/schemas/Attack_Path_Attack-Technique-Single-Filter'
+      required:
+      - operator
+      - value
+      title: Attack-Technique-Multiple-Filters-Nested
+    Attack_Path_DiscoverPageTableResponse:
+      description: Response format for the V2 endpoint, providing paginated attack path data
+      type: object
+      properties:
+        data:
+          description: An array of attack paths representing the search results
+          type: array
+          items:
+            $ref: '#/components/schemas/Attack_Path_VectorRow'
+        total:
+          description: The total number of attack paths that match the search criteria
+          type: integer
+      required:
+      - data
+    Attack_Path_AttackTechniqueSearchResult:
+      type: object
+      properties:
+        mitre_id:
+          type: string
+          description: MITRE ATT&CK technique ID
+        mitigations:
+          type: array
+          items:
+            type: string
+          description: List of mitigations
+        malwares:
+          type: array
+          items:
+            type: string
+          description: List of associated malwares
+        tools:
+          type: array
+          items:
+            type: string
+          description: List of associated tools
+        name:
+          type: string
+          description: Name of the attack technique
+        procedureName:
+          type: string
+          description: Name of the procedure
+        priority:
+          type: string
+          description: Priority level
+          enum:
+          - low
+          - medium
+          - high
+          - critical
+        state:
+          type: string
+          description: Current state
+          enum:
+          - open
+          - archive
+        status:
+          type: string
+          description: Current status
+          enum:
+          - to_do
+          - in_progress
+          - in_review
+          - done
+          - accepted
+        tactics:
+          type: array
+          items:
+            type: string
+          description: MITRE ATT&CK tactics
+        target:
+          type: string
+          description: Target of the attack technique
+        source:
+          type: string
+          description: Source of the attack technique
+        cause:
+          type: string
+          description: Cause of the attack technique
+        created:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        last_updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        serial_id:
+          type: string
+          description: Serial identifier
+      required:
+      - mitre_id
+      - name
+      - priority
+      - state
+      - status
+      - created
+      - last_updated_at
+      - serial_id
+      title: AttackTechniqueSearchResult
+      description: Attack technique search result information
+    Attack_Path_AttackTechniqueSortInfo:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Field used for sorting
+          enum:
+          - last_updated_at
+          - priority
+          - mitre_id
+          - name
+          - procedureName
+          - status
+          - state
+          - vectorCount
+        order:
+          type: string
+          description: Sort order
+          enum:
+          - asc
+          - desc
+      required:
+      - field
+      - order
+      title: AttackTechniqueSortInfo
+      description: Sort information for attack techniques search
+    Attack_Path_GraphPathSegment:
+      description: Graph path information associated with the vector row, including the starting node and ending node of the graph path segment.
+      type: object
+      properties:
+        start:
+          $ref: '#/components/schemas/Attack_Path_AbstractNodeGraphNode'
+        end:
+          $ref: '#/components/schemas/Attack_Path_AbstractNodeGraphNode'
+        relationship:
+          $ref: '#/components/schemas/Attack_Path_AbstractRelationship'
+    Attack_Path_AbstractNodeGraphNode:
+      description: Information about the nodes and segments comprising the graph path. There are starting nodes and ending nodes.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the node.
+        description:
+          type: string
+          description: A short description of the node.
+        _builtin:
+          type: boolean
+          description: Indicates whether or not the node is built-in.
+        whencreated:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the node was created.
+        acr:
+          type: number
+          description: The Asset Criticality Rating (ACR) associated with the node.
+        aes:
+          type: number
+          description: The Asset Exposure Score (AES) associated with the node.
+        avr:
+          type: number
+          description: The Asset Vulnerability Rating (AVR) associated with the node.
+        apa_aes:
+          type: number
+          description: The Attack Path Analysis Asset Exposure Score (APA AES) associated with the node.
+        asset_id:
+          type: string
+          description: The unique identifier of the asset associated with the node.
+        last_scanned:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the node was last scanned.
+        last_observed:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the node was last observed.
+        last_licensed:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the node was last licensed.
+        sensors:
+          type: array
+          description: An array of sensors associated with the node.
+          items:
+            type: string
+        sources:
+          type: array
+          description: An array of sources associated with the node.
+          items:
+            $ref: '#/components/schemas/Attack_Path_NodeInfo'
+    Attack_Path_AttackTechnique:
+      type: object
+      properties:
+        nodes:
+          description: An array of nodes associated with the attack technique.
+          type: array
+          items:
+            type: string
+        method:
+          $ref: '#/components/schemas/Attack_Path_ProcedureGraphNode'
+        technique:
+          type: string
+          description: Name of the attack technique.
+        source_information:
+          type: string
+          description: Information about the sources related to the attack technique.
+        weaknessesIds:
+          type: array
+          items:
+            type: string
+          description: Array of weakness identifiers associated with the attack technique.
+        external_id:
+          type: string
+          description: External identifier associated with the attack technique.
+        target:
+          type: string
+          description: Target of the attack technique.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

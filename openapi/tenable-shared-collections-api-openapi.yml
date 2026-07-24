@@ -1,0 +1,1276 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Shared Collections API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Shared Collections
+  x-displayName: Shared Collections
+paths:
+  /shared-collections:
+    post:
+      summary: Create shared collection
+      description: "Creates a shared collection. You can create up to 1,000 total shared collections. \n\nThis request creates an asynchronous job in Tenable Vulnerability Management. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint. <div class=\"perms-callout\">Requires the Scan Operator [24] user role or the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.CREATE` custom role privilege. See [Roles](doc:roles).</div>"
+      operationId: shared-collections-create
+      tags:
+      - Shared Collections
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shared_Collections_request-create-shared-collection'
+      responses:
+        '200':
+          description: Returned if the asynchronous job was queued successfully. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_async-api-response-body'
+              examples:
+                response:
+                  value:
+                    message: Request has been received.
+                    request_status_id: e0ab9f07-dd4e-4891-9eed-01b47db5ead6
+        '400':
+          description: "Returned if your request specified invalid parameters or if your request was improperly formatted. For example: \n- Missing `name` parameter or `acl` object. \n- The `name` or `description` parameters exceed the character limit. \n- The specified `name` already exists.\n- Trying to assign more than one permission to the same user. \n- The `acl` object is missing the `type` property or more than one `OWNER` permission is specified. \n- Trying to assign the `OWNER` permission to a `GROUP` type. \n- Invalid `acl.permission`, `acl.type`, or `acl.uuid`."
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create a shared collection.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Shared_Collections_cloud: []
+    get:
+      summary: List shared collections
+      description: Returns a list of shared collections that the current user has access to. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: shared-collections-list
+      tags:
+      - Shared Collections
+      responses:
+        '200':
+          description: Returned if the list of shared collections was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shared_Collections_shared-collection-object'
+              examples:
+                response:
+                  value:
+                  - name: Example Shared Collection
+                    description: An example shared collection.
+                    uuid: 07e3ea92-d792-4d70-b23d-d3d57c63495e
+                    acl:
+                    - permission: OWNER
+                      uuid: f0625cad-6af5-450b-9429-f40419a26189
+                      name: user1@example.com
+                      type: USER
+                    - permission: CAN_EDIT
+                      uuid: 7f46340d-17cc-4760-b170-9fd0954f03e0
+                      name: user2@example.com
+                      type: USER
+                    - permission: CAN_VIEW
+                      uuid: 77935353-13a9-44a6-a098-81cddc4f6250
+                      name: user3@example.com
+                      type: USER
+                    - permission: CAN_VIEW
+                      uuid: cffe9496-4ebc-40e0-ba37-cb0a7dccf34e
+                      name: user4@example.com
+                      type: USER
+                    - permission: CAN_EDIT
+                      uuid: c50df8da-de4f-4c3a-9fc5-09d2f35d7e3f
+                      name: Manager Group
+                      type: GROUP
+                    - permission: CAN_VIEW
+                      uuid: 1b461842-7db5-4d96-9565-8c45b9cf9849
+                      name: Dev Group
+                      type: GROUP
+                  - name: Office Network
+                    description: A shared collection for office scans.
+                    uuid: e01b7836-1e33-42ca-af8e-aa770c01d192
+                    acl:
+                    - permission: OWNER
+                      uuid: 7f46340d-17cc-4760-b170-9fd0954f03e0
+                      name: admin@example.com
+                      type: USER
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to retrieve the list of shared collections.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Shared_Collections_cloud: []
+  /shared-collections/{shared_collection_id}:
+    get:
+      summary: Get shared collection details
+      description: Returns the details for the specified shared collection. <div class="perms-callout">Requires the Basic [16] user role and the `CAN_VIEW` shared collections permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.READ` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: shared-collections-details
+      tags:
+      - Shared Collections
+      parameters:
+      - name: shared_collection_id
+        in: path
+        required: true
+        description: The `uuid` of the shared collection to return details for.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the details for the specified shared collection were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_shared-collection-object'
+              examples:
+                response:
+                  value:
+                    name: Office Shared Collection
+                    description: Shared collection for office users.
+                    uuid: ef5b2b45-7d23-46af-a5ce-ca784acb6007
+                    acl:
+                    - permission: OWNER
+                      uuid: 7f46340d-17cc-4760-b170-9fd0954f03e0
+                      name: user@example.com
+                      type: USER
+                    - permission: CAN_VIEW
+                      uuid: 00000000-0000-0000-0000-000000000000
+                      name: All Users
+                      type: GROUP
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to retrieve the shared collection.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified shared collection.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: No shared collection found with uuid=f5751411-308d-4c56-b85e-48829707c5f3
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Shared_Collections_cloud: []
+    put:
+      summary: Update shared collection
+      description: "Updates a shared collection. A shared collection can only be updated by the current owner or an administrator. \n\nThis request creates an asynchronous job in Tenable Vulnerability Management. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint.\n\n**Note:** To remove a user or group from a shared collection, update the permission to `REMOVE_USER`. <div class=\"perms-callout\">Requires the Scan Operator [24] user role and the `CAN_EDIT` shared collections permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.EDIT` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: shared-collections-update
+      tags:
+      - Shared Collections
+      parameters:
+      - name: shared_collection_id
+        in: path
+        required: true
+        description: The `uuid` of the shared collection to update.
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shared_Collections_request-update-shared-collection'
+            examples:
+              response:
+                value:
+                  message: Request has been received.
+                  request_status_id: de4283db-06c2-4b55-86bb-5f2173bc81b2
+      responses:
+        '200':
+          description: Returned if the asynchronous job was queued successfully. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_async-api-response-body'
+              examples:
+                response:
+                  value:
+                    message: Request has been received.
+                    request_status_id: e0ab9f07-dd4e-4891-9eed-01b47db5ead6
+        '400':
+          description: "Returned if your request specified invalid parameters or if your request was improperly formatted. For example: \n- Missing `name` parameter or `acl` object. \n- The `name` or `description` parameters exceed the character limit. \n- The specified `name` already exists.\n- Trying to assign more than one permission to the same user. \n- The `acl` object is missing the `type` property or more than one `OWNER` permission is specified. \n- Trying to assign the `OWNER` permission to a `GROUP` type. \n- Invalid `acl.permission`, `acl.type`, or `acl.uuid`."
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to update the shared collection.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified shared collection.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: No shared collection found with uuid=f5751411-308d-4c56-b85e-48829707c5f3
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Shared_Collections_cloud: []
+    delete:
+      summary: Delete shared collection
+      description: "Deletes a shared collection. \n\nThis request creates an asynchronous job in Tenable Vulnerability Management. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint. <div class=\"perms-callout\">Requires the Administrator [64] user role, the `OWNER` shared collections permission, or the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.DELETE` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: shared-collections-delete
+      tags:
+      - Shared Collections
+      parameters:
+      - name: shared_collection_id
+        in: path
+        required: true
+        description: The `uuid` of the shared collection to delete.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the asynchronous job was queued successfully. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_async-api-response-body'
+              examples:
+                response:
+                  value:
+                    message: Request has been received.
+                    request_status_id: de4283db-06c2-4b55-86bb-5f2173bc81b2
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to delete the shared collection.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified shared collection.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: No shared collection found with uuid=f5751411-308d-4c56-b85e-48829707c5f3
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Shared_Collections_cloud: []
+  /shared-collections/_byName:
+    post:
+      summary: Get shared collection details by name
+      description: Returns the details for the specified shared collection by name. <div class="perms-callout">Requires the Basic [16] user role and the `CAN_VEW` shared collections permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.READ` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: shared-collections-details-by-name
+      tags:
+      - Shared Collections
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the shared collection to return details for.
+                  example: My Shared Collection
+      responses:
+        '200':
+          description: Returned if the specified shared collection was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_shared-collection-object'
+              examples:
+                response:
+                  value:
+                    name: Office Shared Collection
+                    description: Shared collection for office users.
+                    uuid: ef5b2b45-7d23-46af-a5ce-ca784acb6007
+                    acl:
+                    - permission: OWNER
+                      uuid: 7f46340d-17cc-4760-b170-9fd0954f03e0
+                      name: user@example.com
+                      type: USER
+                    - permission: CAN_VIEW
+                      uuid: 00000000-0000-0000-0000-000000000000
+                      name: All Users
+                      type: GROUP
+        '400':
+          description: Returned if your request is missing `name` or if the `name` exceeds the maximum 100 character limit.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified shared collection.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: No shared collection found with name=Office
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Shared_Collections_cloud: []
+  /shared-collections/request-status/{request_status_id}:
+    get:
+      summary: Get job status
+      description: "Retrieves the status of the specified asynchronous shared collections job. \n\nYou can use the `request_status_id` returned in the response of the following endpoints to check the status of the asynchronous job: \n- [Create shared collection](ref:shared-collections-create) \n- [Update shared collection](ref:shared-collections-update) \n- [Delete shared collection](ref:shared-collections-delete) \n- [Add scan configs to shared collection](ref:shared-collections-config-add) \n- [Remove scan configs from shared collection](ref:shared-collections-configs-remove) \n<div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.READ` custom role privilege. See [Roles](doc:roles).</div>"
+      operationId: shared-collections-job-status
+      tags:
+      - Shared Collections
+      parameters:
+      - name: request_status_id
+        in: path
+        required: true
+        description: The `request_status_id` or `id` of the asynchronous job you want to retrieve the status for.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the status of the asynchronous job was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_request-status-response-body'
+              examples:
+                response:
+                  value:
+                    container_uuid: c050dec4-78a7-4d9a-9905-ab9cb3757766
+                    type: shared-collections
+                    id: e0ab9f07-dd4e-4891-9eed-01b47db5ead6
+                    status: completed
+                    created: 1738350594
+                    modified: 1738350594
+                    expiration: 1738352394
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to retrieve the status of the asynchronous job.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified `request_status_id`.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: No shared collection found with uuid=f5751411-308d-4c56-b85e-48829707c5f3
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Shared_Collections_cloud: []
+  /shared-collections/{shared_collection_id}/scan-configs:
+    post:
+      summary: Add scan configs to shared collection
+      description: "Adds scan configurations to a shared collection. \n\nThis request creates an asynchronous job in Tenable Vulnerability Management. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint. <div class=\"perms-callout\">Requires the Scan Operator [24] user role and the `CAN_EDIT` shared collections permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.CREATE` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: shared-collections-config-add
+      tags:
+      - Shared Collections
+      parameters:
+      - name: shared_collection_id
+        in: path
+        required: true
+        description: The `uuid` of the shared collection to add scan configurations to.
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - scan_configs
+              properties:
+                scan_configs:
+                  type: array
+                  description: 'The list of scan configuration IDs to add to the shared collection. You can add up to 1,000 scan configurations per request.
+
+
+                    **Note:** Remediation scan configurations and Web App Scanning (WAS) scan configurations cannot be added to a shared collection. Users must have at least Can View [16] scan permissions to share a scan configuration.'
+                  items:
+                    type: string
+                    example: f536f82a-a3e2-4911-84cb-72cc0177578a
+      responses:
+        '200':
+          description: Returned if the asynchronous job was queued successfully. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_async-api-response-body'
+              examples:
+                response:
+                  value:
+                    message: Request has been received.
+                    request_status_id: 311dd641-88e6-4b9e-ae93-693d66dfb463
+                response - duplicate scan configs:
+                  value:
+                    message: 'Request has been received. The following scan configs were already shared to the collection: template-5bbbd6f7-0a85-5d1f-723c-6bb6781abb9efd2a4d8f86043098, template-4a0e770e-34ae-823e-353c-7429dd0bb2fb9996ac3c7d06b5b3, 379bed2d-f8e3-9c3e-66a9-5fa20a04175df74cb55a4f7f8a23, template-f92cfd73-96ce-98c2-ee12-cdcb1323717053f10f42c9475139.'
+                    request_status_id: 311dd641-88e6-4b9e-ae93-693d66dfb463
+        '400':
+          description: Returned if your request specified invalid parameters, if your request was improperly formatted, or if the scan configurations are missing from the request.
+          content:
+            application/json:
+              examples:
+                response - missing scan configs:
+                  value:
+                    error: Request is missing scan configurations.
+                response - remediation scans:
+                  value:
+                    error: You cannot add remediation scans to a shared collection.
+                response - web application scans:
+                  value:
+                    error: You cannot add web application scans to a shared collection.
+                response - too many scan configs:
+                  value:
+                    error: The request exceeds the maximum limit of 1,000 scan configurations per API call.
+                response - invalid scan config id:
+                  value:
+                    error: Scan configuration `[uuid]` is invalid.
+                response - no min permissions for scan config:
+                  value:
+                    error: You do not have the required permissions to share scan configuration `[uuid]`. A minimum of CAN_VIEW scan configuration access is required.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to add scan configurations to the shared collection.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified shared collection.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: No shared collection found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Shared_Collections_cloud: []
+    get:
+      summary: List scan configs in shared collection
+      description: Returns a list of scan configurations in a shared collection. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.READ` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: shared-collections-config-list
+      tags:
+      - Shared Collections
+      parameters:
+      - name: shared_collection_id
+        in: path
+        required: true
+        description: The `uuid` of the shared collection to list scan configurations for.
+        schema:
+          type: string
+          format: uuid
+      - name: sort
+        in: query
+        description: "Determines the sort order of the scan configurations. You must enter the sort order in the following format: \n\n`<sorting_property>:<sorting_order>`\n\n The supported sorting properties are `name` and `last_modification_date`. The supported sorting orders are ascending (`asc`) and descending (`desc`). For example, `name:asc` sorts results by the `name` property in ascending order."
+        required: false
+        schema:
+          type: string
+      - name: offset
+        in: query
+        description: The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`.
+        required: false
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        description: "The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `200`. The minimum value is `0` and the maximum value of `5000`. \n\nIf you need to retrieve more than 5000 records, use the offset parameter to iterate through the page responses."
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Returned if the list of scan configurations in the specified shared collection was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  scans:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Shared_Collections_scan-object-list'
+                  pagination:
+                    $ref: '#/components/schemas/Shared_Collections_PaginationResponse'
+              examples:
+                response:
+                  value:
+                    scans:
+                    - control: true
+                      creation_date: 0
+                      enabled: false
+                      id: 47
+                      last_modification_date: 0
+                      legacy: false
+                      name: another-jun22-post-autocreated-test
+                      owner: user@example.com
+                      policy_id: 46
+                      read: true
+                      schedule_uuid: template-45ad9347-fbda-58c1-b7d0-1adf800f16c1684e4541d7721533
+                      shared: false
+                      status: empty
+                      has_triggers: false
+                      type: public
+                      permissions: 128
+                      user_permissions: 128
+                      wizard_uuid: ad629e16-03b6-8c1d-cef6-ef8c9dd3c658d24bd260ef5f9e66
+                      status_times: {}
+                    - control: true
+                      creation_date: 0
+                      enabled: false
+                      id: 45
+                      last_modification_date: 0
+                      legacy: false
+                      name: jun-22-auto-routed-create-2
+                      owner: user@example.com
+                      policy_id: 44
+                      read: true
+                      schedule_uuid: template-1d847f60-df27-de91-f416-663c14d2372fb44072de1a39bf07
+                      shared: false
+                      status: empty
+                      has_triggers: false
+                      type: public
+                      permissions: 128
+                      user_permissions: 128
+                      wizard_uuid: ad629e16-03b6-8c1d-cef6-ef8c9dd3c658d24bd260ef5f9e66
+                      status_times: {}
+                    - control: true
+                      creation_date: 0
+                      enabled: false
+                      id: 65
+                      last_modification_date: 0
+                      legacy: false
+                      name: my-third-default-permission-scan
+                      owner: user@example.com
+                      policy_id: 64
+                      read: true
+                      schedule_uuid: template-f8dff1f6-dd34-cdd4-3408-34d70999e47cc31f7e89dbe1014d
+                      shared: true
+                      status: empty
+                      has_triggers: false
+                      type: public
+                      permissions: 128
+                      user_permissions: 128
+                      wizard_uuid: ad629e16-03b6-8c1d-cef6-ef8c9dd3c658d24bd260ef5f9e66
+                      status_times: {}
+                    pagination:
+                      total: 3
+                      limit: 200
+                      offset: 0
+        '204':
+          description: Returned if there are no shared scan configurations in the shared collection.
+          content:
+            application/octet-stream:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list scan configurations for the shared collection.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified shared collection.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: No shared collection found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Shared_Collections_cloud: []
+    delete:
+      summary: Remove scan configs from shared collection
+      description: "Removes scan configurations from a shared collection. \n\nThis request creates an asynchronous job in Tenable Vulnerability Management. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint. <div class=\"perms-callout\">Requires the Scan Operator [24] user role and the `CAN_EDIT` shared collections permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.DELETE` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: shared-collections-configs-remove
+      tags:
+      - Shared Collections
+      parameters:
+      - name: shared_collection_id
+        in: path
+        required: true
+        description: The `uuid` of the shared collection to remove scan configurations from.
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - scan_configs
+              properties:
+                scan_configs:
+                  type: array
+                  description: The list of scan configuration IDs to remove from the shared collection.
+                  items:
+                    type: string
+                    example: f536f82a-a3e2-4911-84cb-72cc0177578a
+      responses:
+        '200':
+          description: Returned if the asynchronous job was queued successfully. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_async-api-response-body'
+              examples:
+                response:
+                  value:
+                    message: Request has been received.
+                    request_status_id: 311dd641-88e6-4b9e-ae93-693d66dfb463
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to remove scan configurations from the shared collection.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified shared collection.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: No shared collection found with uuid=f5751411-308d-4c56-b85e-48829707c5f3
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shared_Collections_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Shared_Collections_cloud: []
+components:
+  schemas:
+    Shared_Collections_PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+    Shared_Collections_request-create-acl-object:
+      type: object
+      description: The access control list (ACL) object that defines the access to a shared collection for a given user or group.
+      required:
+      - permission
+      - uuid
+      - type
+      properties:
+        permission:
+          type: string
+          description: "The level of access a user or group has to the shared collection. The `OWNER` permission can only be assigned to the `USER` type. \n\nNote that users (or a user in a group) that are assigned the `CAN_EDIT` or `OWNER` permissions must have at at least the Scan Operator [24] user role role or the `IO.SHARED_COLLECTIONS.MANAGE` custom role privilege. See [Roles](doc:roles)."
+          enum:
+          - OWNER
+          - CAN_VIEW
+          - CAN_EDIT
+          example: OWNER
+        type:
+          type: string
+          description: Indicates whether or not the permission applies to a user or a group.
+          enum:
+          - USER
+          - GROUP
+          example: USER
+        uuid:
+          type: string
+          description: The unique ID for the user or group you want to grant permission to for the shared collection.
+          example: d72d3138-364b-4d67-a290-a3362a4d18af
+        name:
+          type: string
+          description: A name for the user or group.
+          example: developer@example.com
+    Shared_Collections_settings-rrules:
+      type: string
+      description: 'The interval at which the scan repeats. The interval is formatted as a string of three values delimited by semi-colons. These values are: the frequency (FREQ=ONETIME or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). For a scan that runs every three weeks on Monday Wednesday and Friday, the string would be `FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR`. If the scan is not scheduled to recur, this attribute is `null`. For more information, see [rrules Format](doc:example-assessment-scan-recurring#rrules-format).
+
+
+        **Note:** To set the `rrules` parameter for an agent scan, the request must also include the following body parameters:<ul><li>The `uuid` parameter must specify an agent scan template. For more information, see [Tenable-Provided Agent Templates](https://docs.tenable.com/vulnerability-management/Content/Scans/AgentTemplates.htm) and the [List templates](ref:editor-list-templates) endpoint.</li><li>The `agent_group_id` parameter must specify an agent group. For more information, see [Agent Groups](ref:agent-groups).</li></ul>For an example request body for an agent scan, see [Example Agent Scan: Recurring](doc:example-agent-scan-recurring).'
+    Shared_Collections_request-update-shared-collection:
+      type: object
+      required:
+      - name
+      - acl
+      properties:
+        name:
+          type: string
+          description: A name for the shared collection. Names cannot exceed 100 characters.
+          example: Office scans
+        description:
+          type: string
+          description: A description for shared collection. Descriptions cannot exceed 1,000 characters.
+          example: Shared scan configurations for the office.
+        acl:
+          type: array
+          items:
+            $ref: '#/components/schemas/Shared_Collections_request-update-acl-object'
+    Shared_Collections_acl-object:
+      type: object
+      description: The access control list (ACL) object that defines the permissions for a shared collection for a given user or group.
+      required:
+      - permission
+      - uuid
+      - type
+      properties:
+        permission:
+          type: string
+          description: "The level of access a user or group has to the shared collection. \n\nNote: `REMOVE_USER` is only used in update requests to remove a user from the shared collection."
+          enum:
+          - OWNER
+          - CAN_VIEW
+          - CAN_EDIT
+          - REMOVE_USER
+          example: OWNER
+        uuid:
+          type: string
+          format: uuid
+          description: The unique ID for the user or group.
+          example: d72d3138-364b-4d67-a290-a3362a4d18af
+        name:
+          type: string
+          description: The user or group name.
+          example: developer@example.com
+        type:
+          type: string
+          description: The type of permission. Either `USER` or `GROUP`.
+          enum:
+          - USER
+          - GROUP
+          example: USER
+    Shared_Collections_async-api-response-body:
+      type: object
+      properties:
+        message:
+          type: string
+          description: The message for the initial status of the asynchronous job.
+          example: Request has been received.
+        request_status_id:
+          type: string
+          description: 'The unique ID for tracking the status of the requested asynchronous job. You can query the status of the job with the [Get job status](ref:shared-collections-create) endpoint. '
+          example: e3d24812682ee9a312ef178b8a0deb8a
+    Shared_Collections_scan-object-list:
+      type: object
+      properties:
+        control:
+          type: boolean
+          description: If `true`, the scan has a schedule and can be launched.
+        creation_date:
+          type: integer
+          description: For newly-created scans, the date on which the scan configuration was originally created. For scans that have been launched at least once, this attribute does not represent the date on which the scan configuration was originally created. Instead, it represents the date on which the scan was first launched, in Unix time format.
+          format: int64
+        enabled:
+          type: boolean
+          description: For Nessus scanner scans, a value indicating whether the scan schedule is active (`true`) or inactive (`false`). For Nessus Agent scans, a value indicating whether triggers for triggered scans are active (`true`) or inactive (`false`).
+        id:
+          type: integer
+          description: The unique ID of the scan.
+          format: int32
+        last_modification_date:
+          type: integer
+          description: For newly-created scans, the date on which the scan configuration was created. For scans that have been launched at least once, this attribute does not represent the date on which the scan configuration was last modified. Instead, it represents the date on which the scan was last launched, in Unix time format. Tenable Vulnerability Management updates this attribute each time the scan launches.
+          format: int64
+        legacy:
+          type: boolean
+          description: A value indicating whether the scan results were created before a change in storage method. If `true`, Tenable Vulnerability Management stores the results in the old storage method. If `false`, Tenable Vulnerability Management stores the results in the new storage method.
+        name:
+          type: string
+          description: The name of the scan.
+        owner:
+          type: string
+          description: The owner of the scan.
+        policy_id:
+          type: integer
+          description: The unique ID of the user-defined template (policy) on which the scan configuration is based.
+        read:
+          type: boolean
+          description: A value indicating whether the user account associated with the request message has viewed the scan in the Tenable Vulnerability Management user interface. If `1`, the user account has viewed the scan results.
+        schedule_uuid:
+          type: string
+          description: The UUID for a specific instance in the scan schedule.
+        shared:
+          type: boolean
+          description: If `true`, the scan is shared with users other than the scan owner. The level of sharing is specified in the `acls` attribute of the scan details.
+        status:
+          type: string
+          description: The status of the scan. For a list of possible values, see [Scan Status](doc:scan-status-tio).
+        template_uuid:
+          type: string
+          description: The UUID of the template.
+        type:
+          type: string
+          description: The type of scan.
+        permissions:
+          type: integer
+          description: The requesting user's permissions for the scan.
+          format: int32
+        user_permissions:
+          type: integer
+          description: The sharing permissions for the scan.
+          format: int32
+        uuid:
+          type: string
+          description: The UUID of the scan.
+        wizard_uuid:
+          type: string
+          description: The UUID of the Tenable-provided template used to create either the scan or the user-defined template (policy) on which the scan configuration is based.
+        progress:
+          type: integer
+          description: The progress of the scan ranging from 0 to 100.
+        timezone:
+          type: string
+          description: The timezone of the scheduled start time for the scan.
+        rrules:
+          $ref: '#/components/schemas/Shared_Collections_settings-rrules'
+        starttime:
+          type: string
+          description: 'For one-time scans, the starting date and time for the scan. For recurrent scans, the first date on which the scan schedule is active and the time that recurring scans launch based on the `rrules` attribute.
+
+
+            This attribute has the following format: `YYYYMMDDTHHMMSS`.'
+        total_targets:
+          type: integer
+          description: The total number of targets in the scan.
+    Shared_Collections_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Shared_Collections_request-create-shared-collection:
+      type: object
+      required:
+      - name
+      - acl
+      properties:
+        name:
+          type: string
+          description: A name for the shared collection. Names cannot exceed 100 characters.
+          example: Office scans
+        description:
+          type: string
+          description: A description for shared collection. Descriptions cannot exceed 1,000 characters.
+          example: Shared scan configurations for the office.
+        acl:
+          type: array
+          items:
+            $ref: '#/components/schemas/Shared_Collections_request-create-acl-object'
+    Shared_Collections_request-status-response-body:
+      type: object
+      properties:
+        container_uuid:
+          type: string
+          description: The unique ID of the container.
+          example: 999ec76a-1a16-4bfb-bf20-f23908475372
+        type:
+          type: string
+          description: The type of asynchronous job. For shared collections, the type is always `shared-collections`.
+          example: shared-collections
+        id:
+          type: string
+          description: "The unique ID for tracking the status of the asynchronous job. This is the same value as the `request_status_id` property returned in the response bodies of the following endpoints: \n- [Create shared collection](ref:shared-collections-create) \n- [Update shared collection](ref:shared-collections-update) \n- [Delete shared collection](ref:shared-collections-delete) \n- [Add scan configs to shared collection](ref:shared-collections-config-add) \n- [Remove scan configs from shared collection](ref:shared-collections-configs-remove) endpoints."
+          example: 62a9f498-1738-42d1-bb1b-01b68fce7cc3
+        status:
+          type: string
+          description: The status of the asynchronous operation. The possible statuses are `completed`, `received`, `processing`, and `aborted`.
+          example: completed
+        created:
+          type: string
+          description: A Unix timestamp indicating the date and time when the asynchronous job was created.
+          example: '1734376507'
+        modified:
+          type: string
+          description: A Unix timestamp indicating the date and time when the asynchronous job was modified.
+          example: '1734376665'
+    Shared_Collections_shared-collection-object:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the shared collection.
+          example: Account 24 shared scans
+        description:
+          type: string
+          description: The description of the shared collection.
+          example: Shared scan configurations for account 24
+        uuid:
+          type: string
+          format: uuid
+          description: The unique ID for the shared collection.
+          example: e956769e-76fc-4949-8a5a-135cbb72fff6
+        acl:
+          type: array
+          items:
+            $ref: '#/components/schemas/Shared_Collections_acl-object'
+      required:
+      - name
+      - description
+      - uuid
+      - acl
+    Shared_Collections_request-update-acl-object:
+      type: object
+      description: The access control list (ACL) object that defines the access to a shared collection for a given user or group.
+      required:
+      - permission
+      - uuid
+      - type
+      properties:
+        permission:
+          type: string
+          description: "The level of access a user or group has to the shared collection. Use the `REMOVE_USER` value to remove the specified user or group from the shared collection. The `OWNER` permission can only be assigned to the `USER` type. \n\nNote that users (or a user in a group) that are assigned the `CAN_EDIT` or `OWNER` permissions must have at at least the Scan Operator [24] user role role or the `IO.SHARED_COLLECTIONS.MANAGE` custom role privilege. See [Roles](doc:roles)."
+          enum:
+          - OWNER
+          - CAN_VIEW
+          - CAN_EDIT
+          - REMOVE_USER
+          example: OWNER
+        uuid:
+          type: string
+          description: The unique ID for the user or group you want to grant permission to for the shared collection.
+          example: d72d3138-364b-4d67-a290-a3362a4d18af
+        type:
+          type: string
+          description: Indicates whether or not the permission applies to a user or a group.
+          enum:
+          - USER
+          - GROUP
+          example: USER
+        name:
+          type: string
+          description: A name for the user or group.
+          example: developer@example.com
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

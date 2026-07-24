@@ -1,0 +1,305 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Event API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Event
+  description: A change in the Active Directory
+paths:
+  /api/directories/{directoryId}/events/{id}:
+    get:
+      summary: Get event instance by id.
+      description: 'Required license type: ioe, ioaPreview, ioa'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: An event instance
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - adObjectId
+                - directoryId
+                - date
+                - type
+                properties:
+                  id:
+                    format: int64
+                  adObjectId:
+                    type: number
+                  directoryId:
+                    type: number
+                  type:
+                    type: string
+                    nullable: true
+                  date:
+                    type: string
+                    format: date-time
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Event
+      x-tenablead-required-product-license-type:
+      - ioe
+      - ioaPreview
+      - ioa
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: directoryId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/infrastructures/{infrastructureId}/directories/{directoryId}/events/{id}:
+    get:
+      summary: Get event instance by id.
+      description: 'Required license type: ioe, ioaPreview, ioa'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: An event instance
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - adObjectId
+                - directoryId
+                - date
+                - type
+                properties:
+                  id:
+                    format: int64
+                  adObjectId:
+                    type: number
+                  directoryId:
+                    type: number
+                  type:
+                    type: string
+                    nullable: true
+                  date:
+                    type: string
+                    format: date-time
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Event
+      x-tenablead-required-product-license-type:
+      - ioe
+      - ioaPreview
+      - ioa
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: infrastructureId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: directoryId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/events/search:
+    post:
+      summary: Search events instances
+      description: 'Required license type: ioe, ioaPreview, ioa'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the POST /infrastructures/{infraId}/directories/{dirId}/events response
+                type: array
+                items:
+                  description: An event instance
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - adObjectId
+                  - directoryId
+                  - date
+                  - type
+                  properties:
+                    id:
+                      format: int64
+                    adObjectId:
+                      type: number
+                    directoryId:
+                      type: number
+                    type:
+                      type: string
+                      nullable: true
+                    date:
+                      type: string
+                      format: date-time
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Event
+      x-tenablead-required-product-license-type:
+      - ioe
+      - ioaPreview
+      - ioa
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - expression
+              - profileId
+              - directoryIds
+              - dateStart
+              - dateEnd
+              properties:
+                expression:
+                  type: object
+                order:
+                  type: object
+                  properties:
+                    column:
+                      type: string
+                      enum:
+                      - id
+                    direction:
+                      type: string
+                      enum:
+                      - asc
+                      - desc
+                profileId:
+                  type: integer
+                directoryIds:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: integer
+                dateStart:
+                  type: string
+                  format: date-time
+                dateEnd:
+                  type: string
+                  format: date-time
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

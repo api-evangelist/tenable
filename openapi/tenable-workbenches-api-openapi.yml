@@ -1,0 +1,3185 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Workbenches API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Workbenches
+  x-displayName: Workbenches
+paths:
+  /workbenches/vulnerabilities:
+    get:
+      summary: List vulnerabilities
+      description: "Returns a list of recorded vulnerabilities. The list returned is limited to 5,000. To retrieve more than 5,000 vulnerabilities, use the [export-request API](ref:workbenches-export-request). Additionally, this endpoint only returns data less than 450 days (15 months) old.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability data, and the [POST /assets/v2/export](ref:export-assets-v2) endpoint for large or frequent exports of assets data.\n\nFor information and best practices for retrieving vulnerability and assets data from Tenable Vulnerability Management, see [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio) and [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: workbenches-vulnerabilities
+      tags:
+      - Workbenches
+      parameters:
+      - description: The number of days of data prior to and including today that should be returned.
+        name: date_range
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: 'The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+
+
+          **Note:** There is a limit of 10 filters. A `400 Bad Request` error is returned if you exceed this limit.'
+        required: false
+        name: filter.0.filter
+        in: query
+        schema:
+          type: string
+        example: plugin.name
+      - description: The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.quality
+        in: query
+        schema:
+          type: string
+        example: match
+      - description: 'The value of the filter to apply to the exported scan report. You can find valid values for the filter in the ''control'' attribute of the objects returned by the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+
+
+          **Note:** There is a limit of 10 filter values per filter. A `400 Bad Request` error is returned if you exceed this limit.'
+        required: false
+        name: filter.0.value
+        in: query
+        schema:
+          type: string
+        example: RHEL
+      - description: For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.search_type
+        in: query
+        schema:
+          type: string
+          enum:
+          - ''
+          - and
+          - or
+      responses:
+        '200':
+          description: Returned if the list of vulnerabilities was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: A list of vulnerabilities.
+                properties:
+                  vulnerabilities:
+                    type: array
+                    description: A list of discovered vulnerabilities.
+                    items:
+                      $ref: '#/components/schemas/workbenches_workbenches-vulnerability'
+                  total_vulnerability_count:
+                    type: integer
+                    description: The total number of discovered vulnerabilities.
+                  total_asset_count:
+                    type: integer
+                    description: The total number of assets.
+              examples:
+                response:
+                  value:
+                    vulnerabilities:
+                    - count: 319
+                      plugin_family: General
+                      plugin_id: 51192
+                      plugin_name: SSL Certificate Cannot Be Trusted
+                      vulnerability_state: Active
+                      vpr_score: 2.4
+                      accepted_count: 0
+                      recasted_count: 0
+                      counts_by_severity:
+                      - count: 319
+                        value: 2
+                      severity: 2
+                    - count: 215
+                      plugin_family: Misc.
+                      plugin_id: 70658
+                      plugin_name: SSH Server CBC Mode Ciphers Enabled
+                      vulnerability_state: Active
+                      vpr_score: 7.4
+                      accepted_count: 0
+                      recasted_count: 0
+                      counts_by_severity:
+                      - count: 215
+                        value: 1
+                      severity: 1
+                    - count: 168
+                      plugin_family: Misc.
+                      plugin_id: 71049
+                      plugin_name: SSH Weak MAC Algorithms Enabled
+                      vulnerability_state: Active
+                      vpr_score: 5.5
+                      accepted_count: 0
+                      recasted_count: 0
+                      counts_by_severity:
+                      - count: 168
+                        value: 1
+                      severity: 1
+                    total_vulnerability_count: 3
+                    total_asset_count: 0
+        '400':
+          description: Returned if your request contained invalid syntax or if you specified more than 10 filters or 50 filter values per filter.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: 'Value ''192.0.2.1'' is not valid for filter host.id and operator eq : host.id - 192.0.2.1 does not match [0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})*'
+                    type: invalid_filter_value
+                    filter_name: host.id
+                    filter_operator: eq
+                    filter_value: 192.0.2.1
+                    reason: host.id - 192.0.2.1 does not match [0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})*
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list vulnerabilities.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+  /workbenches/vulnerabilities/{plugin_id}/info:
+    get:
+      summary: Get plugin details
+      description: "Retrieves the details for a plugin.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability data, and the [POST /assets/v2/export](ref:export-assets-v2) endpoint for large or frequent exports of assets data.\n\nFor information and best practices for retrieving vulnerability and assets data from Tenable Vulnerability Management, see [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio) and [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: workbenches-vulnerability-info
+      tags:
+      - Workbenches
+      parameters:
+      - description: The ID of the plugin. You can find the plugin ID by examining the output of the [GET /workbenches/vulnerabilities](ref:workbenches-vulnerabilities) endpoint.
+        required: true
+        name: plugin_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: The number of days of data prior to and including today that should be returned.
+        name: date_range
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.filter
+        in: query
+        schema:
+          type: string
+        example: plugin.name
+      - description: The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.quality
+        in: query
+        schema:
+          type: string
+        example: match
+      - description: The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.value
+        in: query
+        schema:
+          type: string
+        example: RHEL
+      - description: For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.search_type
+        in: query
+        schema:
+          type: string
+          enum:
+          - ''
+          - and
+          - or
+      responses:
+        '200':
+          description: Returned if the details for the specified plugin were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_workbenches-vulnerability-info'
+              examples:
+                response:
+                  value:
+                    info:
+                      count: 13
+                      vuln_count: 14
+                      description: The remote web server is affected by a command injection vulnerability in GNU Bash known as Shellshock. The vulnerability is due to the processing of trailing strings after function definitions in the values of environment variables. This allows a remote attacker to execute arbitrary code via environment variable manipulation depending on the configuration of the system.
+                      synopsis: The remote web server is affected by a remote code execution vulnerability.
+                      solution: Apply the referenced patch.
+                      discovery:
+                        seen_first: '2019-12-31T17:15:52.000Z'
+                        seen_last: '2019-12-31T22:53:45.000Z'
+                      severity: 4
+                      plugin_details:
+                        family: CGI abuses
+                        modification_date: '2017-12-31T00:00:00Z'
+                        name: GNU Bash Environment Variable Handling Code Injection (Shellshock)
+                        publication_date: '2014-12-31T00:00:00Z'
+                        type: remote
+                        version: null
+                        severity: 4
+                      reference_information:
+                      - name: bid
+                        url: http://www.securityfocus.com/bid/
+                        values:
+                        - 70103
+                      - name: cert
+                        url: http://www.kb.cert.org/vuls/id/
+                        values:
+                        - '252743'
+                      - name: cve
+                        url: http://web.nvd.nist.gov/view/vuln/detail?vulnId=
+                        values:
+                        - CVE-2014-6271
+                      - name: edb-id
+                        url: http://www.exploit-db.com/exploits/
+                        values:
+                        - '34766'
+                        - '34777'
+                        - '34765'
+                      - name: iava
+                        values:
+                        - 2014-A-0142
+                      - name: osvdb
+                        values:
+                        - '112004'
+                      risk_information:
+                        risk_factor: Critical
+                        cvss_vector: AV:N/AC:L/Au:N/C:C/I:C/A:C
+                        cvss_base_score: '10.0'
+                        cvss_temporal_vector: E:F/RL:OF/RC:ND
+                        cvss_temporal_score: '8.3'
+                        cvss3_vector: null
+                        cvss3_base_score: null
+                        cvss3_temporal_vector: null
+                        cvss3_temporal_score: null
+                        stig_severity: null
+                      see_also:
+                      - http://seclists.org/oss-sec/2014/q3/650
+                      - http://www.nessus.org/u?dacf7829
+                      - https://www.invisiblethreat.ca/post/shellshock/
+                      vulnerability_information:
+                        vulnerability_publication_date: '2014-12-31T00:00:00Z'
+                        exploited_by_malware: true
+                        patch_publication_date: '2014-12-31T00:00:00Z'
+                        exploit_available: true
+                        exploitability_ease: null
+                        asset_inventory: null
+                        default_account: null
+                        exploited_by_nessus: null
+                        in_the_news: true
+                        malware: null
+                        unsupported_by_vendor: null
+                        cpe: null
+                        exploit_frameworks:
+                        - name: Core Impact
+                        - name: Metasploit
+                          exploits:
+                          - name: Apache mod_cgi Bash Environment Variable Code Injection (Shellshock)
+                            url: null
+                      vpr:
+                        score: 9.6
+                        drivers:
+                          age_of_vuln:
+                            lower_bound: 731
+                            upper_bound: 0
+                          exploit_code_maturity: HIGH
+                          cvss3_impact_score: 5.9
+                          cvss_impact_score_predicted: true
+                          threat_intensity_last28: HIGH
+                          threat_recency:
+                            lower_bound: 0
+                            upper_bound: 7
+                          threat_sources_last28:
+                          - Others
+                          - Mainstream Media
+                          - Code Repo and Paste Bins
+                          product_coverage: LOW
+                        updated: '2019-12-31T10:10:57Z'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view plugin details.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+  /workbenches/vulnerabilities/{plugin_id}/outputs:
+    get:
+      summary: List plugin outputs
+      description: "Retrieves the vulnerability outputs for a plugin. The list returned is limited to 5,000. To retrieve more than 5,000 vulnerability outputs, use the [export-request API](ref:workbenches-export-request). Additionally, this endpoint only returns data less than 450 days (15 months) old.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability data, and the [POST /assets/v2/export](ref:export-assets-v2) endpoint for large or frequent exports of assets data.\n\nFor information and best practices for retrieving vulnerability and assets data from Tenable Vulnerability Management, see [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio) and [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: workbenches-vulnerability-output
+      tags:
+      - Workbenches
+      parameters:
+      - description: The ID of the plugin. You can find the plugin ID by examining the output of the [GET /workbenches/vulnerabilities](ref:workbenches-vulnerabilities) endpoint.
+        required: true
+        name: plugin_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: The number of days of data prior to and including today that should be returned.
+        name: date_range
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.filter
+        in: query
+        schema:
+          type: string
+        example: plugin.name
+      - description: The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.quality
+        in: query
+        schema:
+          type: string
+        example: match
+      - description: The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.value
+        in: query
+        schema:
+          type: string
+        example: RHEL
+      - description: For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.search_type
+        in: query
+        schema:
+          type: string
+          enum:
+          - ''
+          - and
+          - or
+      responses:
+        '200':
+          description: Returned if the list of plugin outputs for the specified plugin was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_workbenches-plugin-outputs'
+              examples:
+                response:
+                  value:
+                    outputs:
+                    - plugin_output: '
+
+                        The following certificate was at the top of the certificate
+
+                        chain sent by the remote host, but it is signed by an unknown
+
+                        certificate authority :
+
+
+                        |-Subject : O=LCE Users/OU=LCE Certification Authority/L=New York/C=US/ST=NY/CN=LCE Certification Authority
+
+                        |-Issuer  : O=LCE Users/OU=LCE Certification Authority/L=New York/C=US/ST=NY/CN=LCE Certification Authority
+
+                        '
+                      states:
+                      - name: Active
+                        results:
+                        - application_protocol: unknown
+                          port: 1243
+                          transport_protocol: tcp
+                          assets:
+                          - hostname: 192.0.2.57
+                            id: e0f36b9c-4b25-477f-b892-adaf9c95ed07
+                            uuid: e0f36b9c-4b25-477f-b892-adaf9c95ed07
+                            netbios_name: null
+                            fqdn: null
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          - hostname: 192.0.2.57
+                            id: 7e62a7a7-943b-4154-a5cf-7abc0fdb6c0b
+                            uuid: 7e62a7a7-943b-4154-a5cf-7abc0fdb6c0b
+                            netbios_name: null
+                            fqdn: null
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          - hostname: 192.0.2.57
+                            id: 665a9705-cbd8-4822-91e1-40da3b902254
+                            uuid: 665a9705-cbd8-4822-91e1-40da3b902254
+                            netbios_name: null
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          - hostname: 192.0.2.57
+                            id: 9ad262f1-f99d-4f9f-ae4d-d49bb79737d0
+                            uuid: 9ad262f1-f99d-4f9f-ae4d-d49bb79737d0
+                            netbios_name: null
+                            fqdn: null
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          - hostname: 192.0.2.57
+                            id: 5bb5bbea-9325-4a3c-9c1a-b9710a1bce58
+                            uuid: 5bb5bbea-9325-4a3c-9c1a-b9710a1bce58
+                            netbios_name: null
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          - hostname: 192.0.2.57
+                            id: a6bd0750-f9c1-46b0-b1db-6de779a67442
+                            uuid: a6bd0750-f9c1-46b0-b1db-6de779a67442
+                            netbios_name: null
+                            fqdn: null
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          severity: 2
+                    - plugin_output: '
+
+                        The following certificate was at the top of the certificate
+
+                        chain sent by the remote host, but it is signed by an unknown
+
+                        certificate authority :
+
+
+                        |-Subject : O=VMware, Inc./OU=vCenterServer_2014.07.30_111246/CN=VMware default certificate/E=support@vmware.com
+
+                        |-Issuer  : O=VMware, Inc./OU=vCenterServer_2014.07.30_111246/CN=192.0.2.57/E=support@vmware.com
+
+                        '
+                      states:
+                      - name: Active
+                        results:
+                        - application_protocol: unknown
+                          port: 443
+                          transport_protocol: tcp
+                          assets:
+                          - hostname: 192.0.2.57
+                            id: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            uuid: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            netbios_name: VCENTER
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          severity: 2
+                        - application_protocol: unknown
+                          port: 8191
+                          transport_protocol: tcp
+                          assets:
+                          - hostname: 192.0.2.57
+                            id: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            uuid: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            netbios_name: VCENTER
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          severity: 2
+                        - application_protocol: unknown
+                          port: 8443
+                          transport_protocol: tcp
+                          assets:
+                          - hostname: 192.0.2.57
+                            id: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            uuid: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            netbios_name: VCENTER
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          severity: 2
+                        - application_protocol: unknown
+                          port: 31100
+                          transport_protocol: tcp
+                          assets:
+                          - hostname: 192.0.2.57
+                            id: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            uuid: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            netbios_name: VCENTER
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          severity: 2
+                        - application_protocol: unknown
+                          port: 32100
+                          transport_protocol: tcp
+                          assets:
+                          - hostname: 192.0.2.57
+                            id: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            uuid: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            netbios_name: VCENTER
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          severity: 2
+                    - plugin_output: '
+
+                        The following certificate was at the top of the certificate
+
+                        chain sent by the remote host, but it is signed by an unknown
+
+                        certificate authority :
+
+
+                        |-Subject : CN=SSL_Self_Signed_Fallback
+
+                        |-Issuer  : CN=SSL_Self_Signed_Fallback
+
+                        '
+                      states:
+                      - name: Active
+                        results:
+                        - application_protocol: unknown
+                          port: 1433
+                          transport_protocol: tcp
+                          assets:
+                          - hostname: 192.0.2.57
+                            id: 1ae3f9f6-2441-462c-b7f9-7171b36aba2d
+                            uuid: 1ae3f9f6-2441-462c-b7f9-7171b36aba2d
+                            netbios_name: SQL2014
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          - hostname: 192.0.2.57
+                            id: cd6e03f1-027a-4575-b7f2-62f0cb562cee
+                            uuid: cd6e03f1-027a-4575-b7f2-62f0cb562cee
+                            netbios_name: SCCMHOST
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          - hostname: 192.0.2.57
+                            id: 0cba3a0e-71e0-4c9b-9049-5db272fb796e
+                            uuid: 0cba3a0e-71e0-4c9b-9049-5db272fb796e
+                            netbios_name: SHAREPOINT2013
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          - hostname: example.com
+                            id: 7317dac9-34c0-4804-9be1-3b59bc08034b
+                            uuid: 7317dac9-34c0-4804-9be1-3b59bc08034b
+                            netbios_name: SQL
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:57Z'
+                            last_seen: '2018-12-31T15:00:57Z'
+                          severity: 2
+                        - application_protocol: unknown
+                          port: 51361
+                          transport_protocol: tcp
+                          assets:
+                          - hostname: 192.0.2.57
+                            id: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            uuid: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            netbios_name: VCENTER
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          severity: 2
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view plugin outputs.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+  /workbenches/assets:
+    get:
+      summary: List assets
+      description: "Retrieves a list of assets. The list can be modified using filters. The list returned is limited to 5,000. To retrieve more than 5,000 assets, use the [Export assets v2](ref:export-assets-v2) endpoint.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability data, and the [POST /assets/v2/export](ref:export-assets-v2) endpoint for large or frequent exports of assets data.\n\nFor information and best practices for retrieving vulnerability and assets data from Tenable Vulnerability Management, see [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio) and [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: workbenches-assets
+      tags:
+      - Workbenches
+      parameters:
+      - description: The number of days of data prior to and including today that should be returned.
+        name: date_range
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. If you specify the name of the filter, you must specify the operator as the filter.0.quality parameter and the value as the filter.0.value parameter. To use multiple filters, increment the `<INDEX>` portion of `filter.<INDEX>.filter`, for example, `filter.0.filter`. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.filter
+        in: query
+        schema:
+          type: string
+        example: plugin.name
+      - description: The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.quality
+        in: query
+        schema:
+          type: string
+        example: match
+      - description: "The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).\n\n **Note:** The value is case sensitive when used with the `match` (contains) or `nmatch` (does not contain) operators."
+        required: false
+        name: filter.0.value
+        in: query
+        schema:
+          type: string
+        example: RHEL
+      - description: For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.search_type
+        in: query
+        schema:
+          type: string
+          enum:
+          - ''
+          - and
+          - or
+      - description: Specifies whether to return all asset fields or only the default fields. When this parameter is present in the request (for example, `all_fields=full`), the system returns the full set of asset attributes. When this parameter is absent, the system returns only the default fields. The schema for this endpoint defines the default fields only. For a definition of the full fields, see [Common Asset Attributes](doc:common-asset-attributes).
+        required: false
+        name: all_fields
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the list of assets was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  assets:
+                    $ref: '#/components/schemas/workbenches_workbenches-assets'
+                  total:
+                    type: integer
+                    description: The total count of returned assets.
+              examples:
+                response:
+                  value:
+                    assets:
+                    - id: 1d194ba1-d43a-4369-9d68-d2113a5d4da9
+                      has_agent: false
+                      last_seen: '2018-12-31T17:28:28.000Z'
+                      last_scan_target: 192.0.2.57
+                      sources:
+                      - name: NESSUS_SCAN
+                        first_seen: '2018-12-31T15:00:25.000Z'
+                        last_seen: '2018-12-31T17:28:28.000Z'
+                      ipv4:
+                      - 192.0.2.57
+                      ipv6: []
+                      fqdn: []
+                      netbios_name:
+                      - S11C
+                      operating_system:
+                      - Microsoft Windows Server 2008 R2 Datacenter Service Pack 1
+                      agent_name: []
+                      aws_ec2_name: []
+                      mac_address: []
+                      bigfix_asset_id: []
+                    - id: 42edcd25-f2c0-44ca-8c46-d531a80c39c8
+                      has_agent: false
+                      last_seen: '2018-12-31T17:28:28.000Z'
+                      last_scan_target: 192.0.2.58
+                      sources:
+                      - name: NESSUS_SCAN
+                        first_seen: '2018-12-31T15:00:25.000Z'
+                        last_seen: '2018-12-31T17:28:28.000Z'
+                      acr_score: 8
+                      acr_drivers:
+                      - driver_name: device_type
+                        driver_value:
+                        - general_purpose
+                      - driver_name: device_capability
+                        driver_value:
+                        - pci
+                      - driver_name: internet_exposure
+                        driver_value:
+                        - internal
+                      exposure_score: 753
+                      scan_frequency:
+                      - interval: 90
+                        frequency: 3
+                        licensed: false
+                      - interval: 30
+                        frequency: 1
+                        licensed: false
+                      - interval: 60
+                        frequency: 1
+                        licensed: false
+                      ipv4:
+                      - 192.0.2.58
+                      ipv6: []
+                      fqdn:
+                      - example.com
+                      netbios_name: []
+                      operating_system:
+                      - FreeBSD 11.1
+                      agent_name: []
+                      aws_ec2_name: []
+                      mac_address: []
+                      bigfix_asset_id: []
+                    - id: 4a191873-394c-4498-bc1e-0c54151b241d
+                      has_agent: false
+                      last_seen: '2018-12-31T17:28:28.000Z'
+                      last_scan_target: 192.0.2.59
+                      sources:
+                      - name: NESSUS_SCAN
+                        first_seen: '2018-12-31T15:00:25.000Z'
+                        last_seen: '2018-12-31T17:28:28.000Z'
+                      ipv4:
+                      - 192.0.2.59
+                      ipv6: []
+                      fqdn:
+                      - example.com
+                      netbios_name: []
+                      operating_system:
+                      - Linux Kernel 4.13.9-300.fc27.x86_64 on Fedora release 27 (Twenty Seven)
+                      agent_name: []
+                      aws_ec2_name: []
+                      mac_address: []
+                      bigfix_asset_id: []
+                    total: 3
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+  /workbenches/assets/vulnerabilities:
+    get:
+      summary: List assets with vulnerabilities
+      description: "Returns a list of assets with vulnerabilities. The list is limited to 5,000. To retrieve more than 5,000 assets, use the [export-request API](ref:workbenches-export-request).\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability data, and the [POST /assets/v2/export](ref:export-assets-v2) endpoint for large or frequent exports of assets data.\n\nFor information and best practices for retrieving vulnerability and assets data from Tenable Vulnerability Management, see [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio) and [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: workbenches-assets-vulnerabilities
+      tags:
+      - Workbenches
+      parameters:
+      - description: The number of days of data prior to and including today that should be returned.
+        name: date_range
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.filter
+        in: query
+        schema:
+          type: string
+        example: plugin.name
+      - description: The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint.For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.quality
+        in: query
+        schema:
+          type: string
+        example: match
+      - description: The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.value
+        in: query
+        schema:
+          type: string
+        example: RHEL
+      - description: For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.search_type
+        in: query
+        schema:
+          type: string
+          enum:
+          - ''
+          - and
+          - or
+      responses:
+        '200':
+          description: Returned if the list of assets with vulnerabilities was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_workbenches-assets-with-vulns'
+              examples:
+                response:
+                  value:
+                    assets:
+                    - id: b822ac94-663b-4f85-bd8c-fd1310ccff44
+                      severities:
+                      - count: 0
+                        level: 0
+                        name: Info
+                      - count: 1
+                        level: 1
+                        name: Low
+                      - count: 0
+                        level: 2
+                        name: Medium
+                      - count: 0
+                        level: 3
+                        name: High
+                      - count: 0
+                        level: 4
+                        name: Critical
+                      total: 1
+                      fqdn: []
+                      ipv4:
+                      - 192.0.2.57
+                      ipv6: []
+                      last_seen: '2018-12-31T17:28:28.000Z'
+                      netbios_name: []
+                      agent_name: []
+                    - id: 1519f45c-b99b-4626-9818-dca849c4e364
+                      severities:
+                      - count: 0
+                        level: 0
+                        name: Info
+                      - count: 0
+                        level: 1
+                        name: Low
+                      - count: 1
+                        level: 2
+                        name: Medium
+                      - count: 0
+                        level: 3
+                        name: High
+                      - count: 0
+                        level: 4
+                        name: Critical
+                      total: 1
+                      fqdn:
+                      - example.com
+                      ipv4:
+                      - 192.0.2.57
+                      ipv6: []
+                      last_seen: '2018-12-31T17:28:28.000Z'
+                      netbios_name: []
+                      agent_name: []
+                    - id: 6417b14b-8a28-41c7-b276-7bca6f069949
+                      severities:
+                      - count: 0
+                        level: 0
+                        name: Info
+                      - count: 0
+                        level: 1
+                        name: Low
+                      - count: 1
+                        level: 2
+                        name: Medium
+                      - count: 0
+                        level: 3
+                        name: High
+                      - count: 0
+                        level: 4
+                        name: Critical
+                      total: 1
+                      fqdn:
+                      - example.com
+                      ipv4:
+                      - 192.0.2.57
+                      ipv6: []
+                      last_seen: '2018-12-31T17:28:28.000Z'
+                      netbios_name: []
+                      agent_name: []
+                    total_asset_count: 3
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view assets with vulnerabilities.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+  /workbenches/assets/{asset_id}/info:
+    get:
+      summary: Get asset information
+      description: "Returns information about the specified asset.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability data, and the [POST /assets/v2/export](ref:export-assets-v2) endpoint for large or frequent exports of assets data.\n\nFor information and best practices for retrieving vulnerability and assets data from Tenable Vulnerability Management, see [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio) and [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: workbenches-asset-info
+      tags:
+      - Workbenches
+      parameters:
+      - description: The unique identifier of the asset. You can find the UUID by examining the output of the [GET /workbenches/assets](ref:workbenches-assets) endpoint.
+        required: true
+        name: asset_id
+        in: path
+        schema:
+          type: string
+      - description: Specifies whether to return all asset fields or only the default fields. When this parameter is present in the request (for example, `all_fields=full`), the system returns the full set of asset attributes. When this parameter is absent, the system returns only the default fields. The schema for this endpoint defines the default fields only. For a definition of the full fields, see [Common Asset Attributes](doc:common-asset-attributes).
+        required: false
+        name: all_fields
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the asset information was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  info:
+                    $ref: '#/components/schemas/workbenches_workbenches-asset-details'
+              examples:
+                response:
+                  value:
+                    info:
+                      time_end: '2018-12-31T15:00:25Z'
+                      time_start: '2018-12-31T15:00:25Z'
+                      id: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                      uuid: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                      operating_system:
+                      - Microsoft Windows Server 2008 R2 Standard Service Pack 1
+                      fqdn:
+                      - example.com
+                      mac_address:
+                      - 00:50:56:bd:4b:d8
+                      counts:
+                        vulnerabilities:
+                          total: 573
+                          severities:
+                          - count: 392
+                            level: 0
+                            name: Info
+                          - count: 11
+                            level: 1
+                            name: Low
+                          - count: 122
+                            level: 2
+                            name: Medium
+                          - count: 316
+                            level: 3
+                            name: High
+                          - count: 27
+                            level: 4
+                            name: Critical
+                        audits:
+                          total: 0
+                          statuses:
+                          - count: 0
+                            level: 1
+                            name: Passed
+                          - count: 0
+                            level: 2
+                            name: Warning
+                          - count: 0
+                            level: 3
+                            name: Failed
+                      has_agent: false
+                      created_at: '2018-11-31T15:00:45.684Z'
+                      updated_at: '2018-12-31T17:28:46.941Z'
+                      first_seen: '2018-11-31T15:00:25.000Z'
+                      last_seen: '2018-12-31T17:28:28.000Z'
+                      last_authenticated_scan_date: '2018-12-31T17:28:28.000Z'
+                      last_licensed_scan_date: '2018-12-31T17:28:28.000Z'
+                      last_scan_target: 192.0.2.57
+                      sources:
+                      - name: NESSUS_SCAN
+                        first_seen: '2018-12-31T15:00:25.000Z'
+                        last_seen: '2018-12-31T17:28:28.000Z'
+                      acr_score: 8
+                      acr_drivers:
+                      - driver_name: device_type
+                        driver_value:
+                        - general_purpose
+                      - driver_name: device_capability
+                        driver_value:
+                        - pci
+                      - driver_name: internet_exposure
+                        driver_value:
+                        - internal
+                      exposure_score: 753
+                      scan_frequency:
+                      - interval: 90
+                        frequency: 3
+                        licensed: false
+                      - interval: 30
+                        frequency: 1
+                        licensed: false
+                      - interval: 60
+                        frequency: 1
+                        licensed: false
+                      tags: []
+                      ipv4:
+                      - 192.0.2.57
+                      ipv6: []
+                      netbios_name:
+                      - VCENTER
+                      system_type:
+                      - general-purpose
+                      tenable_uuid:
+                      - 02dfb8d5a8744a4d925dc8aec4c5dffb
+                      hostname:
+                      - vcenter
+                      agent_name: []
+                      bios_uuid:
+                      - c751db98-09f5-482c-8949-b73dfcc58642
+                      aws_ec2_instance_id:
+                      - i-1234567890abcdef0
+                      aws_ec2_instance_ami_id:
+                      - abcd1234efgh5678i
+                      aws_owner_id:
+                      - 79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be
+                      aws_availability_zone:
+                      - us-west-1a
+                      aws_region:
+                      - us-west-1
+                      aws_vpc_id:
+                      - vpc-1a2b3c4d
+                      aws_ec2_instance_group_name:
+                      - my-sg
+                      aws_ec2_instance_state_name:
+                      - running
+                      aws_ec2_instance_type:
+                      - t2.micro
+                      aws_subnet_id:
+                      - subnet-6e7f829e
+                      aws_ec2_product_code:
+                      - 774F4FF8
+                      aws_ec2_name:
+                      - MyAppAPIServiceInstance
+                      azure_vm_id:
+                      - facaebd2-e45d-4427-a0c4-5c113c66034b
+                      azure_resource_id:
+                      - /subscriptions/1f9bb4fe-9092-49e7-969c-5ebd621881cc/resourceGroups/testRG/providers/Microsoft.Compute/virtualMachines/testVM
+                      gcp_project_id:
+                      - cloudtest8
+                      gcp_zone:
+                      - us-west1-a
+                      gcp_instance_id:
+                      - test-instance
+                      ssh_fingerprint: []
+                      mcafee_epo_guid: []
+                      mcafee_epo_agent_guid: []
+                      qualys_asset_id: []
+                      qualys_host_id: []
+                      servicenow_sysid: []
+                      installed_software:
+                      - cpe:/a:apple:itunes:12.8
+                      - cpe:/a:apple:quicktime:7.7.3
+                      - cpe:/a:openbsd:openssh:6.9
+                      - cpe:/a:google:chrome
+                      bigfix_asset_id: []
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view information for the specified asset.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+  /workbenches/assets/{asset_uuid}/activity:
+    get:
+      summary: Get asset activity log
+      description: "Returns the activity log for the specified asset. Event types include:<ul><li>discovered—Asset created (for example, by a network scan or import).</li><li>seen—Asset observed by a network scan without any changes to its attributes.</li><li>tagging—Tag added to or removed from asset.</li><li>attribute_change—A scan identified new or changed attributes for the asset (for example, new software applications installed on the asset).</li><li>updated—Asset updated either manually by a user or automatically by a new scan.</li></ul>\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability data, and the [POST /assets/v2/export](ref:export-assets-v2) endpoint for large or frequent exports of assets data.\n\nFor information and best practices for retrieving vulnerability and assets data from Tenable Vulnerability Management, see [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio) and [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: workbenches-assets-activity
+      tags:
+      - Workbenches
+      parameters:
+      - description: The unique identifier of the asset. You can find the UUID by examining the output of the [GET /workbenches/assets](ref:workbenches-assets) endpoint.
+        required: true
+        name: asset_uuid
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the activity log for the specified asset was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/workbenches_workbenches-asset-activity'
+              examples:
+                response:
+                  value:
+                    activity:
+                    - type: seen
+                      timestamp: '2018-12-31T12:51:47.164Z'
+                      scan_id: eb18ea55-d548-4ca7-a5b0-2cfbb827a1eb
+                      schedule_id: template-36862012-181b-4b4a-b7c7-ee7f7efd2dbd423f49ea57344aef
+                      source: NESSUS_SCAN
+                    - type: seen
+                      timestamp: '2018-12-31T11:43:55.975Z'
+                      scan_id: 0dbdf489-d257-48f4-bc23-7358be9832e5
+                      schedule_id: template-36862012-181b-4b4a-b7c7-ee7f7efd2dbd423f49ea57344aef
+                      source: NESSUS_SCAN
+                    - type: discovered
+                      timestamp: '2018-12-31T16:50:55.418Z'
+                      scan_id: 76273b98-584d-400e-843b-2299c4a1fa15
+                      schedule_id: template-36862012-181b-4b4a-b7c7-ee7f7efd2dbd423f49ea57344aef
+                      source: NESSUS_SCAN
+                      details:
+                        lastScanTime: '2018-12-31T16:50:55.418Z'
+                        createdAt: '2018-12-31T16:50:58.420Z'
+                        hasAgent: false
+                        sources:
+                        - name: NESSUS_SCAN
+                          firstSeen: '2018-12-31T16:50:55.418Z'
+                          lastSeen: '2018-12-31T16:50:55.418Z'
+                        lastLicensedScanTime: '2018-12-31T16:50:55.418Z'
+                        firstScanTime: '2018-12-31T16:50:55.418Z'
+                        assetId: c79fbd2c-c938-4661-bf8b-9b09ca96879f
+                        lastLicensedScanTimeV2: '2018-12-31T16:50:55.418Z'
+                        hasPluginResults: true
+                        containerId: 1d3feef0-40e3-42a0-a743-91f989ba8197
+                        properties:
+                          ipv4:
+                            lastObserved: '2018-12-31T16:50:55.418Z'
+                            values:
+                            - 192.0.2.57
+                        updatedAt: '2018-12-31T16:50:58.420Z'
+                    - type: attribute_change
+                      timestamp: '2019-12-31T13:24:47.498Z'
+                      updates:
+                      - method: add
+                        property: installed_software
+                        value: cpe:/a:apple:quicktime:7.7.1
+                      - method: add
+                        property: installed_software
+                        value: cpe:/a:apple:safari:12.0.2
+                      - method: add
+                        property: installed_software
+                        value: cpe:/a:apple:itunes:7.5
+                      - method: add
+                        property: installed_software
+                        value: cpe:/a:mariadb:mariadb:1.5
+                      - method: add
+                        property: installed_software
+                        value: cpe:/a:skype:skype:8.4
+                      - method: add
+                        property: installed_software
+                        value: cpe:/a:wireshark:wireshark:2.4.1
+        '401':
+          description: Returned if you do not have permission to view activity for an asset.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified asset.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+  /workbenches/assets/{asset_id}/vulnerabilities:
+    get:
+      summary: List asset vulnerabilities
+      description: "Retrieves a list of the vulnerabilities recorded for a specified asset. By default, this list is sorted by vulnerability count in descending order. The list returned is limited to 5,000. To retrieve more than 5,000 vulnerabilities, use the [export-request API](ref:workbenches-export-request).\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability data, and the [POST /assets/v2/export](ref:export-assets-v2) endpoint for large or frequent exports of assets data.\n\nFor information and best practices for retrieving vulnerability and assets data from Tenable Vulnerability Management, see [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio) and [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: workbenches-asset-vulnerabilities
+      tags:
+      - Workbenches
+      parameters:
+      - description: The unique identifier of the asset. You can find the UUID by examining the output of the [GET /workbenches/assets](ref:workbenches-assets) endpoint.
+        required: true
+        name: asset_id
+        in: path
+        schema:
+          type: string
+      - description: The number of days of data prior to and including today that should be returned.
+        name: date_range
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.filter
+        in: query
+        schema:
+          type: string
+        example: plugin.name
+      - description: The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.quality
+        in: query
+        schema:
+          type: string
+        example: match
+      - description: The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.value
+        in: query
+        schema:
+          type: string
+        example: RHEL
+      - description: For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.search_type
+        in: query
+        schema:
+          type: string
+          enum:
+          - ''
+          - and
+          - or
+      responses:
+        '200':
+          description: Returned if the list of vulnerabilities for the specified asset was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: A list of vulnerabilities.
+                properties:
+                  vulnerabilities:
+                    type: array
+                    description: A list of discovered vulnerabilities.
+                    items:
+                      $ref: '#/components/schemas/workbenches_workbenches-vulnerability'
+                  total_vulnerability_count:
+                    type: integer
+                    description: The total number of discovered vulnerabilities.
+                  total_asset_count:
+                    type: integer
+                    description: The total number of assets.
+              examples:
+                response:
+                  value:
+                    vulnerabilities:
+                    - count: 55
+                      plugin_family: Port scanners
+                      plugin_id: 34220
+                      plugin_name: Netstat Portscanner (WMI)
+                      vulnerability_state: Active
+                      vpr_score: 2.4
+                      accepted_count: 0
+                      recasted_count: 0
+                      counts_by_severity:
+                      - count: 55
+                        value: 0
+                      severity: 0
+                    - count: 54
+                      plugin_family: Windows
+                      plugin_id: 34252
+                      plugin_name: Microsoft Windows Remote Listeners Enumeration (WMI)
+                      vulnerability_state: Active
+                      vpr_score: 6.3
+                      accepted_count: 0
+                      recasted_count: 0
+                      counts_by_severity:
+                      - count: 54
+                        value: 0
+                      severity: 0
+                    - count: 21
+                      plugin_family: Service detection
+                      plugin_id: 22964
+                      plugin_name: Service Detection
+                      vulnerability_state: Active
+                      vpr_score: 4.5
+                      accepted_count: 0
+                      recasted_count: 0
+                      counts_by_severity:
+                      - count: 21
+                        value: 0
+                      severity: 0
+                    - count: 18
+                      plugin_family: Web Servers
+                      plugin_id: 24260
+                      plugin_name: HyperText Transfer Protocol (HTTP) Information
+                      vulnerability_state: Active
+                      vpr_score: 5.5
+                      accepted_count: 0
+                      recasted_count: 0
+                      counts_by_severity:
+                      - count: 18
+                        value: 0
+                      severity: 0
+                    total_vulnerability_count: 3
+                    total_asset_count: 0
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list vulnerabilities for the specified asset.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+  /workbenches/assets/{asset_id}/vulnerabilities/{plugin_id}/info:
+    get:
+      summary: Get asset vulnerability details
+      description: "Retrieves the details for a vulnerability recorded on a specified asset.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability data, and the [POST /assets/v2/export](ref:export-assets-v2) endpoint for large or frequent exports of assets data.\n\nFor information and best practices for retrieving vulnerability and assets data from Tenable Vulnerability Management, see [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio) and [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: workbenches-asset-vulnerability-info
+      tags:
+      - Workbenches
+      parameters:
+      - description: The unique identifier of the asset.
+        required: true
+        name: asset_id
+        in: path
+        schema:
+          type: string
+      - description: The ID of the plugin.
+        required: true
+        name: plugin_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: The number of days of data prior to and including today that should be returned.
+        name: date_range
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.filter
+        in: query
+        schema:
+          type: string
+        example: plugin.name
+      - description: The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.quality
+        in: query
+        schema:
+          type: string
+        example: match
+      - description: The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.value
+        in: query
+        schema:
+          type: string
+        example: RHEL
+      - description: For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.search_type
+        in: query
+        schema:
+          type: string
+          enum:
+          - ''
+          - and
+          - or
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  info:
+                    $ref: '#/components/schemas/workbenches_workbenches-vulnerability-info'
+              examples:
+                response:
+                  value:
+                    info:
+                      count: 1
+                      vuln_count: 1
+                      description: 'The remote Windows host contains a version of the Microsoft Foundation Class (MFC) library affected by an insecure library loading vulnerability. The path used for loading external libraries is not securely restricted.
+
+
+                        An attacker can exploit this by tricking a user into opening an MFC application in a directory that contains a malicious DLL, resulting in arbitrary code execution.'
+                      synopsis: Arbitrary code can be executed on the remote host through the Microsoft Foundation Class library.
+                      solution: Microsoft has released a set of patches for Visual Studio .NET 2003, 2005, and 2008, as well as Visual C++ 2005, 2008, and 2010.
+                      discovery:
+                        seen_first: '2019-12-31T17:15:52.000Z'
+                        seen_last: '2019-12-31T17:15:52.000Z'
+                      severity: 3
+                      plugin_details:
+                        family: 'Windows : Microsoft Bulletins'
+                        modification_date: '2016-12-31T00:00:00Z'
+                        name: 'MS11-025: Vulnerability in Microsoft Foundation Class (MFC) Library Could Allow Remote Code Execution (2500212)'
+                        publication_date: '2011-12-31T00:00:00Z'
+                        type: local
+                        version: null
+                        severity: 3
+                      reference_information:
+                      - name: bid
+                        url: http://www.securityfocus.com/bid/
+                        values:
+                        - 42811
+                      - name: cve
+                        url: http://web.nvd.nist.gov/view/vuln/detail?vulnId=
+                        values:
+                        - CVE-2010-3190
+                      - name: iavb
+                        values:
+                        - 2011-B-0046
+                      - name: msft
+                        url: http://technet.microsoft.com/en-us/security/bulletin/
+                        values:
+                        - MS11-025
+                      - name: osvdb
+                        values:
+                        - '67674'
+                      - name: secunia
+                        url: http://secunia.com/advisories/
+                        values:
+                        - '41212'
+                      risk_information:
+                        risk_factor: High
+                        cvss_vector: AV:N/AC:M/Au:N/C:C/I:C/A:C
+                        cvss_base_score: '9.3'
+                        cvss_temporal_vector: E:F/RL:OF/RC:ND
+                        cvss_temporal_score: '7.7'
+                        cvss3_vector: null
+                        cvss3_base_score: null
+                        cvss3_temporal_vector: null
+                        cvss3_temporal_score: null
+                        stig_severity: null
+                      see_also:
+                      - '["https://technet.microsoft.com/library/security/ms11-025"]'
+                      vulnerability_information:
+                        vulnerability_publication_date: '2010-12-31T00:00:00Z'
+                        exploited_by_malware: null
+                        patch_publication_date: '2011-12-31T00:00:00Z'
+                        exploit_available: true
+                        exploitability_ease: null
+                        asset_inventory: null
+                        default_account: null
+                        exploited_by_nessus: null
+                        in_the_news: null
+                        malware: null
+                        unsupported_by_vendor: null
+                        cpe: null
+                        exploit_frameworks: []
+                      vpr:
+                        score: 5.9
+                        drivers:
+                          age_of_vuln:
+                            lower_bound: 731
+                            upper_bound: 0
+                          exploit_code_maturity: UNPROVEN
+                          cvss_impact_score_predicted: true
+                          threat_intensity_last28: VERY_LOW
+                          threat_sources_last28:
+                          - No recorded events
+                          product_coverage: MEDIUM
+                        updated: '2019-12-31T10:08:58Z'
+          description: Returned if the details for the specified vulnerability recorded on the specified asset were retrieved successfully.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view vulnerability details for the specified asset.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+  /workbenches/assets/{asset_id}/vulnerabilities/{plugin_id}/outputs:
+    get:
+      summary: List asset vulnerabilities for plugin
+      description: "Retrieves the vulnerability outputs for a plugin recorded on a specified asset.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability data, and the [POST /assets/v2/export](ref:export-assets-v2) endpoint for large or frequent exports of assets data.\n\nFor information and best practices for retrieving vulnerability and assets data from Tenable Vulnerability Management, see [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio) and [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: workbenches-asset-vulnerability-output
+      tags:
+      - Workbenches
+      parameters:
+      - description: The unique identifier of the asset.
+        required: true
+        name: asset_id
+        in: path
+        schema:
+          type: string
+      - description: The ID of the plugin.
+        required: true
+        name: plugin_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: The number of days of data prior to and including today that should be returned.
+        name: date_range
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.filter
+        in: query
+        schema:
+          type: string
+        example: plugin.name
+      - description: The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.quality
+        in: query
+        schema:
+          type: string
+        example: match
+      - description: The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.value
+        in: query
+        schema:
+          type: string
+        example: RHEL
+      - description: For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.search_type
+        in: query
+        schema:
+          type: string
+          enum:
+          - ''
+          - and
+          - or
+      responses:
+        '200':
+          description: Returned if the list of asset vulnerabilities for the specified plugin was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  outputs:
+                    $ref: '#/components/schemas/workbenches_workbenches-plugin-outputs'
+              examples:
+                response:
+                  value:
+                    outputs:
+                    - plugin_output: Port 80/tcp was found to be open
+                      states:
+                      - name: Active
+                        results:
+                        - application_protocol: unknown
+                          port: 80
+                          transport_protocol: tcp
+                          assets:
+                          - hostname: 192.0.2.57
+                            id: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            uuid: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            netbios_name: VCENTER
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          severity: 0
+                    - plugin_output: Port 49153/tcp was found to be open
+                      states:
+                      - name: Active
+                        results:
+                        - application_protocol: unknown
+                          port: 49153
+                          transport_protocol: tcp
+                          assets:
+                          - hostname: 192.0.2.57
+                            id: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            uuid: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            netbios_name: VCENTER
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          severity: 0
+                    - plugin_output: Port 123/udp was found to be open
+                      states:
+                      - name: Active
+                        results:
+                        - application_protocol: unknown
+                          port: 123
+                          transport_protocol: udp
+                          assets:
+                          - hostname: 192.0.2.57
+                            id: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            uuid: aae31e9f-1f6f-4b59-b36b-12e51035584d
+                            netbios_name: VCENTER
+                            fqdn: example.com
+                            ipv4: 192.0.2.57
+                            first_seen: '2018-12-31T15:00:25Z'
+                            last_seen: '2018-12-31T15:00:25Z'
+                          severity: 0
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list of asset vulnerabilities for the specified plugin.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+  /workbenches/assets/{asset_uuid}:
+    delete:
+      summary: Delete asset
+      description: 'Deletes the specified asset. When you delete an asset, Tenable Vulnerability Management deletes vulnerability data associated with the asset. Deleting an asset does not immediately subtract the asset from your licensed assets count. Deleted assets continue to be included in the count until they automatically age out as inactive.
+
+
+        **Caution:** This endpoint is deprecated. Tenable recommends that customers use the [Bulk delete assets](ref:assets-bulk-delete) endpoint instead. Please update any existing integrations that your organization has. <div class="perms-callout">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>'
+      operationId: workbenches-assets-delete
+      deprecated: true
+      tags:
+      - Workbenches
+      parameters:
+      - description: The unique identifier of the asset. You can find the UUID by examining the output of the [GET /workbenches/assets](ref:workbenches-assets) endpoint.
+        required: true
+        name: asset_uuid
+        in: path
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Returned if Tenable Vulnerability Management successfully deletes the asset.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to delete the asset.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified asset.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+  /workbenches/export:
+    get:
+      summary: Export workbench
+      description: "Exports the specified workbench to a file. Once requested, the file can be downloaded using the [export download](ref:workbenches-export-download) method upon receiving a \"ready\" status from the [export status](ref:workbenches-export-status) method. For more information about workbench export files, see [Export File Formats](doc:export-file-formats).\n\n**Caution:** This endpoint is deprecated. Tenable recommends that customers use the [Create report](ref:vm-reports-create) endpoint instead. Please update any existing integrations that your organization has. \n\n**Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability data, and the [POST /assets/v2/export](ref:export-assets-v2) endpoint for large or frequent exports of assets data.\n\nFor information and best practices for retrieving vulnerability and assets data from Tenable Vulnerability Management, see [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio) and [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: workbenches-export-request
+      deprecated: true
+      tags:
+      - Workbenches
+      parameters:
+      - description: 'The file format to use (Nessus, HTML, PDF, or CSV).
+
+
+          **Note:** Tag-based filters are supported for the `CSV` file format type only.'
+        required: true
+        name: format
+        in: query
+        schema:
+          type: string
+          enum:
+          - nessus
+          - html
+          - pdf
+          - csv
+      - description: The type of workbench report to be exported
+        required: true
+        name: report
+        in: query
+        schema:
+          type: string
+          enum:
+          - vulnerabilities
+      - description: The date (in unixtime) at which the exported results should begin to be included. Defaults to today.
+        name: start_date
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: Semicolon-separated list of chapters to include for vulnerabilities/hosts reports (vuln\_by\_plugin, vuln\_by\_asset, vuln\_hosts\_summary) or a single chapter for Executive Summary (exec\_summary). Currently, only vuln\_by\_asset is supported for .nessus workbench exports.
+        required: true
+        name: chapter
+        in: query
+        schema:
+          type: string
+        example: vuln_by_asset
+      - description: The number of days of data prior to and including start\_date that should be returned. If not specified, data for all dates is returned.
+        name: date_range
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.filter
+        in: query
+        schema:
+          type: string
+        example: plugin.name
+      - description: The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.quality
+        in: query
+        schema:
+          type: string
+        example: match
+      - description: The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.0.value
+        in: query
+        schema:
+          type: string
+        example: RHEL
+      - description: For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters).
+        required: false
+        name: filter.search_type
+        in: query
+        schema:
+          type: string
+          enum:
+          - ''
+          - and
+          - or
+      - description: When `true`, Tenable Vulnerability Management returns only a minimal subset of scan details for each result, excluding plugin attributes. In this case, only plugin\_output and vulnerability\_state fields are always returned; first\_found, last\_found and last\_fixed are also returned if possible.
+        name: minimum_vuln_info
+        in: query
+        schema:
+          type: boolean
+          enum:
+          - 'true'
+          - 'false'
+      - description: A plugin ID. Restricts the export data to vulnerabilities that only the specified plugin detects.
+        name: plugin_id
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The unique identifier of an asset. Restricts the export data to findings on the specified asset only.
+        name: asset_id
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the export was queued successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  file:
+                    type: integer
+                    description: The ID of the generated file.
+              examples:
+                response:
+                  value:
+                    file: '1279345678'
+        '400':
+          description: Returned if you attempt to use a tag-based filter on a non-CSV file format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_Error'
+              examples:
+                response:
+                  value:
+                    error: Request cannot contain a tag filter.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to export the workbench.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+  /workbenches/export/{file_id}/status:
+    get:
+      summary: Check export status
+      description: "Returns the status of a pending export. When an export has been requested, it is necessary to poll this endpoint until a \"ready\" status is returned, at which point the file is complete and can be downloaded using the [export download](ref:workbenches-export-download) endpoint.\n\n**Caution:** This endpoint is deprecated. Tenable recommends that customers use the [Create report](ref:vm-reports-create) endpoint instead. Please update any existing integrations that your organization has. \n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability data, and the [POST /assets/v2/export](ref:export-assets-v2) endpoint for large or frequent exports of assets data.\n\nFor information and best practices for retrieving vulnerability and assets data from Tenable Vulnerability Management, see [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio) and [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: workbenches-export-status
+      deprecated: true
+      tags:
+      - Workbenches
+      parameters:
+      - description: The unique identifier of the workbench report being exported. The value for this parameter can be obtained from the response of the initial export request.
+        required: true
+        name: file_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the export status was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: The export processing status, for example, READY or LOADING.
+                  progress_total:
+                    type: string
+                    description: The total number of items included in export.
+                  progress:
+                    type: string
+                    description: The number of already processed items.
+              examples:
+                response:
+                  value:
+                    progress_total: '16666'
+                    progress: '4000'
+                    status: loading
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+  /workbenches/export/{file_id}/download:
+    get:
+      summary: Download export file
+      description: "Downloads a file that has been prepared for export. For more information about workbench export files, see [Export File Formats](doc:export-file-formats).\n\n **Caution:** This endpoint is deprecated. Tenable recommends that customers use the [Create report](ref:vm-reports-create) endpoint instead. Please update any existing integrations that your organization has.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability data, and the [POST /assets/v2/export](ref:export-assets-v2) endpoint for large or frequent exports of assets data.\n\nFor information and best practices for retrieving vulnerability and assets data from Tenable Vulnerability Management, see [Retrieve Vulnerability Data from Vulnerability Management](doc:retrieve-vulnerability-data-from-tenableio) and [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: workbenches-export-download
+      deprecated: true
+      tags:
+      - Workbenches
+      parameters:
+      - description: The unique identifier of the workbench report being downloaded. The value for this parameter can be obtained from the response of the initial export request.
+        required: true
+        name: file_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the file was downloaded successfully.
+          content:
+            application/octet-stream:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workbenches_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - workbenches_cloud: []
+components:
+  schemas:
+    workbenches_workbenches-assets:
+      type: array
+      description: An array of asset objects.
+      items:
+        $ref: '#/components/schemas/workbenches_workbenches-asset'
+    workbenches_exploit_framework:
+      type: object
+      description: Information about the vulnerability in a specific exploit framework.
+      properties:
+        name:
+          type: string
+          description: The name of the exploit framework.
+        exploits:
+          type: array
+          description: A list of exploits associated with the vulnerability in the specified exploit framework.
+          items:
+            $ref: '#/components/schemas/workbenches_exploit'
+    workbenches_exploit:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the identified exploit.
+        url:
+          type: string
+          description: The URL for the exploit in the framework.
+    workbenches_AcrDriversObject:
+      type: object
+      description: Asset characteristic that factored into the Asset Criticality Rating (ACR) calculation. For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+      properties:
+        driver_name:
+          type: string
+          description: The ACR key driver. ACR key drivers reflect the global threat landscape associated with the asset's characteristics.
+          enum:
+          - device_type
+          - device_capability
+          - internet_exposure
+        driver_value:
+          type: array
+          description: 'The ACR key driver''s value. For example, for the `device_type` key driver, values can include `hypervisor`, `printer`, etc. '
+          items:
+            type: string
+    workbenches_workbenches-vulnerability:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The number of times that a scan detected the vulnerability on an asset.
+        plugin_family:
+          type: string
+          description: The plugin's family.
+        plugin_id:
+          type: integer
+          description: The unique plugin ID.
+        plugin_name:
+          type: string
+          description: The name of the plugin that detected the vulnerability.
+        vulnerability_state:
+          type: string
+          description: "The current state of the reported plugin. Possible states include:\n - Active—The vulnerability is currently present on an asset.\n - New—The vulnerability is active on an asset, and was first detected within the last 14 days.\n - Fixed—A subsequent scan detected that the formerly-active vulnerability is no longer present on an asset.\n - Resurfaced—The vulnerability was previously marked as fixed on an asset, but a subsequent scan detected the vulnerability on the asset again."
+        vpr_score:
+          type: number
+          format: float
+          description: The Vulnerability Priority Rating (VPR) for the vulnerability. If a plugin is designed to detect multiple vulnerabilities, the VPR represents the highest value calculated for a vulnerability associated with the plugin. For more information, see <a href="https://docs.tenable.com/vulnerability-management/Content/Analysis/RiskMetrics.htm" target="_blank">Severity vs. VPR</a> in the <i>Tenable Vulnerability Management User Guide</i>.
+        severity:
+          type: integer
+          description: "The severity level of the vulnerability, as defined using the Common Vulnerability Scoring System (CVSS) base score. Possible values include: \n - 0—The vulnerability has a CVSS score of 0, which corresponds to the \"info\" severity level.\n - 1—The vulnerability has a CVSS score between 0.1 and 3.9, which corresponds to the \"low\" severity level.\n - 2—The vulnerability has a CVSS score between 4.0 and 6.9, which corresponds to the \"medium\" severity level.\n - 3—The vulnerability has a CVSS score between 7.0 and 9.9, which corresponds to the \"high\" severity level.\n - 4—The vulnerability has a CVSS score of 10.0, which corresponds to the \"critical\" severity level."
+          format: int32
+        accepted_count:
+          type: integer
+          description: The number of times that a user in the user interface created an accept rule for this vulnerability. For more information, see <a href="https://docs.tenable.com/vulnerability-management/Content/Settings/Recast/AboutRecastRules.htm" target="_blank">Recast Rules</a> in the <i>Tenable Vulnerability Management User Guide</i>.
+          format: int32
+        recasted_count:
+          type: integer
+          description: The number of times that a user in the user interface created a recast rule for this vulnerability. For more information, see <a href="https://docs.tenable.com/vulnerability-management/Content/Settings/Recast/AboutRecastRules.htm" target="_blank">Recast Rules</a> in the <i>Tenable Vulnerability Management User Guide</i>.
+          format: int32
+        counts by severity:
+          type: array
+          description: The number of times that a scan detected the vulnerability on an asset, grouped by severity level.
+          items:
+            type: object
+            properties:
+              count:
+                type: integer
+                description: The number of times that a scan detected the vulnerability on an asset while the vulnerability was assigned the specified severity level.
+                format: int32
+              value:
+                type: integer
+                description: The severity level of the vulnerabilities in the group.
+        cvss_base_score:
+          type: number
+          format: float
+          description: The vulnerability's base CVSS v2.0 score. A vulnerability's base score is determined when the vulnerability is initially discovered and does not change over time.
+        cvss3_base_score:
+          type: number
+          format: float
+          description: The vulnerability's base CVSS v3.0 score. A vulnerability's base score is determined when the vulnerability is initially discovered and does not change over time.
+    workbenches_workbenches-asset-details:
+      type: object
+      properties:
+        time_end:
+          type: string
+          description: The scan end timestamp, in ISO-8601 format, when the asset was first detected.
+        time_start:
+          type: string
+          description: The scan start timestamp, in ISO-8601 format, when the asset was first detected.
+        id:
+          type: string
+          description: The unique identifier of the asset.
+        uuid:
+          type: string
+          description: The unique identifier of the asset. Use this value as the unique key for the asset.
+        operating_system:
+          type: array
+          description: A list of operating systems associated with the asset.
+          items:
+            type: string
+        counts:
+          type: object
+          description: Counts of vulnerabilities on the asset, as well as counts of audit checks performed on the asset. For more information about this object, see [Common Asset Attributes](doc:common-asset-attributes).
+          properties: {}
+        has_agent:
+          type: boolean
+          description: A value specifying whether a Nessus agent scan detected the asset.
+        created_at:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time the asset record was created.
+        updated_at:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time the asset record was last updated.
+        first_seen:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time a scan first identified the asset.
+        last_seen:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time of the scan that most recently detected the asset.
+        last_authenticated_scan_date:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time the last credentialed scan was performed on the asset.
+        last_licensed_scan_date:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time of the last scan that identified the asset as licensed. An asset is considered licensed if a scan has returned results from a non-discovery plugin within the past 90 days.
+        last_scan_target:
+          type: string
+          description: The IPv4 address, IPv6 address, or FQDN that the scanner last used to evaluate the asset.
+        sources:
+          type: array
+          description: The sources of the scans that identified the asset.
+          items:
+            $ref: '#/components/schemas/workbenches_workbenches-source-object'
+        tags:
+          type: array
+          description: A list of tags assigned to the asset.
+          items:
+            $ref: '#/components/schemas/workbenches_workbenches-tag-object'
+        acr_score:
+          type: number
+          format: float
+          maximum: 10
+          minimum: 0
+          description: 'The Asset Criticality Rating (ACR) for the asset. Tenable assigns an ACR to each asset on your network to represent the asset''s relative risk as an integer from 1 to 10. For more information, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            This attribute is only present if you have a Lumin license.'
+        acr_drivers:
+          type: array
+          description: 'The key drivers that Tenable uses to calculate an asset''s Tenable-provided ACR. For more information, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            This attribute is only present if you have a Lumin license.'
+          items:
+            $ref: '#/components/schemas/workbenches_AcrDriversObject'
+        exposure_score:
+          type: number
+          format: float
+          maximum: 1000
+          minimum: 0
+          description: 'The Asset Exposure Score (AES) for the asset. For more information, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            This attribute is only present if you have a Lumin license.'
+        scan_frequency:
+          type: array
+          description: 'Information about how often scans were run against the asset during specified time intervals. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+          items:
+            $ref: '#/components/schemas/workbenches_AcrScanFrequencyObject'
+        ipv4:
+          type: array
+          description: A list of IPv4 addresses associated with the asset.
+          items:
+            type: string
+        ipv6:
+          type: array
+          description: A list of IPv6 addresses associated with the asset.
+          items:
+            type: string
+        fqdn:
+          type: array
+          description: A list of fully qualified domain names (FQDNs) associated with the asset.
+          items:
+            type: string
+        mac_address:
+          type: array
+          description: A list of MAC addresses associated with the asset.
+          items:
+            type: string
+        netbios_name:
+          type: array
+          description: A list of NetBIOS names associated with the asset.
+          items:
+            type: string
+        system_type:
+          type: array
+          description: A list of system types assigned to the asset as reported by Plugin ID 54615. Possible values include `router`, `general-purpose`, `scan-host`, and `embedded`.
+          items:
+            type: string
+          enum:
+          - router
+          - general-purpose
+          - scan-host
+          - embedded
+        tenable_uuid:
+          type: array
+          description: This identifier can originate from either an agent or a credentialed remote Nessus scan. If no agent is present on the asset, a UUID is assigned by Tenable Vulnerability Management during a credentialed scan when the [Create unique identifier on hosts scanned with credentials](https://docs.tenable.com/vulnerability-management/Content/Scans/AdvancedSettings.htm) option is enabled. Note that no UUID is set for an uncredentialed non-agent scans.
+          items:
+            type: string
+        hostname:
+          type: array
+          description: A list of host names associated with the asset.
+          items:
+            type: string
+        agent_name:
+          type: array
+          description: A list of Tenable agents that scanned and identified the asset.
+          items:
+            type: string
+        bios_uuid:
+          type: array
+          description: A list of BIOS UUIDs associated with the asset.
+          items:
+            type: string
+        aws_ec2_instance_id:
+          type: array
+          description: A list of Linux instance identifiers in Amazon Elastic Compute Cloud (Amazon EC2) associated with the asset. For more information, see the Amazon Elastic Compute Cloud documentation.
+          items:
+            type: string
+        aws_ec2_instance_ami_id:
+          type: array
+          description: The unique identifier of the Linux AMI image in Amazon Elastic Compute Cloud (Amazon EC2) associated with the asset. For more information, see the Amazon Elastic Compute Cloud documentation.
+          items:
+            type: string
+        aws_owner_id:
+          type: array
+          description: A list of canonical user identifier for the AWS account associated with the virtual machine instance. For example, `79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be`. For more information, see AWS Account Identifiers in the AWS documentation.
+          items:
+            type: string
+        aws_availability_zone:
+          type: array
+          description: A list of availability zones where Amazon Web Services hosts the virtual machine instance. For example, `us-east-1a`. Availability zones are subdivisions of AWS regions. For more information, see Regions and Availability Zones in the AWS documentation.
+          items:
+            type: string
+        aws_region:
+          type: array
+          description: A list of regions where AWS hosts the virtual machine instance. For example, `us-east-1`. For more information, see Regions and Availability Zones in the AWS documentation.
+          items:
+            type: string
+        aws_vpc_id:
+          type: array
+          description: A list of virtual public cloud identifiers that hosts the AWS virtual machine instance. For more information, see the Amazon Virtual Private Cloud User Guide.
+          items:
+            type: string
+        aws_ec2_instance_group_name:
+          type: array
+          description: A list of virtual machine instance groups in AWS.
+          items:
+            type: string
+        aws_ec2_instance_state_name:
+          type: array
+          description: A list of virtual machine instance states in AWS at the time of the scan. For more information on instance states, see the AWS documentation.
+          items:
+            type: string
+        aws_ec2_instance_type:
+          type: array
+          description: A list of instance types in AWS EC2.
+          items:
+            type: string
+        aws_subnet_id:
+          type: array
+          description: A list of unique identifiers of AWS subnets where the virtual machine instance was running at the time of the scan.
+          items:
+            type: string
+        aws_ec2_product_code:
+          type: array
+          description: A list of product codes associated with the AMI used to launch the virtual machine instance in AWS EC2.
+          items:
+            type: string
+        aws_ec2_name:
+          type: array
+          description: A list of virtual machine instance names in AWS EC2 associated with the asset.
+          items:
+            type: string
+        azure_vm_id:
+          type: array
+          description: A list of unique identifiers of Microsoft Azure virtual machine instances. For more information, see "Accessing and Using Azure VM Unique ID" in the Microsoft Azure documentation.
+          items:
+            type: string
+        azure_resource_id:
+          type: array
+          description: A list of unique identifiers of the resources in the Azure Resource Manager. For more information, see the Azure Resource Manager Documentation.
+          items:
+            type: string
+        gcp_project_id:
+          type: array
+          description: A list of customized names of projects to which the virtual machine instance belongs in Google Cloud Platform (GCP). For more information, see "Creating and Managing Projects" in the GCP documentation.
+          items:
+            type: string
+        gcp_zone:
+          type: array
+          description: A list of zones where the virtual machine instance runs in GCP. For more information, see "Regions and Zones" in the GCP documentation.
+          items:
+            type: string
+        gcp_instance_id:
+          type: array
+          description: A list of unique identifiers of virtual machine instances in GCP.
+          items:
+            type: string
+        ssh_fingerprint:
+          type: array
+          description: A list of SSH key fingerprints associated with the asset.
+          items:
+            type: string
+        mcafee_epo_guid:
+          type: array
+          description: A list of unique identifiers assigned to the asset in McAfee ePolicy Orchestrator (ePO). For more information, see the McAfee documentation.
+          items:
+            type: string
+        mcafee_epo_agent_guid:
+          type: array
+          description: A list of unique identifiers of the McAfee ePO agents that identified the asset. For more information, see the McAfee documentation.
+          items:
+            type: string
+        qualys_asset_id:
+          type: array
+          description: A list of unique identifiers for the asset in Qualys. For more information, see the Qualys documentation.
+          items:
+            type: string
+        qualys_host_id:
+          type: array
+          description: The Host ID of the asset in Qualys. For more information, see the Qualys documentation.
+          items:
+            type: string
+        servicenow_sysid:
+          type: array
+          description: The unique record identifier of the asset in ServiceNow. For more information, see the ServiceNow documentation.
+          items:
+            type: string
+        installed_software:
+          type: array
+          description: 'A list of Common Platform Enumeration (CPE) values that represent software applications a scan identified as present on an asset. This attribute supports the CPE 2.2 format. For more information, see the "Component Syntax" section of the [CPE Specification, Version 2.2](https://cpe.mitre.org/files/cpe-specification_2.2.pdf). For assets identified in Tenable scans, this attribute contains data only if a scan using [Nessus Plugin ID 45590](https://www.tenable.com/plugins/nessus/45590) has evaluated the asset.
+
+
+            **Note:** If no scan detects an application within 30 days of the scan that originally detected the application, Tenable Vulnerability Management considers the detection of that application expired. As a result, the next time a scan evaluates the asset, Tenable Vulnerability Management removes the expired application from the installed_software attribute. This activity is logged as a `remove` type of `attribute_change` update in the asset activity log.'
+          items:
+            type: string
+    workbenches_workbenches-asset-activity:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "Event type:\n - discovered—Asset created (for example, by a network scan or import).\n - seen—Asset observed by a network scan without any changes to its attributes.\n - tagging—Tag added to or removed from asset.\n - attribute_change—A scan identified new or changed attributes for the asset (for example, new software applications installed on the asset).\n - updated—Asset updated either manually by a user or automatically by a new scan."
+        timestamp:
+          type: integer
+          description: The timestamp of the event. The timestamp is reported in ISO 8601 format in UTC time.
+        scan_id:
+          type: string
+          description: The unique identifier of the scan that logged the event.
+        schedule_id:
+          type: string
+          description: The ID of the scheduled scan associated with the event.
+        source:
+          type: string
+          description: The entity that logged the event, for example, NESSUS_AGENT, NESSUS_AGENT, PVS, or WAS.
+        details:
+          type: object
+          properties:
+            assetId:
+              type: string
+              description: The unique identifier of the asset.
+            containerId:
+              type: string
+              description: The unique identifier of your Tenable Vulnerability Management instance.
+            createdAt:
+              type: integer
+              description: The timestamp of the asset creation. The timestamp is reported in ISO 8601 format in UTC time.
+            updatedAt:
+              type: integer
+              description: The timestamp of the asset update time. The timestamp is reported in ISO 8601 format in UTC time.
+            hasAgent:
+              type: boolean
+              description: Specifies whether the asset has an agent installed.
+            hasPluginResults:
+              type: boolean
+              description: Specifies whether or not any plugin results match this asset.
+            firstScanTime:
+              type: integer
+              description: The timestamp of the completion of the scan that discovered or observed the asset for the first time. The timestamp is reported in ISO 8601 format in UTC time.
+            lastScanTime:
+              type: integer
+              description: The timestamp of the completion of the last asset scan. The timestamp is reported in ISO 8601 format in UTC time.
+            lastAuthenticatedScanTime:
+              type: integer
+              description: The timestamp of the completion of the last authenticated scan of the asset. The timestamp is reported in ISO 8601 format in UTC time.
+            lastLicensedScanTime:
+              type: integer
+              description: The timestamp of the scan completion time when asset was last scanned and matched license v1 requirements. The timestamp is reported in ISO 8601 format in UTC time.
+            lastLicensedScanTimeV2:
+              type: integer
+              description: The timestamp of the scan completion time when asset was last scanned and matched license v2 requirements. The timestamp is reported in ISO 8601 format in UTC time.
+            sources:
+              description: An array of source objects representing the entity that logged the event.
+              type: array
+              items:
+                $ref: '#/components/schemas/workbenches_workbenches-activity-source'
+            terminatedAt:
+              type: integer
+              description: If terminated, the timestamp of asset termination. The timestamp is reported in ISO 8601 format in UTC time.
+            terminatedBy:
+              type: string
+              description: The unique identifier of the user that terminated the asset.
+            deletedAt:
+              type: integer
+              description: If deleted, the timestamp of asset deletion. The timestamp is reported in ISO 8601 format in UTC time.
+            deletedBy:
+              type: string
+              description: The unique identifier of the user that deleted the asset.
+            properties:
+              type: object
+              description: Additional asset attributes. For attribute definitions, see [Common Asset Attributes](doc:common-asset-attributes).
+              properties: {}
+        updates:
+          type: array
+          description: (attribute_change entries only) A list of updates to the asset's attributes.
+          items:
+            type: object
+            properties:
+              method:
+                type: string
+                description: "The update method. Possible values include: \n - add—A scan identified a new software application installed on the asset.\n - remove—Tenable Vulnerability Management identified the specified application as expired and removed it from the installed_software attribute of the asset. Tenable Vulnerability Management considers an application detection expired if no scan detects the application within 30 days of the scan that originally detected the application."
+              property:
+                type: string
+                description: The name of the updated attribute.
+              value:
+                type: string
+                description: The updated value of the attribute.
+    workbenches_Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Standard HTTP error name, or a brief message about the cause of the error.
+    workbenches_workbenches-plugin-outputs:
+      type: array
+      description: A list of vulnerabilities discovered by the plugin.
+      items:
+        type: object
+        properties:
+          plugin_output:
+            type: string
+            description: The plugin's output about the vulnerability. May be an empty string.
+          states:
+            type: array
+            description: Vulnerability state items.
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The current state of the reported plugin (Active, Fixed, New, etc.)
+                results:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      application_protocol:
+                        type: string
+                        description: The application protocol where this vulnerability was found.
+                      port:
+                        type: integer
+                        description: The port number where this vulnerability was found.
+                      transport_protocol:
+                        type: string
+                        description: The transportation protocol (TCP or UDP) where this vulnerability was found.
+                      assets:
+                        type: array
+                        description: A list of assets where this output was found.
+                        items:
+                          type: object
+                          properties:
+                            hostname:
+                              type: string
+                              description: The host name of the asset.
+                            id:
+                              type: string
+                              description: The ID of the asset.
+                            uuid:
+                              type: string
+                              description: The unique identifier of the asset. Use this value as the unique key for the asset.
+                            netbios_name:
+                              type: string
+                              description: The NetBios name of the asset.
+                            fqdn:
+                              type: string
+                              description: The FQDN of the asset.
+                            ipv4:
+                              type: string
+                              description: The IPV4 of the asset.
+                            first_seen:
+                              type: string
+                              format: date-time
+                              description: Indicates when the asset was discovered by a scan.
+                            last_seen:
+                              type: string
+                              format: date-time
+                              description: Indicates when the asset was last observed by a scan.
+                      severity:
+                        type: integer
+                        description: Integer [0-4] indicating how severe the vulnerability is, where 0 is info only.
+    workbenches_AcrScanFrequencyObject:
+      type: object
+      description: The interval, frequency, and licensing information for the scans of the asset.
+      properties:
+        interval:
+          type: integer
+          description: The number of days in the interval during which Tenable checks for scans involving the asset.
+        frequency:
+          type: integer
+          description: The number of times a scan was run against the asset during the specified interval.
+        licensed:
+          type: boolean
+          description: Indicates whether the asset was licensed at the time of the scans.
+    workbenches_workbenches-asset:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the asset.
+        has_agent:
+          type: boolean
+          description: A value specifying whether a Nessus agent scan detected the asset (`true`).
+        last_seen:
+          type: string
+          description: The ISO timestamp of the scan that most recently detected the asset.
+        last_scan_target:
+          type: string
+          description: The IPv4 address, IPv6 address, or FQDN that the scanner last used to evaluate the asset.
+        sources:
+          type: array
+          description: A list of sources for the asset record.
+          items:
+            $ref: '#/components/schemas/workbenches_workbenches-source-object'
+        acr_score:
+          type: integer
+          description: 'The Asset Criticality Rating (ACR) assigned to the asset. Tenable assigns an ACR to each asset on your network to represent the asset''s relative risk as an integer from 1 to 10. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+        acr_drivers:
+          type: array
+          description: "The key drivers Tenable used to calculate the asset's Tenable-provided Asset Criticality Rating (ACR). For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*. \n\nNote: This attribute is available only with a Tenable Lumin license."
+          items:
+            $ref: '#/components/schemas/workbenches_AcrDriversObject'
+        exposure_score:
+          type: integer
+          description: 'The Asset Exposure Score (AES) assigned to the asset. Tenable assigns an AES to each asset on your network to represent the asset''s relative exposure as an integer between 0 and 1000. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+        scan_frequency:
+          type: array
+          description: 'Information about how often scans were run against the asset during specified time intervals. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+          items:
+            $ref: '#/components/schemas/workbenches_AcrScanFrequencyObject'
+        ipv4:
+          description: A list of IPv4 addresses associated with the asset.
+          type: array
+          items:
+            type: string
+        ipv6:
+          description: A list of IPv6 addresses associated with the asset.
+          type: array
+          items:
+            type: string
+        fqdn:
+          description: A list of fully qualified domain names (FQDNs) associated with the asset.
+          type: array
+          items:
+            type: string
+        netbios_name:
+          type: array
+          description: The NetBIOS name for the asset.
+          items:
+            type: string
+        operating_system:
+          type: array
+          description: A list of operating systems associated with the asset.
+          items:
+            type: string
+        agent_name:
+          type: array
+          description: A list of Tenable agents that scanned and identified the asset.
+          items:
+            type: string
+        aws_ec2_name:
+          type: array
+          description: A list of virtual machine instance names in AWS EC2 associated with the asset.
+          items:
+            type: string
+        mac_address:
+          type: array
+          description: A list of MAC addresses associated with the asset.
+          items:
+            type: string
+        bigfix_asset_id:
+          type: array
+          items:
+            type: string
+          description: The unique identifier of the asset in HCL BigFix. For more information, see the HCL BigFix documentation.
+    workbenches_workbenches-tag-object:
+      type: object
+      properties:
+        tag_uuid:
+          type: string
+          description: The unique identifier of the tag.
+        tag_key:
+          type: string
+          description: The tag key, representing the category portion of a category:value tag pair.
+        tag_value:
+          type: string
+          description: The tag value, representing the value portion of a category:value tag pair.
+        added_by:
+          type: string
+          description: The unique identifier of the user who assigned the tag to the asset.
+        added_at:
+          type: string
+          description: A timestamp in ISO 8601 format indicating the date and time the tag was assigned to the asset.
+        source:
+          type: string
+          description: "Indicates the tag type. Tag types include:\n - static—A user manually applied the tag to an asset. You can use the Tenable Vulnerability Management API to create and assign static tags to assets.\n - dynamic—Tenable Vulnerability Management automatically applies the tag based on asset attribute rules. \n\nFor more information, see [Apply Dynamic Tags](doc:apply-dynamic-tags)."
+    workbenches_workbenches-vulnerability-info:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+          description: A count of the vulnerability occurrences.
+        vuln_count:
+          type: integer
+          format: int32
+          description: ''
+        description:
+          type: string
+          description: The description of the vulnerability.
+        synopsis:
+          type: string
+          description: A brief summary of the vulnerability.
+        solution:
+          type: string
+          description: Information on how to fix the vulnerability.
+        discovery:
+          type: object
+          properties:
+            seen_first:
+              type: string
+              description: The Unix timestamp of the scan that first detected the vulnerability on an asset.
+            seen_last:
+              type: string
+              description: The Unix timestamp of the scan that most recently detected the vulnerability on an asset.
+        severity:
+          type: integer
+          description: The severity level of the vulnerability.
+        plugin_details:
+          type: object
+          properties:
+            family:
+              type: string
+              description: The plugin family.
+            modification_date:
+              type: string
+              description: The ISO timestamp when Tenable last updated the plugin definition.
+            name:
+              type: string
+              description: The name of the plugin.
+            publication_date:
+              type: string
+              description: The ISO timestamp when Tenable first published the plugin definition.
+            type:
+              type: string
+              description: The type of scan that uses the plugin, either a network scan (`remote`) or a credentialed scan (`local`).
+            version:
+              type: string
+              description: The plugin version.
+            severity:
+              type: integer
+              format: int32
+              description: The severity level of the plugin.
+        reference_information:
+          type: array
+          description: ''
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "The source of the reference information about the vulnerability. Possible values include:\n - bid—Bugtraq (Symantec Connect)\n - cert—CERT/CC Vulnerability Notes Database\n - cve—NIST National Vulnerability Database (NVD)\n - edb-id—The Exploit Database\n - iava—information assurance vulnerability alert\n - osvdb—Open Sourced Vulnerability Database"
+              url:
+                type: string
+                description: The URL of the source site, if available.
+              values:
+                type: array
+                description: The unique identifier(s) for the vulnerability at the source.
+                items:
+                  type: string
+        risk_information:
+          type: object
+          properties:
+            risk_factor:
+              type: string
+              description: 'The risk factor of the vulnerability associated with the plugin. The risk factor is determined based on the calculation of the CVSS score, possible values are: <ul><li>`Low`—The vulnerability has a CVSS score between 0.1 and 3.9</li><li>`Medium`—The vulnerability has a CVSS score between 4.0 and 6.9</li><li>`High`—The vulnerability has a CVSS score between 7.0 and 9.9</li><li>`Critical`—The vulnerability has a CVSS score of 10.0</li></ul>.'
+            cvss_vector:
+              type: string
+              description: The raw CVSSv2 metrics for the vulnerability. For more information, see CVSSv2 documentation.
+            cvss_base_score:
+              type: string
+              description: The CVSSv2 base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
+            cvss_temporal_vector:
+              type: string
+              description: The raw CVSSv2 temporal metrics for the vulnerability.
+            cvss_temporal_score:
+              type: string
+              description: The CVSSv2 temporal score (characteristics of a vulnerability that change over time but not among user environments).
+            cvss3_vector:
+              type: string
+              description: The raw CVSSv3 metrics for the vulnerability. For more information, see CVSSv3 documentation.
+            cvss3_base_score:
+              type: string
+              description: The CVSSv3 base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
+            cvss3_temporal_vector:
+              type: string
+              description: CVSSv3 temporal metrics for the vulnerability.
+            cvss3_temporal_score:
+              type: string
+              description: The CVSSv3 temporal score (characteristics of a vulnerability that change over time but not among user environments).
+            stig_severity:
+              type: string
+              description: Security Technical Implementation Guide (STIG) severity code for the vulnerability.
+        see_also:
+          type: array
+          description: Links to external websites that contain helpful information about the vulnerability.
+          items:
+            type: string
+        vulnerability_information:
+          type: object
+          properties:
+            vulnerability_publication_date:
+              type: string
+              description: The ISO timestamp for the first publication date of the plugin.
+            exploited_by_malware:
+              type: boolean
+              description: The vulnerability discovered by this plugin is known to be exploited by malware.
+            patch_publication_date:
+              type: string
+              description: The ISO timestamp for date on which the vendor published a patch for the vulnerability.
+            exploit_available:
+              type: boolean
+              description: A value specifying whether a public exploit exists for the vulnerability.
+            exploitability_ease:
+              type: string
+              description: Description of how easy it is to exploit the issue.
+            asset_inventory:
+              type: string
+              description: ''
+            default_account:
+              type: string
+              description: ''
+            exploited_by_nessus:
+              type: boolean
+              description: A value specifying whether Nessus exploited the vulnerability during the process of identification.
+            in_the_news:
+              type: boolean
+              description: A value specifying whether this plugin has received media attention (for example, ShellShock, Meltdown).
+            malware:
+              type: string
+              description: ''
+            unsupported_by_vendor:
+              type: boolean
+              description: Software found by this plugin is unsupported by the software's vendor (for example, Windows 95 or Firefox 3).
+            cpe:
+              type: string
+              description: The Common Platform Enumeration (CPE) number for the plugin.
+            exploit_frameworks:
+              type: array
+              description: A list of exploit frameworks that have identified the vulnerability.
+              items:
+                $ref: '#/components/schemas/workbenches_exploit_framework'
+        vpr:
+          type: object
+          description: Information about the Vulnerability Priority Rating (VPR) for the vulnerability.
+          properties:
+            score:
+              type: number
+              format: float
+              description: The Vulnerability Priority Rating (VPR) for the vulnerability. If a plugin is designed to detect multiple vulnerabilities, the VPR represents the highest value calculated for a vulnerability associated with the plugin. For more information, see <a href="https://docs.tenable.com/vulnerability-management/Content/Analysis/RiskMetrics.htm" target="_blank">Severity vs. VPR</a> in the <i>Tenable Vulnerability Management User Guide</i>.
+            drivers:
+              type: object
+              description: The key drivers Tenable uses to calculate a vulnerability's VPR. For more information, see <[Vulnerability Priority Rating Drivers](doc:vpr-drivers-tio).
+              properties: {}
+            updated:
+              type: string
+              description: The ISO timestamp when Tenable Vulnerability Management last imported the VPR for this vulnerability. Tenable Vulnerability Management imports a VPR value the first time you scan a vulnerability on your network. Then, Tenable Vulnerability Management automatically re-imports new and updated VPR values daily.
+    workbenches_workbenches-assets-with-vulns:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            description: The unique identifier of the asset.
+          severities:
+            type: array
+            description: A count of vulnerabilities by severity.
+            items:
+              $ref: '#/components/schemas/workbenches_workbenches-severity-object'
+          total:
+            type: integer
+            description: The total number of vulnerabilities detected on the asset.
+          fqdn:
+            description: A list of fully qualified domain names (FQDNs) associated with the asset.
+            type: array
+            items:
+              type: string
+          ipv4:
+            description: A list of IPv4 addresses associated with the asset.
+            type: array
+            items:
+              type: string
+          ipv6:
+            description: A list of IPv6 addresses associated with the asset.
+            type: array
+            items:
+              type: string
+          last_seen:
+            type: string
+            description: The ISO timestamp of the scan that most recently detected the asset.
+          netbios_name:
+            type: array
+            description: A list of NetBIOS names associated with the asset.
+            items:
+              type: string
+          agent_name:
+            type: array
+            description: A list of Tenable agents that scanned and identified the asset.
+            items:
+              type: string
+    workbenches_workbenches-activity-source:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "The name of the entity that reported the asset details. Sources can include sensors, connectors, and API imports. Source names can be customized by your organization (for example, you specify a name when you import asset records). If your organization does not customize source names, system-generated names include:\n - AWS—You obtained the asset data from an Amazon Web Services connector.\n - NESSUS_AGENT—You obtained the asset data obtained from a Nessus agent scan.\n - PVS—You obtained the asset data from a Nessus Network Monitor (NNM) scan.\n - NESSUS_SCAN—You obtained the asset data from a Nessus scan.\n - WAS—You obtained the asset data from a  Tenable Web App Scanning scan."
+        firstSeen:
+          type: string
+          description: The ISO timestamp when the source first reported the asset.
+        lastSeen:
+          type: string
+          description: The ISO timestamp when the source last reported the asset.
+    workbenches_workbenches-severity-object:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The number of vulnerabilities with the specified severity.
+        level:
+          type: integer
+          description: "The code for the severity. Possible values include: \n - 0—The vulnerability has a CVSS score of 0, which corresponds to the \"info\" severity level.\n - 1—The vulnerability has a CVSS score between 0.1 and 3.9, which corresponds to the \"low\" severity level.\n - 2—The vulnerability has a CVSS score between 4.0 and 6.9, which corresponds to the \"medium\" severity level.\n - 3—The vulnerability has a CVSS score between 7.0 and 9.9, which corresponds to the \"high\" severity level.\n - 4—The vulnerability has a CVSS score of 10.0, which corresponds to the \"critical\" severity level."
+        name:
+          type: string
+          description: The severity of the vulnerability as defined using the Common Vulnerability Scoring System (CVSS) base score. Possible values include `info` (CVSS score of 0), `low` (CVSS score between 0.1 and 3.9), `medium` (CVSS score between 4.0 and 6.9), `high` (CVSS score between 7.0 and 9.9), and `critical` (CVSS score of 10.0).
+    workbenches_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    workbenches_workbenches-source-object:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "The name of the entity that reported the asset details. Sources can include sensors, connectors, and API imports. Source names can be customized by your organization (for example, you specify a name when you import asset records). If your organization does not customize source names, system-generated names include:\n - AWS—You obtained the asset data from an Amazon Web Services connector.\n - NESSUS_AGENT—You obtained the asset data obtained from a Nessus agent scan.\n - PVS—You obtained the asset data from a Nessus Network Monitor (NNM) scan.\n - NESSUS_SCAN—You obtained the asset data from a Nessus scan.\n - WAS—You obtained the asset data from a  Tenable Web App Scanning scan."
+        first_seen:
+          type: string
+          description: The ISO timestamp when the source first reported the asset.
+        last_seen:
+          type: string
+          description: The ISO timestamp when the source last reported the asset.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

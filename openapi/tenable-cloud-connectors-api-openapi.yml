@@ -1,0 +1,2383 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Cloud Connectors API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Cloud Connectors
+  x-displayName: Cloud Connectors
+paths:
+  /settings/connectors:
+    post:
+      summary: Create connector
+      description: 'Creates a Tenable Vulnerability Management cloud connector.
+
+
+        **Note:** For AWS cloud connectors, you can get the available AWS cloudtrails for your account via the [POST /settings/connectors/aws/cloudtrails](#io-connectors-get-aws-cloudtrails) endpoint.
+
+
+        **Note:** Frictionless Assessment has reached the End-of-Provisioning phase of its product lifecycle. For more information, see [Frictionless Assessment End-of-Provisioning](https://developer.tenable.com/changelog/tenableio-frictionless-assessment-end-of-provisioning). <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+      operationId: io-connectors-create
+      tags:
+      - Cloud Connectors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cloud_Connectors_Request-ConnectorCreate'
+      responses:
+        '200':
+          description: Returned if the cloud connector was created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  connector:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cloud_Connectors_Response-Connector'
+              examples:
+                AWS (Keyed):
+                  value:
+                    connector:
+                      type: aws
+                      human_type: AWS
+                      data_type: assets
+                      name: AWS Connector - Keyed
+                      status: Scheduled
+                      status_message: ''
+                      schedule:
+                        units: days
+                        value: 1
+                      schedule_full:
+                        units: days
+                        value: 1
+                      date_created: '2019-12-31T20:50:23.635Z'
+                      id: 6d75a992-0727-4d84-aa5f-ebae0185868b
+                      container_uuid: 154a05bd-3f27-495a-a001-a659c24eb1a4
+                      expired: false
+                      incremental_mode: false
+                      params:
+                        access_key: AJIAJLRNVRLZRDZLVBXR
+                        trails:
+                        - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                          name: ExampleAWSTrail
+                          region:
+                            name: All
+                            friendly_name: All
+                          availability: ''
+                        service: aws
+                      network_uuid: 2825e3c9-16be-41f4-8b83-dfe534d10627
+                AWS (Keyless) (Discovery Only):
+                  value:
+                    connector:
+                      network_uuid: 00000000-0000-0000-0000-000000000000
+                      name: AWS Keyless Discovery Connector
+                      type: aws_keyless
+                      schedule:
+                        units: minutes
+                        value: 30
+                      params:
+                        sub_accounts:
+                        - account_id: 012391564378
+                          trails: []
+                AWS with Frictionless Assessment:
+                  value:
+                    connector:
+                      type: aws_fa
+                      human_type: AWS Frictionless Assessment
+                      data_type: assets
+                      name: TEST AWS_FA1
+                      status: Saved
+                      status_message: FA Enabled
+                      date_created: '2022-05-31T17:13:59.026Z'
+                      id: 1fb9f3da-54a2-493f-9039-bca8d3bf3654
+                      container_uuid: ac737cab-114a-4cc1-9f14-07319a20e5a1
+                      expired: false
+                      incremental_mode: false
+                      params:
+                        service: aws_fa
+                        tag:
+                          key: TEST
+                          value: EXAMPLE
+                        account:
+                          account_id: '571474113282'
+                          role_arn: arn:aws:iam::571474113282:role/tenableio-connector_dev
+                      network_uuid: 00000000-0000-0000-0000-000000000000
+                Azure:
+                  value:
+                    connector:
+                      type: azure
+                      human_type: Azure
+                      data_type: assets
+                      name: Azure Connector
+                      status: Scheduled
+                      status_message: ''
+                      schedule:
+                        units: days
+                        value: 1
+                        is_empty: false
+                      date_created: '2021-08-06T21:27:30.784Z'
+                      id: 1b372203-f5fb-4ee9-8940-680b750c0378
+                      container_uuid: 77218c8a-0035-4074-90fe-81da235045d4
+                      expired: false
+                      incremental_mode: false
+                      params:
+                        application_id: appid
+                        tenant_id: tenid
+                        import_config: false
+                        subscription_id: []
+                        service: azure
+                      network_uuid: 00000000-0000-0000-0000-000000000000
+                Azure with Frictionless Assessment:
+                  value:
+                    connector:
+                      type: azure_fa
+                      human_type: Azure Frictionless Assessment
+                      data_type: assets
+                      name: Azure Frictionless Assessment Connector
+                      status: Saved
+                      status_message: ''
+                      date_created: '2021-11-22T05:53:47.131Z'
+                      id: e8ea5b08-e50c-4469-80df-32c9639bec32
+                      container_uuid: af90392b-646e-4a45-ba07-5670efee1b08
+                      expired: false
+                      incremental_mode: false
+                      params:
+                        service: azure_fa
+                        targets:
+                        - resource_group: MyResourceGroup
+                          tag_key: MyTagKey
+                          tag_value: MyTagValue
+                        scan_all: false
+                      network_uuid: 00000000-0000-0000-0000-000000000000
+                GCP (Keyed):
+                  value:
+                    connector:
+                      type: gcp
+                      human_type: GCP
+                      data_type: assets
+                      name: GCP Connector
+                      status: Scheduled
+                      status_message: ''
+                      schedule:
+                        units: minutes
+                        value: 30
+                        is_empty: false
+                      date_created: '2021-08-24T13:20:44.826Z'
+                      id: 1deacf47-eabe-4fec-9fa4-6c13a88203a9
+                      container_uuid: 4a80392b-646e-4a45-ba07-5670efee1bf9
+                      expired: false
+                      incremental_mode: false
+                      params:
+                        service: gcp
+                      network_uuid: 00000000-0000-0000-0000-000000000000
+                GCP Workload Identity Federation:
+                  value:
+                    connector:
+                      type: gcp_keyless
+                      human_type: GCP
+                      data_type: assets
+                      name: GCP Workload Identity Federation Connector
+                      status: Scheduled
+                      status_message: ''
+                      schedule:
+                        units: days
+                        value: 1
+                        is_empty: false
+                      date_created: '2025-01-13T17:44:05.752Z'
+                      id: fdb15b71-231d-4b5d-a50f-460321659854
+                      container_uuid: a236c1a2-4aa2-46ca-9435-289a19e6df2d
+                      expired: false
+                      incremental_mode: false
+                      params:
+                        service: gcp_keyless
+                      network_uuid: 00000000-0000-0000-0000-000000000000
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create a cloud connector.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Cloud_Connectors_cloud: []
+    get:
+      summary: List connectors
+      description: Returns a list of connectors.<p>For information about connector error codes, see [Connectors](doc:io-connectors).</p><div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-connectors-list
+      tags:
+      - Cloud Connectors
+      parameters:
+      - description: The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `1000`.
+        required: false
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`.
+        required: false
+        name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: 'The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.
+
+
+          If you specify multiple fields, the fields must be separated by commas. For example, `name:desc,date_created:asc` would first sort results by the `name` field in descending order and then by the `date_created` field in ascending order.'
+        required: false
+        name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the list of cloud connectors was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  connectors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cloud_Connectors_Response-Connector'
+                  pagination:
+                    $ref: '#/components/schemas/Cloud_Connectors_Response-Pagination'
+              examples:
+                response:
+                  value:
+                    connectors:
+                    - type: aws_keyless
+                      human_type: AWS
+                      data_type: assets
+                      name: AWS FA Connector
+                      is_fa: true
+                      status: Scheduled
+                      status_message: Import completed successfully
+                      schedule:
+                        units: minutes
+                        value: 30
+                        is_empty: false
+                      date_created: '2021-07-22T14:31:15.616Z'
+                      date_modified: '2021-07-22T14:31:27.098Z'
+                      id: 56d31cbe-efab-47d6-8158-749192629954
+                      container_uuid: 9164fd5e-5013-4fa2-bfce-557c54f7a7e4
+                      expired: false
+                      incremental_mode: true
+                      last_sync_time: '2021-07-22T14:31:27.098Z'
+                      last_run: '2021-07-22T14:31:39.809Z'
+                      params:
+                        sub_accounts:
+                        - account_id: 012345678901
+                          trails: []
+                          role_arn: arn:aws:iam::012345678901:role/tenableio-connector_example
+                          external_id: 5147401f-d006-4a2b-9ded-a40c156be579
+                          incremental_mode: false
+                        import_config: false
+                        auto_discovery: true
+                        tags:
+                        - key: Tenable
+                          value: FA
+                        service: aws_keyless
+                      network_uuid: 00000000-0000-0000-0000-000000000000
+                      last_seen_updated: '2021-07-22T14:31:39.801Z'
+                    - type: aws_keyless
+                      human_type: AWS
+                      data_type: assets
+                      name: AWS Discovery Connector
+                      status: Scheduled
+                      status_message: Import completed successfully
+                      schedule:
+                        units: minutes
+                        value: 30
+                        is_empty: false
+                      date_created: '2021-07-22T14:31:14.958Z'
+                      date_modified: '2021-07-22T14:31:18.109Z'
+                      id: a66a1c02-8580-44fd-871b-b7aed14f784e
+                      container_uuid: 38a5c3f1-a0e7-47a7-8a5e-36f586d186ee
+                      expired: false
+                      incremental_mode: true
+                      last_sync_time: '2021-07-22T14:31:18.109Z'
+                      last_run: '2021-07-22T14:31:31.308Z'
+                      params:
+                        sub_accounts:
+                        - account_id: 012345678901
+                          trails: []
+                          role_arn: arn:aws:iam::012345678901:role/tenableio-connector_example
+                          external_id: 6253e895-ac86-4024-9fca-952b17cb327a
+                          incremental_mode: false
+                        import_config: false
+                        auto_discovery: true
+                        service: aws_keyless
+                      network_uuid: 00000000-0000-0000-0000-000000000000
+                      last_seen_updated: '2021-07-22T14:31:31.296Z'
+                    - type: aws
+                      human_type: AWS
+                      data_type: assets
+                      name: AWS Connector - Keyed
+                      status: Saved
+                      status_message: ''
+                      date_created: '2019-12-31T20:18:59.509Z'
+                      id: a66f2220-2c81-4970-b576-6f0cc6f976be
+                      container_uuid: 154a05bd-3f27-495a-a001-a659c24eb1a4
+                      expired: false
+                      incremental_mode: false
+                      params:
+                        access_key: AJIAJLRNVRLZRDZLVBXR
+                        trails:
+                        - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                          name: ExampleAWSTrail
+                          region:
+                            name: All
+                            friendly_name: All
+                          availability: success
+                        sub_accounts: []
+                        service: aws
+                      network_uuid: 2825e3c9-16be-41f4-8b83-dfe534d10627
+                    - type: azure
+                      human_type: Azure
+                      data_type: assets
+                      name: Azure Connector
+                      status: Completed
+                      status_message: Import completed successfully
+                      date_created: '2019-11-31T19:56:23.713Z'
+                      date_modified: '2019-12-31T20:09:01.241Z'
+                      id: 0e51d315-30dc-4506-8fd6-7ccfd47b4bf3
+                      container_uuid: 154a05bd-3f27-495a-a001-a659c24eb1a4
+                      expired: false
+                      incremental_mode: false
+                      last_sync_time: '2019-12-31T20:09:01.241Z'
+                      params:
+                        status:
+                          439c6328-7d1d-41f0-bd11-66807c79e991:
+                            last_event_seen: '2019-12-31T20:08:59.190Z'
+                            release_timestamp: '2019-12-31T20:09:00.315Z'
+                            message: Import completed successfully
+                            state: SUCCESS
+                          ac210f05-7ad5-4036-b916-d9528bb6a41f:
+                            last_event_seen: '2019-12-31T20:09:01.241Z'
+                            release_timestamp: '2019-12-31T20:09:01.504Z'
+                            message: Import completed successfully
+                            state: SUCCESS
+                        application_id: 70d0c4fb-84c8-4853-a936-3805f485ed72
+                        tenant_id: edcf3500-7f5b-432d-848e-af299a529d51
+                        subscription_id: []
+                        service: azure
+                      network_uuid: 00000000-0000-0000-0000-000000000000
+                    - type: azure_fa
+                      human_type: Azure Frictionless Assessment
+                      data_type: assets
+                      name: Azure FA
+                      status: Saved
+                      status_message: ''
+                      date_created: '2024-12-02T05:58:18.819Z'
+                      id: a7c80be3-de3f-45de-aa0c-4d9714233390
+                      container_uuid: d036c1a2-4aa2-46ca-9435-289a19e6df2d
+                      expired: false
+                      incremental_mode: false
+                      params:
+                        service: azure_fa
+                        targets: []
+                        scan_all: true
+                      network_uuid: 00000000-0000-0000-0000-000000000000
+                    - type: aws_keyless
+                      human_type: AWS
+                      data_type: assets
+                      name: AWS Keyless Connector
+                      status: Saved
+                      status_message: ''
+                      date_created: '2019-12-31T14:18:30.350Z'
+                      id: 4e11d8af-de87-4fe8-a51a-e2b6ee420ce4
+                      container_uuid: 154a05bd-3f27-495a-a001-a659c24eb1a4
+                      expired: false
+                      incremental_mode: false
+                      params:
+                        sub_accounts:
+                        - role_arn: arn:aws:iam::795163652895:role/tenableio-connector
+                          external_id: 154a05bd-3f27-495a-a001-a659c24eb1a4
+                          trails:
+                          - arn: arn:aws:cloudtrail:us-east-1:795163652895:trail/ExampleAWSTrail
+                            name: ExampleAWSTrail
+                            region:
+                              name: All
+                              friendly_name: All
+                            availability: success
+                          incremental_mode: false
+                          account_id: '795163652895'
+                        service: aws
+                      network_uuid: 89578c5d-931a-4bae-bcd6-421cacfad3b8
+                    - type: gcp_keyless
+                      human_type: GCP
+                      data_type: assets
+                      name: GCP Workload Identity Federation Connector
+                      status: Scheduled
+                      status_message: Import completed successfully
+                      schedule:
+                        units: minutes
+                        value: 30
+                        is_empty: false
+                      date_created: '2024-12-20T15:32:03.720Z'
+                      date_modified: '2025-01-23T22:17:01.573Z'
+                      id: afc651ca-1585-495b-9c89-b38140cfc7dd
+                      container_uuid: b036c1a2-4aa2-46ca-9435-289a19e6df2d
+                      expired: false
+                      incremental_mode: true
+                      last_sync_time: '2025-01-23T22:17:01.573Z'
+                      last_run: '2025-01-23T22:17:01.998Z'
+                      params:
+                        status:
+                          project-1234:
+                            last_event_seen: '2025-01-23T22:17:01.573Z'
+                            release_timestamp: '2025-01-23T22:20:35.201Z'
+                            message: Import completed successfully
+                            state: SUCCESS
+                        service: gcp_keyless
+                      network_uuid: 00000000-0000-0000-0000-000000000000
+                      last_seen_updated: '2025-01-23T00:08:17.715Z'
+                    pagination:
+                      total: 5
+                      offset: 0
+                      limit: 1000
+                      sort:
+                      - name: date_created
+                        order: desc
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the list of cloud connectors.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Cloud_Connectors_cloud: []
+  /settings/connectors/{connector_id}:
+    get:
+      summary: Get connector details
+      description: Returns the details for the specified connector.<p>For information about connector error codes, see [Connectors](doc:io-connectors).</p><div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-connectors-details
+      tags:
+      - Cloud Connectors
+      parameters:
+      - description: The UUID of the connector to return details for.
+        required: true
+        name: connector_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the details for the specified cloud connector were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  connector:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cloud_Connectors_Response-Connector'
+              examples:
+                AWS - Keyed:
+                  value:
+                    connector:
+                      type: aws
+                      human_type: AWS
+                      data_type: assets
+                      name: AWS - Keyed
+                      status: Scheduled
+                      status_message: ''
+                      schedule:
+                        units: days
+                        value: 1
+                      schedule_full:
+                        units: days
+                        value: 1
+                      date_created: '2019-12-31T20:50:23.635Z'
+                      id: 6d75a992-0727-4d84-aa5f-ebae0185868b
+                      container_uuid: 154a05bd-3f27-495a-a001-a659c24eb1a4
+                      expired: false
+                      incremental_mode: false
+                      params:
+                        access_key: AJIAJLRNVRLZRDZLVBXR
+                        trails:
+                        - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                          name: ExampleAWSTrail
+                          region:
+                            name: All
+                            friendly_name: All
+                          availability: ''
+                        service: aws
+                      network_uuid: 89578c5d-931a-4bae-bcd6-421cacfad3b8
+                AWS - Keyless (Discovery with FA):
+                  value:
+                    connector:
+                      type: aws_keyless
+                      human_type: AWS
+                      data_type: assets
+                      name: AWS Keyless with Frictionless Assessment Connector
+                      is_fa: true
+                      status: Scheduled
+                      status_message: Import completed successfully
+                      schedule:
+                        units: minutes
+                        value: 30
+                        is_empty: false
+                      date_created: '2021-07-22T14:31:15.616Z'
+                      date_modified: '2021-07-22T14:31:27.098Z'
+                      id: b3397cb2-6650-432b-ae1c-fc64ec7ef6ba
+                      container_uuid: 7930d8cc-27c0-43cc-abdb-b846e2b13414
+                      expired: false
+                      incremental_mode: true
+                      last_sync_time: '2021-07-22T14:31:27.098Z'
+                      last_run: '2021-07-22T14:31:39.809Z'
+                      params:
+                        sub_accounts:
+                        - account_id: 012345678910
+                          trails: []
+                          role_arn: arn:aws:iam::012345678910:role/tenableio-connector_example
+                          external_id: 7930d8cc-27c0-43cc-abdb-b846e2b13414
+                          incremental_mode: false
+                        import_config: false
+                        auto_discovery: true
+                        tags:
+                        - key: Tenable
+                          value: FA
+                        service: aws_keyless
+                      network_uuid: 00000000-0000-0000-0000-000000000000
+                      last_seen_updated: '2021-07-22T14:31:39.801Z'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view cloud connector details.
+        '404':
+          description: Returned if the specified connector doesn't exist.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Could not find connector with UUID a2e7e8a6-a818-4e15-82f9-a945c1d3c8d4 in container with UUID b436c1a2-4aa2-46ca-9435-289a19e6df2d
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Cloud_Connectors_cloud: []
+    put:
+      summary: Update connector
+      description: 'Updates the specified connector. You can change the connector name, associated service accounts, and schedule. You cannot change the connector type for an existing connector.
+
+
+        **Note:** Frictionless Assessment has reached the End-of-Provisioning phase of its product lifecycle. For more information, see [Frictionless Assessment End-of-Provisioning](https://developer.tenable.com/changelog/tenableio-frictionless-assessment-end-of-provisioning). <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+      operationId: io-connectors-update
+      tags:
+      - Cloud Connectors
+      parameters:
+      - description: The UUID of the connector to update.
+        required: true
+        name: connector_id
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cloud_Connectors_Request-UpdateConnector'
+      responses:
+        '200':
+          description: Returned if the specified cloud connector was updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The UUID of the connector that was updated.
+              examples:
+                response:
+                  value:
+                    id: ad93ebf4-7e53-4972-bb20-90a5a46d86bb
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to update cloud connectors.
+        '404':
+          description: Returned if the specified connector doesn't exist.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Attempting to update a connector that does not exist in the specified container
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Cloud_Connectors_cloud: []
+    delete:
+      summary: Delete connector
+      description: Deletes the specified connector.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-connectors-delete
+      tags:
+      - Cloud Connectors
+      parameters:
+      - description: The UUID of the connector to delete.
+        required: true
+        name: connector_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the specified cloud connector was deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to delete cloud connectors.
+        '404':
+          description: Returned if the specified connector doesn't exist.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Could not find connector with UUID a2e7e8a6-a818-4e15-82f9-a945c1d3c8d4 in container with UUID b436c1a2-4aa2-46ca-9435-289a19e6df2d
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Cloud_Connectors_cloud: []
+  /settings/connectors/azure-fa/{connector_id}/arm-template:
+    get:
+      summary: Download ARM Template
+      description: Returns an Azure Resource Manager (ARM) template for Microsoft Azure Frictionless Assessment connectors.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-connectors-get-arm-template
+      tags:
+      - Cloud Connectors
+      parameters:
+      - description: The UUID of the connector to download an ARM template for.
+        required: true
+        name: connector_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the ARM template for the specified Azure Frictionless Assessment connector was retrieved successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    $schema: https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#
+                    contentVersion: 1.0.0.0
+                    variables:
+                      connectorUuid: 2c8eceba-ee91-49fc-b357-5ec74b01b1fa
+                      storageAccount: faconnector
+                      storageContainer: ba10492c-365b-1a45-ba07-5670efae1b12
+                      storageKey: redacted
+                      scriptsAccount: faautomationscript
+                      scriptsKey: redacted
+                      tableKey: redacted
+                      keyRotationMethod: default
+                      resourceGroupLocation: eastus
+                      resourceGroupName: '[ concat(''Tenable-FA-Connector-'', variables(''connectorUuid''))]'
+                      tenableFACollectionRoleDefinitionResourceName: '[guid(''Tenable-FA-Custom-Role-Def'', subscription().id, variables(''connectorUuid''))]'
+                      tenableFACollectionRoleDefinitionId: '[subscriptionResourceId(''Microsoft.Authorization/roleDefinitions'', variables(''tenableFACollectionRoleDefinitionResourceName''))]'
+                      logicAppName: TenableFAEventBasedCollection
+                      resourceTags:
+                        Tenable: AzureFa
+                      roleDefinition:
+                        name: '[format(''Tenable FA Role (Subscription: {0} | Connector: {1})'', subscription().subscriptionId, variables(''connectorUuid''))]'
+                        description: Authorization required to run Frictionless Assessment on Azure Resources
+                        actions:
+                        - Microsoft.ClassicCompute/operatingSystems/read
+                        - Microsoft.ClassicCompute/operatingSystemFamilies/read
+                        - Microsoft.ClassicCompute/virtualMachines/read
+                        - Microsoft.Compute/virtualMachines/read
+                        - Microsoft.Compute/virtualMachineScaleSets/read
+                        - Microsoft.Compute/virtualMachines/runCommand/action
+                        - Microsoft.Compute/virtualMachineScaleSets/virtualMachines/read
+                        - Microsoft.Compute/virtualMachineScaleSets/virtualMachines/runCommand/action
+                        notActions: []
+                    resources:
+                    - type: Microsoft.Resources/resourceGroups
+                      apiVersion: '2020-06-01'
+                      name: '[variables(''resourceGroupName'')]'
+                      location: '[variables(''resourceGroupLocation'')]'
+                      tags: '[variables(''resourceTags'')]'
+                      properties: {}
+                    - type: Microsoft.Authorization/roleDefinitions
+                      apiVersion: 2018-01-01-preview
+                      name: '[variables(''tenableFACollectionRoleDefinitionResourceName'')]'
+                      properties:
+                        roleName: '[variables(''roleDefinition'').name]'
+                        description: '[variables(''roleDefinition'').description]'
+                        type: customRole
+                        permissions:
+                        - actions: '[variables(''roleDefinition'').actions]'
+                          notActions: '[variables(''roleDefinition'').notActions]'
+                        assignableScopes:
+                        - '[subscription().id]'
+                    - name: automationAccountDeployment
+                      type: Microsoft.Resources/deployments
+                      apiVersion: '2019-10-01'
+                      resourceGroup: '[variables(''resourceGroupName'')]'
+                      dependsOn:
+                      - '[resourceId(''Microsoft.Resources/resourceGroups/'', variables(''resourceGroupName''))]'
+                      properties:
+                        expressionEvaluationOptions:
+                          scope: inner
+                        mode: Incremental
+                        parameters:
+                          connectorUuid:
+                            value: '[variables(''connectorUuid'')]'
+                          storageKey:
+                            value: '[variables(''storageKey'')]'
+                          storageAccount:
+                            value: '[variables(''storageAccount'')]'
+                          storageContainer:
+                            value: '[variables(''storageContainer'')]'
+                          scriptsAccount:
+                            value: '[variables(''scriptsAccount'')]'
+                          scriptsKey:
+                            value: '[variables(''scriptsKey'')]'
+                          tableKey:
+                            value: '[variables(''tableKey'')]'
+                          logicAppName:
+                            value: '[variables(''logicAppName'')]'
+                          keyRotationMethod:
+                            value: '[variables(''keyRotationMethod'')]'
+                          resourceTags:
+                            value: '[variables(''resourceTags'')]'
+                        template:
+                          $schema: https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#
+                          contentVersion: 1.0.0.0
+                          parameters:
+                            connectorUuid:
+                              type: string
+                            storageKey:
+                              type: string
+                            storageAccount:
+                              type: string
+                            storageContainer:
+                              type: string
+                            scriptsAccount:
+                              type: string
+                            scriptsKey:
+                              type: string
+                            tableKey:
+                              type: string
+                            logicAppName:
+                              type: string
+                            keyRotationMethod:
+                              type: string
+                            resourceTags:
+                              type: object
+                          variables:
+                            arm-templates-url: '[concat(''https://'', parameters(''scriptsAccount''), ''.blob.core.windows.net/'', ''arm-templates'',''/'')]'
+                          resources:
+                          - type: Microsoft.Resources/deployments
+                            apiVersion: '2019-10-01'
+                            name: deployAutomationResources
+                            properties:
+                              mode: Incremental
+                              templateLink:
+                                uri: '[uri(variables(''arm-templates-url''), concat(''automation-resources.json'', parameters(''scriptsKey'')))]'
+                                contentVersion: 1.0.0.0
+                              parameters:
+                                connectorUuid:
+                                  value: '[parameters(''connectorUuid'')]'
+                                storageKey:
+                                  value: '[parameters(''storageKey'')]'
+                                storageAccount:
+                                  value: '[parameters(''storageAccount'')]'
+                                storageContainer:
+                                  value: '[parameters(''storageContainer'')]'
+                                scriptsAccount:
+                                  value: '[parameters(''scriptsAccount'')]'
+                                scriptsKey:
+                                  value: '[parameters(''scriptsKey'')]'
+                                tableKey:
+                                  value: '[parameters(''tableKey'')]'
+                                logicAppName:
+                                  value: '[parameters(''logicAppName'')]'
+                                keyRotationMethod:
+                                  value: '[parameters(''keyRotationMethod'')]'
+                                resourceTags:
+                                  value: '[parameters(''resourceTags'')]'
+                          outputs:
+                            collectionWebHookUri:
+                              type: string
+                              value: '[reference(''deployAutomationResources'').outputs.collectionWebHookUri.value]'
+                            terminatedInstancesWebHookUri:
+                              type: string
+                              value: '[reference(''deployAutomationResources'').outputs.terminatedInstancesWebHookUri.value]'
+                            logicAppPrincipalId:
+                              type: string
+                              value: '[reference(''deployAutomationResources'').outputs.logicAppPrincipalId.value]'
+                            automationAccountPrincipalId:
+                              type: string
+                              value: '[reference(''deployAutomationResources'').outputs.automationAccountPrincipalId.value]'
+                            automationAccountName:
+                              type: string
+                              value: '[reference(''deployAutomationResources'').outputs.automationAccountName.value]'
+                    - name: collectionScriptsDeployment
+                      type: Microsoft.Resources/deployments
+                      apiVersion: '2019-10-01'
+                      resourceGroup: '[variables(''resourceGroupName'')]'
+                      dependsOn:
+                      - '[resourceId(''Microsoft.Resources/resourceGroups/'', variables(''resourceGroupName''))]'
+                      - automationAccountDeployment
+                      properties:
+                        expressionEvaluationOptions:
+                          scope: inner
+                        mode: Incremental
+                        parameters:
+                          resourceTags:
+                            value: '[variables(''resourceTags'')]'
+                          connectorUuid:
+                            value: '[variables(''connectorUuid'')]'
+                          tenableScriptsStorageAccount:
+                            value: '[variables(''scriptsAccount'')]'
+                          tenableScriptsStorageSasToken:
+                            value: '[variables(''scriptsKey'')]'
+                          automationAccountPrincipalId:
+                            value: '[reference(''automationAccountDeployment'').outputs.automationAccountPrincipalId.value]'
+                          automationAccountName:
+                            value: '[reference(''automationAccountDeployment'').outputs.automationAccountName.value]'
+                        template:
+                          $schema: https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#
+                          contentVersion: 1.0.0.0
+                          parameters:
+                            resourceTags:
+                              type: object
+                            connectorUuid:
+                              type: string
+                            tenableScriptsStorageAccount:
+                              type: string
+                            tenableScriptsStorageSasToken:
+                              type: string
+                            automationAccountPrincipalId:
+                              type: string
+                            automationAccountName:
+                              type: string
+                          variables:
+                            arm-templates-url: '[concat(''https://'', parameters(''tenableScriptsStorageAccount''), ''.blob.core.windows.net/'', ''arm-templates'',''/'')]'
+                          resources:
+                          - type: Microsoft.Resources/deployments
+                            apiVersion: '2019-10-01'
+                            name: deployCollectionScriptResources
+                            properties:
+                              mode: Incremental
+                              templateLink:
+                                uri: '[uri(variables(''arm-templates-url''), concat(''fetch-scripts.json'', parameters(''tenableScriptsStorageSasToken'')))]'
+                                contentVersion: 1.0.0.0
+                              parameters:
+                                resourceTags:
+                                  value: '[parameters(''resourceTags'')]'
+                                connectorUuid:
+                                  value: '[parameters(''connectorUuid'')]'
+                                tenableScriptsAccount:
+                                  value: '[parameters(''tenableScriptsStorageAccount'')]'
+                                tenableScriptsKey:
+                                  value: '[parameters(''tenableScriptsStorageSasToken'')]'
+                                automationAccountPrincipalId:
+                                  value: '[parameters(''automationAccountPrincipalId'')]'
+                                automationAccountName:
+                                  value: '[parameters(''automationAccountName'')]'
+                          outputs: {}
+                    - name: roleAssignmentDeployment
+                      type: Microsoft.Resources/deployments
+                      apiVersion: '2019-10-01'
+                      location: '[variables(''resourceGroupLocation'')]'
+                      dependsOn:
+                      - automationAccountDeployment
+                      - '[resourceId(''Microsoft.Authorization/roleDefinitions'', variables(''tenableFACollectionRoleDefinitionResourceName''))]'
+                      properties:
+                        expressionEvaluationOptions:
+                          scope: inner
+                        mode: Incremental
+                        parameters:
+                          tenableFACollectionRoleDefinitionId:
+                            value: '[variables(''tenableFACollectionRoleDefinitionId'')]'
+                          automationAccountPrincipalId:
+                            value: '[reference(''automationAccountDeployment'').outputs.automationAccountPrincipalId.value]'
+                          logicAppPrincipalId:
+                            value: '[reference(''automationAccountDeployment'').outputs.logicAppPrincipalId.value]'
+                          scriptsAccount:
+                            value: '[variables(''scriptsAccount'')]'
+                          scriptsKey:
+                            value: '[variables(''scriptsKey'')]'
+                          resourceTags:
+                            value: '[variables(''resourceTags'')]'
+                        template:
+                          $schema: https://schema.management.azure.com/schemas/2019-04-01/subscriptionDeploymentTemplate.json#
+                          contentVersion: 1.0.0.0
+                          parameters:
+                            tenableFACollectionRoleDefinitionId:
+                              type: string
+                            automationAccountPrincipalId:
+                              type: string
+                            logicAppPrincipalId:
+                              type: string
+                            scriptsAccount:
+                              type: string
+                            scriptsKey:
+                              type: string
+                            resourceTags:
+                              type: object
+                          variables:
+                            arm-templates-url: '[concat(''https://'', parameters(''scriptsAccount''), ''.blob.core.windows.net/'', ''arm-templates'',''/'')]'
+                          resources:
+                          - type: Microsoft.Resources/deployments
+                            apiVersion: '2019-10-01'
+                            name: deployRoleAssignments
+                            location: '[deployment().location]'
+                            properties:
+                              mode: Incremental
+                              templateLink:
+                                uri: '[uri(variables(''arm-templates-url''), concat(''role-assignments.json'', parameters(''scriptsKey'')))]'
+                                contentVersion: 1.0.0.0
+                              parameters:
+                                tenableFACollectionRoleDefinitionId:
+                                  value: '[parameters(''tenableFACollectionRoleDefinitionId'')]'
+                                automationAccountPrincipalId:
+                                  value: '[parameters(''automationAccountPrincipalId'')]'
+                                logicAppPrincipalId:
+                                  value: '[parameters(''logicAppPrincipalId'')]'
+                                resourceTags:
+                                  value: '[parameters(''resourceTags'')]'
+                    - name: deployEventBasedCollection
+                      type: Microsoft.Resources/deployments
+                      apiVersion: '2019-10-01'
+                      resourceGroup: '[variables(''resourceGroupName'')]'
+                      dependsOn:
+                      - '[resourceId(''Microsoft.Resources/resourceGroups/'', variables(''resourceGroupName''))]'
+                      - automationAccountDeployment
+                      properties:
+                        expressionEvaluationOptions:
+                          scope: inner
+                        mode: Incremental
+                        parameters:
+                          scriptsAccount:
+                            value: '[variables(''scriptsAccount'')]'
+                          scriptsKey:
+                            value: '[variables(''scriptsKey'')]'
+                          logicAppName:
+                            value: '[variables(''logicAppName'')]'
+                          collectionRunbookWebHookUri:
+                            value: '[reference(''automationAccountDeployment'').outputs.collectionWebHookUri.value]'
+                          terminatedInstancesRunbookWebHookUri:
+                            value: '[reference(''automationAccountDeployment'').outputs.terminatedInstancesWebHookUri.value]'
+                          resourceTags:
+                            value: '[variables(''resourceTags'')]'
+                        template:
+                          $schema: https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#
+                          contentVersion: 1.0.0.0
+                          parameters:
+                            scriptsAccount:
+                              type: string
+                            scriptsKey:
+                              type: string
+                            logicAppName:
+                              type: string
+                            collectionRunbookWebHookUri:
+                              type: string
+                            terminatedInstancesRunbookWebHookUri:
+                              type: string
+                            resourceTags:
+                              type: object
+                          variables:
+                            arm-templates-url: '[concat(''https://'', parameters(''scriptsAccount''), ''.blob.core.windows.net/'', ''arm-templates'',''/'')]'
+                          resources:
+                          - name: Default-EventGrid
+                            type: Microsoft.EventGrid/systemTopics
+                            apiVersion: 2021-06-01-preview
+                            location: global
+                            properties:
+                              source: '[subscription().id]'
+                              topicType: Microsoft.Resources.Subscriptions
+                          - name: roleAssignmentWait
+                            type: Microsoft.Resources/deploymentScripts
+                            apiVersion: '2020-10-01'
+                            location: '[resourceGroup().location]'
+                            kind: AzurePowerShell
+                            properties:
+                              azPowerShellVersion: '5.4'
+                              timeout: PT3M
+                              scriptContent: Start-Sleep -s 30
+                              cleanupPreference: onSuccess
+                              retentionInterval: P1D
+                          - type: Microsoft.Resources/deployments
+                            apiVersion: '2019-10-01'
+                            name: deployAPIConnectionAndLogicAppDefinition
+                            properties:
+                              mode: Incremental
+                              templateLink:
+                                uri: '[uri(variables(''arm-templates-url''), concat(''event-collection.json'', parameters(''scriptsKey'')))]'
+                                contentVersion: 1.0.0.0
+                              parameters:
+                                collectionRunbookWebHookUri:
+                                  value: '[parameters(''collectionRunbookWebHookUri'')]'
+                                terminatedInstancesRunbookWebHookUri:
+                                  value: '[parameters(''terminatedInstancesRunbookWebHookUri'')]'
+                                logicAppName:
+                                  value: '[parameters(''logicAppName'')]'
+                                resourceTags:
+                                  value: '[parameters(''resourceTags'')]'
+                            dependsOn:
+                            - '[resourceId(''Microsoft.Resources/deploymentScripts'', ''roleAssignmentWait'')]'
+        '400':
+          description: Returned if your request specified invalid input parameters, if your request was improperly formatted, or if an error occurred while processing the request.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified connector.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Cloud_Connectors_cloud: []
+  /settings/connectors/cloudformation-template:
+    post:
+      summary: Download CFT Template
+      description: Returns a Cloud Formation Template (CFT) for AWS Frictionless Assessment connectors.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-connectors-get-cft-template
+      tags:
+      - Cloud Connectors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                connector_id:
+                  type: string
+                  description: The UUID of the connector to download a CFT template for.
+                  format: uuid
+                account_id:
+                  type: string
+                  description: For keyless AWS connectors, the AWS account ID.
+              required:
+              - connector_id
+              - account_id
+      responses:
+        '200':
+          description: Returned if the CFT template for the specified AWS Frictionless Assessment connector and AWS account was retrieved successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    template_content: redacted
+                    tio_external_id: bc738cae-114b-4cc1-9f15-17319a20e5a3
+                    tio_bucket_region: us-east-1
+                    tio_site: qa-develop
+                    kms_arn: arn:aws:kms:us-east-1:926186178802:key/b245e9d8-102d-4658-a602-a898fc782d92
+        '400':
+          description: Returned if your request specified invalid input parameters, if your request was improperly formatted, or if an error occurred while processing the request.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to download CFT templates.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find not find the specified connector or AWS account.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Cloud_Connectors_cloud: []
+  /settings/connectors/aws/cloudtrails:
+    post:
+      summary: List AWS cloudtrails
+      description: Returns a list of available AWS cloudtrails. You can then use the cloudtrails to [create an AWS connector](ref:io-connectors-create).<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-connectors-get-aws-cloudtrails
+      tags:
+      - Cloud Connectors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                region:
+                  type: array
+                  description: A complete list of available AWS regions.
+                  items:
+                    $ref: '#/components/schemas/Cloud_Connectors_region'
+                credentials:
+                  $ref: '#/components/schemas/Cloud_Connectors_AWSCredentials'
+                account_id:
+                  type: string
+                  description: For keyless AWS connectors, the AWS account ID.
+              required:
+              - region
+      responses:
+        '200':
+          description: Returned if the list of cloudtrails was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  trails:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cloud_Connectors_trail'
+              examples:
+                response:
+                  value:
+                    trails:
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/TenableAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+                    - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                      name: ExampleAWSTrail
+                      region:
+                        name: All
+                        friendly_name: All
+                      availability: success
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you specify invalid AWS credentials or account ID.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Cloud_Connectors_cloud: []
+  /settings/connectors/{connector_id}/import:
+    post:
+      summary: Import data
+      description: Imports data using a cloud connector. This creates an asynchronous import job in Tenable Vulnerability Management. You can check the import status by examining the `status_message` property in [connector details](ref:io-connectors-details).<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-connectors-import-assets
+      tags:
+      - Cloud Connectors
+      parameters:
+      - description: The UUID of the connector for which to import the data.
+        required: true
+        name: connector_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the cloud connector for import was scheduled successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  connector:
+                    $ref: '#/components/schemas/Cloud_Connectors_Response-Connector'
+              examples:
+                response:
+                  value:
+                    connector:
+                      type: aws
+                      human_type: AWS
+                      data_type: assets
+                      name: AWS Connector - Keyed
+                      status: Scheduled
+                      status_message: Import completed successfully
+                      date_created: '2019-11-31T17:21:19.495Z'
+                      date_modified: '2019-12-31T17:21:28.457Z'
+                      id: d8280673-3f9f-4d32-8241-12b3d8cab3fa
+                      container_uuid: 154a05bd-3f27-495a-a001-a659c24eb1a4
+                      expired: false
+                      incremental_mode: false
+                      last_sync_time: '2019-12-31T17:21:28.457Z'
+                      params:
+                        access_key: AJIAJLRNVRLZRDZLVBXR
+                        trails:
+                        - arn: arn:aws:cloudtrail:us-east-1:069647819620:trail/ExampleAWSTrail
+                          name: ExampleAWSTrail
+                          region:
+                            name: All
+                            friendly_name: All
+                          availability: ''
+                        sub_accounts:
+                        - role_arn: arn:aws:iam::795163652895:role/tenableio-connector
+                          external_id: 154a05bd-3f27-495a-a001-a659c24eb1a4
+                          trails:
+                          - arn: arn:aws:cloudtrail:us-east-1:795163652895:trail/ExampleAWSTrail
+                            name: ExampleAWSTrail
+                            region:
+                              name: us-west-1
+                              friendly_name: us-west-1
+                            availability: ''
+                          incremental_mode: false
+                          account_id: '795163652895'
+                        service: aws
+                      network_uuid: 89578c5d-931a-4bae-bcd6-421cacfad3b8
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to import data using a cloud connector.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified connector.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Cloud_Connectors_cloud: []
+components:
+  schemas:
+    Cloud_Connectors_aws_sub_account:
+      required:
+      - account_id
+      - role_arn
+      - external_id
+      - trails
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: The AWS account ID.
+        role_arn:
+          type: string
+          description: The Amazon Resource Name (ARN) of the role generated based on the associated account ID.
+        external_id:
+          description: The UUID of your Tenable Vulnerability Management instance used by AWS to identify it as a client application. You can obtain the UUID of your Tenable Vulnerability Management account using the [GET /users/{user_id}](ref:users-details) endpoint. The UUID corresponds to the `container_uuid` attribute of the response message for that endpoint.
+          type: string
+        trails:
+          description: A list of AWS cloudtrails associated with the account.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_trail'
+        incremental_mode:
+          type: boolean
+          description: Indicates whether a connector has completed the initial full import successfully. If the value is `true`, then the connector is in incremental mode where it imports assets based on events instead of enumerating all assets in the account every single time.
+    Cloud_Connectors_trail:
+      required:
+      - arn
+      type: object
+      properties:
+        arn:
+          type: string
+          description: The Amazon Resource Name (ARN) of the cloudtrail.
+        name:
+          type: string
+          description: The name of the cloudtrail.
+        region:
+          $ref: '#/components/schemas/Cloud_Connectors_region'
+        availability:
+          description: "Indicates whether a cloudtrail is available to be used by a connector (logging is turned on in AWS, or it has at least one EventSelector with IncludeManagementEvents). Values include:\n - `success`—The cloudtrail is available.\n - `error`—The cloudtrail is not available."
+          type: string
+          enum:
+          - success
+          - error
+    Cloud_Connectors_azure_status:
+      type: object
+      properties:
+        last_event_seen:
+          type: string
+          description: An ISO timestamp indicating the last time the connector found new or changed records and successfully imported them.
+        release_timestamp:
+          description: An ISO timestamp indicating the last time the connector successfully completed an import (regardless of whether it found any changes).
+          type: string
+        message:
+          type: string
+          description: The extended import status message.
+    Cloud_Connectors_Response-Connector:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of cloud connector. Types include `aws`, `aws_keyless`, `aws_fa`, `azure`, `azure_fa`, `gcp`, or `gcp_keyless`.
+        human_type:
+          type: string
+          description: The human-readable connector type.
+        data_type:
+          type: string
+          description: The data type imported by the connector. This value is always `assets`.
+        name:
+          type: string
+          description: The name of the cloud connector. The name must be unique within a Tenable Vulnerability Management instance.
+        status:
+          type: string
+          description: "The import status of the connector. Status values can include:\n - Completed—Tenable Vulnerability Management successfully used the connector to import assets (no imports scheduled)\n - Scheduled—Imports using the connector are scheduled for future dates\n - Saved—Tenable Vulnerability Management saved the connector configuration, but did not import assets at this time (no imports scheduled)\n - Error—Tenable Vulnerability Management failed to import assets using the connector"
+        is_fa:
+          type: boolean
+          description: For AWS keyless connectors, indicates whether Frictionless Assessment is enabled or not.
+        status_message:
+          type: string
+          description: Extended description of the connector status. If Frictionless Assessment is enabled, this property is set to `FA Enabled`. For information about connector error codes, see [Connectors](doc:io-connectors).
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+        date_created:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the connector was created, for example, `2018-12-31T13:51:17.243Z`.
+        date_modified:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the connector was last modified or new records were imported, for example, `2018-12-31T13:51:17.243Z`.
+        id:
+          type: string
+          description: The UUID of the connector.
+        container_uuid:
+          type: string
+          description: The UUID of the Tenable Vulnerability Management instance.
+        expired:
+          type: boolean
+          description: Indicates whether the Vulnerability Management license for the Tenable Vulnerability Management instance associated with the connector is expired.
+        incremental_mode:
+          type: boolean
+          description: Indicates whether a connector has completed the initial full import successfully. If the value is `true`, then the connector is in incremental mode where it imports assets based on on the service provider event stream instead of enumerating all assets in the account every single time.
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_response_params'
+        last_sync_time:
+          type: string
+          description: An ISO timestamp indicating the date and time of the last successful import, for example, `2018-12-31T13:51:17.243Z`.
+        network_uuid:
+          type: string
+          format: UUID
+          description: The UUID of the [network](doc:manage-networks-tio) associated with the connector.
+    Cloud_Connectors_region:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The AWS region code, for example, `us-east-1`. The value of `All` indicates that the cloudtrail is associated with all AWS available regions.
+        friendly_name:
+          description: The AWS region name, for example, `US East (N. Virginia)`. The value of `All` indicates that the cloudtrail is associated with all AWS available regions.
+          type: string
+    Cloud_Connectors_Request-ConnectorCreate:
+      oneOf:
+      - title: Amazon Web Services (Keyed)
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Amazon Web Services (AWS) keyed connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_AWS_Keyed_Connector'
+      - title: Amazon Web Services (Keyless)
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Amazon Web Services (AWS) keyless connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_AWS_Keyless_Connector'
+      - title: Amazon Web Services with Frictionless Assessment
+        type: object
+        description: 'There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Amazon Web Services (AWS) with Frictionless Assessment connector.
+
+
+          **Note:** Frictionless Assessment has reached the End-of-Provisioning phase of its product lifecycle. For more information, see [Frictionless Assessment End-of-Provisioning](https://developer.tenable.com/changelog/tenableio-frictionless-assessment-end-of-provisioning).'
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_AWS_FA_Connector'
+      - title: Microsoft Azure
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Microsoft Azure connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_Azure_Connector'
+      - title: Microsoft Azure with Frictionless Assessment
+        type: object
+        description: 'There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Microsoft Azure with Frictionless Assessment connector.
+
+
+          **Note:** Frictionless Assessment has reached the End-of-Provisioning phase of its product lifecycle. For more information, see [Frictionless Assessment End-of-Provisioning](https://developer.tenable.com/changelog/tenableio-frictionless-assessment-end-of-provisioning).'
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_Azure_ConnectorFA'
+      - title: Google Cloud Platform (Keyed)
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Google Cloud Platform (GCP) keyed connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_GCP_Keyed_Connector'
+      - title: Google Cloud Platform Workload Identity Federation
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Google Cloud Platform (GCP) Workload Identity Federation connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_GCP_Keyless_Connector'
+    Cloud_Connectors_Request-Create_AWS_FA_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        type:
+          type: string
+          description: The type of cloud connector. For AWS with Frictionless Assessment connectors, the type is `aws_fa`.
+          default: aws_fa
+          enum:
+          - aws_fa
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAWS_FA'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_Request_Update_Azure_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAzure'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_Request-Create_AWS_Keyless_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        type:
+          type: string
+          description: The type of cloud connector. For AWS keyless connectors, the type is `aws_keyless`.
+          default: aws_keyless
+          enum:
+          - aws_keyless
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAWSKeyless'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_ParamsRequestAWSKeyed:
+      type: object
+      properties:
+        access_key:
+          description: The AWS access key.
+          type: string
+        secret_key:
+          description: The AWS secret key.
+          type: string
+        trails:
+          description: A list of AWS cloudtrails associated with the connector. The trails must be available to be used by the connector. Use the [POST /settings/connectors/aws/cloudtrails](ref:io-connectors-get-aws-cloudtrails) endpoint to check the `availability` property of cloudtrail objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_trail'
+      required:
+      - access_key
+      - secret_key
+    Cloud_Connectors_Request-Update_AWS_Keyed_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAWSKeyed'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_Request_Update_GCP_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestGCP'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_Request-Update_AWS_Keyless_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAWSKeyless'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_ParamsRequestAWS_FA:
+      type: object
+      properties:
+        tag:
+          $ref: '#/components/schemas/Cloud_Connectors_tags'
+        account:
+          description: The AWS account associated with the connector.
+          type: object
+          properties:
+            account_id:
+              type: string
+              description: The AWS account ID.
+    Cloud_Connectors_Request-Update_Azure_FA_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAzureFA'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_response_params:
+      type: object
+      description: The connector parameters. Note that only the `params` object for AWS keyed connectors is shown below. The `param` object for other connector types is not used in the example.
+      properties:
+        access_key:
+          description: 'For AWS connectors, the AWS access key.
+
+
+            <b>Note: </b>The `access_key` is not included in the keyless AWS connector parameters.'
+          type: string
+        sub_accounts:
+          description: For AWS connectors, a list of AWS accounts associated with the connector.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_aws_sub_account'
+        status:
+          description: For Azure connectors, a list of import status records.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_azure_status'
+        targets:
+          description: For Azure Frictionless Assessment connectors, the resource group and tag information.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_TargetsAzureFA'
+        application_id:
+          description: For Azure connectors, the Azure application ID.
+          type: string
+        tenant_id:
+          type: string
+          description: For Azure connectors, the Azure tenant ID (directory ID).
+        subscription_id:
+          type: string
+          description: For Azure connectors, the Azure subscription ID. If you do not provide subscription IDs, Tenable Vulnerability Management automatically discovers them.
+        auto_discovery:
+          description: Specifies whether Auto Discovery is enabled or not for AWS keyless connectors. If Auto Discovery is enabled, the connector will automatically discover linked accounts and CloudTrails.
+          type: boolean
+        service:
+          description: The service targeted by the connector. Values include `aws`, `aws_keyless`, `aws_fa`, `azure`, `azure_fa`, and `gcp`.
+          type: string
+    Cloud_Connectors_schedule:
+      type: object
+      description: The data import schedule.
+      properties:
+        units:
+          type: string
+          description: The units of time for the import interval. Units can include `days`, `hours`, `minutes`.
+        value:
+          type: integer
+          description: The number of units between import intervals.
+    Cloud_Connectors_Response-Pagination:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_Response-PaginationSortObject'
+    Cloud_Connectors_ParamsRequestAzure:
+      type: object
+      properties:
+        application_id:
+          description: The Microsoft Azure application ID.
+          type: string
+        tenant_id:
+          type: string
+          description: The Microsoft Azure tenant ID (directory ID).
+        client_secret:
+          type: string
+          description: The Microsoft Azure client secret value.
+        subscription_id:
+          type: string
+          description: The Microsoft Azure subscription ID. If you do not provide subscription IDs, Tenable Vulnerability Management automatically discovers them.
+      required:
+      - application_id
+      - tenant_id
+      - client_secret
+    Cloud_Connectors_Request_Update_GCP_Keyless_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestGCPKeyless'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_tags:
+      description: "The AWS tag associated with the hosts you want to assess. \n\n**Note:** You can no longer use Frictionless Assessment tags to create an AWS keyless (`aws_keyless`) connector with Frictionless Assessment. To create an AWS with Frictionless Assessment connector, use the `aws_fa` connector type when creating the connector."
+      type: object
+      properties:
+        key:
+          description: The AWS tag associated with the hosts you want to assess.
+          type: string
+        value:
+          description: The value of the AWS tag associated with the hosts you want to assess.
+          type: string
+    Cloud_Connectors_Request-UpdateConnector:
+      oneOf:
+      - title: Amazon Web Services (Keyed)
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Amazon Web Services (AWS) keyed connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Update_AWS_Keyed_Connector'
+      - title: Amazon Web Services (Keyless)
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Amazon Web Services (AWS) keyless connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Update_AWS_Keyless_Connector'
+      - title: Amazon Web Services with Frictionless Assessment
+        type: object
+        description: 'There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Amazon Web Services (AWS) with Frictionless Assessment connector.
+
+
+          **Note:** Frictionless Assessment has reached the End-of-Provisioning phase of its product lifecycle. For more information, see [Frictionless Assessment End-of-Provisioning](https://developer.tenable.com/changelog/tenableio-frictionless-assessment-end-of-provisioning).'
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Update_AWS_Keyless_Connector'
+      - title: Microsoft Azure
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Microsoft Azure connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request_Update_Azure_Connector'
+      - title: Microsoft Azure with Frictionless Assessment
+        type: object
+        description: 'There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Microsoft Azure with Frictionless Assessment connector.
+
+
+          **Note:** Frictionless Assessment has reached the End-of-Provisioning phase of its product lifecycle. For more information, see [Frictionless Assessment End-of-Provisioning](https://developer.tenable.com/changelog/tenableio-frictionless-assessment-end-of-provisioning).'
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Update_Azure_FA_Connector'
+      - title: Google Cloud Platform (Keyed)
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Google Cloud Platform (GCP) keyed connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request_Update_GCP_Connector'
+      - title: Google Cloud Platform Workload Identity Federation
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Google Cloud Platform (GCP) Workload Identity Federation connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request_Update_GCP_Keyless_Connector'
+    Cloud_Connectors_Request-Create_GCP_Keyed_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        type:
+          type: string
+          description: The type of cloud connector. For GCP keyed connectors, the type is `gcp`.
+          default: gcp
+          enum:
+          - gcp
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestGCP'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_ParamsRequestGCP:
+      type: object
+      properties:
+        service_account_key:
+          type: string
+          description: 'A Base64-encoded string value of the service account key JSON file. For more information, see <a href="https://cloud.google.com/iam/docs/creating-managing-service-account-keys" target="_blank">Create and delete service account keys</a> in the GCP documentation.
+
+
+            Note: The `service_account_key` value must include only the literal encoded string. Do not include the `data:application/json;base64` prefix.'
+      required:
+      - service_account_key
+    Cloud_Connectors_AWSCredentials:
+      type: object
+      description: The credentials that the Tenable Vulnerability Management connector uses to communicate with the AWS API, including `access_key` and `secret_key`.
+      properties:
+        access_key:
+          type: string
+          description: The AWS access key.
+        secret_key:
+          type: string
+          description: The AWS secret key.
+    Cloud_Connectors_Request-Create_Azure_ConnectorFA:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        type:
+          type: string
+          description: The type of cloud connector. For Azure with Frictionless Assessment connectors, the type is `azure_fa`.
+          default: azure_fa
+          enum:
+          - azure_fa
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAzureFA'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_ParamsRequestAWSKeyless:
+      required:
+      - sub_accounts
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_tags'
+        auto_discovery:
+          description: Specifies whether Auto Discovery is enabled or not. If Auto Discovery is enabled, the connector will automatically discover linked accounts and CloudTrails.
+          type: boolean
+        sub_accounts:
+          description: A list of AWS accounts associated with the connector.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_aws_sub_account'
+        trails:
+          description: A list of AWS cloudtrails associated with the connector. The trails must be available to be used by the connector. Use the [POST /settings/connectors/aws/cloudtrails](ref:io-connectors-get-aws-cloudtrails) endpoint to check the `availability` property of cloudtrail objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_trail'
+    Cloud_Connectors_Request-Create_Azure_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        type:
+          type: string
+          description: The type of cloud connector. For Azure connectors, the type is `azure`.
+          default: azure
+          enum:
+          - azure
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAzure'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_Response-PaginationSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    Cloud_Connectors_Request-Create_GCP_Keyless_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        type:
+          type: string
+          description: The type of cloud connector. For GCP Workload Identity Federation connectors, the type is `gcp_keyless`.
+          default: gcp_keyless
+          enum:
+          - gcp_keyless
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestGCPKeyless'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_ParamsRequestGCPKeyless:
+      type: object
+      properties:
+        credentials_config:
+          type: string
+          description: "A Base64-encoded string value of the credential configuration. \n\nFor more information, see <a href=\"https://docs.tenable.com/vulnerability-management/Content/Settings/cloud-connectors/GCP/CreateWorkloadIdentityPool.htm\" target=\"_blank\">Create a GCP Workload Identity Pool and Download the Configuration File</a> in the _Tenable Vulnerability Management User Guide_ or <a href=\"https://cloud.google.com/iam/docs/workload-identity-federation-with-other-providers#download-cred-config\" target=\"_blank\">Download a credential configuration</a> in the GCP documentation.\n\nNote: The `credentials_config` value must include only the literal encoded string. Do not include the `data:application/json;base64` prefix."
+      required:
+      - credentials_config
+    Cloud_Connectors_Request-Create_AWS_Keyed_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        type:
+          type: string
+          description: The type of cloud connector. For AWS keyed connectors, the type is `aws`.
+          default: aws
+          enum:
+          - aws
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAWSKeyed'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_ParamsRequestAzureFA:
+      type: object
+      properties:
+        targets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_TargetsAzureFA'
+        scan_all:
+          type: boolean
+          description: Indicates whether or not to override the `resource_group`, `tag_key`, and `tag_value` properties and scan all VMs in the current subscription. Setting `scan_all` to `true` is equivalent to using `*` for `resource_group`, `tag_key`, and `tag_value`.
+          example: false
+      required:
+      - application_id
+      - tenant_id
+      - client_secret
+    Cloud_Connectors_TargetsAzureFA:
+      type: object
+      properties:
+        resource_group:
+          description: "The name of the resource group that Azure Frictionless Assessment scans VMs in. \n\n**Note:** You can use the wildcard `*` to select all resource groups in the Azure subscription."
+          type: string
+        tag_key:
+          type: string
+          description: "The tag name in Microsoft Azure. \n\n**Note:** You can use the wildcard `*` to select all tag names in Azure for Frictionless Assessment."
+        tag_value:
+          type: string
+          description: "The tag value in Microsoft Azure. \n\n**Note:** You can use the wildcard `*` to select all tag values in Azure for Frictionless Assessment."
+      required:
+      - application_id
+      - tenant_id
+      - client_secret
+    Cloud_Connectors_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

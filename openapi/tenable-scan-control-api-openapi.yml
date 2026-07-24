@@ -1,0 +1,413 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Scan Control API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Scan Control
+  x-displayName: Scan Control
+paths:
+  /scans/{scan_id}/launch:
+    post:
+      summary: Launch scan
+      description: 'Launches a scan. For more information, see [Launch a Scan](doc:launch-scan-tio).
+
+
+        **Note:** There is a limit of 25 active scans per container. You can use use the [Get scan count](ref:io-scans-count) endpoint to retrieve the total number of active scans in your container. For more information, see [Concurrency Limiting](doc:concurrency-limiting). <div class="perms-callout">Requires the Scan Operator [24] user role and Can Execute [32] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+      operationId: scans-launch
+      tags:
+      - Scan Control
+      parameters:
+      - description: The unique identifier for the scan you want to launch. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`.
+        required: true
+        name: scan_id
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                alt_targets:
+                  items:
+                    type: string
+                  description: If you include this parameter, Tenable Vulnerability Management scans these targets instead of the default. Value can be an array where each index is a target, or an array with a single index of comma-separated targets.
+                  type: array
+                rollover:
+                  description: Indicates whether or not to launch a rollover scan instead of full scan. A rollover scan only runs against the targets that Tenable Vulnerability Management did not scan due to a previous scan timeout.
+                  type: boolean
+      responses:
+        '200':
+          description: Returned if the scan was launched successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  scan_uuid:
+                    type: string
+                    description: The UUID of the scan launched.
+              examples:
+                response:
+                  value:
+                    scan_uuid: 44346bcb-4afc-4db0-b283-2dd823fa8579
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Control_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if Tenable Vulnerability Management cannot launch the scan because the scan is disabled.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified scan.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Error message
+                properties:
+                  error:
+                    type: string
+                    description: A brief description of the cause of the error.
+              examples:
+                response:
+                  value:
+                    info:
+                      error: Scan not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time or if you attempt to launch more than 25 scans. For more information, see [Rate Limiting](doc:rate-limiting) and [Concurrency Limiting](doc:concurrency-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Control_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Control_cloud: []
+  /scans/{scan_id}/pause:
+    post:
+      summary: Pause scan
+      description: Pauses a scan. You can only pause scans that have a `running` status.<div class="perms-callout">Requires the Scan Operator [24] user role and Can Execute [32] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: scans-pause
+      tags:
+      - Scan Control
+      parameters:
+      - description: The unique identifier for the scan you want to pause. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`.
+        required: true
+        name: scan_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the scan to pause was queued successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Control_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified scan.
+        '409':
+          description: Returned if the specified scan has a status other than `running`.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Control_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Control_cloud: []
+  /scans/{scan_id}/resume:
+    post:
+      summary: Resume scan
+      description: Resumes a scan. You can only resume a scan that has a status of `paused`.<div class="perms-callout">Requires the Scan Operator [24] user role and Can Execute [32] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: scans-resume
+      tags:
+      - Scan Control
+      parameters:
+      - description: The unique identifier for the scan you want to resume. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`.
+        required: true
+        name: scan_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the scan to resume was queued successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Control_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified scan.
+        '409':
+          description: Returned if the specified scan has a status other than `paused`.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Control_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Control_cloud: []
+  /scans/{scan_id}/stop:
+    post:
+      summary: Stop scan
+      description: "Stops a scan. \n\nYou can only stop a scan that has a status of `pending`, `running`, or `resuming`. To stop a scan with a status of `stopping` or `publishing`, use the [Force stop scan](ref:vm-scans-stop-force) endpoint. For more information about scan statuses, see [Scan Status](doc:scan-status-tio).<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can Execute [32] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: scans-stop
+      tags:
+      - Scan Control
+      parameters:
+      - description: The identifier for the scan you want to stop. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the [GET /scans](ref:scans-list) endpoint's response message.
+        required: true
+        name: scan_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the scan to stop was queued successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Control_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified scan.
+        '409':
+          description: Returned if the scan does not have a `pending`,`running`, or `resuming` status. For more information about scan statuses, see [Scan Status](doc:scan-status-tio).
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Control_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Control_cloud: []
+  /scans/{schedule_uuid}/force-stop:
+    post:
+      summary: Force stop scan
+      description: "Force stops a scan. A force stop cancels all the scan's incomplete scan tasks and updates the scan status to `aborted`. Tenable Vulnerability Management processes and indexes the completed scan tasks. After you force stop a scan, Tenable recommends re-running the scan in its entirety to ensure total scan coverage. \n\nYou can use the force stop endpoint to abort a stalled scan in the `stopping`, `publishing`, or `resuming` status. This can be helpful when you need to abort a scan before a freeze window or before a subsequent scheduled scan begins.  \n\nYou can only force stop a scan that has a status of `stopping` or `publishing`. For more information about scan statuses, see [Scan Status](doc:scan-status-tio).<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can Execute [32] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: vm-scans-stop-force
+      tags:
+      - Scan Control
+      parameters:
+      - description: The identifier for the scan you want to force stop. For the identifier, use the `scans.schedule_uuid` in the [GET /scans](ref:scans-list) endpoint's response message.
+        required: true
+        name: schedule_uuid
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the scan was force-stopped successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Control_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified scan.
+        '409':
+          description: Returned if the scan does not have a `stopping`, or `publishing` status. For more information about scan statuses, see [Scan Status](doc:scan-status-tio).
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_Control_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_Control_cloud: []
+components:
+  schemas:
+    Scan_Control_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

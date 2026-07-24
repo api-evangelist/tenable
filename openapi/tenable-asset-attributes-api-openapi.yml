@@ -1,0 +1,771 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Asset Attributes API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Asset Attributes
+  x-displayName: Asset Attributes
+paths:
+  /api/v3/assets/attributes:
+    post:
+      summary: Create attribute
+      description: Creates a new custom asset attribute. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-v3-asset-attributes-create
+      tags:
+      - Asset Attributes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                attributes:
+                  description: An array of new custom asset attributes.
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Asset_Custom_Attributes_createCustomAttributesList'
+              required:
+              - attributes
+            example:
+              attributes:
+              - name: Owner
+                description: The person that owns the asset.
+              - name: Risk Rating
+                description: The risk rating of the asset.
+              - name: Location
+                description: Where the asset is located.
+      responses:
+        '200':
+          description: Returned if the custom attribute was created successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Asset_Custom_Attributes_cloud: []
+    get:
+      summary: List attributes
+      description: 'Returns a list of custom asset attributes.
+
+
+        **Note:** A container can have a maximum of 10 custom asset attributes. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+      operationId: io-v3-asset-attributes-list
+      tags:
+      - Asset Attributes
+      responses:
+        '200':
+          description: Returned if the list of custom asset attributes was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  attributes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Asset_Custom_Attributes_getCustomAttributesList'
+              examples:
+                response:
+                  value:
+                    attributes:
+                    - id: 116af8c3-969d-4621-9f9f-364eeb58e3a7
+                      name: Owner
+                      description: The person that owns the asset.
+                    - id: 116af8c3-969d-4621-9f9f-364eeb58e3a7
+                      name: Risk Rating
+                      description: The risk rating of the asset.
+                    - id: 116af8c3-969d-4621-9f9f-364eeb58e3a7
+                      name: Location
+                      description: Where the asset is located.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to view the asset attributes list.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Asset_Custom_Attributes_cloud: []
+  /api/v3/assets/attributes/{attribute_id}:
+    put:
+      summary: Update attribute
+      description: 'Updates the specified custom asset attribute.
+
+
+        **Note:** You can only update non-key attributes like `description`. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+      operationId: io-v3-asset-attributes-update
+      tags:
+      - Asset Attributes
+      parameters:
+      - description: The ID of the custom attribute that you want to update.
+        required: true
+        name: attribute_id
+        in: path
+        example: 116af8c3-969d-4621-9f9f-364eeb58e3a7
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: "The new or updated description for the custom asset attribute.\n\n **Note:** Currently `description` is the only non-primary key attribute that can be updated. If the `name` field needs a new value then you should create a new custom asset attribute via the [POST /api/v3/assets/attributes](ref:io-v3-asset-attributes-create) endpoint."
+            example:
+              description: A new description.
+      responses:
+        '200':
+          description: Returned if the custom asset attribute was updated successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+        '504':
+          description: Returned if Tenable Vulnerability Management is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 504
+                    error: Gateway Timeout
+                    message: Please wait a moment and try your request again.
+      security:
+      - Asset_Custom_Attributes_cloud: []
+    delete:
+      summary: Delete attribute
+      description: Deletes the specified custom asset attribute and removes it from all assets that it's assigned to. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-v3-asset-attributes-delete
+      tags:
+      - Asset Attributes
+      parameters:
+      - description: The ID of the custom asset attribute that you want to delete.
+        required: true
+        name: attribute_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the custom asset attribute was deleted successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters, if your request was improperly formatted, or if the specified custom asset attribute ID was not found.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+        '504':
+          description: Returned if Tenable Vulnerability Management is unavailable. Wait a moment, and try your request again.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 504
+                    error: Gateway Timeout
+                    message: Please wait a moment and try your request again.
+      security:
+      - Asset_Custom_Attributes_cloud: []
+  /api/v3/assets/{asset_id}/attributes:
+    put:
+      summary: Assign attributes to asset
+      description: Assigns custom asset attributes to the specified asset. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-v3-asset-attributes-assign
+      tags:
+      - Asset Attributes
+      parameters:
+      - description: The ID of the asset for which you want to assign custom asset attributes.
+        required: true
+        name: asset_id
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                attributes:
+                  description: An array of custom asset attribute values to assign to the specified asset.
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Asset_Custom_Attributes_updateAssetCustomAttributesList'
+              required:
+              - attributes
+            example:
+              attributes:
+              - id: c0f35d67-64a5-490a-8acb-b6d5c1c242e4a
+                value: Rob
+              - id: 12121212-64a5-1212-8acb-b6d5c1c242121
+                value: Moderate
+              - id: 43958345-64a5-1212-8acb-1212121212121
+                value: Denver
+      responses:
+        '200':
+          description: Returned if the custom asset attributes were assigned to the specified asset successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters, if your request was improperly formatted, or if the specified asset ID or custom asset attribute ID was not found.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Asset_Custom_Attributes_cloud: []
+    get:
+      summary: List attributes assigned to asset
+      description: 'Returns a list of custom asset attributes assigned to the specified asset.
+
+
+        **Note:** A container can have a maximum of 10 custom attributes. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+      operationId: io-v3-asset-attributes-assigned-list
+      tags:
+      - Asset Attributes
+      parameters:
+      - description: The ID of the asset you want to list custom asset attributes for.
+        required: true
+        name: asset_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the list of custom asset attributes assigned to the specified asset was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  attributes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Asset_Custom_Attributes_getAssetCustomAttributesList'
+              examples:
+                response:
+                  value:
+                    attributes:
+                    - id: 116af8c3-969d-4621-9f9f-364eeb58e3a7
+                      name: Owner
+                      description: The person that owns the asset.
+                    - id: 116af8c3-969d-4621-9f9f-364eeb58e3a7
+                      name: Risk Rating
+                      description: The risk rating of the asset.
+                    - id: 116af8c3-969d-4621-9f9f-364eeb58e3a7
+                      name: Location
+                      description: Where the asset is located.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to list attributes assigned to the asset.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>    "
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Asset_Custom_Attributes_cloud: []
+    delete:
+      summary: Delete attributes from asset
+      description: Deletes all custom asset attributes assigned to the specified asset. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-v3-asset-attributes-assigned-delete
+      tags:
+      - Asset Attributes
+      parameters:
+      - description: The ID of the asset for which you want to remove all custom attributes.
+        required: true
+        name: asset_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if all custom asset attributes from the specified asset were deleted successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters, if your request was improperly formatted, or if the specified asset ID was not found.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Asset_Custom_Attributes_cloud: []
+  /api/v3/assets/{asset_id}/attributes/{attribute_id}:
+    put:
+      summary: Assign single attribute to asset
+      description: Assigns a single custom asset attribute to the specified asset. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-v3-asset-attributes-single-update
+      tags:
+      - Asset Attributes
+      parameters:
+      - description: The ID of the asset for which you want to assign a single custom asset attribute.
+        required: true
+        name: asset_id
+        in: path
+        schema:
+          type: string
+      - description: The ID of the custom asset attribute you want to assign to the asset.
+        required: true
+        name: attribute_id
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: string
+                  description: The value of the custom asset attribute. For example, for a custom asset attribute named `Location` you could assign a value of `Dallas`.
+            example:
+              value: Boston
+      responses:
+        '200':
+          description: Returned if the custom asset attribute was assigned to the specified asset successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters, if your request was improperly formatted, or if the specified asset ID or custom asset attribute ID was not found.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Asset_Custom_Attributes_cloud: []
+    delete:
+      summary: Delete attribute from asset
+      description: Deletes a single custom asset attribute from the specified asset. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-v3-asset-attributes-single-delete
+      tags:
+      - Asset Attributes
+      parameters:
+      - description: The ID of the asset for which you want to remove a single custom asset attribute.
+        required: true
+        name: asset_id
+        in: path
+        schema:
+          type: string
+      - description: The ID of the custom asset attribute that you want to remove from the asset.
+        required: true
+        name: attribute_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the single custom attribute from the specified asset was deleted successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters, if your request was improperly formatted, or if the specified asset ID or custom asset attribute ID was not found.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_Custom_Attributes_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Asset_Custom_Attributes_cloud: []
+components:
+  schemas:
+    Asset_Custom_Attributes_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Asset_Custom_Attributes_createCustomAttributesList:
+      properties:
+        name:
+          type: string
+          description: The name of the custom asset attribute that you want to create. For example, `Location`.
+        description:
+          type: string
+          description: A description of the custom asset attribute.
+    Asset_Custom_Attributes_getAssetCustomAttributesList:
+      properties:
+        id:
+          type: string
+          description: the `attribute-id` of the Custom Attribute created by the Admin in a specific container
+        name:
+          type: string
+          description: the `name` of the Custom Attribute created by the Admin in a specific container
+        value:
+          type: string
+          description: the `value` of the Custom Attribute assigned on an asset.
+    Asset_Custom_Attributes_updateAssetCustomAttributesList:
+      properties:
+        id:
+          type: string
+          description: The ID of the custom asset attribute you want to assign to the asset.
+        value:
+          type: string
+          description: The value of the custom asset attribute. For example, for a custom asset attribute named `Location` you could assign a value of `Dallas`.
+    Asset_Custom_Attributes_getCustomAttributesList:
+      properties:
+        id:
+          type: string
+          description: UUID of the Custom Attribute created by the Admin in a specific container
+        name:
+          type: string
+          description: name of the Custom Attribute created by the Admin in a specific container
+        description:
+          type: string
+          description: description of the Custom Attribute created by the Admin in a specific container
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

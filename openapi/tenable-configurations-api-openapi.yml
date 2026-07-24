@@ -1,0 +1,2630 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Configurations API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Configurations
+  description: 'With the Configurations API, you can create and maintain reusable scan settings. These endpoints allow you to perform standard CRUD operations on configuration objects to standardize scanning across your environment.
+
+
+    For more information, see [Scan Templates](https://docs.tenable.com/web-app-scanning/Content/WAS/Scans/WASScanSettings.htm) in the _Tenable Web App Scanning User Guide_.'
+paths:
+  /was/v2/configs:
+    post:
+      summary: Create scan configuration
+      description: "Creates a new scan configuration.\n\n This operation is asynchronous and returns with an immediate 202. The scan configuration is guaranteed to be created at some point in the immediate future depending on resource load. To track the status of the operation, use the [GET /was/v2/configs/{config_id}/status/{tracking_id}](ref:was-v2-config-status) endpoint. The `config_id` and `tracking_id` can be retrieved from the URI provided in the `Location` header of the `202 Accepted` response. <div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. Additionally, requires the Can Edit [64] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: was-v2-config-create
+      tags:
+      - Configurations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request-Config'
+      responses:
+        '202':
+          description: Returned if Tenable Web App Scanning accepted the request for processing.
+          headers:
+            Location:
+              description: Use the contents of this header appended to the prefix `/was/v2` to execute lookups on the current status of the resource.
+              schema:
+                type: string
+                format: uri
+                example: /configs/{config_id}/status/{tracking_id}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response-Scan-Config'
+              examples:
+                response:
+                  value:
+                    config_id: 77d748e5-c007-4f79-9a03-d1c35b7d95f4
+                    container_id: 9f084368-f11e-4d69-be63-df5e2a0b2635
+                    owner_id: ef22f2bf-db1b-4471-984f-9507dcc083e1
+                    template_id: f93dfcb4-6eb2-4820-9b64-3dee8893a3f0
+                    user_template_id: null
+                    name: Scan Configuration Example
+                    targets:
+                    - https://example.com
+                    applications: []
+                    tag_targets:
+                    - 2f06e776-ecc3-4fbe-a005-6e84b4ed61a3
+                    description: null
+                    created_at: '2020-09-01T23:36:04.289Z'
+                    updated_at: '2020-09-01T23:36:04.289Z'
+                    settings:
+                      timeout: 08:00:00
+                      debug_mode: false
+                      credentials: null
+                      scope:
+                        option: all
+                        urls: null
+                        exclude_file_extensions:
+                        - js
+                        - css
+                        - png
+                        - jpeg
+                        - gif
+                        - pdf
+                        - csv
+                        - svn-base
+                        - svg
+                        - jpg
+                        - ico
+                        exclude_path_patterns:
+                        - logout
+                        dom_depth_limit: 5
+                        directory_depth_limit: 10
+                        page_limit: 10000
+                        crawl_script: null
+                        decompose_paths: false
+                        exclude_binaries: true
+                        auto_redundant_paths: 5
+                        openapi_file: null
+                        openapi_filename: null
+                        openapi_file_url: null
+                        crawl_script_filename: null
+                        deduplicate_pages: null
+                        graphql_file: null
+                        graphql_filename: null
+                        graphql_file_url: null
+                        graphql_introspection: null
+                        soap_file: null
+                        soap_filename: null
+                        soap_file_url: null
+                      plugin:
+                        rate_limiter:
+                          requests_per_second: 25
+                          autothrottle: true
+                          timeout_threshold: 100
+                        mode: disable
+                        ids: []
+                        names: []
+                        families: []
+                      browser:
+                        screen_width: 1600
+                        screen_height: 1200
+                        ignore_images: true
+                        job_timeout: 30
+                        analysis: null
+                        pool_size: 3
+                      http:
+                        response_max_size: 500000
+                        request_redirect_limit: 2
+                        user_agent: WAS/%v
+                        custom_user_agent: false
+                        request_headers:
+                          Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+                          Accept-Language: en-US,en;q=0.5
+                        include_scan_id: false
+                        request_concurrency: 10
+                        request_timeout: 5
+                      chrome:
+                        script_finish_wait: 5000
+                        script_page_load_wait: 30000
+                        script_command_wait: 500
+                        disable_web_security: false
+                      assessment:
+                        rfi_remote_url: http://rfi.nessus.org/rfi.txt
+                        dictionary: limited
+                        fingerprinting: null
+                        enable: true
+                      audit:
+                        forms: true
+                        cookies: true
+                        ui_forms: true
+                        ui_inputs: true
+                        headers: true
+                        links: true
+                        parameter_names: false
+                        parameter_values: true
+                        jsons: true
+                        xmls: true
+                    scanner_id: null
+                    pause_window: null
+                    schedule: null
+                    default_permissions: no_access
+                    results_visibility: dashboard
+                    permissions: []
+                    notifications:
+                      emails: []
+        '400':
+          description: Returned if your request specifies invalid scan configuration parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputErrorResponse'
+              examples:
+                response:
+                  value:
+                    code: INPUT_FORM_VIOLATION
+                    fields:
+                    - field: .name
+                      message_type: VALUE_MUST_BE_SPECIFIED
+                      value:
+                        message: the value must be specified
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to create a scan configuration or if you attempt to assign an invalid owner to a scan configuration. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /api/v3/export/configs/remediation/{vuln_id}:
+    get:
+      summary: Get remediation scan configuration
+      description: 'Returns a scan configuration for the vulnerability that you want to remediate.
+
+
+        **Note:** This endpoint does not create the remediation scan configuration. Use the response from this endpoint as the request body for the [Create scan config](ref:was-v2-config-create) endpoint to create the remediation scan. <div class="perms-callout">Requires the Scan Manager [40] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. Additionally, requires the Can Edit [64] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+      operationId: was-v3-config-remediation
+      tags:
+      - Configurations
+      parameters:
+      - in: path
+        name: vuln_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The UUID of the vulnerability you want to remediate. You can use the [Search vulnerabilities](ref:was-v2-vulns-search) endpoint or the [Search vulnerabilities for scan](ref:was-v2-scans-details-vulns-search) endpoint to determine the UUID of the vulnerability you want to remediate.
+      responses:
+        '200':
+          description: Returned if the remediation scan configuration was generated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response-Scan-Config'
+              examples:
+                response:
+                  value:
+                    name: Remediation scan of plugin 115540
+                    targets:
+                    - http://203.0.113.224:3334/remediation
+                    owner_id: a8ba6418-0b8e-44b9-add6-17bf941719a6
+                    template_id: 3223f18e-5a94-4e02-b560-77a4a8246cd3
+                    scanner_id: '36960339'
+                    permissions: []
+                    settings:
+                      assessment:
+                        rfi_remote_url: http://rfi.nessus.org/rfi.txt
+                        dictionary: limited
+                        enable: true
+                      audit:
+                        forms: false
+                        cookies: true
+                        ui_forms: false
+                        ui_inputs: false
+                        headers: false
+                        links: false
+                        parameter_names: false
+                        parameter_values: true
+                        jsons: false
+                        xmls: false
+                        path_parameters: false
+                        include_vector_patterns: []
+                      browser:
+                        screen_height: 1200
+                        screen_width: 1600
+                        ignore_images: true
+                        job_timeout: 60
+                        pool_size: 3
+                      chrome:
+                        script_finish_wait: 5000
+                        script_page_load_wait: 30000
+                        script_command_wait: 500
+                        disable_web_security: false
+                      debug_mode: false
+                      http:
+                        response_max_size: 5000000
+                        request_redirect_limit: 3
+                        custom_user_agent: false
+                        request_headers:
+                          Accept: '*/*'
+                          Accept-Language: en-US,en;q=0.5
+                        include_scan_id: false
+                        request_concurrency: 10
+                        request_timeout: 30
+                      plugin:
+                        rate_limiter:
+                          requests_per_second: 25
+                          autothrottle: true
+                          timeout_threshold: 100
+                        mode: disable
+                        ids:
+                        - 114211
+                        - 98148
+                        - 98204
+                        - 113837
+                        - 98203
+                        - 113894
+                        - 113895
+                        - 112439
+                        - 112921
+                        - 98214
+                        - 98226
+                        - 114006
+                        - 112772
+                        - 113893
+                        - 114244
+                        - 113342
+                        - 113230
+                        - 114232
+                        - 98210
+                        - 98765
+                        - 112719
+                        - 98223
+                        - 113452
+                        - 98207
+                        - 98211
+                        - 112809
+                        - 113580
+                        - 114132
+                        - 113899
+                        - 114147
+                        - 114064
+                        - 114202
+                        - 114199
+                        - 114201
+                        - 114200
+                        - 112545
+                        - 113975
+                        - 98703
+                        - 114148
+                        - 98647
+                        - 112421
+                        - 98987
+                        - 112613
+                        - 98644
+                        - 113247
+                        - 114029
+                        - 98224
+                        - 112771
+                        - 98047
+                        - 113370
+                        - 114106
+                        - 113972
+                        - 98525
+                        - 114219
+                        - 114065
+                        - 112361
+                        - 114166
+                        - 98988
+                        - 98701
+                        - 113871
+                        - 98986
+                        - 113901
+                        - 98538
+                        - 112895
+                        - 112697
+                        - 114223
+                        - 112893
+                        - 98780
+                        - 98206
+                        - 113043
+                        - 113579
+                        - 112894
+                        - 98200
+                        - 113338
+                        - 113170
+                        - 112925
+                        - 98225
+                        - 113340
+                        - 113978
+                        - 113229
+                        - 98201
+                        - 113422
+                        - 98080
+                        - 98593
+                        - 114149
+                        - 112714
+                        - 98103
+                        - 113237
+                        - 113371
+                        - 114167
+                        - 113218
+                        - 98065
+                        - 112686
+                        - 98649
+                        - 113951
+                        - 98642
+                        - 112949
+                        - 98205
+                        - 113973
+                        - 113258
+                        - 98702
+                        - 114089
+                        - 112922
+                        - 113211
+                        - 112547
+                        - 112615
+                        - 112804
+                        - 113207
+                        - 113455
+                        - 113059
+                        - 113068
+                        - 98208
+                        - 112630
+                        - 113974
+                        - 112811
+                        - 98059
+                        - 98202
+                        - 98070
+                        - 98101
+                        - 113374
+                        - 98088
+                        - 98054
+                        - 113554
+                        - 98061
+                        - 98083
+                        - 98524
+                        - 98100
+                        - 98407
+                        - 98068
+                        - 98067
+                        - 114237
+                        - 98212
+                        - 113898
+                        - 98063
+                        - 112907
+                        - 98062
+                        - 98064
+                        - 113553
+                        - 98050
+                        - 98091
+                        - 113851
+                        - 112528
+                        - 113392
+                        - 114224
+                        - 114146
+                        - 98146
+                        - 98943
+                        - 98937
+                        - 98209
+                        - 113904
+                        - 98213
+                        - 98398
+                        - 112703
+                        names: []
+                        families:
+                        - Component Vulnerability
+                        - Injection
+                        - HTTP Security Header
+                        - Web Servers
+                        - File Inclusion
+                        - Data Exposure
+                        - Authentication & Session
+                        - Cross Site Scripting
+                        - Code Execution
+                        - General
+                        - SSL/TLS
+                        - Cross Site Request Forgery
+                      queue_timeout: 08:00:00
+                      scope:
+                        option: urls
+                        exclude_file_extensions:
+                        - js
+                        - css
+                        - png
+                        - jpeg
+                        - gif
+                        - pdf
+                        - csv
+                        - svn-base
+                        - svg
+                        - jpg
+                        - ico
+                        - woff
+                        - woff2
+                        - exe
+                        - msi
+                        - zip
+                        exclude_path_patterns:
+                        - logout
+                        dom_depth_limit: 5
+                        directory_depth_limit: 10
+                        page_limit: 10000
+                        decompose_paths: false
+                        exclude_binaries: true
+                        auto_redundant_paths: 5
+                        openapi_file: null
+                        openapi_filename: null
+                        openapi_file_url: null
+                        crawl_script_filename: null
+                        deduplicate_pages: false
+                        graphql_file: null
+                        graphql_filename: null
+                        graphql_file_url: null
+                        graphql_introspection: null
+                        soap_file: null
+                        soap_filename: null
+                        soap_file_url: null
+                      session: {}
+                      timeout: 00:10:00
+                      remediation:
+                        findings:
+                        - vuln_id: f7c91cfa-b9c4-46eb-bcdc-3defb08e2e4b
+                          scan_id: 72b549a2-9921-4eeb-86f3-1e2b9ab7ca82
+                          plugin_id: 115540
+                          found_on_url: http://203.0.113.224:3334/remediation
+                          details:
+                            inputType: cookie
+                            inputName: connect.sid
+                            creation_type: from_url_via_browser
+                    in_remediation: true
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to generate a remediation scan configuration. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Returned if Tenable Web App Scanning could not find the specified vulnerability.
+        '422':
+          description: Returned if the plugin for the specified vulnerability is non-remediable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /was/v2/configs/search:
+    post:
+      tags:
+      - Configurations
+      summary: Search scan configurations
+      description: Returns a list of web application scan configurations. If a scan has been run using the configuration, the list also contains information about the last scan that was run. <div class="perms-callout">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: was-v2-config-search
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/sort'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - title: Single Filter
+                $ref: '#/components/schemas/AppliedFilters-ScanConfigs'
+              - title: Multiple Filters
+                type: object
+                properties:
+                  AND:
+                    type: array
+                    description: An array of filters that must all be satisfied.
+                    items:
+                      $ref: '#/components/schemas/AppliedFilters-ScanConfigs'
+                  OR:
+                    type: array
+                    description: An array of filters where at least one must be satisfied.
+                    items:
+                      $ref: '#/components/schemas/AppliedFilters-ScanConfigs'
+      responses:
+        '200':
+          description: A list of web application scan configurations. If a scan has been run using the configuration, the list also contains information about the last scan that was run.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - pagination
+                - items
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/PaginationResponse'
+                  items:
+                    type: array
+                    description: A list of scan configurations.
+                    items:
+                      $ref: '#/components/schemas/ConfigMetadata'
+              examples:
+                response:
+                  value:
+                    pagination:
+                      total: 1690
+                      offset: 0
+                      limit: 10
+                      sort:
+                      - name: name
+                        order: asc
+                      - name: created_at
+                        order: desc
+                      - name: updated_at
+                        order: desc
+                    items:
+                    - config_id: b7eb721f-5768-48a4-969f-aee8bc29ac22
+                      owner_id: ef22f2bf-db1b-4471-984f-9507dcc083e1
+                      is_shared: false
+                      user_permissions: configure
+                      name: '3370'
+                      target_count: 1
+                      description: null
+                      created_at: '2020-05-12T09:43:42.620Z'
+                      updated_at: '2020-05-12T09:43:42.620Z'
+                      schedule:
+                        timezone: Asia/Calcutta
+                        starttime: 20200512T153000
+                        rrule: FREQ=YEARLY;COUNT=1
+                        enabled: false
+                      template_id: ea71052b-5b48-4712-8255-3711d00a6514
+                      last_scan: null
+                      user_template: null
+                    - config_id: 0aa9445f-b673-4563-b7e2-612ac37e885a
+                      owner_id: 3e0eae98-dd3b-4c88-aa12-bac0b17567c6
+                      is_shared: false
+                      user_permissions: configure
+                      name: 3370_WASTest
+                      target_count: 1
+                      description: test
+                      created_at: '2020-05-12T10:06:06.919Z'
+                      updated_at: '2020-05-12T10:06:50.955Z'
+                      schedule:
+                        timezone: Asia/Calcutta
+                        starttime: 20200512T160000
+                        rrule: FREQ=YEARLY;COUNT=1
+                        enabled: false
+                      template_id: ea71052b-5b48-4712-8255-3711d00a6514
+                      last_scan: null
+                      user_template: null
+                    - config_id: 31b6dd5e-5edb-457d-9350-b9e31bd02bf1
+                      owner_id: 01c924ee-e6ab-4d55-b283-dffba6dcce4c
+                      is_shared: false
+                      user_permissions: configure
+                      name: A1_WAS_scan
+                      target_count: 1
+                      description: ''
+                      created_at: '2020-06-11T15:08:48Z'
+                      updated_at: '2020-06-11T15:08:48Z'
+                      schedule: null
+                      template_id: f93dfcb4-6eb2-4820-9b64-3dee8893a3f0
+                      last_scan: null
+                      user_template:
+                        user_template_id: 0c539366-172d-49bd-9c3d-90a9947ea48e
+                        name: A1_WAS_scan
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /was/v2/configs/{config_id}:
+    get:
+      summary: Get scan configuration details
+      description: Returns details for the specified scan configuration.<div class="perms-callout">Requires the Scan Operator [24] user role or the `WAS.SCAN_WAS.READ` custom role privilege. Additionally, requires the Can Execute [32] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: was-v2-config-details
+      tags:
+      - Configurations
+      parameters:
+      - description: The UUID of the scan configuration that you want to retrieve details for.
+        in: path
+        name: config_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returns details for the specified scan configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response-Scan-Config'
+              examples:
+                response:
+                  value:
+                    settings:
+                      timeout: 08:00:00
+                      debug_mode: false
+                      credentials:
+                        credential_ids:
+                        - a982f52a-d1ee-48bf-8c94-e5d3b62804e6
+                      scope:
+                        option: all
+                        urls: []
+                        exclude_file_extensions:
+                        - js
+                        - css
+                        - png
+                        - jpeg
+                        - gif
+                        - pdf
+                        - csv
+                        - svn-base
+                        - svg
+                        - jpg
+                        - ico
+                        exclude_path_patterns:
+                        - logout
+                        dom_depth_limit: 5
+                        directory_depth_limit: 10
+                        page_limit: 10000
+                        crawl_script: null
+                        decompose_paths: false
+                        exclude_binaries: true
+                        auto_redundant_paths: 5
+                        openapi_file: null
+                        openapi_filename: null
+                        openapi_file_url: null
+                        crawl_script_filename: null
+                        deduplicate_pages: null
+                        graphql_file: null
+                        graphql_filename: null
+                        graphql_file_url: null
+                        graphql_introspection: null
+                        soap_file: null
+                        soap_filename: null
+                        soap_file_url: null
+                      plugin:
+                        rate_limiter:
+                          requests_per_second: 25
+                          autothrottle: true
+                          timeout_threshold: 100
+                        mode: disable
+                        ids: []
+                        names: []
+                        families: []
+                      browser:
+                        screen_width: 1600
+                        screen_height: 1200
+                        ignore_images: true
+                        job_timeout: 30
+                        analysis: null
+                        pool_size: 3
+                      http:
+                        response_max_size: 500000
+                        request_redirect_limit: 2
+                        user_agent: WAS/%v
+                        custom_user_agent: false
+                        request_headers:
+                          Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+                          Accept-Language: en-US,en;q=0.5
+                        include_scan_id: false
+                        request_concurrency: 10
+                        request_timeout: 5
+                      chrome:
+                        script_finish_wait: 5000
+                        script_page_load_wait: 30000
+                        script_command_wait: 500
+                        disable_web_security: false
+                      assessment:
+                        enable: true
+                        dictionary: limited
+                        rfi_remote_url: http://rfi.nessus.org/rfi.txt
+                        fingerprinting: null
+                        element_exclusions:
+                        - element_type: dom_element
+                          selector: Logout
+                          selector_type: text
+                        - element_type: dom_element
+                          selector:
+                            id_form: login
+                          selector_type: attribute
+                      audit:
+                        forms: true
+                        cookies: true
+                        ui_forms: true
+                        ui_inputs: true
+                        headers: true
+                        links: true
+                        parameter_names: false
+                        parameter_values: true
+                        jsons: false
+                        xmls: false
+                    config_id: f08a9605-231a-45b0-b0f8-5ab4f5510239
+                    container_id: 9f084368-f11e-4d69-be63-df5e2a0b2635
+                    owner_id: 01c924ee-e6ab-4d55-b283-dffba6dcce4c
+                    template_id: f93dfcb4-6eb2-4820-9b64-3dee8893a3f0
+                    user_template_id: null
+                    name: Bank of Tenable full
+                    targets:
+                    - http://192.0.2.119
+                    description: null
+                    created_at: '2020-02-10T12:49:23.503Z'
+                    updated_at: '2020-03-30T17:37:29.603Z'
+                    scanner_id: 36973541
+                    schedule: null
+                    folder:
+                      folder_id: 71bd4347-db84-41e5-9e2f-9600f8f846f2
+                      name: Eastern Region
+                    in_trash: false
+                    default_permissions: no_access
+                    results_visibility: dashboard
+                    permissions: []
+                    notifications:
+                      emails: []
+        '400':
+          description: Returned if your request specifies an invalid scan configuration ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: INVALID_ID_FORMAT
+                      reason: The provided ID of '10-ABC' must be UUID type
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Web App Scanning cannot find the specified configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: NOT_FOUND
+                      reason: Resource with ID 'b29f198c-eac6-4107-b046-c621f542cd39' not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    put:
+      summary: Upsert scan configuration
+      description: "Updates an existing scan configuration or creates a new scan configuration. \n\nThis operation is asynchronous and returns with an immediate 202. The scan configuration is guaranteed to be created at some point in the immediate future depending on resource load. To track the status of the operation, use the [GET /was/v2/configs/{config_id}/status/{tracking_id}](ref:was-v2-config-status) endpoint. The `config_id` and `tracking_id` can be retrieved from the URI provided in the `Location` header of the `202 Accepted` response. \n\n**Note:** Although this endpoint can be used to create a scan configuration, Tenable recommends the [POST /was/v2/configs](ref:was-v2-config-create) endpoint instead for the creation of scan configurations. To create a scan configuration with this endpoint, you first need to generate a UUID. Tenable recommends the `uuidgen` tool available in most Linux distributions. The `--time` option can be passed to the `uuidgen` tool to ensure that the UUID is unique.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `WAS.SCAN_WAS.MANAGE` custom role privilege. Additionally, requires the Can Edit [64] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: was-v2-config-upsert
+      tags:
+      - Configurations
+      parameters:
+      - description: If updating an existing scan configuration, the UUID of the scan configuration you want to update. If creating a new scan configuration, a new UUID generated with a tool like `uuidgen`.
+        in: path
+        name: config_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request-Config'
+      responses:
+        '202':
+          description: Returned if Tenable Web App Scanning successfully been accepted the request for processing.
+          headers:
+            Location:
+              description: Use the contents of this header appended to the prefix `/was/v2` to execute lookups on the current status of the resource.
+              schema:
+                type: string
+                format: uri
+                example: /configs/{config_id}/status/{tracking_id}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response-Scan-Config'
+              examples:
+                response:
+                  value:
+                    settings:
+                      timeout: 08:00:00
+                      debug_mode: false
+                      credentials: null
+                      scope:
+                        option: all
+                        urls: null
+                        exclude_file_extensions:
+                        - js
+                        - css
+                        - png
+                        - jpeg
+                        - gif
+                        - pdf
+                        - csv
+                        - svn-base
+                        - svg
+                        - jpg
+                        - ico
+                        exclude_path_patterns:
+                        - logout
+                        dom_depth_limit: 5
+                        directory_depth_limit: 10
+                        page_limit: 10000
+                        crawl_script: null
+                        decompose_paths: false
+                        exclude_binaries: true
+                        auto_redundant_paths: 5
+                        openapi_file: null
+                        openapi_filename: null
+                        openapi_file_url: null
+                        crawl_script_filename: null
+                        deduplicate_pages: null
+                        graphql_file: null
+                        graphql_filename: null
+                        graphql_file_url: null
+                        graphql_introspection: null
+                        soap_file: null
+                        soap_filename: null
+                        soap_file_url: null
+                      plugin:
+                        rate_limiter:
+                          requests_per_second: 25
+                          autothrottle: true
+                          timeout_threshold: 100
+                        mode: disable
+                        ids: []
+                        names: []
+                        families: []
+                      browser:
+                        screen_width: 1600
+                        screen_height: 1200
+                        ignore_images: true
+                        job_timeout: 30
+                        analysis: null
+                        pool_size: 3
+                      http:
+                        response_max_size: 500000
+                        request_redirect_limit: 2
+                        user_agent: WAS/%v
+                        custom_user_agent: false
+                        request_headers:
+                          Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+                          Accept-Language: en-US,en;q=0.5
+                        include_scan_id: false
+                        request_concurrency: 10
+                        request_timeout: 5
+                      chrome:
+                        script_finish_wait: 5000
+                        script_page_load_wait: 30000
+                        script_command_wait: 500
+                        disable_web_security: false
+                      assessment:
+                        rfi_remote_url: http://rfi.nessus.org/rfi.txt
+                        dictionary: limited
+                        fingerprinting: null
+                        enable: true
+                      audit:
+                        forms: true
+                        cookies: true
+                        ui_forms: true
+                        ui_inputs: true
+                        headers: true
+                        links: true
+                        parameter_names: false
+                        parameter_values: true
+                        jsons: true
+                        xmls: true
+                    config_id: c21c9f22-f4f9-440f-a49b-aad3b694f0df
+                    container_id: 9f084368-f11e-4d69-be63-df5e2a0b2635
+                    owner_id: ef22f2bf-db1b-4471-984f-9507dcc083e1
+                    template_id: f93dfcb4-6eb2-4820-9b64-3dee8893a3f0
+                    user_template_id: null
+                    name: LD Test 5
+                    targets:
+                    - https://example5.com
+                    description: null
+                    created_at: '2020-09-25T16:22:38.659Z'
+                    updated_at: '2020-09-25T16:24:38.117Z'
+                    scanner_id: null
+                    schedule: null
+                    additional_properties: null
+                    default_permissions: no_access
+                    results_visibility: dashboard
+                    permissions: []
+                    notifications:
+                      emails: []
+        '400':
+          description: Returned if your request specifies invalid scan configuration parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputErrorResponse'
+              examples:
+                response:
+                  value:
+                    code: INPUT_FORM_VIOLATION
+                    fields:
+                    - field: .target
+                      message_type: VALUE_MUST_BE_SPECIFIED
+                      value:
+                        message: the value must be specified
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    patch:
+      summary: Move scan configuration
+      description: Moves the scan configuration to the specified folder. <div class="perms-callout">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: was-v2-config-move
+      tags:
+      - Configurations
+      parameters:
+      - description: The UUID of the scan configuration you want to update.
+        in: path
+        name: config_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigUpdate'
+      responses:
+        '200':
+          description: Returned if the request to move the scan configuration to another folder was successful.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '202':
+          description: The request to move the scan configuration to the Trash has successfully been accepted, and will be processed.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+          headers:
+            Location:
+              description: Use the contents of this header appended to the prefix `/was/v2` to execute lookups on the current status of the resource
+              schema:
+                type: string
+                format: uri
+                example: /configs/:config_id/status/:tracking_id
+        '400':
+          description: Returned if your request body is invalid or if you specify a folder name with invalid characters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: INVALID_JSON_BODY
+                      reason: "Invalid message body: Could not decode JSON: {\n  \"target\" : \"https://example45.com\",\n  \"folder_name\" : \"Eastern Region 2@#$\"\n}"
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Web App Scanning cannot find the specified scan configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: NOT_FOUND
+                      reason: Resource with id 'f637c8ab-3b43-427d-a32f-e668f1a4a745' not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    delete:
+      summary: Delete scan configuration
+      description: Deletes the specified scan configuration and all associated scan history and vulnerabilities. You cannot delete a scan configuration if a scan based on that configuration is currently running.<div class="perms-callout">Requires the Scan Manager [40] user role or the `WAS.SCAN_WAS.MANAGE` custom role privilege. Additionally, requires the Can Edit [64] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: was-v2-config-delete
+      tags:
+      - Configurations
+      parameters:
+      - description: The UUID of the scan configuration you want to delete.
+        in: path
+        name: config_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '202':
+          description: Returned if Tenable Web App Scanning successfully created the deletion job.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specifies an invalid scan configuration ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: INVALID_ID_FORMAT
+                      reason: The provided ID of '10-ABC' must be UUID type
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Web App Scanning cannot find the specified configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: NOT_FOUND
+                      reason: Resource with ID 'b29f198c-eac6-4107-b046-c621f542cd39' not found
+        '409':
+          description: Returned if you attempt to delete a configuration in use by a running scan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: NOT_ALLOWED
+                      reason: Can't delete config due to scan '9ed690de-212f-4765-94c0-57922c20536a' with status 'Pending'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /was/v2/configs/{config_id}/status/{tracking_id}:
+    get:
+      summary: Get scan configuration processing status
+      description: "Tracks the current status of a scan configuration creation, update, or upsert process. When creating or updating a scan configuration, this endpoint can be used to determine the current status of the request. You can poll this endpoint using a sensible pause duration between each request until a `completed` or `failed` status is returned. \n\nThe `config_id` and `tracking_id` can be retrieved from the URI provided in the `Location` header of the `202 Accepted` response from the [POST /was/v2/configs](ref:was-v2-config-create) or [PUT /was/v2/configs/{config_id}](ref:was-v2-config-upsert) request used to create or update the scan configuration. <div class=\"perms-callout\">Requires the Scan Operator [24] user role or the `WAS.SCAN_WAS.MANAGE` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: was-v2-config-status
+      tags:
+      - Configurations
+      parameters:
+      - description: 'The UUID of the scan configuration.
+
+
+          **Note:** The `config_id` can be retrieved from the URI provided in the `Location` header of the `202 Accepted` response from the [POST /was/v2/configs](ref:was-v2-config-create) or [PUT /was/v2/configs/{config_id}](ref:was-v2-config-upsert) request used to create or update the scan configuration.'
+        in: path
+        name: config_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - description: "The tracking UUID for the request you want to retrieve the status for. \n\n**Note:** The `tracking_id` can be retrieved from the URI provided in the `Location` header of the `202 Accepted` response from the [POST /was/v2/configs](ref:was-v2-config-create) or [PUT /was/v2/configs/{config_id}](ref:was-v2-config-upsert) request used to create or update the scan configuration."
+        in: path
+        name: tracking_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the status for the scan configuration was found.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - tracking_status
+                properties:
+                  tracking_status:
+                    description: The status of the scan creation, update, or upsert process. Possible values are `processing`, `complete`, or `failed`.
+                    type: string
+                    enum:
+                    - processing
+                    - completed
+                    - failed
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /api/v3/export/configs/{config_id}:
+    get:
+      tags:
+      - Configurations
+      summary: Export scan configuration for CI/CD
+      description: "Downloads the specified scan configuration in HOCON (Human-Optimized Config Object Notation) format for use with WAS Docker images in CI/CD (continuous integration / continuous delivery) mode. \n\nYou can integrate Tenable WAS Docker images with GitHub, GitLab, Jenkins, CircleCI, or Bamboo to scan builds and prevent vulnerabilities before your code and applications are deployed. For more information, see [CI/CD Application Scan Overview](https://docs.tenable.com/web-app-scanning/Content/WAS/GettingStarted/Integrations/CI-CD/Overview.htm) in the Tenable Web App Scanning User Guide. <div class=\"perms-callout\">Requires the `WAS.TOGGLE_WAS.USE` custom role privilege. Additionally, requires the Can Configure WAS scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: was-v3-config-export-cicd
+      parameters:
+      - in: path
+        name: config_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The UUID of the scan configuration to export in HOCON format for WAS CI/CD mode. You can use the [POST /was/v2/configs/search](ref:was-v2-config-search) endpoint to determine the UUID of the scan configuration you want to export.
+      responses:
+        '200':
+          description: Returned if the HOCON file for the specified scan configuration was returned successfully.
+          content:
+            application/octet-stream:
+              examples:
+                response:
+                  value: "\"config_id\"=\"262a01a3-9de3-43f9-bed6-b4da34015d71\"\n\"template_id\"=\"426ce117-b083-423c-a256-01e2e1e3cd55\"\n\"results_visibility\"=dashboard\nscan {\n    assessment {\n        dictionary=limited\n        enable=true\n        fingerprinting=false\n        \"rfi_remote_url\"=\"http://rfi.nessus.org/rfi.txt\"\n    }\n    audit {\n        cookies=true\n        forms=true\n        headers=true\n        jsons=true\n        links=true\n        \"parameter_names\"=false\n        \"parameter_values\"=true\n        \"path_parameters\"=false\n        \"ui_forms\"=true\n        \"ui_inputs\"=true\n        xmls=true\n    }\n    browser {\n        analysis=false\n        \"ignore_images\"=true\n        \"job_timeout\"=60\n        \"pool_size\"=3\n        \"screen_height\"=1200\n        \"screen_width\"=1600\n    }\n    chrome {\n        \"script_command_wait\"=500\n        \"script_finish_wait\"=5000\n        \"script_page_load_wait\"=30000\n    }\n    \"debug_mode\"=false\n    http {\n        \"custom_user_agent\"=false\n        \"include_scan_id\"=false\n        \"request_concurrency\"=10\n        \"request_headers\" {\n            Accept=\"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\"\n            Accept-Language=\"en-US,en;q=0.5\"\n        }\n        \"request_redirect_limit\"=2\n        \"request_timeout\"=30\n        \"response_max_size\"=5000000\n        \"user_agent\"=\"WAS/%v\"\n    }\n    plugin {\n        families=[]\n        ids=[]\n        mode=disable\n        names=[]\n        \"rate_limiter\" {\n            autothrottle=true\n            \"requests_per_second\"=25\n            \"timeout_threshold\"=100\n        }\n    }\n    scope {\n        \"auto_redundant_paths\"=5\n        \"decompose_paths\"=false\n        \"deduplicate_pages\"=false\n        \"directory_depth_limit\"=10\n        \"dom_depth_limit\"=5\n        \"exclude_binaries\"=true\n        \"exclude_file_extensions\"=[\n            js,\n            css,\n            png,\n            jpeg,\n            gif,\n            pdf,\n            csv,\n            svn-base,\n            svg,\n            jpg,\n            ico,\n            woff,\n            woff2\n        ]\n        \"exclude_path_patterns\"=[\n            logout\n        ]\n        option=all\n        \"page_limit\"=10000\n    }\n    timeout=\"08:00:00\"\n    }\n    target=\"https://example45.com\"\n}\n\"vulnerability_threshold\"=High\n"
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have user permissions to export the specified scan configuration. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Returned if Tenable Web App Scanning could not find the specified configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: NOT_FOUND
+                      reason: Resource with ID 'b29f198c-eac6-4107-b046-c621f542cd39' not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    ConfigSettings:
+      type: object
+      description: The scan configuration settings.
+      properties:
+        description:
+          type: string
+          example: Security scan configuration for Facebook applications.
+          description: The description of the scan configuration.
+        timeout:
+          type: string
+          pattern: ^\d{2}:\d{2}:\d{2}$
+          example: 08:00:00
+          description: The maximum duration the scan runs before it stops automatically. The maximum duration you can set for your overall scan max time is 99:59:59 (hours:minutes:seconds).
+        debug_mode:
+          description: Indicates whether scan debug mode is enabled (`true`) or disabled (`false`). Scan debug mode provides additional information to users.
+          type: boolean
+          example: true
+        input_force:
+          description: Indicates whether to force input (`true`) or not (`false`).
+          type: boolean
+        credentials:
+          $ref: '#/components/schemas/Credentials'
+        scope:
+          $ref: '#/components/schemas/ScopeSettings'
+        plugin:
+          $ref: '#/components/schemas/PluginSettings'
+        browser:
+          $ref: '#/components/schemas/BrowserSettings'
+        http:
+          $ref: '#/components/schemas/HttpSettings'
+        chrome_script:
+          $ref: '#/components/schemas/ChromeScript'
+        assessment:
+          $ref: '#/components/schemas/AssessmentSettings'
+        audit:
+          $ref: '#/components/schemas/AuditSettings'
+    Request-Config:
+      type: object
+      required:
+      - name
+      - targets
+      - owner_id
+      - template_id
+      - settings
+      properties:
+        name:
+          description: A unique, user-defined name for the scan configuration.
+          type: string
+          example: Quarterly Security Audit
+        description:
+          description: An optional summary or notes about the scan configuration's purpose.
+          type: string
+          example: Internal business applications vulnerability assessment.
+        targets:
+          type: array
+          description: A list of absolute URLs to be included in the scan. Specifying multiple URLs enables you to assess several web applications within a single scan job.
+          items:
+            type: string
+            format: uri
+            example: https://example.com
+        tag_targets:
+          type: array
+          description: A list of unique tag identifiers (UUIDs) to include in the scan. This enables you to dynamically target assets based on their assigned tags rather than manual URL entry.
+          items:
+            type: string
+            format: uuid
+            example: 2f06e776-ecc3-4fbe-a005-6e84b4ed61a3
+        applications:
+          type: array
+          description: A list of unique web application identifiers (UUIDs) to include in the scan. Selecting specific applications enables you to run targeted assessments on pre-defined assets within your inventory.
+          items:
+            type: string
+            format: uuid
+            example: 3b06e776-ecc3-3fbe-a005-6e84b4ed62a1
+        target:
+          type: string
+          description: "The URL of the web application that you want to scan. \n\n**Deprecated:** This parameter is deprecated and will be retired on 2022/04/06. Tenable recommends that you use the `targets` parameter instead. Please update any existing integrations that your organization has."
+          format: uri
+          deprecated: true
+        folder_id:
+          description: The UUID of the folder to assign for the scan configuration.
+          type: string
+          format: uuid
+        owner_id:
+          description: The UUID of the owner of the scan configuration.
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+        template_id:
+          type: string
+          format: uuid
+          description: The UUID of the Tenable-provided configuration template.
+        user_template_id:
+          type: string
+          format: uuid
+          description: The UUID of the user-defined configuration template from which this configuration was derived.
+        scanner_id:
+          type: integer
+          description: "The unique identifier for the scanner or scanner group designated to perform the scan. Specifying a scanner enables you to control the network origin of the scan. If omitted, the system defaults to the default cloud scanner. \n\n**Caution:** To scan internal web applications, you must specify the ID of a local scanner or scanner group to ensure the target is reachable."
+        schedule:
+          description: The scan schedule settings. By default, scans are not scheduled.
+          $ref: '#/components/schemas/ScanSchedule'
+        pause_window:
+          description: 'Defines time frames during which the scheduled scan should not run. Pause windows can be used only when a scan schedule is configured.
+
+
+            **Deprecated:** The `pause_window` object is deprecated. To create a pause window, use a schedule window with the `type` parameter set to `pause`. For more information, see the `schedule_windows` object. Please update any existing integrations that your organization has.'
+          $ref: '#/components/schemas/PauseWindow'
+        schedule_windows:
+          description: Defines scan and pause windows for scheduled scans. Each window specifies when scans run or pause. Requires a scan schedule to be enabled.
+          $ref: '#/components/schemas/ScheduleWindows'
+        notifications:
+          description: Contact information used to send scan notifications upon scan completion.
+          $ref: '#/components/schemas/Notifications'
+        permissions:
+          description: The permissions for the scan configuration.
+          type: array
+          items:
+            $ref: '#/components/schemas/Permissions'
+        settings:
+          $ref: '#/components/schemas/ConfigSettings'
+    PluginSettings:
+      type: object
+      description: The settings for enabling or disabling individual plugins and/or plugin families to customize your scan.
+      properties:
+        rate_limiter:
+          type: object
+          description: Optional parameters for limiting the rate at which HTTP requests are sent to the target web application.
+          properties:
+            requests_per_second:
+              type: integer
+              description: The maximum number of HTTP requests per second.
+              default: 25
+            autothrottle:
+              description: Indicates whether the scanner slows down the scan when network congestion is detected (`true`). The default value of this parameter is `true`.
+              type: boolean
+              default: true
+            timeout_threshold:
+              type: integer
+              description: The number of consecutive timeouts before Tenable Web App Scanning aborts the scan.
+              default: 100
+        mode:
+          type: string
+          example: disable
+          description: Indicates whether specific plugins and/or plugin families are enabled (`enable`) or disabled (`disable`) for the scan.
+        ids:
+          type: array
+          description: A list of plugin IDs.
+          items:
+            type: integer
+            description: The ID of the plugin.
+          example:
+          - 98000
+          - 98001
+        names:
+          type: array
+          description: A list of plugin names.
+          items:
+            type: string
+            description: The name of the plugin.
+          example:
+          - path_traversal
+        families:
+          type: array
+          description: A list of plugin families.
+          items:
+            type: string
+            description: The name of the plugin family.
+          example:
+          - web_servers
+          - csrf
+    AuditSettings:
+      description: The settings that allow the scan to audit elements other than the ones detected during crawling.
+      type: object
+      properties:
+        forms:
+          type: boolean
+          description: Indicates whether to scan for form vulnerabilities (`true`).
+          default: false
+        cookies:
+          type: boolean
+          description: Indicates whether to scan for cookie vulnerabilities (`true`).
+          default: false
+        ui_forms:
+          type: boolean
+          default: false
+          description: Indicates whether to scan input and button groups associated with JavaScript code (`true`).
+        ui_inputs:
+          type: boolean
+          description: Indicates whether to scan orphan input elements with associated DOM events (`true`).
+          default: false
+        headers:
+          type: boolean
+          description: Indicates whether to scan headers for vulnerabilities and insecure configurations (`true`); for example, missing X-Frame-Options.
+          default: false
+        links:
+          type: boolean
+          description: Indicates whether to scan links and their parameters in vulnerability checks (`true`).
+          default: false
+        parameter_names:
+          type: boolean
+          description: Indicates whether to perform extensive fuzzing of parameter names (`true`).
+          default: false
+        parameter_values:
+          type: boolean
+          description: Indicates whether to perform performs extensive fuzzing of parameter values (`true`).
+          default: false
+        jsons:
+          type: boolean
+          description: Indicates whether to scan JSON request data (`true`).
+          default: false
+        xmls:
+          type: boolean
+          description: Indicates whether to scan XML request data (`true`).
+          default: false
+        cookies_extensively:
+          description: Indicates whether an assessment is enabled (`true`) or disabled (`false`).
+          type: boolean
+        with_raw_payloads:
+          description: Indicates whether parameters should be tested with their raw payloads (`true`) or not (`false`).
+          type: boolean
+        with_both_http_methods:
+          description: Indicates if both GET and POST methods should be used during an assessment (`true`) or not (`false`).
+          type: boolean
+        with_extra_parameter:
+          description: Indicates whether to test non-existing parameters (`true`) or disabled (`false`).
+          type: boolean
+    ErrorResponse:
+      type: object
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
+      properties:
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
+    ConfigUpdate:
+      type: object
+      required:
+      - folder_name
+      properties:
+        folder_name:
+          description: The name of the folder to set for the scan configuration.
+          type: string
+    HttpSettings:
+      type: object
+      description: The HTTP request settings for the scan.
+      properties:
+        response_max_size:
+          type: integer
+          minimum: 1
+          default: 500000
+          description: The maximum load size for an audited page.
+        request_redirect_limit:
+          type: integer
+          minimum: 1
+          default: 1
+          description: The number of redirects the scan follows before it stops trying to crawl the page.
+        user_agent:
+          description: The user-agent header the scanner includes in HTTP requests to the web application.
+          type: string
+          default: Nessus WAS/%v
+        custom_user_agent:
+          description: Indicates whether the scanner includes the `user-agent` header in HTTP requests to the web application (`true`).
+          type: boolean
+        request_headers:
+          description: 'The custom headers the scanner includes in HTTP requests to the web application.
+
+
+            **Note:** If you specify a user-agent header value in this parameter, it overrides the `user_agent` parameter value.'
+          type: object
+        request_concurrency:
+          description: The maximum number of concurrent HTTP connections to the web application.
+          type: integer
+          default: 10
+        request_timeout:
+          type: integer
+          description: HTTP request timeout (in milliseconds).
+          default: 5000
+    PauseWindow:
+      deprecated: true
+      type: object
+      required:
+      - pause_window_schedule
+      - timezone
+      properties:
+        enabled:
+          type: boolean
+          description: Indicates whether a pause window is enabled (`true`) or disabled (`false`).
+        timezone:
+          type: string
+          description: A valid `TZID` per RFC 5545. For example, `America/New_York`.
+          example: America/New_York
+        pause_window_schedule:
+          $ref: '#/components/schemas/PauseWindowSchedule'
+          description: The start and end times for the pause window configured by day of week.
+    Credentials:
+      type: object
+      description: The credentials the scanner uses to run an authenticated scan against the web application. For more information, see the managed credentials category in [Manage Credentials](doc:manage-credentials).
+      required:
+      - credential_ids
+      properties:
+        credential_ids:
+          type: array
+          description: A list of credentials UUIDs.
+          items:
+            type: string
+            format: uuid
+            description: The UUID of the credential.
+    PauseWindowSchedule:
+      type: object
+      properties:
+        sunday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Sundays.
+        monday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Mondays.
+        tuesday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Tuesdays.
+        wednesday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Wednesdays.
+        thursday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Thursdays.
+        friday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Fridays.
+        saturday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Saturdays.
+    Notifications:
+      type: object
+      description: Contact information used to send scan notifications upon scan completion.
+      default:
+        emails: []
+      required:
+      - emails
+      properties:
+        emails:
+          type: array
+          description: A list of email addresses.
+          items:
+            type: string
+            format: email
+            description: Email address
+    ConfigMetadata:
+      type: object
+      required:
+      - config_id
+      - user_permissions
+      - name
+      - target_count
+      - created_at
+      - updated_at
+      properties:
+        config_id:
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+          description: The UUID of the scan configuration.
+        owner_id:
+          description: The UUID of the owner of the scan configuration.
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+        is_shared:
+          type: boolean
+        user_permissions:
+          $ref: '#/components/schemas/PermissionLevel'
+        name:
+          type: string
+          example: My First Scan
+          description: The scan configuration name.
+        target:
+          type: string
+          description: The URL of the web application targeted by the scan.
+          format: uri
+        target_count:
+          type: integer
+          format: int32
+          description: The number of targets associated with the scan configuration.
+        description:
+          type: string
+          example: Security scan configuration for Facebook applications.
+          description: The description of the scan configuration.
+        created_at:
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when the scan configuration was created, for example, `2018-12-31T13:51:17.243Z`.
+        updated_at:
+          type: string
+          format: date-time
+          example: '2018-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when the scan configuration was last updated, for example, `2018-12-31T13:51:17.243Z`.
+        schedule:
+          description: The scan schedule settings. By default, scans are not scheduled.
+          $ref: '#/components/schemas/ScanSchedule'
+        template_id:
+          description: The UUID of the Tenable-provided or user-defined configuration template from which this configuration was derived.
+          type: string
+          format: uuid
+        container_id:
+          type: string
+          example: On Demand
+          description: The UUID of your organization's Tenable Web App Scanning instance.
+        last_scan:
+          $ref: '#/components/schemas/Scan'
+        user_template:
+          type: object
+          properties:
+            user_template_id:
+              description: The UUID of the user-defined template.
+              type: string
+              format: uuid
+            name:
+              type: string
+              description: The name of the user-defined template.
+    PermissionLevel:
+      description: The scan permissions level, as described in [Permissions](doc:permissions).
+      type: string
+      enum:
+      - no_access
+      - view
+      - control
+      - configure
+    ScheduleWindowTime:
+      type: object
+      required:
+      - day_of_week
+      - time
+      properties:
+        day_of_week:
+          description: The day of the week when the window starts or ends.
+          type: string
+          enum:
+          - monday
+          - tuesday
+          - wednesday
+          - thursday
+          - friday
+          - saturday
+          - sunday
+        time:
+          description: he time in HH:mm (24-hour) format.
+          type: string
+          pattern: ^([01]\d|2[0-3]):[0-5]\d$
+    InputErrorResponse:
+      type: object
+      required:
+      - code
+      - fields
+      description: Tenable Web App Scanning invalid input error response.
+      properties:
+        code:
+          type: string
+          description: The Tenable Web App Scanning error code. The code `INPUT_FORM_VIOLATION` is returned if your request body contains invalid input.
+        fields:
+          type: array
+          description: A list of fields that contain invalid input along with a message about the cause of the input error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning input error.
+            properties:
+              field:
+                type: string
+                description: The JSON path of the invalid field.
+              message_type:
+                type: string
+                description: "The type of input violation. Common input errors include:\n - `VALUE_MUST_BE_SPECIFIED`—Returned if a required body parameter is missing.\n - `VALUE_NOT_POSITIVE`—Returned if your input contains a negative integer when it should be positive.\n - `VALUE_IS_NEGATIVE`—Returned if your input contains a positive integer when it should be negative.\n - `VALUE_CANT_BE_CHANGED`—Returned if you attempted to change a value that cannot be changed.\n - `VALUE_MUST_BE_GREATER`—Returned if your input contains a value that is smaller than the minimum required lower bound.\n - `FIELD_CANT_BE_ADDED`—Returned if your input contains a field that can't be added.\n - `INVALID_TYPE`—Returned if your input contains an invalid type (ex. integer or string).\n - `INVALID_FORMAT`—Returned if your input contains an invalid format."
+                enum:
+                - VALUE_MUST_BE_SPECIFIED
+                - VALUE_NOT_POSITIVE
+                - VALUE_IS_NEGATIVE
+                - VALUE_CANT_BE_CHANGED
+                - VALUE_MUST_BE_GREATER
+                - FIELD_CANT_BE_ADDED
+                - INVALID_TYPE
+                - INVALID_FORMAT
+                - ERROR_MESSAGE
+              value:
+                description: Contains an error message describing the cause of the input validation error.
+                type: object
+    RequestedAction:
+      type: string
+      enum:
+      - start
+      - stop
+      example: start
+    ScanStatus:
+      type: string
+      description: "The scan status. Values include:\n - aborted—Terminated before completion for reason other than a user-requested stop.\n - canceled—Stopped by a user request.\n - completed—Completed successfully.\n - pending—Start requested but not yet running.\n - processing—The scan has completed but the results are still being processed. The scanner is processing vulnerability findings, attachments, notes, and other metadata.\n - ready—Scan is ready to be started.\n - running—Scan is in progress.\n - stopping—Stop requested but not yet stopped."
+      enum:
+      - aborted
+      - canceled
+      - completed
+      - pending
+      - processing
+      - ready
+      - running
+      - stopping
+      example: completed
+    ScheduleWindows:
+      type: object
+      description: Defines scan and pause windows for scheduled scans. Each window specifies when scans run or pause. Schedule windows require a scan schedule to be enabled.
+      required:
+      - enabled
+      - time_zone
+      - windows
+      properties:
+        enabled:
+          type: boolean
+          description: Indicates whether schedule windows are enabled.
+        time_zone:
+          type: string
+          description: The time zone used to interpret the schedule windows.
+        windows:
+          type: array
+          description: A list of scan or pause windows.
+          items:
+            $ref: '#/components/schemas/ScheduleWindowItem'
+      example:
+        enabled: true
+        time_zone: America/Chicago
+        windows:
+        - type: scan
+          start:
+            day_of_week: monday
+            time: '10:00'
+          end:
+            day_of_week: tuesday
+            time: '11:00'
+        - type: scan
+          start:
+            day_of_week: tuesday
+            time: '13:00'
+          end:
+            day_of_week: tuesday
+            time: '15:00'
+    AssessmentSettings:
+      type: object
+      description: 'Assessment settings specify which web application elements you want the scanner to audit as it crawls your URLs. '
+      properties:
+        rfi_remote_url:
+          type: string
+          description: The URL of the file on a remote host to use for Remote File Inclusion (RFI) tests. By default, Tenable Web App Scanning uses a safe file hosted by Tenable for RFI testing. If the scanner cannot reach the internet, you can use an internally hosted file for more accurate RFI testing.
+          format: uri
+          default: http://rfi.nessus.org/rfi.txt
+        dictionary:
+          description: The type of dictionary to use when testing common and backup files. Possible values are `full` or `limited`.
+          type: string
+          enum:
+          - limited
+          - full
+          default: limited
+        fingerprinting:
+          description: Indicates whether fingerprinted should be enabled (`true`) or disabled (`false`).
+          type: boolean
+          default: true
+        enable:
+          description: Indicates whether an assessment is enabled (`true`) or disabled (`false`).
+          type: boolean
+        element_exclusions:
+          type: array
+          description: Element exclusions prevent scans from interacting with specific page elements (ex. logout buttons or forms) and their children. This setting is available for Scan, Overview, and PCI scan templates.
+          items:
+            type: object
+            properties:
+              element_type:
+                type: string
+                description: The type of element to exclude. Currently, only `dom_element` is supported.
+                enum:
+                - dom_element
+              selector_type:
+                type: string
+                description: Specifies the selector type. DOM elements can be selected based on either text values or CSS attributes. Use `text` for text contents or `attribute` for a CSS key and value pair.
+                enum:
+                - text
+                - attribute
+              selector:
+                description: If the `selector_type` is `text`, the selector value is a `string` (option 1). If the `selector_type` is `attribute`, the selector value is an object containing one key and value pair (option 2).
+                oneOf:
+                - type: string
+                - type: object
+                  description: 'An object containing one key-value pair, where the key is the CSS attribute name and the value is the attribute value. For example: `{"id": "logout"}`'
+                  example: '{"id": "logout"}'
+                  additionalProperties: true
+                  maxProperties: 1
+    AppliedFilters-ScanConfigs:
+      type: object
+      description: A single filter to apply to the scan configuration search.
+      properties:
+        field:
+          type: string
+          description: The name of the field you want to filter on. You can list available scan configuration filters with the [GET /was/v2/configs/filters](ref:was-v2-filters-scan-configs-list) endpoint.
+          example: folder_name
+        operator:
+          type: string
+          description: The comparison operator to apply to the filter. You can find available comparison operators for the filter in the `operators` attribute of the objects returned by the [GET /was/v2/configs/filters](ref:was-v2-filters-scan-configs-list) endpoint.
+          example: match
+        value:
+          type: string
+          description: The value to compare the given field to using the given operator. You can find valid values for the filter in the `control` attribute of the objects returned by the [GET /was/v2/configs/filters](ref:was-v2-filters-scan-configs-list) endpoint.
+          example: My Scans
+    PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/PaginationResponseSortObject'
+    ScheduleWindowItem:
+      type: object
+      required:
+      - type
+      - start
+      - end
+      properties:
+        type:
+          description: Specifies whether the window allows scanning or pauses scanning.
+          type: string
+          enum:
+          - scan
+          - pause
+        start:
+          $ref: '#/components/schemas/ScheduleWindowTime'
+        end:
+          $ref: '#/components/schemas/ScheduleWindowTime'
+    BrowserSettings:
+      type: object
+      description: The settings for the virtual browser instance used by the scanner.
+      properties:
+        screen_width:
+          type: integer
+          description: The screen width (in pixels) of the browser embedded into the scanner.
+          default: 1600
+        screen_height:
+          type: integer
+          description: The screen height (in pixels) of the browser embedded into the scanner.
+          default: 1200
+        ignore_images:
+          type: boolean
+          description: Indicates whether the browser should crawl images on web pages (`false`) or ignore those images (`true`) . The default value of this parameter is `true`.
+          default: true
+        job_timeout:
+          type: integer
+          description: The browser timeout (in milliseconds).
+          default: 10000
+        analysis:
+          type: boolean
+          description: Indicates whether DOM page analysis should be enabled (`true`) or (`disabled`) during the scan.
+          default: true
+        pool_size:
+          type: integer
+          description: The number of browser instances used for the scan.
+    ScopeSettings:
+      type: object
+      description: The URLs and file types that you want to include or exclude from your scan.
+      properties:
+        option:
+          type: string
+          description: "Specifies how the scanner handles the URLs it finds during the application crawl. Options include:\n - all—Crawl all detected URLs.\n - paths—Limit crawling to specified URLs, siblings and child paths.\n - children—Limit crawling to specified URLs and child paths.\n - urls—Limit crawling to specified URLs."
+          enum:
+          - all
+          - paths
+          - children
+          - urls
+        urls:
+          type: array
+          description: A list of URLs to include in scan.
+          default: []
+          items:
+            type: string
+            format: uri
+            description: A URL to include in scan.
+        exclude_file_extensions:
+          type: array
+          description: A list of file extensions to exclude from scan.
+          default: []
+          items:
+            type: string
+            example:
+            - css
+            - js
+            - png
+            - jpeg
+            - gif
+            - pdf
+            - csv
+        exclude_path_patterns:
+          type: array
+          description: A list of URL path regex patterns to exclude from scan.
+          default: []
+          items:
+            type: string
+            example:
+            - logout
+            - secrets
+        dom_depth_limit:
+          type: integer
+          description: The maximum depth of HTML DOM elements to crawl.
+          minimum: 1
+          default: 5
+        directory_depth_limit:
+          type: integer
+          description: The maximum number of sub-directories to crawl.
+          minimum: 1
+          default: 10
+        page_limit:
+          type: integer
+          description: The maximum number of unique URLs to crawl.
+          minimum: 1
+          default: 10000
+        crawl_script:
+          type: object
+          description: Selenium crawl script for auditing specific parts of web application.
+        decompose_paths:
+          description: Indicates whether or not the scanner crawls additional URL paths (`true`). For example, if http://example.com/dir1/dir2/dir3/index.html is detected during a scan, then http://example.com/dir1/dir2/dir3/, http://example.com/dir1/dir2/, and http://example.com/dir1/ will be added to the queue.
+          type: boolean
+          default: false
+        exclude_binaries:
+          description: Indicates whether or not to exclude binaries from the assessment.
+          type: boolean
+        auto_redundant_paths:
+          description: Indicates the number of redundant paths to be assessed.
+          type: integer
+          minimum: 1
+        crawl_script_filename:
+          type: string
+          description: The name to use of for the Selenium crawl script. Must have a .side extension.
+        openapi_file:
+          type: string
+          format: base64
+          description: "A base64-encoded OpenAPI file describing the RESTful API that you want to scan. The file should be OpenAPI Specification (v2 or v3) compliant and represented in either JSON or YAML format. \n\nAlternatively, you can provide the OpenAPI specification as a URL via the `openapi_file_url` parameter."
+        openapi_filename:
+          type: string
+          description: The name to use for the base64-encoded OpenAPI file specified in the `openapi_file` parameter. The file extension must be `.json`, `.yaml`, or `.yml`.
+        openapi_file_url:
+          type: string
+          description: "The URL for the OpenAPI specification describing the RESTful API that you want to scan. The URL must start with `http://` or `https://` and end with `.json`, `.yaml`, or `.yml`. \n\nAlternatively, you can provide the OpenAPI specification as a base64-encoded file via the `openapi_file` parameter."
+        graphql_file:
+          type: string
+          format: base64
+          description: "A base64-encoded GraphQL SDL file that defines the API schema to scan. The file must comply with the GraphQL SDL specification. \n\nAlternatively, you can provide the SDL file via a URL using the `graphql_file_url` parameter. \n\n**Note:** The maximum supported file size is 1 MB. For larger schemas, host the file externally and reference it with the `graphql_file_url` parameter."
+        graphql_filename:
+          type: string
+          description: The filename to assign to the GraphQL SDL file provided in the `graphql_file` parameter. The extension must be `.graphql`.
+        graphql_file_url:
+          type: string
+          description: 'A URL to a GraphQL SDL file that defines the API schema to scan. The URL must begin with `http://` or `https://` and end with `.graphql`.
+
+
+            Alternatively, you can supply the SDL file directly as a base64-encoded string using the `graphql_file` parameter.'
+        graphql_introspection:
+          type: boolean
+          description: Specifies whether the WAS scanner should perform a GraphQL introspection query to automatically generate the schema for the target API.
+        soap_file:
+          type: string
+          format: base64
+          description: "A base64-encoded WSDL v1.1 file that defines the API schema to scan. The file must comply with the [WSDL v1.1 specification](https://www.w3.org/TR/2001/NOTE-wsdl-20010315). \n\nAlternatively, you can provide the WSDL file via a URL using the `soap_file_url` parameter. \n\n**Note:** The maximum supported file size is 1 MB. For larger schemas, host the file externally and reference it with the `soap_file_url` parameter."
+        soap_filename:
+          type: string
+          description: The filename to assign to the WSDL file provided in the `soap_file` parameter. The filename must end in `.wsdl`, `.xml`, or `/wsdl/`.
+        soap_file_url:
+          type: string
+          description: "A URL pointing to a WSDL v1.1 file that defines the API schema to scan. The URL must start with `http://` or `https://` and end with `.wsdl`, `.xml`, or `/wsdl/`. \n\nAlternatively, you can provide the WSDL file as a base64-encoded string via the `soap_file` parameter."
+    PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    ScanMetadata:
+      type: object
+      description: Summary statistics for the scan results.
+      properties:
+        queued_urls:
+          type: integer
+          example: 0
+          description: The number of web application URLs queued for the scan.
+        crawled_urls:
+          type: integer
+          example: 6
+          description: The number of web application URLs crawled by the scan.
+        queued_pages:
+          type: integer
+          example: 0
+          description: The number of web application pages queued for the scan.
+        audited_pages:
+          type: integer
+          example: 29
+          description: The number of pages audited by the scan.
+        request_count:
+          type: integer
+          example: 32339
+          description: The number of requests the scan made to the target web application.
+        response_time:
+          type: integer
+          example: 0
+          description: The average response time (in milliseconds) from the web application.
+        finalized_children:
+          type: integer
+          example: 0
+          description: The total number of finalized children if the scan has multiple targets.
+        total_children:
+          type: integer
+          example: 0
+          description: The total number of children if the scan has multiple targets.
+    Scan:
+      type: object
+      required:
+      - scan_id
+      - asset_id
+      - user_id
+      - config_id
+      - created_at
+      - updated_at
+      - requested_action
+      - status
+      - target
+      - notes
+      properties:
+        scan_id:
+          type: string
+          description: The UUID of the scan that detected the vulnerability in the web application.
+          format: uuid
+          example: b74adc0d-52d5-44c5-99cc-0f18d19672c7
+        parent_id:
+          type: string
+          description: The ID of the parent scan in the case of a multi targeted scan.
+          format: uuid
+          example: 497bc024-73d9-4e83-8665-d294b1457bcd
+        asset_id:
+          description: The UUID of the asset being scanned.
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+        user_id:
+          description: The UUID of the user that created the scan.
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+        config_id:
+          type: string
+          description: The UUID of the scan configuration.
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+        target:
+          type: string
+          description: The URI of the web application.
+        created_at:
+          description: An ISO timestamp indicating the date and time when the scan configuration was created, for example, `2018-12-31T13:51:17.243Z`.
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+        updated_at:
+          type: string
+          description: An ISO timestamp indicating the date and time when the scan processing status changed, for example, `2018-12-31T13:51:17.243Z`.
+          format: date-time
+          example: '2017-07-21T17:32:29Z'
+        requested_action:
+          $ref: '#/components/schemas/RequestedAction'
+        status:
+          $ref: '#/components/schemas/ScanStatus'
+        metadata:
+          $ref: '#/components/schemas/ScanMetadata'
+    FolderResponse:
+      type: object
+      description: Folder data
+      required:
+      - name
+      - folder_id
+      properties:
+        folder_id:
+          type: string
+          format: uuid
+          description: The UUID of the folder.
+        name:
+          type: string
+          description: The name of the folder.
+    Permissions:
+      type: object
+      required:
+      - entity
+      - entity_id
+      - level
+      properties:
+        entity:
+          description: 'The type of permissions object: `user` (permissions for an individual user) or `group` (permissions for a user group).'
+          type: string
+          enum:
+          - user
+          - group
+        entity_id:
+          description: The UUID of the user or group granted the specified permissions.
+          type: string
+          format: uuid
+        level:
+          description: The scan permissions level, as described in [Permissions](doc:permissions).
+          $ref: '#/components/schemas/PermissionLevel'
+        permissions_id:
+          description: The UUID of the permissions object.
+          type: string
+          format: uuid
+          deprecated: true
+    ScanSchedule:
+      type: object
+      required:
+      - rrule
+      - starttime
+      - timezone
+      properties:
+        rrule:
+          type: string
+          description: A valid `rrule` string per RFC 5545.
+          example: FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1
+        starttime:
+          type: string
+          description: A valid `dtstart` string per RFC 5545, minus TZID (see timezone below) if different than UTC, in which case use Z at the end. For example, `19970105T083000 or 19970105T083000Z (utc)`.
+          example: 19970105T083000 or 19970105T083000Z (utc)
+        timezone:
+          type: string
+          description: A valid `TZID` per RFC 5545. For example, `America/New_York`.
+          example: America/New_York
+        enabled:
+          type: boolean
+          description: Indicates whether a schedule is enabled (`true`) or disabled (`false`).
+        launch:
+          type: string
+          description: Specifies how often the scan schedule repeats.
+          example: DAILY
+          enum:
+          - DAILY
+          - WEEKLY
+          - MONTHLY
+          - ONETIME
+    ChromeScript:
+      type: object
+      properties:
+        finish_wait:
+          description: The time (in milliseconds) that the scanner waits for the Selenium script to complete before the browser loads any remaining contents.
+          type: integer
+          default: 5000
+        page_load_wait:
+          description: The time (in milliseconds) that page rendering is delayed during the Selenium authentication process. It is recommended to wait for some time if a page is known to take time before its contents are rendered.
+          type: integer
+          default: 10000
+        command_wait:
+          description: The time (in milliseconds) to wait after running each command in the Selenium script.
+          type: integer
+          default: 500
+        disable_web_security:
+          description: Disables enforcement of CORS and the Same-Origin Policy in the browser.
+          type: boolean
+          default: false
+    ResultsVisibility:
+      description: The visibility of the results (private or dashboard).
+      type: string
+      default: dashboard
+      enum:
+      - private
+      - dashboard
+    Response-Scan-Config:
+      type: object
+      required:
+      - config_id
+      - owner_id
+      - name
+      - container_id
+      - created_at
+      - updated_at
+      - settings
+      - scanner_id
+      - targets
+      - default_permissions
+      - results_visibility
+      - permissions
+      properties:
+        config_id:
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+          description: The UUID of the scan configuration.
+        container_id:
+          type: string
+          example: On Demand
+          description: The UUID of your organization's Tenable Web App Scanning instance.
+        owner_id:
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+          description: The UUID of owner of the scan configuration.
+        template_id:
+          description: The UUID of the Tenable-provided configuration template from which this configuration was derived.
+          type: string
+          format: uuid
+        user_template_id:
+          description: The UUID of the user-defined template resource.
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          example: Quarterly Security Audit
+          description: The unique, user-defined name assigned to the scan configuration.
+        targets:
+          type: array
+          description: A list of absolute URLs defined as targets for this scan. This list enables you to identify the specific entry points the scanner was instructed to assess.
+          items:
+            type: string
+            format: uri
+            example: https://example.com
+        applications:
+          type: array
+          description: A list of unique identifiers (UUIDs) for the specific web application assets included in the scan. This enables you to map scan results back to your pre-defined application inventory.
+          items:
+            type: string
+            format: uuid
+        tag_targets:
+          type: array
+          description: A list of unique tag identifiers (UUIDs) used for targeting. This enables you to see which dynamic asset groups were included in the scan's scope.
+          items:
+            type: string
+            format: uuid
+        target:
+          type: string
+          description: "The URL of the web application targeted by the scan. \n\n**Deprecated:** This parameter is deprecated and will be retired on 2022/04/06. Tenable recommends that you use the `targets` parameter instead. Please update any existing integrations that your organization has."
+          format: uri
+          deprecated: true
+        description:
+          type: string
+          example: Internal business applications vulnerability assessment.
+          description: The summary or notes provided for the scan configuration.
+        created_at:
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when the scan configuration was created, for example, `2018-12-31T13:51:17.243Z`.
+        updated_at:
+          type: string
+          format: date-time
+          example: '2018-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when the scan configuration was last updated, for example, `2018-12-31T13:51:17.243Z`.
+        settings:
+          $ref: '#/components/schemas/ConfigSettings'
+        scanner_id:
+          type: integer
+          description: The unique identifier of the scanner or scanner group configured to perform the scan. This value represents either a Tenable-provided cloud scanner or a user-defined internal scanner, which enables you to confirm the specific resource used for execution.
+        schedule:
+          description: The scan schedule settings. By default, scans are not scheduled.
+          $ref: '#/components/schemas/ScanSchedule'
+        folder:
+          description: The folder that contains the scan configuration. This value can be `null` if the scan configuration is in a default Tenable-provided folder like `My Scans` instead of a custom folder.
+          $ref: '#/components/schemas/FolderResponse'
+        in_trash:
+          type: boolean
+          description: Indicates whether the scan is in the Trash folder (`true`) or not (`false`).
+        default_permissions:
+          $ref: '#/components/schemas/PermissionLevel'
+        results_visibility:
+          $ref: '#/components/schemas/ResultsVisibility'
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permissions'
+        notifications:
+          description: Contact information used to send scan notifications upon scan completion.
+          $ref: '#/components/schemas/Notifications'
+        pause_window:
+          description: 'Defines time frames during which the scheduled scan should not run. Pause windows can be used only when a scan schedule is configured.
+
+
+            **Deprecated:** The `pause_window` object is deprecated. To create a pause window, use a schedule window with the `type` parameter set to `pause`. For more information, see the `schedule_windows` object. Please update any existing integrations that your organization has.'
+          $ref: '#/components/schemas/PauseWindow'
+        schedule_windows:
+          description: Defines scan and pause windows for scheduled scans. Each window specifies when scans run or pause. Requires a scan schedule to be enabled.
+          $ref: '#/components/schemas/ScheduleWindows'
+    PauseWindowDaySchedule:
+      type: object
+      required:
+      - start
+      - end
+      properties:
+        start:
+          type: string
+          description: Indicates the time (per 24-hour clock) at which to pause the scan. Do not configure scan pause windows to start within 15 minutes of a scheduled start time for that same day. A 15 minute buffer is always needed.
+          example: 09:00
+        end:
+          type: string
+          description: Indicates the time (per 24-hour clock) at which to resume the scan.
+          example: '18:00'
+  parameters:
+    sort:
+      description: 'The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.
+
+
+        If you specify multiple fields, the fields must be separated by commas. For example, `name:desc,created_at:asc` would first sort results by the `name` field in descending order and then by the `created_at` field in ascending order.'
+      example: last_seen:desc,ipv4:asc
+      in: query
+      name: sort
+      required: false
+      schema:
+        type: string
+    offset:
+      description: The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`.
+      in: query
+      name: offset
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+    limit:
+      description: The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses.
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 200
+        default: 10
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

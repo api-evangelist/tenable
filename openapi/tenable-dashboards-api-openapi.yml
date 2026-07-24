@@ -1,0 +1,243 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Dashboards API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Dashboards
+  description: "The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Dashboard endpoints in the Tenable MSSP Portal API enables customers to retrieve details for various dashboard widgets. \n\nFor more information about the Tenable MSSP Portal, see the [Tenable MSSP Portal User Guide](https://docs.tenable.com/managed-security-service-provider/Content/Welcome.htm)."
+paths:
+  /mssp/dashboard:
+    get:
+      tags:
+      - Dashboards
+      summary: Get widget details
+      description: Returns the data for the specified dashboard widget. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-dashboard-details
+      parameters:
+      - name: widget
+        required: true
+        description: 'The dashboard widget you want to retrieve data for. You can retrieve data for two dashboard widgets: <ul><li>customer_licensing_data—This widget provides a quick list of customer accounts and their basic licensing snapshot.</li><li>scan_results—This widget provides a list of customer accounts and some high level scan metadata for each one.</li></ul>'
+        in: query
+        schema:
+          type: string
+          enum:
+          - customer_licensing_data
+          - scan_results
+      responses:
+        '200':
+          description: Returned if the request dashboard widget data was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response-Dashboards'
+              examples:
+                customer_licensing_data:
+                  value:
+                    customer_licensing_data:
+                      accounts:
+                      - uuid: b21d8e1d-653d-468d-8ee8-7ee7f5a1c597
+                        container_name: example.com-772977010
+                        licensed_assets: 0
+                        licensed_assets_limit: 10
+                        license_utilization: 0
+                        licensed_apps: []
+                        domains: []
+                      - uuid: d3afd841-bdbb-407f-ad45-ebcc35e4afbc
+                        container_name: John Doe
+                        licensed_assets: 0
+                        licensed_assets_limit: 1550
+                        license_utilization: 0
+                        licensed_apps: []
+                        domains: []
+                      - uuid: 19efcd2e-5908-475d-b03a-74b05dee508d
+                        container_name: Example, Inc.
+                        licensed_assets: 0
+                        licensed_assets_limit: 66
+                        license_utilization: 0
+                        licensed_apps: []
+                        domains: []
+                scan_results:
+                  value:
+                    scan_results:
+                    - child_container_uuid: 728774a4-d7a7-4d14-aff9-5f4a51665e6c
+                      child_container_name: example account
+                      created_date: 1670874338
+                      modified_date: 1674850753
+                      scan_status_count:
+                        days_all:
+                          running_scans_count: '1'
+                          aborted_scans_count: '4'
+                          completed_scans_count: '39'
+                          canceled_scans_count: '0'
+                        days7:
+                          running_scans_count: '1'
+                          aborted_scans_count: '2'
+                          completed_scans_count: '4'
+                          canceled_scans_count: '0'
+                        days30:
+                          running_scans_count: '1'
+                          aborted_scans_count: '3'
+                          completed_scans_count: '26'
+                          canceled_scans_count: '0'
+                        days90:
+                          running_scans_count: '1'
+                          aborted_scans_count: '4'
+                          completed_scans_count: '39'
+                          canceled_scans_count: '0'
+                        days180:
+                          running_scans_count: '1'
+                          aborted_scans_count: '4'
+                          completed_scans_count: '39'
+                          canceled_scans_count: '0'
+                        days365:
+                          running_scans_count: '1'
+                          aborted_scans_count: '4'
+                          completed_scans_count: '39'
+                          canceled_scans_count: '0'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if the Tenable MSSP Platform could not find the specified dashboard widget.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    Licensed-Apps:
+      type: array
+      description: 'An array of strings defining the list of licensed Tenable applications For example, `["vm", "was", "lumin"]`. Valid strings include the following: <ul><li>ad—Tenable Identity Exposure</li><li>asm—Tenable Attack Surface Management</li><li>lumin—Tenable Lumin</li><li>one—Tenable One</li><li>vm—Tenable Vulnerability Management</li><li>was—Tenable Web App Scanning</li></ul>'
+      items:
+        type: string
+    Response-Dashboards:
+      type: object
+      properties:
+        customer_licensing_data:
+          description: A customer accounts object.
+          properties:
+            accounts:
+              description: An array of customer account objects.
+              type: array
+              items:
+                $ref: '#/components/schemas/Response-Dashboards-Accounts-Object'
+    Response-Dashboards-Accounts-Object:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
+          description: The UUID of the customer account in the Tenable MSSP Portal.
+        container_name:
+          type: string
+          example: Dallas Office
+          description: The name of the customer account in the Tenable MSSP Portal.
+        licensed_assets:
+          type: integer
+          format: int64
+          description: The number of assets currently counted against the customer's Tenable license.
+        licensed_assets_limit:
+          type: integer
+          format: int64
+          description: The number of assets which the customer is licensed to scan.
+        license_utilization:
+          type: number
+          multipleOf: 0.1
+          description: The current license utilization.
+        licensed_apps:
+          $ref: '#/components/schemas/Licensed-Apps'
+        domains:
+          type: array
+          description: A list of the customer domains.
+          items:
+            type: string
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

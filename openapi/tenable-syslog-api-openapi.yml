@@ -1,0 +1,948 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Syslog API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Syslog
+  description: A syslog alert
+paths:
+  /api/syslogs:
+    get:
+      summary: Retrieve all syslog instances.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the get /syslogs response
+                type: array
+                items:
+                  description: syslog
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - ip
+                  - port
+                  - protocol
+                  - tls
+                  - criticityThreshold
+                  - directories
+                  - checkers
+                  - attackTypes
+                  - profiles
+                  - shouldNotifyOnInitialFullSecurityCheck
+                  - relayId
+                  properties:
+                    id:
+                      type: integer
+                    ip:
+                      type: string
+                    port:
+                      type: integer
+                    protocol:
+                      type: string
+                      enum:
+                      - UDP
+                      - TCP
+                    tls:
+                      type: boolean
+                    criticityThreshold:
+                      type: integer
+                    description:
+                      type: string
+                      nullable: true
+                    filterExpression:
+                      type: object
+                      nullable: true
+                    inputType:
+                      type: string
+                      enum:
+                      - deviances
+                      - adObjectChanges
+                      - attacks
+                      - healthChecks
+                    directories:
+                      minItems: 1
+                      type: array
+                      items:
+                        type: integer
+                    checkers:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: integer
+                      nullable: true
+                    attackTypes:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: integer
+                      nullable: true
+                    profiles:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: integer
+                      nullable: true
+                    shouldNotifyOnInitialFullSecurityCheck:
+                      type: boolean
+                    relayId:
+                      type: number
+                      nullable: true
+                    healthCheckNames:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: string
+                      nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Syslog
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+    post:
+      summary: Create syslog instance.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the post /syslogs response
+                type: array
+                items:
+                  description: syslog
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - ip
+                  - port
+                  - protocol
+                  - tls
+                  - criticityThreshold
+                  - directories
+                  - checkers
+                  - attackTypes
+                  - profiles
+                  - shouldNotifyOnInitialFullSecurityCheck
+                  - relayId
+                  properties:
+                    id:
+                      type: integer
+                    ip:
+                      type: string
+                    port:
+                      type: integer
+                    protocol:
+                      type: string
+                      enum:
+                      - UDP
+                      - TCP
+                    tls:
+                      type: boolean
+                    criticityThreshold:
+                      type: integer
+                    description:
+                      type: string
+                      nullable: true
+                    filterExpression:
+                      type: object
+                      nullable: true
+                    inputType:
+                      type: string
+                      enum:
+                      - deviances
+                      - adObjectChanges
+                      - attacks
+                      - healthChecks
+                    directories:
+                      minItems: 1
+                      type: array
+                      items:
+                        type: integer
+                    checkers:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: integer
+                      nullable: true
+                    attackTypes:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: integer
+                      nullable: true
+                    profiles:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: integer
+                      nullable: true
+                    shouldNotifyOnInitialFullSecurityCheck:
+                      type: boolean
+                    relayId:
+                      type: number
+                      nullable: true
+                    healthCheckNames:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: string
+                      nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Syslog
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              minLength: 1
+              items:
+                allOf:
+                - type: object
+                  required:
+                  - ip
+                  - port
+                  - protocol
+                  - tls
+                  - criticityThreshold
+                  - inputType
+                  - directories
+                  - shouldNotifyOnInitialFullSecurityCheck
+                  properties:
+                    ip:
+                      type: string
+                    port:
+                      type: integer
+                    protocol:
+                      type: string
+                      enum:
+                      - UDP
+                      - TCP
+                    tls:
+                      type: boolean
+                    criticityThreshold:
+                      type: integer
+                    directories:
+                      minItems: 1
+                      type: array
+                      items:
+                        type: integer
+                    description:
+                      type: string
+                    inputType:
+                      type: string
+                      enum:
+                      - deviances
+                      - adObjectChanges
+                      - attacks
+                      - healthChecks
+                    shouldNotifyOnInitialFullSecurityCheck:
+                      type: boolean
+                    relayId:
+                      type: number
+                      nullable: true
+                - description: List the properties that depend on the input type
+                  type: object
+                  oneOf:
+                  - allOf:
+                    - properties:
+                        inputType:
+                          enum:
+                          - deviances
+                    - required:
+                      - checkers
+                      - profiles
+                      properties:
+                        checkers:
+                          type: array
+                          minItems: 1
+                          items:
+                            type: integer
+                        profiles:
+                          type: array
+                          minItems: 1
+                          items:
+                            type: integer
+                  - allOf:
+                    - not:
+                        properties:
+                          inputType:
+                            enum:
+                            - deviances
+                    - oneOf:
+                      - allOf:
+                        - properties:
+                            inputType:
+                              enum:
+                              - attacks
+                        - required:
+                          - attackTypes
+                          - profiles
+                          properties:
+                            attackTypes:
+                              type: array
+                              minItems: 1
+                              items:
+                                type: integer
+                            profiles:
+                              type: array
+                              minItems: 1
+                              items:
+                                type: integer
+                      - allOf:
+                        - not:
+                            properties:
+                              inputType:
+                                enum:
+                                - attacks
+                        - oneOf:
+                          - allOf:
+                            - properties:
+                                inputType:
+                                  enum:
+                                  - adObjectChanges
+                            - properties:
+                                filterExpression:
+                                  type: object
+                          - allOf:
+                            - not:
+                                properties:
+                                  inputType:
+                                    enum:
+                                    - adObjectChanges
+                            - required:
+                              - healthCheckNames
+                              properties:
+                                healthCheckNames:
+                                  type: array
+                                  minItems: 1
+                                  items:
+                                    type: string
+  /api/syslogs/{id}:
+    get:
+      summary: Get syslog instance by id.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: syslog
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - ip
+                - port
+                - protocol
+                - tls
+                - criticityThreshold
+                - directories
+                - checkers
+                - attackTypes
+                - profiles
+                - shouldNotifyOnInitialFullSecurityCheck
+                - relayId
+                properties:
+                  id:
+                    type: integer
+                  ip:
+                    type: string
+                  port:
+                    type: integer
+                  protocol:
+                    type: string
+                    enum:
+                    - UDP
+                    - TCP
+                  tls:
+                    type: boolean
+                  criticityThreshold:
+                    type: integer
+                  description:
+                    type: string
+                    nullable: true
+                  filterExpression:
+                    type: object
+                    nullable: true
+                  inputType:
+                    type: string
+                    enum:
+                    - deviances
+                    - adObjectChanges
+                    - attacks
+                    - healthChecks
+                  directories:
+                    minItems: 1
+                    type: array
+                    items:
+                      type: integer
+                  checkers:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: integer
+                    nullable: true
+                  attackTypes:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: integer
+                    nullable: true
+                  profiles:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: integer
+                    nullable: true
+                  shouldNotifyOnInitialFullSecurityCheck:
+                    type: boolean
+                  relayId:
+                    type: number
+                    nullable: true
+                  healthCheckNames:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: string
+                    nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Syslog
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+    patch:
+      summary: Update syslog instance.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: syslog
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - ip
+                - port
+                - protocol
+                - tls
+                - criticityThreshold
+                - directories
+                - checkers
+                - attackTypes
+                - profiles
+                - shouldNotifyOnInitialFullSecurityCheck
+                - relayId
+                properties:
+                  id:
+                    type: integer
+                  ip:
+                    type: string
+                  port:
+                    type: integer
+                  protocol:
+                    type: string
+                    enum:
+                    - UDP
+                    - TCP
+                  tls:
+                    type: boolean
+                  criticityThreshold:
+                    type: integer
+                  description:
+                    type: string
+                    nullable: true
+                  filterExpression:
+                    type: object
+                    nullable: true
+                  inputType:
+                    type: string
+                    enum:
+                    - deviances
+                    - adObjectChanges
+                    - attacks
+                    - healthChecks
+                  directories:
+                    minItems: 1
+                    type: array
+                    items:
+                      type: integer
+                  checkers:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: integer
+                    nullable: true
+                  attackTypes:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: integer
+                    nullable: true
+                  profiles:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: integer
+                    nullable: true
+                  shouldNotifyOnInitialFullSecurityCheck:
+                    type: boolean
+                  relayId:
+                    type: number
+                    nullable: true
+                  healthCheckNames:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: string
+                    nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Syslog
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates the post /syslogs response
+              type: object
+              properties:
+                ip:
+                  type: string
+                port:
+                  type: integer
+                protocol:
+                  type: string
+                  enum:
+                  - UDP
+                  - TCP
+                tls:
+                  type: boolean
+                criticityThreshold:
+                  type: integer
+                description:
+                  type: string
+                filterExpression:
+                  type: object
+                inputType:
+                  type: string
+                  enum:
+                  - deviances
+                  - adObjectChanges
+                  - attacks
+                  - healthChecks
+                directories:
+                  minItems: 1
+                  type: array
+                  items:
+                    type: integer
+                checkers:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: integer
+                  nullable: true
+                profiles:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: integer
+                  nullable: true
+                attackTypes:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: integer
+                  nullable: true
+                relayId:
+                  type: number
+                  nullable: true
+    delete:
+      summary: Delete syslog instance.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '204':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: syslog
+                additionalProperties: false
+                nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Syslog
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/syslogs/test-message/{id}:
+    get:
+      summary: Send a test syslog notification by id
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the post /syslogs/ response
+                nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Syslog
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/syslogs/test-message:
+    post:
+      summary: Send a test syslog notification
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the post /syslogs/ response
+                nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Syslog
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates the post /syslogs/test-message payload
+              allOf:
+              - type: object
+                required:
+                - ip
+                - port
+                - protocol
+                - tls
+                - criticityThreshold
+                - directories
+                - inputType
+                properties:
+                  ip:
+                    type: string
+                  port:
+                    type: integer
+                  protocol:
+                    type: string
+                    enum:
+                    - UDP
+                    - TCP
+                  tls:
+                    type: boolean
+                  criticityThreshold:
+                    type: integer
+                  directories:
+                    minItems: 1
+                    type: array
+                    items:
+                      type: integer
+                  description:
+                    type: string
+                  inputType:
+                    type: string
+                    enum:
+                    - deviances
+                    - adObjectChanges
+                    - attacks
+                    - healthChecks
+                  relayId:
+                    type: number
+                    nullable: true
+              - description: List the properties that depend on the input type
+                type: object
+                oneOf:
+                - allOf:
+                  - properties:
+                      inputType:
+                        enum:
+                        - deviances
+                  - required:
+                    - checkers
+                    - profiles
+                    properties:
+                      checkers:
+                        type: array
+                        minItems: 1
+                        items:
+                          type: integer
+                      profiles:
+                        type: array
+                        minItems: 1
+                        items:
+                          type: integer
+                - allOf:
+                  - not:
+                      properties:
+                        inputType:
+                          enum:
+                          - deviances
+                  - oneOf:
+                    - allOf:
+                      - properties:
+                          inputType:
+                            enum:
+                            - attacks
+                      - required:
+                        - attackTypes
+                        - profiles
+                        properties:
+                          attackTypes:
+                            type: array
+                            minItems: 1
+                            items:
+                              type: integer
+                          profiles:
+                            type: array
+                            minItems: 1
+                            items:
+                              type: integer
+                    - allOf:
+                      - not:
+                          properties:
+                            inputType:
+                              enum:
+                              - attacks
+                      - oneOf:
+                        - allOf:
+                          - properties:
+                              inputType:
+                                enum:
+                                - adObjectChanges
+                          - properties:
+                              filterExpression:
+                                type: object
+                        - allOf:
+                          - not:
+                              properties:
+                                inputType:
+                                  enum:
+                                  - adObjectChanges
+                          - required:
+                            - healthCheckNames
+                            properties:
+                              healthCheckNames:
+                                type: array
+                                minItems: 1
+                                items:
+                                  type: string
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

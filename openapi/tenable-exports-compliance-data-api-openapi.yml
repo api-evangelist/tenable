@@ -1,0 +1,979 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Exports (Compliance Data) API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Exports (Compliance Data)
+  x-displayName: Exports (Compliance Data)
+paths:
+  /compliance/export:
+    post:
+      summary: Export compliance data
+      description: "Exports compliance data that matches the request criteria. The compliance export API does not return results for individual scans. Instead, the exported data is an aggregation / summary of all compliance scan data. As new compliance scans are run, the summary is updated with the latest audit results.\n\n**Note:** If you do not submit a request body with the POST request, Tenable Vulnerability Management returns a `415 Unsupported Media Type` error. If you do not want to use any body parameters, you must still supply an empty JSON body with the request to avoid this error. For example: `{}` \n\n**Note:** There are limits for concurrent export requests. For more information, see [Concurrency Limiting](doc:concurrency-limiting) and [Rate Limiting](doc:rate-limiting). <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      operationId: io-exports-compliance-create
+      tags:
+      - Exports (Compliance Data)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                num_findings:
+                  type: integer
+                  description: 'Specifies the number of compliance findings per exported chunk. The valid range is 50-10000. The value defaults to `5000` if this parameter is omitted. If you specify a value outside of the supported range, the value defaults to the upper or lower-bound value.
+
+
+                    **Note:** Some chunks may contain fewer findings than the specified `num_findings.`'
+                  format: int32
+                  minimum: 50
+                  maximum: 10000
+                  default: 5000
+                  example: 5000
+                asset:
+                  type: array
+                  description: A list of asset UUIDs for which you want to return compliance data. The list can contain a maximum of 200 asset UUIDs.
+                  items:
+                    type: string
+                filters:
+                  type: object
+                  description: 'A list of filters that Tenable Vulnerability Management applies to exported compliance data. Omit the filters object to return compliance data for all assets.
+
+
+                    **Note:** The `first_seen` filter cannot be used by itself. You must use `last_seen` and `first_seen` together or only `last_seen`. Additionally, when the `ACTIVE` is specified for the `state` filter, both `ACTIVE` and `NEW` findings are returned.'
+                  properties:
+                    last_seen:
+                      type: integer
+                      format: int64
+                      description: Returns compliance findings for assets that were last seen (as `active`) by a scan between the specified date (in Unix time) and now.
+                      example: 1589824486
+                    first_seen:
+                      type: integer
+                      format: int64
+                      description: 'Returns compliance findings for assets that were first seen by a scan between the specified date (in Unix time) and now.
+
+
+                        Note that this filter can only be used in conjunction with the `last_seen` filter.'
+                      example: 1589824486
+                    last_observed:
+                      type: integer
+                      format: int64
+                      description: Returns compliance data for assets that were last observed (whether `active` or `fixed`) by a scan between the specified date (in Unix time) and now.
+                      example: 1589824486
+                    indexed_at:
+                      type: integer
+                      format: int64
+                      description: Returns compliance data for assets that were indexed into Tenable Vulnerability Management at the specified date (in Unix time).
+                      example: 1589824486
+                    since:
+                      type: integer
+                      format: int64
+                      description: "The start date for the range of compliance data you want to export. The date must be specified in Unix time format. Note that `since` is based on the `indexed_at` at timestamp. Use this filter in conjunction with the `state` filter as follows:\n - If the `state` filter is set to `OPEN` or `REOPENED`, the export includes compliance findings for assets that were seen on or after the `since` date you specify.\n - If the `state` filter is set to `FIXED`, the export includes compliance findings for assets that were fixed on or after the since date you specify.\n - If you do not include the `state` filter in your request, the export includes data for `OPEN` and `REOPENED` findings that were seen on or after the `since` date you specify, and `FIXED` findings that were fixed on or after the since date you specify."
+                      example: 1589824486
+                    audit_name:
+                      type: string
+                      description: Returns compliance findings with the specified audit name. You can use an asterisk to match text. For example `Ensure default *`.
+                      example: 5.5.4 Ensure default group for the root account is GID 0
+                    audit_file_name:
+                      type: string
+                      description: Returns compliance findings with the specified audit file name. You can use an asterisk to match text, for example `CIS_CentOS_8_Server_L1_v1*`.
+                      example: CIS_CentOS_8_Server_L1_v1.0.0.audit
+                    compliance_results:
+                      description: "Returns compliance findings with the specified compliance status. Supported values are:\n - PASSED—Returned if the asset has passed the compliance check.\n - FAILED—Returned if the asset has failed the compliance check.\n - WARNING—Returned in cases where there is no definable passing criteria; for example, an audit where you must verify that members of the administrator group are appropriate for your organization.\n - SKIPPED—Returned if the plugin determined that the check is not applicable to the asset. It can also be returned in other various cases; for example, if a check requires that a direct command be run to gather data on an offline network device or if a check contains commands that won't run on the specified OS.\n - ERROR—Returned if Tenable Vulnerability Management failed to complete the compliance check.\n - UNKNOWN—Returned when a status cannot be determined for the OVAL check. The OVAL engine sets this status."
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                        - PASSED
+                        - FAILED
+                        - WARNING
+                        - SKIPPED
+                        - ERROR
+                        - UNKNOWN
+                    ipv4_addresses:
+                      type: array
+                      description: A list of IPv4 addresses for which you want to return compliance findings.
+                      items:
+                        type: string
+                      example:
+                      - 192.168.1.1
+                    ipv6_addresses:
+                      type: array
+                      description: A list of IPv6 addresses for which you want to return compliance findings.
+                      items:
+                        type: string
+                      example:
+                      - 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+                    network_id:
+                      type: string
+                      format: uuid
+                      description: The ID of the network associated with the scanners that that gathered the compliance data you want to export. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+                    plugin_id:
+                      type: array
+                      description: A list of plugin IDs for which you want to return compliance findings.
+                      items:
+                        type: integer
+                        format: int32
+                      example:
+                      - 1234
+                    state:
+                      description: "Returns compliance findings for assets that have the specified state. Supported values are:\n - OPEN—The compliance finding is currently present on a host.\n - REOPENED—The compliance finding was previously marked as fixed on a host but has returned.\n - FIXED—The compliance finding was present on a host but is no longer detected.\n\nNote that the API uses different terms for states than the user interface. The `new` and `active` states in the user interface map to the `open` state in the API. The `resurfaced` state in the user interface maps to the `reopened` state in the API. The `fixed` state is the same."
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                        - OPEN
+                        - REOPENED
+                        - FIXED
+                    tags:
+                      description: Returns compliance findings for assets that have the specified tags.
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          category:
+                            type: string
+                            description: The tag category.
+                            example: Office
+                          values:
+                            type: array
+                            description: The tag values for the tag category.
+                            items:
+                              type: string
+                            example:
+                            - Dallas
+      responses:
+        '200':
+          description: Returned if a compliance export request was queued successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  export_uuid:
+                    type: string
+                    description: The UUID of the compliance export job.
+              examples:
+                response:
+                  value:
+                    export_uuid: ae0ca095-2e09-4721-9a86-9c174382f01c
+        '400':
+          description: Returned if your request specifies invalid input parameters. For example, an invalid filter parameter.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Compliance_Data_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to export compliance data.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting) and [Concurrency Limiting](doc:concurrency-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Compliance_Data_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Export_Compliance_Data_cloud: []
+  /compliance/export/{export_uuid}/status:
+    get:
+      summary: Get compliance export status
+      description: Returns the status of the specified compliance export. Tenable Vulnerability Management processes the chunks in parallel so the chunks may not complete in order. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: io-exports-compliance-status
+      tags:
+      - Exports (Compliance Data)
+      parameters:
+      - description: The UUID for the compliance export request.
+        required: true
+        name: export_uuid
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the status of the specified compliance export was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Compliance_Data_response-compliance-export-status'
+              examples:
+                response:
+                  value:
+                    uuid: 6b3ce4b9-604d-4de6-9dd2-a0bb5aa38cc1
+                    status: FINISHED
+                    chunks_available:
+                    - 1
+                    - 2
+                    - 3
+                    chunks_failed: []
+                    chunks_cancelled: []
+                    chunks_available_count: 3
+                    empty_chunks_count: 0
+                    finished_chunks: 3
+                    filters: {}
+                    num_findings: 5000
+                    asset: []
+                    created: 1720682287157
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Compliance_Data_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the compliance export status.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find a compliance export job with the specified ID.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Compliance_Data_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Export_Compliance_Data_cloud: []
+  /compliance/export/status:
+    get:
+      summary: List compliance export jobs
+      description: Returns a list of the last 1,000 compliance export requests along with their statuses and related metadata. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: exports-compliance-status-list
+      tags:
+      - Exports (Compliance Data)
+      responses:
+        '200':
+          description: Returned if the list of compliance export jobs was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exports:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Export_Compliance_Data_response-compliance-export-jobs'
+              examples:
+                response:
+                  value:
+                    exports:
+                    - uuid: 3c8d6306-4e94-4203-8b28-57d13469154f
+                      status: FINISHED
+                      chunks_available_count: 1
+                      empty_chunks_count: 0
+                      finished_chunks: 1
+                      filters:
+                        last_seen: 1717320495
+                      num_findings: 100
+                      asset: []
+                      created: 1719912495575
+                    - uuid: ce0b0c04-e043-499d-8908-9f9e557d9d24
+                      status: FINISHED
+                      chunks_available_count: 1
+                      empty_chunks_count: 0
+                      finished_chunks: 1
+                      filters:
+                        last_seen: 1717318694
+                      num_findings: 100
+                      asset: []
+                      created: 1719910695474
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Compliance_Data_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view compliance export statuses.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find any compliance exports.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Compliance_Data_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Export_Compliance_Data_cloud: []
+  /compliance/export/{export_uuid}/chunks/{chunk_id}:
+    get:
+      summary: Download compliance chunk
+      description: Downloads a specific compliance data chunk by ID. Chunks are processed in parallel and remain available for download for up to 3 days after creation. A `404` response is returned for expired chunks. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: io-exports-compliance-download
+      tags:
+      - Exports (Compliance Data)
+      x-readme:
+        explorer-enabled: false
+      parameters:
+      - description: The UUID of the compliance export request.
+        required: true
+        name: export_uuid
+        in: path
+        schema:
+          type: string
+      - description: The ID of the compliance chunk you want to export.
+        required: true
+        name: chunk_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the compliance export chunk is downloaded successfully.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: array
+                items:
+                  $ref: '#/components/schemas/Export_Compliance_Data_response-compliance-export-chunk'
+              examples:
+                response:
+                  value:
+                  - asset_uuid: e5e6fa1b-243f-45b7-82cb-285c271cbaa6
+                    first_seen: '2021-01-16T00:18:49Z'
+                    last_seen: '2021-01-28T17:27:07Z'
+                    audit_file: CIS_CentOS_8_Server_L1_v1.0.0.audit
+                    check_id: 00a3efcb8730ae2af470fdfc4eac23dfb1880539ad6a861e6ebc94df6b6f3dbf
+                    check_name: 5.5.4 Ensure default group for the root account is GID 0
+                    check_info: The usermod command can be used to specify which group the root user belongs to. This affects permissions of files that are created by the root user.  Using GID 0 for the root account helps prevent root -owned files from accidentally becoming accessible to non-privileged users.
+                    expected_value: 'expect: ^root:x:0:0:
+
+                      file: /etc/passwd
+
+                      regex: ^root:
+
+                      system: Linux'
+                    actual_value: "Compliant file(s):\n      /etc/passwd - regex '^root:' found - expect '^root:x:0:0:' found in the following lines:\n          1: root:x:0:0:root:/root:/bin/bash"
+                    status: PASSED
+                    reference:
+                    - framework: 800-171
+                      control: 3.1.1
+                    - framework: 800-53
+                      control: AC-2
+                    see_also: https://workbench.cisecurity.org/files/2518
+                    solution: 'Run the following command to set the root user default group to GID 0 : # usermod -g 0 root'
+                    db_type: sqlserver
+                    plugin_id: 21157
+                    state: OPEN
+                    description: "\"Check 6: [PASSED]\"\n\ninfo block\n\nSolution:\nsolution block\nReference:\nComplianceReference(framework=800-171, control=3.4.2), ComplianceReference(framework= 800-53, control=CM-6), ComplianceReference(framework= CSCv7, control=BVVV)}\n\nPolicy Value:\nsome value\n\nActual Value:\n actual block 6"
+                    compliance_benchmark_name: CIS SQL Server 2019
+                    compliance_benchmark_version: 1.2.0
+                    compliance_control_id: baadfa76f88e685b15df2cdb753a1e6e287cd3f2e4e3f8c7227a30e46f1a5d81
+                    compliance_full_id: a91e96f031534a34949e11d1be63f78b5ba332c14e9c900bdb50ebae7a37d189
+                    compliance_functional_id: 7957fe426e
+                    compliance_informational_id: 52eeae68890a69e5ed722c9f624cba3d70d753f7025514284dc5ced306f74140
+                    synopsis: Compliance checks for database servers.
+                    last_fixed: '2024-01-03T17:24:28.004Z'
+                    last_observed: '2024-01-03T17:24:28.004Z'
+                    metadata_id: 9c30d6c68b6dde740fd7c864fbdf2acc0562e281ef8f156d05f1ed1695574a6e
+                    uname_output: Linux centos-agent-docker3...
+                    indexed_at: '2024-01-05T15:54:59.839Z'
+                    plugin_name: Database Compliance Checks
+                    asset:
+                      id: 037bb045-2c31-5a3a-9b19-8832b9a00210
+                      ipv4_addresses:
+                      - 10.22.20.164
+                      ipv6_addresses:
+                      - fe80::4bb:baff:fe75:ef5c
+                      fqdns:
+                      - 19733542-65892551.test.com
+                      name: 19733543-65892552.test.com
+                      agent_name: Agent namef of asset
+                      agent_uuid: 5084c820f68a431f8ee4e26f7af47fa6
+                      netbios_name: 19733543-65892552.test.com
+                      mac_addresses:
+                      - 04:32:d7:26:ef:82
+                      operating_systems:
+                      - Linux
+                      system_type: system-type
+                      network_id: d6797cf4-42b9-4cad-8591-9dd91c3f0fc3
+                      tags:
+                      - category: Cloud
+                        values:
+                        - AWS
+                        - Azure
+                  - asset_uuid: e5e6fa1b-243f-45b7-82cb-285c271cbaa6
+                    first_seen: '2021-01-28T17:26:40Z'
+                    last_seen: '2021-01-28T17:27:02Z'
+                    audit_file: CIS_CentOS_8_Server_L1_v1.0.0.audit
+                    check_id: 029872b8096c787524a6bc025aaa541f2ac662384859158a5388d3b3e4d07162
+                    check_name: 3.4.4.1.2 Ensure loopback traffic is configured - INPUT
+                    check_info: Configure the loopback interface to accept traffic. Configure all other interfaces to deny traffic to the loopback network (127.0.0.0/8).  Loopback traffic is generated between processes on machine and is typically critical to operation of the system. The loopback interface is the only place that loopback network (127.0.0.0/8) traffic should be seen, all other interfaces should ignore traffic on this network as an anti-spoofing measure.
+                    expected_value: 'cmd: /usr/sbin/iptables -L INPUT -v -n | /usr/bin/awk ''{ a[$3":"$4":"$6":"$7":"$8":"$9] = NR; print } END { if (a["ACCEPT:all:lo:*:0.0.0.0/0:0.0.0.0/0"] > 0 && a["ACCEPT:all:lo:*:0.0.0.0/0:0.0.0.0/0"] < a["DROP:all:*:*:127.0.0.0/8:0.0.0.0/0"]) { print "pass" } else { print "fail" } }''
+
+                      expect: ^pass$
+
+                      system: Linux'
+                    actual_value: "The command '/usr/sbin/iptables -L INPUT -v -n | /usr/bin/awk '{ a[$3\":\"$4\":\"$6\":\"$7\":\"$8\":\"$9] = NR; print } END { if (a[\"ACCEPT:all:lo:*:0.0.0.0/0:0.0.0.0/0\"] > 0 && a[\"ACCEPT:all:lo:*:0.0.0.0/0:0.0.0.0/0\"] < a[\"DROP:all:*:*:127.0.0.0/8:0.0.0.0/0\"]) { print \"pass\" } else { print \"fail\" } }'' returned : \n\nChain INPUT (policy ACCEPT 2247K packets, 301M bytes)\n pkts bytes target     prot opt in     out     source               destination         \nfail"
+                    status: PASSED
+                    reference:
+                    - framework: 800-171
+                      control: 3.1.1
+                    - framework: 800-53
+                      control: AC-2
+                    see_also: https://workbench.cisecurity.org/files/2518
+                    solution: 'Run the following command to set the root user default group to GID 0 : # usermod -g 0 root'
+                    db_type: sqlserver
+                    plugin_id: 21157
+                    state: OPEN
+                    description: "\"Check 6: [PASSED]\"\n\ninfo block\n\nSolution:\nsolution block\nReference:\nComplianceReference(framework=800-171, control=3.4.2), ComplianceReference(framework= 800-53, control=CM-6), ComplianceReference(framework= CSCv7, control=BVVV)}\n\nPolicy Value:\nsome value\n\nActual Value:\n actual block 6"
+                    compliance_functional_id: 7957fe426e
+                    compliance_informational_id: 52eeae68890a69e5ed722c9f624cba3d70d753f7025514284dc5ced306f74140
+                    synopsis: Compliance checks for database servers.
+                    last_fixed: '2024-01-03T17:24:28.004Z'
+                    last_observed: '2024-01-03T17:24:28.004Z'
+                    metadata_id: 9c30d6c68b6dde740fd7c864fbdf2acc0562e281ef8f156d05f1ed1695574a6e
+                    uname_output: Linux centos-agent-docker3...
+                    indexed_at: '2024-01-05T15:54:59.839Z'
+                    plugin_name: Database Compliance Checks
+                    asset:
+                      id: 037bb045-2c31-5a3a-9b19-8832b9a00210
+                      ipv4_addresses:
+                      - 10.22.20.164
+                      ipv6_addresses: []
+                      fqdns:
+                      - 19733542-65892551.test.com
+                      name: 19733543-65892552.test.com
+                      agent_name: Agent name of asset
+                      netbios_name: 19733543-65892552.test.com
+                      system_type: system-type
+                      network_id: null
+                      tags: []
+        '400':
+          description: Returned if the compliance chunk ID is invalid or the chunk is not ready for download.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Compliance_Data_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to download the compliance export.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified chunk with the specified export ID.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Compliance_Data_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Export_Compliance_Data_cloud: []
+  /compliance/export/{export_uuid}/cancel:
+    post:
+      summary: Cancel compliance export
+      description: Cancels the specified compliance export job. If you cancel an export job, Tenable Vulnerability Management finishes any chunk that is currently processing, terminates the processing of any unprocessed chunks, and updates the job status to `CANCELLED`. If a canceled job includes completed chunks, you can still download those chunks after cancellation. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: io-exports-compliance-cancel
+      tags:
+      - Exports (Compliance Data)
+      parameters:
+      - description: The UUID of the export request you want to cancel.
+        required: true
+        name: export_uuid
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the specified export job was cancelled successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: The status of the export job.
+                    example: CANCELLED
+              examples:
+                response:
+                  value:
+                    status: CANCELLED
+        '400':
+          description: Returned if Tenable Vulnerability Management could not cancel the specified export job because it is already finished.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: The error message explaining why the request failed.
+                    example: Cannot cancel finished export
+              examples:
+                response:
+                  value:
+                    error: Cannot cancel finished export
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Compliance_Data_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to cancel the export. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified export job.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: The error message explaining why the request failed.
+              examples:
+                response:
+                  value:
+                    error: Export '65a1bb38-30ef-46b9-8fc2-a8287b8de854' does not exist
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export_Compliance_Data_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Export_Compliance_Data_cloud: []
+components:
+  schemas:
+    Export_Compliance_Data_compliance-tags:
+      type: object
+      properties:
+        category:
+          type: string
+          description: The tag category.
+        values:
+          type: array
+          description: The tag value,
+          items:
+            type: string
+    Export_Compliance_Data_response-compliance-export-chunk-asset:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The UUID of the asset in Tenable Vulnerability Management. Use this value as the unique key for the asset.
+        ipv4_addresses:
+          description: A list of IPv4 addresses that are associated with the asset.
+          type: array
+          items:
+            type: string
+        ipv6_addresses:
+          description: A list of IPv6 addresses that are associated with the asset.
+          type: array
+          items:
+            type: string
+        fqdns:
+          description: A list of fully-qualified domain names (FQDNs) that are associated with the asset.
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+          description: The name of the asset.
+        agent_name:
+          type: string
+          description: The name of the Nessus agent that scanned and identified the asset.
+        agent_uuid:
+          type: string
+          description: The unique identifier of the Nessus agent that identified the asset.
+        netbios_name:
+          type: string
+          description: The NetBIOS name that is associated with the asset.
+        mac_addresses:
+          type: array
+          description: A list of MAC addresses that are associated with the asset.
+          items:
+            type: string
+        operating_systems:
+          type: array
+          description: The operating systems that scans have associated with the asset record.
+          items:
+            type: string
+        system_type:
+          type: string
+          description: The system type as reported by Plugin ID 54615. Possible values include `router`, `general-purpose`, `scan-host`, and `embedded`.
+        network_id:
+          type: string
+          description: The ID of the network associated with the scanners that that gathered the compliance data. The default network ID is `00000000-0000-0000-0000-000000000000`. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        tags:
+          type: array
+          description: The tags assigned to the asset in Tenable Vulnerability Management.
+          items:
+            $ref: '#/components/schemas/Export_Compliance_Data_compliance-tags'
+    Export_Compliance_Data_response-compliance-export-status:
+      description: Information about the compliance export job, including the current status of the export and the total number of chunks.
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: The UUID of the compliance export request.
+        status:
+          type: string
+          description: "The status of the compliance export request. Possible values include:\n - PROCESSING—Tenable Vulnerability Management has started processing the compliance export request.\n - FINISHED—Tenable Vulnerability Management has completed processing the export request, the list of chunks is complete, and all chunks are available for download.\n - READY—Some chunks are now available for download, but Tenable Vulnerability Management is still processing the export request.\n - CANCELLED—An administrator has canceled the export request.\n - ERROR—Tenable Vulnerability Management encountered an error while processing the export request. Tenable recommends that you retry the request. If the status persists on retry, contact Support."
+        chunks_available:
+          type: array
+          description: A comma-separated list of completed chunks available for download. Chunks appear in the list as they become available, so numbering may not start at 1 and gaps between chunk numbers are possible.
+          items:
+            type: integer
+            format: int32
+        chunks_failed:
+          type: array
+          description: A comma-separated list of failed chunks. If a chunk fails processing, submit the export request again. If the chunk continues to fail, contact Support.
+          items:
+            type: integer
+            format: int32
+        chunks_cancelled:
+          type: array
+          description: A comma-separated list of cancelled chunks.
+          items:
+            type: integer
+            format: int32
+        chunks_available_count:
+          type: integer
+          description: The total number of completed chunks available for download.
+        empty_chunks_count:
+          type: integer
+          description: The total number of empty chunks.
+        finished_chunks:
+          type: integer
+          description: The number of chunks that have been processed and are available for download.
+        filters:
+          type: object
+          description: The filters used in the compliance export job request. For a list of possible filters, see the [POST /compliance/export](ref:io-exports-compliance-create) endpoint.
+          properties: {}
+        num_findings:
+          type: integer
+          description: The number of findings contained in each compliance export chunk.
+        asset:
+          type: array
+          description: A comma-separated list of asset UUIDs.
+          items:
+            type: string
+            format: uuid
+        created:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the compliance export job was created.
+    Export_Compliance_Data_response-compliance-export-jobs:
+      description: Information about the last 1000 compliance export jobs.
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: The UUID of the compliance export request.
+        status:
+          type: string
+          description: "The status of the compliance export request. Possible values include:\n - PROCESSING—Tenable Vulnerability Management has started processing the compliance export request.\n - FINISHED—Tenable Vulnerability Management has completed processing the export request, the list of chunks is complete, and all chunks are available for download.\n - READY—Some chunks are now available for download, but Tenable Vulnerability Management is still processing the export request.\n - CANCELLED—An administrator has canceled the export request.\n - ERROR—Tenable Vulnerability Management encountered an error while processing the export request. Tenable recommends that you retry the request. If the status persists on retry, contact Support."
+        chunks_available_count:
+          type: integer
+          description: The total number of completed chunks available for download.
+        empty_chunks_count:
+          type: integer
+          description: The total number of empty chunks.
+        finished_chunks:
+          type: integer
+          description: The number of chunks that have been processed and are available for download.
+        filters:
+          type: object
+          description: The filters used in the compliance export job request. For a list of possible filters, see the [POST /compliance/export](ref:io-exports-compliance-create) endpoint.
+          properties: {}
+        num_findings:
+          type: integer
+          description: The number of findings contained in each compliance export chunk.
+        asset:
+          type: array
+          description: A comma-separated list of asset UUIDs.
+          items:
+            type: string
+            format: uuid
+        created:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the compliance export job was created.
+    Export_Compliance_Data_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Export_Compliance_Data_response-compliance-export-chunk:
+      description: ''
+      type: object
+      properties:
+        asset_uuid:
+          description: The UUID of the asset on which the compliance check was executed.
+          type: string
+          example: e5e6fa1b-243f-45b7-82cb-285c271cbaa6
+        first_seen:
+          description: The ISO date when a compliance scan first assessed the asset with the compliance check.
+          type: string
+        last_seen:
+          description: The ISO date when a compliance scan last assessed the asset with the compliance check.
+          type: string
+        audit_file:
+          description: The name of the audit file containing the compliance check. This property is part of the composite key (`asset_uuid` + `compliance_full_id` + `audit_file`) that uniquely identifies a compliance finding. If the same check exists in multiple audit files assigned to an asset, each audit file produces a separate finding.
+          type: string
+          example: CIS_CentOS_8_Server_L1_v1.0.0.audit
+        check_id:
+          description: The unique identifier for the compliance finding. This identifier is generated based on the `compliance_full_id`, `compliance_functional_id`, and `compliance_informational_id`. The `check_id` is regenerated if any of the identifiers it's based on changes.
+          type: string
+          example: 016a5388346b8f1f45e8ed18a33109fb0fa8506263e58f33dc598e00c23ce418
+        check_name:
+          description: The descriptive name of the compliance check.
+          type: string
+          example: 2.2.18 Ensure mail transfer agent is configured for local-only mode
+        check_info:
+          description: Full text description of the compliance check.
+          type: string
+          example: Mail Transfer Agents (MTA), such as sendmail and Postfix, are used to listen for incoming mail and transfer the messages to the appropriate user or mail server. If the system is not intended to be a mail server, it is recommended that the MTA be configured to only process local mail.  The software for all Mail Transfer Agents is complex and most have a long history of security issues. While it is important to ensure that the system can process local mail messages, it is not necessary to have the MTA's daemon listening on a port unless the server is intended to be a mail server that receives and processes mail from other systems.
+        expected_value:
+          description: The desired value (integer or string) for the compliance check. For example, if a password length compliance check requires passwords to be 8 characters long then `8` is the expected value. For manual checks, this field will contain the command used for the compliance check.
+          type: string
+          example: 'cmd: /bin/grep -E -i ''^[^#]*svfats'' /etc/fstab'
+        actual_value:
+          description: The actual value (integer, string, or table) evaluated from the compliance check. For example, if a password length compliance check requires passwords to be 8 characters long, but the evaluated value was 7 then `7` is the actual value. For manual checks, this field will contain the output of the command that was executed.
+          type: string
+        status:
+          description: "Indicates the result of the compliance check for the given asset. \n\nPossible values include:\n - PASSED—Returned if the asset has passed the compliance check.\n - FAILED—Returned if the asset has failed the compliance check.\n - WARNING—Returned in cases where there is no definable passing criteria; for example, an audit where you must verify that members of the administrator group are appropriate for your organization.\n - SKIPPED—Returned if the plugin determined that the check is not applicable to the asset. It can also be returned in other various cases; for example, if a check requires that a direct command be run to gather data on an offline network device or if a check contains commands that won't run on the specified OS.\n - UNKNOWN—Returned when a status cannot be determined for the OVAL check. The OVAL engine sets this status."
+          type: string
+          example: PASSED
+        reference:
+          description: Industry references for the compliance check.
+          type: array
+          items:
+            type: object
+            properties:
+              framework:
+                description: The name of the compliance framework.
+                type: string
+                example: 800-171
+              control:
+                description: The specific control within the compliance framework.
+                type: string
+                example: 3.5.1
+        see_also:
+          description: Links to external websites that contain reference information about the compliance check.
+          type: string
+          example: https://workbench.cisecurity.org/files/2518
+        solution:
+          description: Remediation information for the compliance check.
+          type: string
+          example: 'Edit /etc/postfix/main.cf and add the following line to the RECEIVING MAIL section. If the line already exists, change it to look like the line below: inet_interfaces = loopback-only Run the following command to restart postfix # systemctl restart postfix'
+        db_type:
+          description: The type of database if the compliance check assessed a database.
+          type: string
+        plugin_id:
+          description: The unique ID of the compliance plugin.
+          type: integer
+        state:
+          description: "The state as determined by the Tenable Vulnerability Management state service. This field is `NULL` for findings last seen before December 2021. Possible values include: \n - OPEN—The compliance finding is currently present on an asset. \n - REOPENED—The compliance finding was previously marked as fixed on an asset but has been detected again by a new scan. \n - FIXED—The compliance finding was present on an asset but is no longer detected.\n\nNote that the API uses different terms for states than the user interface. The `new` and `active` states in the user interface map to the `open` state in the API. The `resurfaced` state in the user interface maps to the `reopened` state in the API. The `fixed` state is the same."
+          type: string
+        check_error:
+          description: An error message if the compliance evaluation fails.
+          type: string
+        profile_name:
+          description: The name of the profile for the benchmark standard.
+          type: string
+        description:
+          description: A detailed description of the compliance check.
+          type: string
+        compliance_benchmark_name:
+          description: The name of the compliance benchmark. For example, `CIS SQL Server 2019`.
+          type: string
+        compliance_benchmark_version:
+          description: The version of the compliance benchmark. For example, `1.2.0`.
+          type: string
+        compliance_control_id:
+          description: A unique identifier for the aggregation of multiple results to single recommendations in CIS and DISA audits. This identifier is a computed and hashed value for CIS and DISA content that enables customers to match checks that evaluate the same recommendation within a benchmark.
+          type: string
+        compliance_full_id:
+          description: 'A unique identifier that identifies the compliance check content. The identifier is a hash of fields within the compliance check (excluding external references). The identifier changes if any of the fields within the compliance check change.
+
+
+            **Note:** This identifier does not include the audit file. If the same check exists in multiple audit files assigned to an asset, each audit file produces a separate finding with the same `compliance_full_id`. To uniquely identify a compliance finding, use the composite key of `asset_uuid` + `compliance_full_id` + `audit_file`.'
+          type: string
+        compliance_functional_id:
+          description: A unique identifier for aggregating or comparing compliance results that were tested the same way. The identifier is a hash of the code within the audit that actually performs the check. The identifier changes if functional evaluation of the audit changes.
+          type: string
+        compliance_informational_id:
+          description: A unique identifier for aggregating or comparing compliance results that have the same informational data. For example, the same solution text. The identifier is a hash of the info and solution fields within the compliance check. The identifier changes if either of these fields are updated.
+          type: string
+        synopsis:
+          description: A short summary of the compliance audit.
+          type: string
+        last_fixed:
+          description: The ISO date when the compliance failure was last fixed on the asset.
+          type: string
+        last_observed:
+          description: The ISO date when the compliance issue was last observed (whether `active` or `fixed`) on the asset.
+          type: string
+        metadata_id:
+          description: A unique identifier used in the Tenable Vulnerability Management pipeline results ingestion.
+          type: string
+        uname_output:
+          description: The output of the `uname` command on the asset. It typically contains the operating system type and version.
+          type: string
+        indexed_at:
+          description: The ISO date when the audit for the asset was indexed into Tenable Vulnerability Management.
+          type: string
+        plugin_name:
+          description: The name of the compliance check.
+          type: string
+        assets:
+          $ref: '#/components/schemas/Export_Compliance_Data_response-compliance-export-chunk-asset'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

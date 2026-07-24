@@ -1,0 +1,1018 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Scanners API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Scanners
+  x-displayName: Scanners
+paths:
+  /scanners:
+    get:
+      summary: List scanners
+      description: 'Returns the scanner list.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>'
+      operationId: scanners-list
+      tags:
+      - Scanners
+      responses:
+        '200':
+          description: Returned if the list of scanners was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_response-list-scanners'
+              examples:
+                response:
+                  value:
+                    scanners:
+                    - creation_date: 1500743403
+                      group: true
+                      groups:
+                      - name: scanner-group-a
+                        uuid: ff1a7722-d244-4d17-9083-1a1f6e42e341
+                      - name: scanner-group-b
+                        uuid: 5448d73b-a394-44ff-b0ed-643ba580887c
+                      id: 120958
+                      key: fd16fc0278c4222feb0697045cd8f0358449acc6ca3130aa63a09d5acb1dd78f
+                      last_connect: null
+                      last_modification_date: 1500743403
+                      license:
+                        activation_code: 448U-ABCD-1234
+                        agents: -1
+                        ips: 500
+                        scanners: -1
+                        users: -1
+                        enterprise_pause: false
+                        expiration_date: 1614038400
+                        evaluation: false
+                        apps:
+                          consec:
+                            mode: standard
+                            expiration_date: 1613970000
+                            activation_code: C82J-ABCD-1234
+                            max_gb: '1'
+                          was:
+                            mode: standard
+                            expiration_date: 1613970000
+                            activation_code: C99G-ABCD-1234
+                            web_assets: '10'
+                        scanners_used: 1
+                        agents_used: 0
+                      linked: 1
+                      name: US West Cloud Scanners
+                      network_name: Default
+                      num_scans: 0
+                      owner: system
+                      owner_id: 1
+                      owner_name: system
+                      owner_uuid: 564bc2ce-4dae-4285-aade-2b744697d9aa
+                      pool: true
+                      scan_count: 0
+                      shared: 1
+                      source: service
+                      status: 'on'
+                      timestamp: 1500743403
+                      type: local
+                      user_permissions: 64
+                      uuid: 26e9266b-d42e-4f77-877f-3164bce652c4db3eac57471272de
+                      supports_remote_logs: false
+                      profile_uuid: 00000000-0000-0000-0000-000000000000
+                      profile_name: Default
+                    - creation_date: 1559325208
+                      group: true
+                      id: 236329
+                      key: 6dec14cb6d33bce4173b8bd0a022400e306629ddca7951bebe4252a6973c16ce
+                      last_connect: null
+                      last_modification_date: 1559325208
+                      linked: 1
+                      name: US Cloud Scanner
+                      network_name: Default
+                      num_scans: 0
+                      owner: system
+                      owner_id: 1
+                      owner_name: system
+                      owner_uuid: 564bc2ce-4dae-4285-aade-2b744697d9aa
+                      pool: true
+                      scan_count: 0
+                      shared: 1
+                      source: service
+                      status: 'on'
+                      timestamp: 1559325208
+                      type: pool
+                      user_permissions: 128
+                      uuid: 00000000-0000-0000-0000-00000000000000000000000000001
+                      supports_remote_logs: false
+                      profile_uuid: 00000000-0000-0000-0000-000000000000
+                      profile_name: Default
+                    - creation_date: 1561584499
+                      group: true
+                      id: 236911
+                      key: 68a3829fe2ce4d9ee6ab053691c7b9114cab6148294b12489bbcc0db54c6c109
+                      last_connect: null
+                      last_modification_date: 1561584499
+                      linked: 1
+                      name: US West Cloud Scanners
+                      network_name: Default
+                      num_scans: 0
+                      owner: system
+                      owner_id: 1
+                      owner_name: system
+                      owner_uuid: 564bc2ce-4dae-4285-aade-2b744697d9aa
+                      pool: true
+                      scan_count: 0
+                      shared: 1
+                      source: service
+                      status: 'on'
+                      timestamp: 1561584499
+                      type: pool
+                      user_permissions: 128
+                      uuid: e84ca418-ef25-4dd6-8635-4df11a6e1c2f
+                      supports_remote_logs: false
+                      profile_uuid: 00000000-0000-0000-0000-000000000000
+                      profile_name: Default
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the list.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanners_cloud: []
+  /scanners/{scanner_id}:
+    get:
+      summary: Get scanner details
+      description: 'Returns details for the specified scanner.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>'
+      operationId: scanners-details
+      tags:
+      - Scanners
+      parameters:
+      - description: The ID of the scanner.
+        required: true
+        name: scanner_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the details for the specified scanner were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_response-scanner-object'
+              examples:
+                response:
+                  value:
+                    creation_date: 1543416914
+                    group: true
+                    groups:
+                    - name: scanner-group-a
+                      uuid: ff1a7722-d244-4d17-9083-1a1f6e42e341
+                    - name: scanner-group-b
+                      uuid: 5448d73b-a394-44ff-b0ed-643ba580887c
+                    id: 141482
+                    key: 83520d0f4da8265cb52f7b558a3319ecb36d4b0ea490d4f9ec4ca9f2e1eee8b9
+                    last_connect: null
+                    last_modification_date: 1543416914
+                    license: null
+                    linked: 1
+                    name: AP Singapore Cloud Scanners
+                    network_name: Default
+                    num_scans: 0
+                    owner: system
+                    owner_id: 1
+                    owner_name: system
+                    owner_uuid: b61cd03e-ee5a-4d20-a999-fb62603f8252
+                    pool: true
+                    scan_count: 0
+                    shared: 1
+                    source: service
+                    status: 'on'
+                    timestamp: 1543416914
+                    type: local
+                    user_permissions: 64
+                    uuid: b9e4edf7-d7f4-40c3-9b76-61e902c5579b0523d1e84e3fef44
+                    supports_remote_logs: false
+                    profile_uuid: 00000000-0000-0000-0000-000000000000
+                    profile_name: Default
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the specified scanner.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified scanner.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanners_cloud: []
+    put:
+      summary: Update scanner
+      description: "Updates the specified scanner. \n\nYou cannot use this endpoint to assign the scanner to a network object. Instead, use the [POST /networks/{network_id}/scanners/{scanner_uuid}](ref:networks-assign-scanner) endpoint.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See [Roles](doc:roles).</div>"
+      operationId: scanners-edit
+      tags:
+      - Scanners
+      parameters:
+      - description: The ID of the scanner.
+        required: true
+        name: scanner_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The new name for the scanner.
+                force_plugin_update:
+                  type: integer
+                  description: Pass 1 to force a plugin update.
+                  format: int32
+                force_ui_update:
+                  type: integer
+                  description: Pass 1 to force a UI update.
+                  format: int32
+                finish_update:
+                  type: integer
+                  description: Pass 1 to reboot the scanner and run the latest software update (only valid if automatic updates are disabled).
+                  format: int32
+                registration_code:
+                  type: string
+                  description: Sets the registration code for the scanner.
+                aws_update_interval:
+                  type: integer
+                  description: Specifies how often, in minutes, the scanner checks in with Tenable Vulnerability Management (Amazon Web Services scanners only).
+                  format: int32
+      responses:
+        '200':
+          description: Returned if the specified profile was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_update-scanner'
+              examples:
+                response:
+                  value:
+                    owner_uuid: 169a9fad-c23b-454a-8519-285e30b11d94
+                    created: 1576171974205
+                    modified: 1579909576455
+                    container_uuid: 234a6a72-0fe6-4d5b-aaab-9f97774d42da
+                    uuid: 9e226caf-ef74-419a-875e-205e77534cba
+                    id: 44741097
+                    name: test13
+                    type: local
+                    network_name: Default
+                    default_permissions: 16
+                    shared: 1
+                    user_permissions: 64
+                    key: e3eeefeacca0d998c466af126549d68ef0f4e0d0ba3ab04a6e59a1d8a8a57079
+                    system: true
+                    linked: 1
+                    settings: {}
+                    aws_update_interval: 0
+                    status: 'on'
+                    lce: false
+                    pvs: false
+                    aws: false
+                    industrial_security: false
+                    scanner_scanner: false
+                    webapp: false
+                    group: true
+                    can_factory_reset: false
+                    system_group_scanner: true
+                    system_scanner_scanner: false
+                    system_webapp_scanner: false
+                    supports_remote_logs: false
+                    created_in_seconds: 1576171974
+                    modified_in_seconds: 1579909576
+                    network_id: 00000000-0000-0000-0000-000000000000
+                    profile_uuid: 00000000-0000-0000-0000-000000000000
+                    profile_name: Default
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you attempt to update a cloud scanner where you don't have edit permissions, or if you attempt to set a registration code for an Amazon Web Services scanner.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanners_cloud: []
+    delete:
+      summary: Delete scanner
+      description: 'Deletes and unlinks a scanner from Tenable Vulnerability Management.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.DELETE`, `VM.VM_SENSOR.VM_WAS_SCANNER.DELETE`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.DELETE`. See [Roles](doc:roles).</div>'
+      operationId: scanners-delete
+      tags:
+      - Scanners
+      parameters:
+      - description: The ID of the scanner.
+        required: true
+        name: scanner_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the specified scanner was deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you attempt to delete the local scanner.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanners_cloud: []
+  /scanners/{scanner_id}/key:
+    get:
+      summary: Get scanner key
+      description: Retrieves the key of the requested scanner.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.LINKING_KEY.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: scanners-get-scanner-key
+      tags:
+      - Scanners
+      parameters:
+      - description: The ID or UUID of the scanner. You can use the default UUID `00000000-0000-0000-0000-00000000000000000000000000001` to retrieve your container's current linking key.
+        required: true
+        name: scanner_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the scanner linking key was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_scanner-key'
+              examples:
+                response:
+                  value:
+                    key: 615f4cbeda288998dffe534d36385a422cd4e27be34dcdd7738dc0a01b787f5f
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view scanner data.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified scanner.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanners_cloud: []
+  /scanners/{scanner_id}/aws-targets:
+    get:
+      summary: List AWS scan targets
+      description: 'Lists AWS scan targets if the requested scanner is an Amazon Web Services scanner.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>'
+      operationId: scanners-get-aws-targets
+      tags:
+      - Scanners
+      parameters:
+      - description: The ID of the scanner.
+        required: true
+        name: scanner_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the AWS target list for the specified scanner was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_aws-target'
+              examples:
+                response:
+                  value:
+                    object: aws-target
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view scanner data.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified scanner, or if the scanner is not an AWS scanner.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanners_cloud: []
+  /scanners/{scanner_id}/scans:
+    get:
+      summary: List running scans
+      description: 'Lists scans running on the requested scanner.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>'
+      operationId: scanners-get-scans
+      tags:
+      - Scanners
+      parameters:
+      - description: The ID of the scanner.
+        required: true
+        name: scanner_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the list of scans running on the specified scanner was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_scan'
+              examples:
+                response:
+                  value:
+                    scans:
+                    - scan_id: 36
+                      scanner_uuid: 00000000-0000-0000-0000-00000000000000000000000000001
+                      name: Basic Scan
+                      status: pending
+                      id: 007d0e76-fcec-455d-a5e2-fac16772560c
+                      user: API Demo User
+                      user_uuid: 1fb43a88-2240-4d7e-a46a-dd655fa59398
+                      last_modification_date: 1545945321
+                      start_time: 1545945321
+                      network_id: 6be6cbfe-2c4b-4f3c-b959-127362d2dcce
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view scanner data.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified scanner.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanners_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanners_cloud: []
+components:
+  schemas:
+    Scanners_scanner-key:
+      type: object
+      properties:
+        scanner_id:
+          type: string
+          description: The linking key, that is, the alpha-numeric sequence of characters you use to link a scanner to Tenable Vulnerability Management. For more information about linking a scanner, see the [Link a Sensor](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/LinkaSensor.htm) in the Tenable Vulnerability Management User Guide.
+    Scanners_scan:
+      type: object
+      properties:
+        scanner_uuid:
+          type: string
+          description: The UUID of the scanner the scan belongs to.
+        name:
+          type: string
+          description: The name of the scan.
+        status:
+          type: string
+          description: The status of the scan. For a list of scan statuses and their descriptions, see [Scan Status](doc:scan-status-tio).
+        id:
+          type: string
+          description: The scan UUID.
+        scan_id:
+          type: integer
+          description: The ID of the scan.
+        user:
+          type: string
+          description: The username of the owner of the scan.
+        last_modification_date:
+          type: integer
+          description: The last time the scan was modified.
+        start_time:
+          type: integer
+          description: When the scan was started.
+        remote:
+          type: boolean
+          description: Indicates whether the scan is running remotely ('true') or not ('false').
+        network_id:
+          type: string
+          description: The ID of the network object associated with the scanner currently running the scan. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+    Scanners_aws-target:
+      type: object
+      properties:
+        scanner_id:
+          type: integer
+          description: The ID of the scanner.
+        instance_id:
+          type: string
+          description: Unique instance identifier from Amazon.
+        private_ip:
+          type: string
+          description: Private IP address of the AWS instance.
+        public_ip:
+          type: string
+          description: Public IP address of the AWS instance.
+        state:
+          type: string
+          description: 'The state of the instance. Can be one of the following values: `running`, `stopped`, or `terminated`.'
+        zone:
+          type: string
+          description: 'The availability zone for the instance. Example: `us-east-1a`, `us-east-1b`, etc.'
+        type:
+          type: string
+          description: 'The size of the instance. Example: `t2.small`, `t2.medium`, etc.'
+        name:
+          type: string
+          description: The user-defined name of the instance.
+    Scanners_response-list-scanners:
+      type: array
+      items:
+        $ref: '#/components/schemas/Scanners_response-scanner-object'
+    Scanners_update-scanner:
+      type: object
+      properties:
+        owner_uuid:
+          type: string
+          description: The UUID of the owner of the scanner.
+        created:
+          type: integer
+          format: int64
+          description: The Unix timestamp when you linked the scanner to the Tenable Vulnerability Management instance.
+        modified:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the scanner configuration was last modified.
+        container_uuid:
+          type: string
+          description: The UUID of the Tenable Vulnerability Management instance to which the scanner is linked.
+        uuid:
+          type: string
+          description: The UUID of the scanner.
+        id:
+          type: integer
+          description: The unique ID of the scanner.
+        name:
+          type: string
+          description: The user-defined name of the scanner.
+        network_name:
+          type: string
+          description: The name of the network object associated with the scanner. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        default_permissions:
+          type: integer
+          description: 'The default permissions value set for the scanner. (Possible values are: 16, 24, 32, 40, and 64)'
+        shared:
+          type: boolean
+          description: Indicates whether anyone other than the scanner owner has explicit access to the scanner (`1`).
+        user_permissions:
+          type: integer
+          description: The permissions you (the current user) have been assigned for the scanner. See [Permissions](doc:permissions).
+        key:
+          type: string
+          description: The linking key, that is, the alpha-numeric sequence of characters you use to link a scanner to Tenable Vulnerability Management. For more information about linking a scanner, see the [Link a Sensor](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/LinkaSensor.htm) in the Tenable Vulnerability Management User Guide.
+        status:
+          type: string
+          description: The status of the scanner (`on` or `off`).
+        profile_uuid:
+          type: string
+          description: The unique ID (UUID) of the scanner profile that the scanner belongs to.
+        profile_name:
+          type: string
+          description: The name of the scanner profile that the scanner belongs to.
+    Scanners_response-scanner-object:
+      type: object
+      properties:
+        creation_date:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the scanner was created. This attribute specifies the original creation date if the scanner was migrated.
+        distro:
+          type: string
+          description: The scanner operating system distribution.
+        engine_version:
+          type: string
+          description: The version of the scanner.
+        group:
+          type: boolean
+          description: Indicates whether the scanner belongs to a scanner group ('true') or not ('false').
+        groups:
+          type: array
+          description: A list of scanner groups that the scanner belongs to.
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the scanner group.
+              uuid:
+                type: string
+                description: The UUID of the scanner group.
+        hostname:
+          type: string
+          description: The hostname of the scanner.
+        id:
+          type: integer
+          description: The unique ID of the scanner.
+        ip_addresses:
+          description: A list of IP addresses associated with the scanner.
+          type: array
+          items:
+            type: string
+        key:
+          type: string
+          description: The linking key, that is, the alpha-numeric sequence of characters you use to link a scanner to Tenable Vulnerability Management. For more information about linking a scanner, see the [Link a Sensor](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/LinkaSensor.htm) in the Tenable Vulnerability Management User Guide.
+        last_connect:
+          type: string
+          description: The Unix timestamp when any of the scanner's tasks have provided its last update.
+        last_modification_date:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the scanner was last modified.
+        linked:
+          type: integer
+          description: Specifies whether you disabled (`0`) or enabled (`1`) the scanner. For more information, see the [PUT /scanners/{scanner_id}/link](ref:scanners-toggle-link-state) endpoint.
+        loaded_plugin_set:
+          type: string
+          description: The current plugin set on the scanner.
+        registration_code:
+          type: string
+          description: The registration code of the scanner.
+        license:
+          type: object
+          properties:
+            type:
+              type: string
+              description: The license type.
+            ips:
+              type: integer
+              description: The number of hosts the scanner is licensed to use.
+            agents:
+              type: integer
+              description: The number of agents the scanner is licensed to use.
+            scanners:
+              type: integer
+              description: The number of scanners the scanner is licensed to use.
+            apps:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: The Tenable products licensed on the scanner.
+                consec:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: Indicates that the scanner is licensed to perform Tenable Container Security scans.
+                    mode:
+                      type: string
+                      description: Indicates whether the product license is an evaluation license (`eval`) or standard license (`standard`).
+                    expiration_date:
+                      type: integer
+                      format: int64
+                      description: The Unix timestamp when the license expires.
+                    activation_code:
+                      type: integer
+                      description: The activation code you used to enable the license. This value is present for standard licenses only.
+                    max_gb:
+                      type: integer
+                      description: The maximum memory (in GB) on the scanner allotted for the Tenable licensed application.
+                was:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: Indicates that the scanner is licensed to perform Tenable Web App Scanning scans.
+                    mode:
+                      type: string
+                      description: Indicates whether the product license is an evaluation license (`eval`) or standard license (`standard`).
+                    expiration_date:
+                      type: integer
+                      format: int64
+                      description: The Unix timestamp when the license expires.
+                    activation_code:
+                      type: integer
+                      description: The activation code you used to enable the license. This value is present for standard licenses only.
+                    web_assets:
+                      type: integer
+                      description: The number of web assets which your license authorizes you to scan.
+        name:
+          type: string
+          description: The user-defined name of the scanner.
+        network_name:
+          type: string
+          description: The name of the network object associated with the scanner. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        num_scans:
+          type: integer
+          description: The number of scans (tasks) the scanner is currently executing.
+        owner:
+          type: string
+          description: The owner of the scanner.
+        owner_id:
+          type: integer
+          description: The ID of the owner of the scanner.
+        owner_name:
+          type: string
+          description: The username of the owner of the scanner.
+        owner_uuid:
+          type: string
+          description: The UUID of the owner of the scanner.
+        platform:
+          type: string
+          description: The platform of the scanner.
+        pool:
+          type: boolean
+          description: Indicates whether the scanner is part of a scanner group ('true') or not ('false'). For more information about scanner groups, see the [Scanner Groups](ref:scanner-groups) endpoints.
+        scan_count:
+          type: integer
+          description: The number of scans that the scanner is currently running.
+        shared:
+          type: boolean
+          description: Indicates whether anyone other than the scanner owner has explicit access to the scanner (`1`).
+        source:
+          type: string
+          description: Always set to `service`.
+        status:
+          type: string
+          description: The status of the scanner (`on` or `off`).
+        timestamp:
+          type: integer
+          description: Equivalent to the `last_modification_date` attribute.
+        type:
+          type: string
+          description: The type of scanner (`local`, `managed`, `managed_pvs`, `pool`, `remote`, or `webapp`).
+        ui_build:
+          type: integer
+          description: The backend build of Nessus that is running on the scanner.
+        ui_version:
+          type: string
+          description: The backend version of Nessus that is running on the scanner.
+        user_permissions:
+          type: integer
+          description: The permissions you (the current user) have been assigned for the scanner. See [Permissions](doc:permissions).
+        uuid:
+          type: string
+          description: The UUID of the scanner.
+        remote_uuid:
+          type: string
+          description: The UUID of the Nessus installation on the scanner.
+        supports_remote_logs:
+          type: boolean
+          description: Indicates if the scanner supports remote logging.
+        supports_webapp:
+          type: boolean
+          description: Indicates if the scanner supports Tenable Web App Scanning.
+        aws_update_interval:
+          type: integer
+          description: Specifies how often, in minutes, the scanner checks in with Tenable Vulnerability Management (Amazon Web Services scanners only).
+        profile_uuid:
+          type: string
+          description: The unique ID (UUID) of the scanner profile that the scanner belongs to.
+        profile_name:
+          type: string
+          description: The name of the scanner profile that the scanner belongs to.
+    Scanners_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

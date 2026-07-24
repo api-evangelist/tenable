@@ -1,0 +1,2985 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Filters API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Filters
+  description: "The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Filters endpoints in the Tenable MSSP Portal API enables customers to list the filtering capabilities for the other MSSP endpoints that support filtering. \n\nFor more information about the Tenable MSSP Portal, see the [Tenable MSSP Portal User Guide](https://docs.tenable.com/managed-security-service-provider/Content/Welcome.htm)."
+paths:
+  /filters/mssp/accounts:
+    get:
+      tags:
+      - Filters
+      summary: List account filters
+      description: Lists the filtering capabilities for account endpoints that support filtering. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-filters-account-list
+      responses:
+        '200':
+          description: Returned if the list of account filters was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wildcard_fields:
+                    $ref: '#/components/schemas/wildcard_fields'
+                  filters:
+                    $ref: '#/components/schemas/filters'
+              examples:
+                response:
+                  value:
+                    wildcard_fields:
+                    - container_name
+                    - custom_name
+                    - licensed_apps
+                    - region
+                    - notes
+                    filters:
+                    - name: container_name
+                      readable_name: Account Name
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                    - name: uuid
+                      readable_name: Account UUID
+                      control:
+                        readable_regex: 01234567-abcd-ef01-2345-6789abcdef01
+                        type: entry
+                        regex: '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})*'
+                      operators:
+                      - eq
+                      - neq
+                    - name: licensed_assets
+                      readable_name: Licenses Provisioned
+                      control:
+                        readable_regex: e.g. 1111111,2222222
+                        type: entry
+                        regex: 0|(-?[1-9][0-9]*)
+                      operators:
+                      - lte
+                      - gte
+                      - lt
+                      - gt
+                      - eq
+                      - neq
+                    - name: license_utilization
+                      readable_name: License Utilization
+                      control:
+                        readable_regex: e.g. 1111111,2222222
+                        type: entry
+                        regex: 0|(-?[1-9][0-9]*)
+                      operators:
+                      - lte
+                      - gte
+                      - lt
+                      - gt
+                      - eq
+                      - neq
+                    - name: license_expiration_date
+                      readable_name: License Expiring
+                      control:
+                        readable_regex: Enter no. of days, eg. 90
+                        type: entry
+                        regex: ^[0-9]+$
+                        maxlength: '6'
+                      operators:
+                      - lte
+                      - gte
+                      - lt
+                      - gt
+                    - name: licensed_apps
+                      readable_name: Licensed Apps
+                      control:
+                        type: dropdown_multi
+                        list:
+                        - name: WAS
+                          id: was
+                        - name: LUMIN
+                          id: lumin
+                      operators:
+                      - eq
+                      - neq
+                    - name: region
+                      readable_name: Region
+                      control:
+                        type: dropdown_multi
+                        list:
+                        - name: QA-STAGING
+                          id: qa-staging
+                      operators:
+                      - eq
+                      - neq
+        '400':
+          description: Returned if you specify invalid input parameters.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /filters/scans/agents:
+    get:
+      summary: List agent filters
+      description: Lists the filtering, sorting, and pagination capabilities available for agent records on endpoints that support them.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-filters-agents-list
+      tags:
+      - Filters
+      responses:
+        '200':
+          description: Returned if the agent filters was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wildcard_fields:
+                    $ref: '#/components/schemas/filters_wildcard_fields'
+                  filters:
+                    $ref: '#/components/schemas/filters_filters'
+                  sort:
+                    $ref: '#/components/schemas/filters_sort'
+              examples:
+                response:
+                  value:
+                    wildcard_fields:
+                    - core_version
+                    - distro
+                    - groups
+                    - ip
+                    - name
+                    - platform
+                    - status
+                    filters:
+                    - name: core_version
+                      readable_name: Version
+                      operators:
+                      - match
+                      - lt
+                      - neq
+                      - eq
+                      - nmatch
+                      - gt
+                      control:
+                        readable_regex: X.Y.Z
+                        type: entry
+                        regex: .*
+                    - name: distro
+                      readable_name: Distro
+                      operators:
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: Distro Name (e.g. es7-x86-64)
+                        type: entry
+                        regex: .*
+                    - name: groups
+                      readable_name: Member of Group
+                      operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - name: None
+                          id: -1
+                        - name: NA1
+                          id: 738777
+                    - name: ip
+                      readable_name: IP Address
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 192.168.1.1
+                        type: entry
+                        regex: .*
+                    - name: last_connect
+                      readable_name: Last Connection
+                      operators:
+                      - date-lt
+                      - date-gt
+                      - date-eq
+                      - date-neq
+                      - lt
+                      - gt
+                      - exists
+                      - nexists
+                      control:
+                        readable_regex: yyyy/MM/dd OR 1234567890
+                        type: datefield
+                        regex: ^(?:[0-9]{4}/[0-9]{2}/[0-9]{2}|[0-9]{1,11})$
+                    - name: last_scanned
+                      readable_name: Last Scanned
+                      operators:
+                      - date-lt
+                      - date-gt
+                      - date-eq
+                      - date-neq
+                      - lt
+                      - gt
+                      - exists
+                      - nexists
+                      control:
+                        readable_regex: yyyy/MM/dd OR 1234567890
+                        type: datefield
+                        regex: ^(?:[0-9]{4}/[0-9]{2}/[0-9]{2}|[0-9]{1,11})$
+                    - name: name
+                      readable_name: Name
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                    - name: platform
+                      readable_name: Platform
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: Platform Name (e.g. Linux)
+                        type: entry
+                        regex: .*
+                    - name: plugin_feed_id
+                      readable_name: Last Plugin Update
+                      operators:
+                      - date-lt
+                      - date-gt
+                      - date-eq
+                      - date-neq
+                      - lt
+                      - gt
+                      - exists
+                      - nexists
+                      control:
+                        readable_regex: yyyy/MM/dd OR 1234567890
+                        type: datefield
+                        regex: ^(?:[0-9]{4}/[0-9]{2}/[0-9]{2}|[0-9]{1,11})$
+                    - name: status
+                      readable_name: Status
+                      operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - Online
+                        - Offline
+                        - Initializing
+                    - name: uuid
+                      readable_name: UUID
+                      operators:
+                      - eq
+                      - neq
+                      control:
+                        readable_regex: agent uuid
+                        type: entry
+                        regex: .*
+                    - name: network_uuid
+                      readable_name: Network UUID
+                      operators:
+                      - eq
+                      - neq
+                      control:
+                        readable_regex: Network UUID
+                        type: entry
+                        regex: .*
+                    - name: network_name
+                      readable_name: Network Name
+                      operators:
+                      - eq
+                      - neq
+                      control:
+                        readable_regex: Network Name
+                        type: entry
+                        regex: .*
+                    - name: profile_uuid
+                      readable_name: Assigned to Profile
+                      operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - name: Default
+                          id: 00000000-0000-0000-0000-000000000000
+                        - name: NA1
+                          id: e302aaa5-aaa5-aaa5-aaa5-703dd25faaa5
+                    - name: health
+                      readable_name: Health
+                      operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - Healthy
+                        - Warning
+                        - Critical
+                        - Safe Mode
+                        - Unknown
+                    - name: safe_mode
+                      readable_name: Safe Mode
+                      operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - Enabled
+                        - Disabled
+                        - N/A
+                    - name: linked_on
+                      readable_name: Linked On
+                      operators:
+                      - date-lt
+                      - date-gt
+                      - date-eq
+                      - date-neq
+                      - lt
+                      - gt
+                      - exists
+                      - nexists
+                      control:
+                        readable_regex: yyyy/MM/dd OR 1234567890
+                        type: datefield
+                        regex: ^(?:[0-9]{4}/[0-9]{2}/[0-9]{2}|[0-9]{1,11})$
+                    sort:
+                      sortable_fields:
+                      - core_version
+                      - distro
+                      - health
+                      - ip
+                      - last_connect
+                      - last_scanned
+                      - name
+                      - platform
+                      - plugin_feed_id
+                      - linked_on
+                      - safe_mode
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - filters_cloud: []
+  /filters/workbenches/assets:
+    get:
+      summary: List asset filters
+      description: Lists the filtering, sorting, and pagination capabilities available for assets on endpoints that support them. For more information about these filters, see [Workbench Filters](doc:workbench-filters).<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-filters-assets-list
+      tags:
+      - Filters
+      responses:
+        '200':
+          description: Returned if the asset filters was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wildcard_fields:
+                    $ref: '#/components/schemas/filters_wildcard_fields'
+                  filters:
+                    $ref: '#/components/schemas/filters_filters'
+                  sort:
+                    $ref: '#/components/schemas/filters_sort'
+              examples:
+                response:
+                  value:
+                    filters:
+                    - name: acr_score
+                      readable_name: ACR Score
+                      operators:
+                      - eq
+                      - gte
+                      - lte
+                      control:
+                        type: entry
+                        regex: ^([1-9]|10)$
+                        readable_regex: NUMBER
+                    - name: acr_severity
+                      readable_name: ACR Severity
+                      operators:
+                      - eq
+                      control:
+                        type: dropdown_multi
+                        list:
+                        - name: Critical
+                          value: '4'
+                        - name: High
+                          value: '3'
+                        - name: Medium
+                          value: '2'
+                        - name: Low
+                          value: '1'
+                        - name: Unclassified
+                          value: '-1'
+                    - name: exposure_score
+                      readable_name: AES
+                      operators:
+                      - eq
+                      - gte
+                      - lte
+                      control:
+                        type: entry
+                        regex: ^\s*[+-]?[0-9]+\s*$
+                        readable_regex: NUMBER
+                    - control:
+                        list:
+                        - name: 'true'
+                          value: 'true'
+                        - name: 'false'
+                          value: 'false'
+                        - name: unclassified
+                          value: unclassified
+                        - name: vpr comp predicted
+                          value: vpr_comp_predicted
+                        - name: acr comp predicted
+                          value: acr_comp_predicted
+                        - name: vpr and acr comp predicted
+                          value: vpr_and_acr_comp_predicted
+                        type: dropdown_multi
+                      name: aes_score_prediction
+                      operators:
+                      - eq
+                      readable_name: AES Prediction
+                    - name: exposure_severity
+                      readable_name: AES Severity
+                      operators:
+                      - eq
+                      control:
+                        type: dropdown_multi
+                        list:
+                        - name: High
+                          value: '3'
+                        - name: Medium
+                          value: '2'
+                        - name: Low
+                          value: '1'
+                        - name: Unclassified
+                          value: '-1'
+                    - control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: asset_assessed
+                      operators:
+                      - eq
+                      readable_name: Asset Assessed
+                    - control:
+                        type: entry
+                        regex: '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})*'
+                        readable_regex: 01234567-abcd-ef01-2345-6789abcdef01
+                      name: host.id
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Asset ID
+                    - control:
+                        list:
+                        - name: us-east-1a
+                          value: us-east-1a
+                        - name: us-east-1b
+                          value: us-east-1b
+                        type: dropdown
+                      name: aws_availability_zone
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: AWS Availability Zone
+                    - control:
+                        readable_regex: e.g. ami-12345678
+                        type: entry
+                        regex: .*
+                      name: aws_ec2_instance_ami_id
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: AWS EC2 AMI ID
+                    - control:
+                        readable_regex: e.g. i-1234567890abcdef0
+                        type: entry
+                        regex: .*
+                      name: aws_ec2_instance_id
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: AWS EC2 Instance ID
+                    - control:
+                        readable_regex: e.g. aws-server1
+                        type: entry
+                        regex: .*
+                      name: aws_ec2_name
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: AWS EC2 Name
+                    - control:
+                        readable_regex: e.g. amzn-ami-hvm-2016.03.0.x86_64-ebs
+                        type: entry
+                        regex: .*
+                      name: aws_ec2_product_code
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: AWS EC2 Product Code
+                    - control:
+                        list:
+                        - pending
+                        - rebooting
+                        - running
+                        - shutting-down
+                        - stopped
+                        - stopping
+                        - terminated
+                        type: dropdown
+                      name: aws_ec2_instance_state_name
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: AWS Instance State
+                    - control:
+                        list:
+                        - g2.8xlarge
+                        - g3.4xlarge
+                        - g3.8xlarge
+                        type: dropdown
+                      name: aws_ec2_instance_type
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: AWS Instance Type
+                    - control:
+                        readable_regex: e.g. 123456789012
+                        type: entry
+                        regex: .*
+                      name: aws_owner_id
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: AWS Owner
+                    - control:
+                        list:
+                        - name: US East (N. Virginia)
+                          value: us-east-1
+                        - name: US East (Ohio)
+                          value: us-east-2
+                        type: dropdown
+                      name: aws_region
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: AWS Region
+                    - control:
+                        readable_regex: e.g. sg-edcd9784
+                        type: entry
+                        regex: .*
+                      name: aws_ec2_instance_group_name
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: AWS Security Group
+                    - control:
+                        readable_regex: e.g. subnet-ae552f1b
+                        type: entry
+                        regex: .*
+                      name: aws_subnet_id
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: AWS Subnet ID
+                    - control:
+                        readable_regex: e.g. vpc-f4fbc091
+                        type: entry
+                        regex: .*
+                      name: aws_vpc_id
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: AWS VPC ID
+                    - control:
+                        readable_regex: e.g. eastus
+                        type: entry
+                        regex: .*
+                      name: azure_location
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Azure Location
+                    - control:
+                        readable_regex: e.g. my-resource-group
+                        type: entry
+                        regex: .*
+                      name: azure_resource_group
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Azure Resource Group
+                    - control:
+                        readable_regex: e.g. /subscriptions/63e28077-2511-4165-b747-dd05978431e9/resourceGroups/my-resource-group/providers/Microsoft.Compute/virtualMachines/vm-name
+                        type: entry
+                        regex: .*
+                      name: azure_resource_id
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      readable_name: Azure Resource ID
+                    - control:
+                        readable_regex: e.g. Microsoft.Compute/virtualMachines
+                        type: entry
+                        regex: .*
+                      name: azure_type
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Azure Resource Type
+                    - control:
+                        readable_regex: e.g. 5cff7d6e-0f3d-4bd8-a09f-2c654a0d8947,63e28077-2511-4165-b747-dd05978431e9
+                        type: entry
+                        regex: .*
+                      name: azure_subscription_id
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Azure Subscription ID
+                    - control:
+                        readable_regex: e.g. 5cff7d6e-0f3d-4bd8-a09f-2c654a0d8947,63e28077-2511-4165-b747-dd05978431e9
+                        type: entry
+                        regex: .*
+                      name: azure_vm_id
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Azure VM ID
+                    - control:
+                        list:
+                        - 'true'
+                        - 'false'
+                        type: dropdown
+                      name: belongs_to_access_group
+                      operators:
+                      - eq
+                      readable_name: Belongs to Access Group
+                    - control:
+                        readable_regex: e.g. 12315195
+                        type: entry
+                        regex: .*
+                      name: bigfix_asset_id
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: BigFix Asset ID
+                    - control:
+                        type: dropdown
+                        list:
+                        - name: 7 Days Ago
+                          value: '2024-07-08T16:10:31.960Z'
+                        - name: 14 Days Ago
+                          value: '2024-07-01T16:10:31.960Z'
+                        - name: 30 Days Ago
+                          value: '2024-06-15T16:10:31.960Z'
+                        - name: 90 Days Ago
+                          value: '2024-04-16T16:10:31.960Z'
+                      name: deleted_at
+                      operators:
+                      - date-lt
+                      - date-gt
+                      readable_name: Deleted Date
+                    - control:
+                        list:
+                        - name: pbx
+                          value: pbx
+                        - name: telephony
+                          value: telephony
+                        - name: tele conferencing
+                          value: tele_conferencing
+                        - name: multimedia endpoint
+                          value: multimedia_endpoint
+                        - name: remote console manager
+                          value: remote_console_manager
+                        - name: kvm switch
+                          value: kvm_switch
+                        - name: firewall vpn
+                          value: firewall_vpn
+                        - name: security gateway
+                          value: security_gateway
+                        - name: media gateway
+                          value: media_gateway
+                        - name: network router
+                          value: network_router
+                        - name: network switch
+                          value: network_switch
+                        - name: optical networking
+                          value: optical_networking
+                        - name: wap
+                          value: wap
+                        - name: load balancer
+                          value: load_balancer
+                        - name: enterprise storage
+                          value: enterprise_storage
+                        - name: consumer storage
+                          value: consumer_storage
+                        - name: power management
+                          value: power_management
+                        - name: hypervisor
+                          value: hypervisor
+                        - name: embedded
+                          value: embedded
+                        - name: general server
+                          value: general_server
+                        - name: embedded print server
+                          value: embedded_print_server
+                        - name: printer
+                          value: printer
+                        - name: network access control
+                          value: network_access_control
+                        - name: network traffic performance
+                          value: network_traffic_performance
+                        - name: surveillance
+                          value: surveillance
+                        - name: webcam
+                          value: webcam
+                        - name: scada
+                          value: scada
+                        - name: multimedia stream server
+                          value: multimedia_stream_server
+                        - name: edge of network
+                          value: edge_of_network
+                        - name: misc
+                          value: misc
+                        - name: general purpose
+                          value: general_purpose
+                        type: dropdown_multi
+                      name: acr_drivers.device_type
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Device Type
+                    - control:
+                        readable_regex: e.g. mail01.mycompany.com
+                        type: entry
+                        regex: .*
+                      name: fqdn
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      readable_name: DNS
+                    - control:
+                        type: dropdown
+                        list:
+                        - name: 7 Days Ago
+                          value: '2024-07-08T16:10:31.960Z'
+                        - name: 14 Days Ago
+                          value: '2024-07-01T16:10:31.960Z'
+                        - name: 30 Days Ago
+                          value: '2024-06-15T16:10:31.960Z'
+                        - name: 90 Days Ago
+                          value: '2024-04-16T16:10:31.960Z'
+                      name: first_scan_time
+                      operators:
+                      - date-lt
+                      - date-gt
+                      readable_name: First Seen
+                    - control:
+                        readable_regex: e.g. 359889107416955862
+                        type: entry
+                        regex: .*
+                      name: gcp_instance_id
+                      operators:
+                      - eq
+                      readable_name: Google Cloud Instance ID
+                    - control:
+                        readable_regex: e.g. sample-project-12345
+                        type: entry
+                        regex: .*
+                      name: gcp_project_id
+                      operators:
+                      - eq
+                      readable_name: Google Cloud Project ID
+                    - control:
+                        list:
+                        - name: asia-east1-a
+                          value: asia-east1-a
+                        - name: asia-east1-b
+                          value: asia-east1-b
+                        type: dropdown
+                      name: gcp_zone
+                      operators:
+                      - eq
+                      readable_name: Google Cloud Zone
+                    - control:
+                        list:
+                        - 'true'
+                        - 'false'
+                        type: dropdown
+                      name: has_plugin_results
+                      operators:
+                      - eq
+                      readable_name: Has Plugin Results
+                    - control:
+                        readable_regex: e.g. 192.168.0.1, BASTIANHOST, some.example.com
+                        type: entry
+                        regex: .*
+                      name: host.target
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      readable_name: Hostname/IP Address
+                    - control:
+                        readable_regex: e.g. cpe:/a:nginx:nginx:0.3.18
+                        type: entry
+                        regex: ^.{2,}$
+                      name: installed_software
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      readable_name: Installed Software
+                    - control:
+                        readable_regex: e.g. 192.168.0.1, 10.0.0.0/24, 201.15.99.100-201.15.99.199
+                        type: entry
+                        regex: ^(\s*((?=\d+\.\d+\.\d+\.\d+(?:\/|-|\s*,|$))(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.?){4})(?:(?:\/(?:3[0-2]|[12]+\d|[1-9]))|((?:-(?=\d+\.\d+\.\d+\.\d+)(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.?){4})|(?:\s*,(?:\s*)))?)+)+$
+                      name: ipv4
+                      operators:
+                      - eq
+                      readable_name: IPv4 Address
+                    - control:
+                        readable_regex: e.g. 47e6:7c92:cbb6:3de4:8070:2319:2fd5:f650, 2002:cb0a:3cdd:1::1
+                        type: entry
+                        regex: (([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))+[,\s*+]*
+                      name: ipv6
+                      operators:
+                      - eq
+                      readable_name: IPv6 Address
+                    - control:
+                        list:
+                        - 'true'
+                        - 'false'
+                        type: dropdown
+                      name: is_deleted
+                      operators:
+                      - eq
+                      readable_name: Is Deleted
+                    - control:
+                        list:
+                        - 'true'
+                        - 'false'
+                        type: dropdown
+                      name: is_licensed
+                      operators:
+                      - eq
+                      - eq-hide
+                      readable_name: Is Licensed (VM)
+                    - control:
+                        list:
+                        - 'true'
+                        - 'false'
+                        type: dropdown
+                      name: is_was_licensed
+                      operators:
+                      - eq
+                      readable_name: Is Licensed (WAS)
+                    - control:
+                        list:
+                        - 'true'
+                        - 'false'
+                        type: dropdown
+                      name: is_terminated
+                      operators:
+                      - eq
+                      readable_name: Is Terminated
+                    - control:
+                        type: dropdown
+                        list:
+                        - name: 7 Days Ago
+                          value: '2024-07-08T16:10:31.960Z'
+                        - name: 14 Days Ago
+                          value: '2024-07-01T16:10:31.960Z'
+                        - name: 30 Days Ago
+                          value: '2024-06-15T16:10:31.960Z'
+                        - name: 90 Days Ago
+                          value: '2024-04-16T16:10:31.960Z'
+                      name: last_assessed
+                      operators:
+                      - date-lt
+                      - date-gt
+                      readable_name: Last Assessed
+                    - control:
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                        readable_regex: YYYY/MM/DD
+                      name: last_assessed_date
+                      operators:
+                      - eq
+                      readable_name: Last Assessed Date
+                    - control:
+                        type: dropdown
+                        list:
+                        - name: 7 Days Ago
+                          value: '2024-07-08T16:10:31.960Z'
+                        - name: 14 Days Ago
+                          value: '2024-07-01T16:10:31.960Z'
+                        - name: 30 Days Ago
+                          value: '2024-06-15T16:10:31.960Z'
+                        - name: 90 Days Ago
+                          value: '2024-04-16T16:10:31.960Z'
+                      name: last_authenticated_scan_time
+                      operators:
+                      - date-lt
+                      - date-gt
+                      - date-lt-strict
+                      readable_name: Last Authenticated Scan
+                    - control:
+                        type: dropdown
+                        list:
+                        - name: 7 Days Ago
+                          value: '2024-07-08T16:10:31.960Z'
+                        - name: 14 Days Ago
+                          value: '2024-07-01T16:10:31.960Z'
+                        - name: 30 Days Ago
+                          value: '2024-06-15T16:10:31.960Z'
+                        - name: 90 Days Ago
+                          value: '2024-04-16T16:10:31.960Z'
+                      name: last_scan_time
+                      operators:
+                      - date-lt
+                      - date-gt
+                      readable_name: Last Seen
+                    - control:
+                        list:
+                        - name: Headquarters
+                          value: Headquarters
+                        type: dropdown_multi
+                      name: tag.Location
+                      operators:
+                      - set-has
+                      - set-hasnot
+                      readable_name: Location
+                    - control:
+                        readable_regex: e.g. 01:23:45:67:89:AB
+                        type: entry
+                        regex: ^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$
+                      name: mac_address
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: MAC Address
+                    - control:
+                        list:
+                        - 'true'
+                        - 'false'
+                        type: dropdown
+                      name: sec_ctrl_security_protections
+                      operators:
+                      - eq
+                      readable_name: Mitigation - Detected
+                    - control:
+                        type: dropdown
+                        list:
+                        - name: 7 Days Ago
+                          value: '2024-07-08T16:10:32.271Z'
+                        - name: 14 Days Ago
+                          value: '2024-07-01T16:10:32.271Z'
+                        - name: 30 Days Ago
+                          value: '2024-06-15T16:10:32.271Z'
+                        - name: 90 Days Ago
+                          value: '2024-04-16T16:10:32.271Z'
+                      name: sec_ctrl_last_detected_date
+                      operators:
+                      - date-lt
+                      - date-gt
+                      readable_name: Mitigation - Last Detected
+                    - control:
+                        readable_regex: e.g. Falcon
+                        type: entry
+                        regex: .*
+                      name: sec_ctrl_product_name
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      readable_name: Mitigation - Product Name
+                    - control:
+                        readable_regex: e.g. CrowdStrike
+                        type: entry
+                        regex: .*
+                      name: sec_ctrl_vendor_name
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      readable_name: Mitigation - Vendor Name
+                    - control:
+                        readable_regex: e.g. 4.20.8305.0
+                        type: entry
+                        regex: .*
+                      name: sec_ctrl_version
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Mitigation - Version
+                    - control:
+                        readable_regex: e.g. mail01
+                        type: entry
+                        regex: .*
+                      name: netbios_name
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      readable_name: NetBIOS Name
+                    - control:
+                        list:
+                        - name: Default
+                          value: 00000000-0000-0000-0000-000000000000
+                        - name: test
+                          value: d0f7787e-9fcc-422b-a2cd-62511c483278
+                        type: dropdown_multi
+                      name: network_id
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Network Name
+                    - control:
+                        list:
+                        - name: Dallas
+                          value: Dallas
+                        type: dropdown_multi
+                      name: tag.Office
+                      operators:
+                      - set-has
+                      - set-hasnot
+                      readable_name: Office
+                    - control:
+                        readable_regex: e.g. Windows
+                        type: entry
+                        regex: .*
+                      name: operating_system
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      readable_name: Operating System
+                    - control:
+                        list:
+                        - name: Operating System
+                          value: operating_system
+                        - name: ServiceNow Sys ID
+                          value: servicenow_sysid
+                        type: dropdown
+                      name: property_list
+                      operators:
+                      - set-has
+                      - set-hasnot
+                      readable_name: Property List
+                    - control:
+                        readable_regex: e.g. 1111111,2222222
+                        type: entry
+                        regex: ^\d+(,\d+)*$
+                      name: qualys_asset_id
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Qualys Asset ID
+                    - control:
+                        readable_regex: e.g. 1111111,2222222
+                        type: entry
+                        regex: ^\d+(,\d+)*$
+                      name: qualys_host_id
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Qualys Host ID
+                    - name: scan_frequency.90
+                      readable_name: Scan Frequency
+                      operators:
+                      - eq
+                      - lte
+                      - gte
+                      - lt
+                      - gt
+                      control:
+                        type: dropdown
+                        list:
+                        - name: 0 days
+                          value: '0'
+                        - name: 1 days
+                          value: '1'
+                        - name: 7 days
+                          value: '7'
+                        - name: 14 days
+                          value: '14'
+                        - name: 30 days
+                          value: '30'
+                        - name: 60 days
+                          value: '60'
+                        - name: 90 days
+                          value: '90'
+                    - control:
+                        readable_regex: e.g. 01862a20-636f-44a9-adfd-f85fd1193988
+                        type: entry
+                        regex: .*
+                      name: last_scan_id
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Scan ID
+                    - control:
+                        readable_regex: e.g. 9d385017c611228701d22104cc95c371
+                        type: entry
+                        regex: .*
+                      name: servicenow_sysid
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: ServiceNow Sys ID
+                    - control:
+                        list: []
+                        type: dropdown_multi
+                      name: sources
+                      readable_name: Source
+                      operators:
+                      - set-has
+                      - set-hasnot
+                      - set-hasonly
+                    - control:
+                        list:
+                        - name: Default
+                          value: 1
+                        - name: test-target-group
+                          value: 54
+                        type: dropdown_multi
+                      name: target_group
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Target Group
+                    - control:
+                        readable_regex: e.g. 123e4567e89b12d3a456426655440000
+                        type: entry
+                        regex: .*
+                      name: tenable_uuid
+                      operators:
+                      - eq
+                      - neq
+                      readable_name: Tenable UUID
+                    - control:
+                        type: dropdown
+                        list:
+                        - name: 7 Days Ago
+                          value: '2024-07-08T16:10:31.960Z'
+                        - name: 14 Days Ago
+                          value: '2024-07-01T16:10:31.960Z'
+                        - name: 30 Days Ago
+                          value: '2024-06-15T16:10:31.960Z'
+                        - name: 90 Days Ago
+                          value: '2024-04-16T16:10:31.960Z'
+                      name: terminated_at
+                      operators:
+                      - date-lt
+                      - date-gt
+                      readable_name: Terminated Date
+                    - control:
+                        list:
+                        - name: '*/00000000-0000-00000-00000-0000000/*'
+                          value: '*/00000000-0000-00000-00000-0000000/*'
+                        type: dropdown_multi
+                      name: tag.Test2
+                      operators:
+                      - set-has
+                      - set-hasnot
+                      readable_name: Test2
+                    - control:
+                        list:
+                        - name: ld
+                          value: ld
+                        type: dropdown_multi
+                      name: tag.TestRule
+                      operators:
+                      - set-has
+                      - set-hasnot
+                      readable_name: TestRule
+                    - control:
+                        list:
+                        - name: test
+                          value: test
+                        type: dropdown_multi
+                      name: tag.UWLab
+                      operators:
+                      - set-has
+                      - set-hasnot
+                      readable_name: UWLab
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - filters_cloud: []
+    post:
+      summary: List asset filters v2
+      description: 'Lists the filtering, sorting, and pagination capabilities available for assets on endpoints that support them. For more information about these filters, see [Workbench Filters](doc:workbench-filters).
+
+
+        **Caution:** This endpoint is deprecated and is tentatively scheduled for removal on November 5. Tenable recommends using the [List asset filters](ref:io-filters-assets-list) endpoint instead. Please update any existing integrations your organization may have.
+
+
+        **Note:** This endpoint returns an additional filter (`tag_uuid`), displayed as `Tag (Category: Value)`, that is not returned when using the GET version of this endpoint.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+      operationId: io-filters-assets-list-v2
+      deprecated: true
+      tags:
+      - Filters
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag_uuids:
+                  items:
+                    type: string
+                  type: array
+                  description: A list of tag UUIDs that are guaranteed to be returned in the initial data set of the `tag_uuid` filter, if the tags exist.
+      responses:
+        '200':
+          description: Returned if the asset filters was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wildcard_fields:
+                    $ref: '#/components/schemas/filters_wildcard_fields'
+                  filters:
+                    $ref: '#/components/schemas/filters_filters'
+                  sort:
+                    $ref: '#/components/schemas/filters_sort'
+              examples:
+                response:
+                  value:
+                    filters:
+                    - control:
+                        list:
+                        - name: AWS Connector
+                          value: AWS
+                        - name: Agent
+                          value: NESSUS_AGENT
+                        - name: Microsoft Azure
+                          value: AZURE
+                        - name: NNM
+                          value: PVS
+                        - name: Nessus
+                          value: NESSUS_SCAN
+                        - name: Qualys Connector
+                          value: QUALYS
+                        - name: Web Application Scan
+                          value: WAS
+                        type: dropdown_multi
+                      name: sources
+                      operators:
+                      - set-has
+                      - set-hasnot
+                      - set-hasonly
+                      readable_name: Source
+                    - control:
+                        list:
+                        - 'true'
+                        - 'false'
+                        type: dropdown
+                      name: belongs_to_access_group
+                      operators:
+                      - eq
+                      readable_name: Belongs to Access Group
+                    - control:
+                        list:
+                        - name: Headquarters
+                          value: Headquarters
+                        - name: Los Angeles
+                          value: Los Angeles
+                        - name: New York
+                          value: New York
+                        type: dropdown_multi
+                      name: tag.Location
+                      operators:
+                      - set-has
+                      - set-hasnot
+                      readable_name: Location
+                    - control:
+                        list:
+                        - name: 'test: 1'
+                          value: 1045b435-920d-45bb-be5d-96a700f8f777
+                        - name: 'test: 2'
+                          value: a47eebeb-5b01-42ad-b1e5-7fd77470387d
+                        - name: 'xtest: 1'
+                          value: f7a71784-4798-4884-b4f7-26df3116e897
+                        - name: 'xtest: 2'
+                          value: 764403fa-1bb1-419b-8e2d-d0c0b5abb0e6
+                        - name: 'ztest: 1'
+                          value: b616efbe-fcdb-4548-85c7-8e250d71396d
+                        - name: 'ztest: 2'
+                          value: a14ee781-aa07-4e5d-a19f-4b33c764829b
+                        - name: 'ztest: 3'
+                          value: b9de9cae-76c9-402b-a066-13890c2fe013
+                        type: dropdown_multi
+                      name: tag_uuid
+                      operators:
+                      - eq
+                      readable_name: 'Tag (Category: Value)'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - filters_cloud: []
+  /filters/credentials:
+    get:
+      summary: List credential filters
+      description: Returns the filtering, sorting, and pagination capabilities available for scan credentials on endpoints that support them. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-filters-credentials-list
+      tags:
+      - Filters
+      responses:
+        '200':
+          description: Returned if the credential filters was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wildcard_fields:
+                    $ref: '#/components/schemas/filters_wildcard_fields'
+                  filters:
+                    $ref: '#/components/schemas/filters_filters'
+                  sort:
+                    $ref: '#/components/schemas/filters_sort'
+              examples:
+                response:
+                  value:
+                    wildcard_fields:
+                    - name
+                    - description
+                    - type
+                    filters:
+                    - name: name
+                      readable_name: Credential Name
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                    - name: type
+                      readable_name: Credential Type
+                      control:
+                        type: dropdown_multi
+                        list:
+                        - id: Windows
+                          name: Windows
+                      operators:
+                      - eq
+                      - neq
+                    - name: created_date
+                      readable_name: Created Date
+                      control:
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                        readable_regex: YYYY/MM/DD
+                      operators:
+                      - date-lt
+                      - date-gt
+                      - date-eq
+                      - date-neq
+                    sort:
+                      sortable_fields:
+                      - name
+                      - type
+                      - created_date
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - filters_cloud: []
+  /filters/reports/export:
+    get:
+      summary: List report filters
+      description: Returns the filters, supported operators, data types, and allowed values for the [POST /reports/export](ref:vm-reports-create) endpoint. For more information about the supported filters, see [Report Export Filters](doc:vm-report-export-filters). <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: vm-filters-reports-list
+      tags:
+      - Filters
+      responses:
+        '200':
+          description: Returned if the report filters was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  filters:
+                    $ref: '#/components/schemas/filters_response-report-filters'
+              examples:
+                response:
+                  value:
+                    filters:
+                    - name: plugin_id
+                      operators:
+                      - eq
+                      type: Array Of Integers
+                    - name: asset_id
+                      operators:
+                      - eq
+                      type: Array Of Strings
+                    - name: asset_name
+                      operators:
+                      - eq
+                      - neq
+                      - wc
+                      type: Array Of Strings
+                    - name: cidr_range
+                      operators:
+                      - eq
+                      - neq
+                      type: Array Of Strings
+                    - name: severity
+                      operators:
+                      - eq
+                      - neq
+                      type: Array Of Strings
+                      allowedValues:
+                      - INFO
+                      - LOW
+                      - MEDIUM
+                      - HIGH
+                      - CRITICAL
+                    - name: state
+                      operators:
+                      - eq
+                      - neq
+                      type: Array Of Strings
+                      allowedValues:
+                      - NEW
+                      - ACTIVE
+                      - RESURFACED
+                      - FIXED
+                    - name: source
+                      operators:
+                      - eq
+                      - neq
+                      type: Array Of Strings
+                      allowedValues:
+                      - AWS
+                      - NESSUS_AGENT
+                      - NNM
+                      - NESSUS_SCAN
+                      - WAS
+                      - AZURE
+                      - GCP
+                      - ASM
+                      - CLOUD_DISCOVERY_CONNECTOR
+                      - SERVICENOW
+                    - name: severity_modification_type
+                      operators:
+                      - eq
+                      - neq
+                      type: Array Of Strings
+                      allowedValues:
+                      - NONE
+                      - RECASTED
+                      - ACCEPTED
+                    - name: last_found
+                      operators:
+                      - gte
+                      type: int64(in Unix time)
+                    - name: first_found
+                      operators:
+                      - gte
+                      type: int64(in Unix time)
+                    - name: last_fixed
+                      operators:
+                      - gte
+                      type: int64(in Unix time)
+                    - name: indexed_at
+                      operators:
+                      - gte
+                      type: int64(in Unix time)
+                    - name: vpr_score
+                      operators:
+                      - eq
+                      - neq
+                      - gt
+                      - gte
+                      - lt
+                      - lte
+                      type: eq and neq are array of floats. Others are float
+                    - name: asset_tags
+                      operators:
+                      - eq
+                      - neq
+                      type: array of key/value pairs where key is tagName and value will be list of values
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - filters_cloud: []
+  /filters/scans/reports:
+    get:
+      summary: List scan filters
+      description: Lists the filtering, sorting, and pagination capabilities available for scan records on endpoints that support them.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-filters-scan-list
+      tags:
+      - Filters
+      responses:
+        '200':
+          description: Returned if the scan filters was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  filters:
+                    $ref: '#/components/schemas/filters_filters'
+              examples:
+                response:
+                  value:
+                    filters:
+                    - name: host.id
+                      readable_name: Asset ID
+                      control:
+                        type: entry
+                        regex: '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})*'
+                        readable_regex: a94fd560-f8d9-4ed1-9b46-cba00c21bcdb
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      group_name: null
+                    - name: plugin.attributes.exploit_framework_canvas
+                      readable_name: CANVAS Exploit Framework
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      operators:
+                      - eq
+                      - neq
+                      group_name: null
+                    - name: plugin.name
+                      readable_name: Plugin Name
+                      control:
+                        type: entry
+                        regex: .*
+                        readable_regex: TEXT
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      group_name: null
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - filters_cloud: []
+  /filters/scans/reports/history:
+    get:
+      summary: List scan history filters
+      description: Lists the filtering, sorting, and pagination capabilities available for scan history records on endpoints that support them.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-filters-scan-history-list
+      tags:
+      - Filters
+      responses:
+        '200':
+          description: Returned if the scan history filters was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wildcard_fields:
+                    $ref: '#/components/schemas/filters_wildcard_fields'
+                  filters:
+                    $ref: '#/components/schemas/filters_filters'
+                  sort:
+                    $ref: '#/components/schemas/filters_sort'
+              examples:
+                response:
+                  value:
+                    wildcard_fields: []
+                    filters:
+                    - name: start_date
+                      readable_name: Start Date
+                      operators:
+                      - date-gt
+                      - date-lt
+                      - date-eq
+                      - date-neq
+                      control:
+                        readable_regex: YYYY/MM/DD
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                    - name: end_date
+                      readable_name: End Date
+                      operators:
+                      - date-gt
+                      - date-lt
+                      - date-eq
+                      - date-neq
+                      control:
+                        readable_regex: YYYY/MM/DD
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                    - name: status
+                      readable_name: Scan Status
+                      operators:
+                      - eq
+                      - neq
+                      - nmatch
+                      - match
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                    sort:
+                      sortable_fields:
+                      - start_date
+                      - end_date
+                      - status
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - filters_cloud: []
+  /filters/workbenches/vulnerabilities:
+    get:
+      summary: List vulnerability filters
+      description: Returns the filters available for the Vulnerabilities Workbench. For more information about these filters, see [Workbench Filters](doc:workbench-filters).<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-filters-vulnerabilities-workbench-list
+      tags:
+      - Filters
+      responses:
+        '200':
+          description: Returned if the vulnerability filters was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wildcard_fields:
+                    $ref: '#/components/schemas/filters_wildcard_fields'
+                  filters:
+                    $ref: '#/components/schemas/filters_filters'
+                  sort:
+                    $ref: '#/components/schemas/filters_sort'
+              examples:
+                response:
+                  value:
+                    filters:
+                    - name: host.id
+                      readable_name: Asset ID
+                      control:
+                        type: entry
+                        regex: '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})*'
+                        readable_regex: a94fd560-f8d9-4ed1-9b46-cba00c21bcdb
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      group_name: null
+                    - name: plugin.attributes.bid
+                      readable_name: Bugtraq ID
+                      control:
+                        type: entry
+                        regex: ^[0-9]+(,[0-9]+)*
+                        readable_regex: NUMBER
+                        maxlength: 18
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      group_name: null
+                    - name: plugin.attributes.exploit_framework_canvas
+                      readable_name: CANVAS Exploit Framework
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      operators:
+                      - eq
+                      - neq
+                      group_name: null
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - filters_cloud: []
+    post:
+      summary: List vulnerability filters v2
+      description: 'Returns the filters available for the Vulnerabilities Workbench. For more information about these filters, see [Workbench Filters](doc:workbench-filters).
+
+
+        **Caution:** This endpoint is deprecated and is tentatively scheduled for removal on November 5. Tenable recommends using the [List vulnerability filters](ref:io-filters-vulnerabilities-workbench-list) endpoint instead. Please update any existing integrations your organization may have.
+
+
+        **Note:** This endpoint returns an additional filter (`tag_uuid`), displayed as `Tag (Category: Value)`, that is not returned when using the GET version of this endpoint.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+      operationId: io-filters-vulnerabilities-workbench-list-v2
+      deprecated: true
+      tags:
+      - Filters
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag_uuids:
+                  items:
+                    type: string
+                  type: array
+                  description: A list of tag UUIDs that are guaranteed to be returned in the initial data set of the `tag_uuid` filter, if the tags exist.
+      responses:
+        '200':
+          description: Returned if the vulnerability filters was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wildcard_fields:
+                    $ref: '#/components/schemas/filters_wildcard_fields'
+                  filters:
+                    $ref: '#/components/schemas/filters_filters'
+                  sort:
+                    $ref: '#/components/schemas/filters_sort'
+              examples:
+                response:
+                  value:
+                    filters:
+                    - name: host.id
+                      readable_name: Asset ID
+                      control:
+                        type: entry
+                        regex: '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})*'
+                        readable_regex: a94fd560-f8d9-4ed1-9b46-cba00c21bcdb
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      group_name: null
+                    - name: plugin.attributes.bid
+                      readable_name: Bugtraq ID
+                      control:
+                        type: entry
+                        regex: ^[0-9]+(,[0-9]+)*
+                        readable_regex: NUMBER
+                        maxlength: 18
+                      operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      group_name: null
+                    - name: plugin.attributes.exploit_framework_canvas
+                      readable_name: CANVAS Exploit Framework
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      operators:
+                      - eq
+                      - neq
+                      group_name: null
+                    - control:
+                        list:
+                        - name: 'test: 1'
+                          value: 1045b435-920d-45bb-be5d-96a700f8f777
+                        - name: 'test: 2'
+                          value: a47eebeb-5b01-42ad-b1e5-7fd77470387d
+                        - name: 'xtest: 1'
+                          value: f7a71784-4798-4884-b4f7-26df3116e897
+                        - name: 'xtest: 2'
+                          value: 764403fa-1bb1-419b-8e2d-d0c0b5abb0e6
+                        - name: 'ztest: 1'
+                          value: b616efbe-fcdb-4548-85c7-8e250d71396d
+                        - name: 'ztest: 2'
+                          value: a14ee781-aa07-4e5d-a19f-4b33c764829b
+                        - name: 'ztest: 3'
+                          value: b9de9cae-76c9-402b-a066-13890c2fe013
+                        type: dropdown_multi
+                      name: tag_uuid
+                      operators:
+                      - eq
+                      readable_name: 'Tag (Category: Value)'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - filters_cloud: []
+  /was/v2/configs/filters:
+    get:
+      summary: List scan configuration filters
+      description: Lists the filtering capabilities available for scan configurations for endpoints that support scan configuration filtering.<div class="perms-callout">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: was-v2-filters-scan-configs-list
+      tags:
+      - Filters
+      responses:
+        '200':
+          description: Returns the filtering capabilities for scan configurations.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  filters:
+                    $ref: '#/components/schemas/Filters'
+              examples:
+                response:
+                  value:
+                    filters:
+                    - name: scans_status
+                      readable_name: scans_status
+                      operators:
+                      - eq
+                      control:
+                        type: dropdown
+                        list:
+                        - Never Run
+                        - pending
+                        - running
+                        - stopping
+                        - aborted
+                        - canceled
+                        - completed
+                    - name: scans_finalized_at
+                      readable_name: scans_finalized_at
+                      operators:
+                      - lt
+                      - lte
+                      - gt
+                      - gte
+                      control:
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                        readable_regex: YYYY/MM/DD
+                    - name: user_template.name
+                      readable_name: user_template.name
+                      operators:
+                      - match
+                      - eq
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+                    - name: templates.name
+                      readable_name: templates.name
+                      operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - scan
+                        - overview
+                        - ssl_tls
+                        - config_audit
+                        - pci
+                        - api
+                    - name: configs.schedule
+                      readable_name: configs.schedule
+                      operators:
+                      - eq
+                      control:
+                        type: dropdown
+                        list:
+                        - Enabled
+                        - On Demand
+                    - name: target
+                      readable_name: target
+                      operators:
+                      - match
+                      - eq
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+                    - name: scans_started_at
+                      readable_name: scans_started_at
+                      operators:
+                      - lt
+                      - lte
+                      - gt
+                      - gte
+                      control:
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                        readable_regex: YYYY/MM/DD
+                    - name: configs.created_at
+                      readable_name: configs.created_at
+                      operators:
+                      - lt
+                      - lte
+                      - gt
+                      - gte
+                      control:
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                        readable_regex: YYYY/MM/DD
+                    - name: configs.updated_at
+                      readable_name: configs.updated_at
+                      operators:
+                      - lt
+                      - lte
+                      - gt
+                      - gte
+                      control:
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                        readable_regex: YYYY/MM/DD
+                    - name: folder_name
+                      readable_name: folder_name
+                      operators:
+                      - match
+                      - eq
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+                    - name: configs.name
+                      readable_name: configs.name
+                      operators:
+                      - match
+                      - eq
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+                    - name: configs.description
+                      readable_name: configs.description
+                      operators:
+                      - match
+                      - eq
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse_2'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse_2'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /was/v2/configs/{config_id}/scans/filters:
+    get:
+      summary: List scan filters
+      description: Lists the filtering capabilities available for scans for endpoints that support scan filtering. <div class="perms-callout">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: was-v2-filters-scans-list
+      parameters:
+      - in: path
+        name: config_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The UUID of the scan configuration that was used for the scan.
+      tags:
+      - Filters
+      responses:
+        '200':
+          description: Returns the filtering capabilities for scans.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  filters:
+                    $ref: '#/components/schemas/Filters'
+              examples:
+                response:
+                  value:
+                    filters:
+                    - name: started_at
+                      readable_name: started_at
+                      operators:
+                      - lt
+                      - lte
+                      - gt
+                      - gte
+                      control:
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                        readable_regex: YYYY/MM/DD
+                    - name: finalized_at
+                      readable_name: finalized_at
+                      operators:
+                      - lt
+                      - lte
+                      - gt
+                      - gte
+                      control:
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                        readable_regex: YYYY/MM/DD
+                    - name: status
+                      readable_name: status
+                      operators:
+                      - nmatch
+                      - eq
+                      - contains
+                      - match
+                      - neq
+                      - ncontains
+                      control:
+                        type: dropdown
+                        list:
+                        - pending
+                        - running
+                        - stopping
+                        - aborted
+                        - canceled
+                        - completed
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse_2'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse_2'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /was/v2/user-templates/filters:
+    get:
+      summary: List user-defined template filters
+      description: Lists the filtering capabilities available for user-defined templates for endpoints that support user-defined template filtering. <div class="perms-callout">Requires either the Scan Operator [24] user role, the `WAS.SCAN_WAS.MANAGE` custom role privilege, or the `WAS.SCAN_WAS_USER_TEMPLATE.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: was-v2-filters-user-templates-list
+      tags:
+      - Filters
+      responses:
+        '200':
+          description: Returns the filtering capabilities for user-defined templates.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  filters:
+                    $ref: '#/components/schemas/Filters'
+              examples:
+                response:
+                  value:
+                    filters:
+                    - name: template_name
+                      readable_name: template_name
+                      operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - scan
+                        - overview
+                        - ssl_tls
+                        - config_audit
+                        - pci
+                        - api
+                    - name: user_templates.created_at
+                      readable_name: user_templates.created_at
+                      operators:
+                      - lt
+                      - lte
+                      - gt
+                      - gte
+                      control:
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                        readable_regex: YYYY/MM/DD
+                    - name: user_templates.updated_at
+                      readable_name: user_templates.updated_at
+                      operators:
+                      - lt
+                      - lte
+                      - gt
+                      - gte
+                      control:
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                        readable_regex: YYYY/MM/DD
+                    - name: user_templates.name
+                      readable_name: user_templates.name
+                      operators:
+                      - match
+                      - eq
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+                    - name: user_templates.description
+                      readable_name: user_templates.description
+                      operators:
+                      - match
+                      - eq
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse_2'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse_2'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /was/v2/vulnerabilities/filters:
+    get:
+      summary: List vulnerability filters
+      description: Lists the filtering capabilities available for vulnerability findings for endpoints that support vulnerability filtering. <div class="perms-callout">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: was-v2-filters-vulns-list
+      tags:
+      - Filters
+      responses:
+        '200':
+          description: Returns the filtering capabilities for findings.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  filters:
+                    $ref: '#/components/schemas/Filters'
+              examples:
+                response:
+                  value:
+                    filters:
+                    - name: asset_id
+                      readable_name: asset_id
+                      operators:
+                      - eq
+                      control: null
+                    - name: uri
+                      readable_name: uri
+                      operators:
+                      - eq
+                      - match
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+                    - name: input_type
+                      readable_name: input_type
+                      operators:
+                      - eq
+                      - match
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+                    - name: input_name
+                      readable_name: input_name
+                      operators:
+                      - eq
+                      - match
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+                    - name: plugin_id
+                      readable_name: plugin_id
+                      operators:
+                      - eq
+                      control:
+                        type: entry
+                        regex: ^[1-9]\d*$
+                        readable_regex: NUMBER
+                    - name: output
+                      readable_name: output
+                      operators:
+                      - eq
+                      - match
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+                    - name: vulns.created_at
+                      readable_name: vulns.created_at
+                      operators:
+                      - lt
+                      - lte
+                      - gt
+                      - gte
+                      control:
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                        readable_regex: YYYY/MM/DD
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse_2'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse_2'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /was/v2/scans/{scan_id}/vulnerabilities/filters:
+    get:
+      summary: List vulnerability filters for scan
+      description: Lists the filtering capabilities available for vulnerability findings on a given scan for endpoints that support vulnerability filtering. <div class="perms-callout">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: was-v2-filters-vulns-scan-list
+      parameters:
+      - in: path
+        name: scan_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The UUID of the scan for which you want to list available findings filters.
+      tags:
+      - Filters
+      responses:
+        '200':
+          description: Returns the filtering capabilities for findings.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  filters:
+                    $ref: '#/components/schemas/Filters'
+              examples:
+                response:
+                  value:
+                    filters:
+                    - name: uri
+                      readable_name: uri
+                      operators:
+                      - eq
+                      - match
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+                    - name: input_type
+                      readable_name: input_type
+                      operators:
+                      - eq
+                      - match
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+                    - name: input_name
+                      readable_name: input_name
+                      operators:
+                      - eq
+                      - match
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+                    - name: plugin_id
+                      readable_name: plugin_id
+                      operators:
+                      - eq
+                      control:
+                        type: entry
+                        regex: ^[1-9]\d*$
+                        readable_regex: NUMBER
+                    - name: output
+                      readable_name: output
+                      operators:
+                      - eq
+                      - match
+                      control:
+                        type: entry
+                        regex: null
+                        readable_regex: null
+                    - name: vulns.created_at
+                      readable_name: vulns.created_at
+                      operators:
+                      - lt
+                      - lte
+                      - gt
+                      - gte
+                      control:
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                        readable_regex: YYYY/MM/DD
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse_2'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse_2'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    Filter:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The field name to be used in request query strings when applying the filter.
+        readable_name:
+          type: string
+          description: The filter's display label.
+        operators:
+          description: Strings which represent the comparison operations which can be used for the filter.
+          type: array
+          items:
+            type: string
+        control:
+          type: object
+          properties:
+            type:
+              type: string
+              description: The type of UI control which represents the filter.
+            regex:
+              type: string
+              description: A regex which can be used by a user interface to validate input.
+            readable_regex:
+              type: string
+              description: Provides a human-readable "hint" which describes what the filter string should look like.
+            max_length:
+              type: integer
+              description: The max length of the filter.
+    filters_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    wildcard_fields:
+      description: Array of strings which represent each field which supports "wildcard" search. Wildcard search is a mechanism where multiple fields of a record are filtered against one specific filter string. If any one of the supported fields' values matches against the filter string, then the record matches the wildcard filter. Note that for a record to be returned, it must pass the wildcard filter (if there is one) AND the set of standard filters.
+      type: array
+      items:
+        type: string
+    Filters:
+      type: array
+      description: A list of filters available for the record type.
+      items:
+        $ref: '#/components/schemas/Filter'
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    filters_wildcard_fields:
+      description: Array of strings which represent each field which supports "wildcard" search. Wildcard search is a mechanism where multiple fields of a record are filtered against one specific filter string. If any one of the supported fields' values matches against the filter string, then the record matches the wildcard filter. Note that for a record to be returned, it must pass the wildcard filter (if there is one) AND the set of standard filters.
+      type: array
+      items:
+        type: string
+    filters_sort:
+      type: object
+      description: The sorting parameters supported for data returned by the endpoint.
+      properties:
+        max_sort_fields:
+          type: integer
+          description: Maximum number of fields that may be specified for sorting. If this is parameter is not present, any number of fields may be used.
+        sortable_fields:
+          description: Fields by which the returned list of records may be sorted.
+          type: array
+          items:
+            type: string
+    filters_filter:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The field name to be used in request query strings when applying the filter.
+        readable_name:
+          type: string
+          description: The filter's display label.
+        operators:
+          description: The comparison operators that can be applied to the filter.
+          type: array
+          items:
+            type: string
+        control:
+          type: object
+          properties:
+            readable_regex:
+              type: string
+              description: Provides a human-readable "hint" which describes what the filter string should look like.
+            type:
+              type: string
+              description: The type of UI control which represents the filter.
+            regex:
+              type: string
+              description: A regex which can be used by a user interface to validate input.
+        group_name:
+          type: string
+          description: Always set to `NULL`. Legacy attribute associated with deprecated functionality.
+    filters_response-report-filters:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The field name to be used in request query strings when applying the filter.
+        operators:
+          description: The comparison operators that can be applied to the filter.
+          type: array
+          items:
+            type: string
+        type:
+          description: Specifies the datatype of the values that can be used for the filter.
+          type: string
+        allowedValues:
+          description: Some filters only allow a specific set of values. For these filters, the list of supported values is returned in this field.
+          type: array
+          items:
+            type: string
+    filters:
+      type: array
+      description: A list of filters available for the record type.
+      items:
+        $ref: '#/components/schemas/filter'
+    filters_filters:
+      type: array
+      description: A list of filters available for the record type.
+      items:
+        $ref: '#/components/schemas/filters_filter'
+    ErrorResponse_2:
+      type: object
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
+      properties:
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
+    filter:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The field name to be used in request query strings when applying the filter.
+        readable_name:
+          type: string
+          description: The filter's display label.
+        operators:
+          description: Strings which represent the comparison operations which can be used for the filter.
+          type: array
+          items:
+            type: string
+        control:
+          type: object
+          properties:
+            readable_regex:
+              type: string
+              description: Provides a human-readable "hint" which describes what the filter string should look like.
+            type:
+              type: string
+              description: The type of UI control which represents the filter.
+            regex:
+              type: string
+              description: A regex which can be used by a user interface to validate input.
+            max_length:
+              type: integer
+              description: The max length of the filter.
+        group_name:
+          type: string
+          description: Always set to `NULL`. Legacy attribute associated with deprecated functionality.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

@@ -1,0 +1,2090 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Widget API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Widget
+  description: Contains a serie of data
+paths:
+  /api/dashboards/{dashboardId}/widgets:
+    get:
+      summary: Get all widgets by dashboard id
+      description: 'Required license type: ioe, ioaPreview, ioa'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - posX
+                  - posY
+                  - width
+                  - height
+                  - dashboardId
+                  properties:
+                    id:
+                      type: number
+                    posX:
+                      type: number
+                    posY:
+                      type: number
+                    width:
+                      type: number
+                    height:
+                      type: number
+                    dashboardId:
+                      type: number
+                    title:
+                      type: string
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Widget
+      x-tenablead-required-product-license-type:
+      - ioe
+      - ioaPreview
+      - ioa
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: dashboardId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+    post:
+      summary: Create a new widget in dashboard by dashboard id
+      description: 'Required license type: ioe, ioaPreview, ioa'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - posX
+                - posY
+                - width
+                - height
+                - dashboardId
+                properties:
+                  id:
+                    type: number
+                  posX:
+                    type: number
+                  posY:
+                    type: number
+                  width:
+                    type: number
+                  height:
+                    type: number
+                  dashboardId:
+                    type: number
+                  title:
+                    type: string
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Widget
+      x-tenablead-required-product-license-type:
+      - ioe
+      - ioaPreview
+      - ioa
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: dashboardId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - posX
+              - posY
+              - width
+              - height
+              - title
+              properties:
+                posX:
+                  type: number
+                posY:
+                  type: number
+                width:
+                  type: number
+                  minimum: 0
+                  maximum: 2147483647
+                height:
+                  type: number
+                  minimum: 0
+                  maximum: 2147483647
+                title:
+                  type: string
+  /api/dashboards/{dashboardId}/widgets/{id}:
+    get:
+      summary: Get widget instance by id.
+      description: 'Required license type: ioe, ioaPreview, ioa'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - posX
+                - posY
+                - width
+                - height
+                - dashboardId
+                properties:
+                  id:
+                    type: number
+                  posX:
+                    type: number
+                  posY:
+                    type: number
+                  width:
+                    type: number
+                  height:
+                    type: number
+                  dashboardId:
+                    type: number
+                  title:
+                    type: string
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Widget
+      x-tenablead-required-product-license-type:
+      - ioe
+      - ioaPreview
+      - ioa
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: dashboardId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+    patch:
+      summary: Update widget instance.
+      description: 'Required license type: ioe, ioaPreview, ioa'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - posX
+                - posY
+                - width
+                - height
+                - dashboardId
+                properties:
+                  id:
+                    type: number
+                  posX:
+                    type: number
+                  posY:
+                    type: number
+                  width:
+                    type: number
+                  height:
+                    type: number
+                  dashboardId:
+                    type: number
+                  title:
+                    type: string
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Widget
+      x-tenablead-required-product-license-type:
+      - ioe
+      - ioaPreview
+      - ioa
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: dashboardId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                id:
+                  type: number
+                  minimum: 0
+                  maximum: 2147483647
+                posX:
+                  type: number
+                posY:
+                  type: number
+                width:
+                  type: number
+                  minimum: 0
+                  maximum: 2147483647
+                height:
+                  type: number
+                  minimum: 0
+                  maximum: 2147483647
+                title:
+                  type: string
+    delete:
+      summary: Delete widget instance.
+      description: 'Required license type: ioe, ioaPreview, ioa'
+      responses:
+        '204':
+          description: ''
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Widget
+      x-tenablead-required-product-license-type:
+      - ioe
+      - ioaPreview
+      - ioa
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: dashboardId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/dashboards/{dashboardId}/widgets/{id}/options:
+    get:
+      summary: Get a widget's options by id
+      description: 'Required license type: ioe, ioaPreview, ioa'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - allOf:
+                  - properties:
+                      type:
+                        enum:
+                        - BigNumber
+                  - additionalProperties: false
+                    type: object
+                    required:
+                    - type
+                    - series
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                        - BigNumber
+                      series:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties: false
+                          required:
+                          - dataOptions
+                          - displayOptions
+                          properties:
+                            dataOptions:
+                              oneOf:
+                              - allOf:
+                                - properties:
+                                    type:
+                                      enum:
+                                      - User
+                                - description: User options
+                                  type: object
+                                  additionalProperties: false
+                                  required:
+                                  - duration
+                                  - directoryIds
+                                  - type
+                                  properties:
+                                    type:
+                                      enum:
+                                      - User
+                                    duration:
+                                      type: integer
+                                    interval:
+                                      type: string
+                                      nullable: true
+                                    directoryIds:
+                                      type: array
+                                      items:
+                                        type: integer
+                                    active:
+                                      type: boolean
+                                      nullable: true
+                              - allOf:
+                                - not:
+                                    properties:
+                                      type:
+                                        enum:
+                                        - User
+                                - oneOf:
+                                  - allOf:
+                                    - properties:
+                                        type:
+                                          enum:
+                                          - Deviance
+                                    - description: Deviance options
+                                      type: object
+                                      additionalProperties: false
+                                      required:
+                                      - duration
+                                      - directoryIds
+                                      - type
+                                      - checkerIds
+                                      - reasonIds
+                                      - profileId
+                                      properties:
+                                        type:
+                                          type: string
+                                          enum:
+                                          - Deviance
+                                        duration:
+                                          type: integer
+                                        interval:
+                                          type: string
+                                          nullable: true
+                                        profileId:
+                                          type: integer
+                                        directoryIds:
+                                          type: array
+                                          items:
+                                            type: integer
+                                        checkerIds:
+                                          type: array
+                                          items:
+                                            type: integer
+                                        reasonIds:
+                                          type: array
+                                          items:
+                                            type: integer
+                                  - allOf:
+                                    - not:
+                                        properties:
+                                          type:
+                                            enum:
+                                            - Deviance
+                                    - x-then:
+                                        $schema: http://json-schema.org/draft-07/schema#
+                                        $id: http://localhost:3001/schemas/widget/widget-series-data-options-compliance-score.json
+                                        description: ComplianceScore options
+                                        type: object
+                                        additionalProperties: false
+                                        required:
+                                        - duration
+                                        - directoryIds
+                                        - type
+                                        - checkerIds
+                                        - reasonIds
+                                        - profileId
+                                        properties:
+                                          type:
+                                            type: string
+                                            enum:
+                                            - ComplianceScore
+                                          duration:
+                                            type: integer
+                                          interval:
+                                            type:
+                                            - string
+                                            - 'null'
+                                          profileId:
+                                            type: integer
+                                          directoryIds:
+                                            type: array
+                                            items:
+                                              type: integer
+                                          checkerIds:
+                                            type: array
+                                            items:
+                                              type: integer
+                                          reasonIds:
+                                            type: array
+                                            items:
+                                              type: integer
+                            displayOptions:
+                              type: object
+                              additionalProperties: false
+                              properties:
+                                label:
+                                  type: string
+                                  nullable: true
+                - allOf:
+                  - not:
+                      properties:
+                        type:
+                          enum:
+                          - BigNumber
+                  - oneOf:
+                    - allOf:
+                      - properties:
+                          type:
+                            enum:
+                            - LineChart
+                      - additionalProperties: false
+                        type: object
+                        required:
+                        - type
+                        - series
+                        properties:
+                          type:
+                            type: string
+                            enum:
+                            - LineChart
+                          series:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              required:
+                              - dataOptions
+                              - displayOptions
+                              properties:
+                                dataOptions:
+                                  oneOf:
+                                  - allOf:
+                                    - properties:
+                                        type:
+                                          enum:
+                                          - User
+                                    - description: User options
+                                      type: object
+                                      additionalProperties: false
+                                      required:
+                                      - duration
+                                      - directoryIds
+                                      - type
+                                      properties:
+                                        type:
+                                          enum:
+                                          - User
+                                        duration:
+                                          type: integer
+                                        interval:
+                                          type: string
+                                          nullable: true
+                                        directoryIds:
+                                          type: array
+                                          items:
+                                            type: integer
+                                        active:
+                                          type: boolean
+                                          nullable: true
+                                  - allOf:
+                                    - not:
+                                        properties:
+                                          type:
+                                            enum:
+                                            - User
+                                    - oneOf:
+                                      - allOf:
+                                        - properties:
+                                            type:
+                                              enum:
+                                              - Deviance
+                                        - description: Deviance options
+                                          type: object
+                                          additionalProperties: false
+                                          required:
+                                          - duration
+                                          - directoryIds
+                                          - type
+                                          - checkerIds
+                                          - reasonIds
+                                          - profileId
+                                          properties:
+                                            type:
+                                              type: string
+                                              enum:
+                                              - Deviance
+                                            duration:
+                                              type: integer
+                                            interval:
+                                              type: string
+                                              nullable: true
+                                            profileId:
+                                              type: integer
+                                            directoryIds:
+                                              type: array
+                                              items:
+                                                type: integer
+                                            checkerIds:
+                                              type: array
+                                              items:
+                                                type: integer
+                                            reasonIds:
+                                              type: array
+                                              items:
+                                                type: integer
+                                      - allOf:
+                                        - not:
+                                            properties:
+                                              type:
+                                                enum:
+                                                - Deviance
+                                        - x-then:
+                                            $schema: http://json-schema.org/draft-07/schema#
+                                            $id: http://localhost:3001/schemas/widget/widget-series-data-options-compliance-score.json
+                                            description: ComplianceScore options
+                                            type: object
+                                            additionalProperties: false
+                                            required:
+                                            - duration
+                                            - directoryIds
+                                            - type
+                                            - checkerIds
+                                            - reasonIds
+                                            - profileId
+                                            properties:
+                                              type:
+                                                type: string
+                                                enum:
+                                                - ComplianceScore
+                                              duration:
+                                                type: integer
+                                              interval:
+                                                type:
+                                                - string
+                                                - 'null'
+                                              profileId:
+                                                type: integer
+                                              directoryIds:
+                                                type: array
+                                                items:
+                                                  type: integer
+                                              checkerIds:
+                                                type: array
+                                                items:
+                                                  type: integer
+                                              reasonIds:
+                                                type: array
+                                                items:
+                                                  type: integer
+                                displayOptions:
+                                  type: object
+                                  additionalProperties: false
+                                  properties:
+                                    label:
+                                      type: string
+                                      nullable: true
+                    - allOf:
+                      - not:
+                          properties:
+                            type:
+                              enum:
+                              - LineChart
+                      - oneOf:
+                        - allOf:
+                          - properties:
+                              type:
+                                enum:
+                                - BarChart
+                          - additionalProperties: false
+                            type: object
+                            required:
+                            - type
+                            - series
+                            properties:
+                              type:
+                                type: string
+                                enum:
+                                - BarChart
+                              series:
+                                type: array
+                                items:
+                                  type: object
+                                  additionalProperties: false
+                                  required:
+                                  - dataOptions
+                                  - displayOptions
+                                  properties:
+                                    dataOptions:
+                                      oneOf:
+                                      - allOf:
+                                        - properties:
+                                            type:
+                                              enum:
+                                              - User
+                                        - description: User options
+                                          type: object
+                                          additionalProperties: false
+                                          required:
+                                          - duration
+                                          - directoryIds
+                                          - type
+                                          properties:
+                                            type:
+                                              enum:
+                                              - User
+                                            duration:
+                                              type: integer
+                                            interval:
+                                              type: string
+                                              nullable: true
+                                            directoryIds:
+                                              type: array
+                                              items:
+                                                type: integer
+                                            active:
+                                              type: boolean
+                                              nullable: true
+                                      - allOf:
+                                        - not:
+                                            properties:
+                                              type:
+                                                enum:
+                                                - User
+                                        - oneOf:
+                                          - allOf:
+                                            - properties:
+                                                type:
+                                                  enum:
+                                                  - Deviance
+                                            - description: Deviance options
+                                              type: object
+                                              additionalProperties: false
+                                              required:
+                                              - duration
+                                              - directoryIds
+                                              - type
+                                              - checkerIds
+                                              - reasonIds
+                                              - profileId
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                  - Deviance
+                                                duration:
+                                                  type: integer
+                                                interval:
+                                                  type: string
+                                                  nullable: true
+                                                profileId:
+                                                  type: integer
+                                                directoryIds:
+                                                  type: array
+                                                  items:
+                                                    type: integer
+                                                checkerIds:
+                                                  type: array
+                                                  items:
+                                                    type: integer
+                                                reasonIds:
+                                                  type: array
+                                                  items:
+                                                    type: integer
+                                          - allOf:
+                                            - not:
+                                                properties:
+                                                  type:
+                                                    enum:
+                                                    - Deviance
+                                            - x-then:
+                                                $schema: http://json-schema.org/draft-07/schema#
+                                                $id: http://localhost:3001/schemas/widget/widget-series-data-options-compliance-score.json
+                                                description: ComplianceScore options
+                                                type: object
+                                                additionalProperties: false
+                                                required:
+                                                - duration
+                                                - directoryIds
+                                                - type
+                                                - checkerIds
+                                                - reasonIds
+                                                - profileId
+                                                properties:
+                                                  type:
+                                                    type: string
+                                                    enum:
+                                                    - ComplianceScore
+                                                  duration:
+                                                    type: integer
+                                                  interval:
+                                                    type:
+                                                    - string
+                                                    - 'null'
+                                                  profileId:
+                                                    type: integer
+                                                  directoryIds:
+                                                    type: array
+                                                    items:
+                                                      type: integer
+                                                  checkerIds:
+                                                    type: array
+                                                    items:
+                                                      type: integer
+                                                  reasonIds:
+                                                    type: array
+                                                    items:
+                                                      type: integer
+                                    displayOptions:
+                                      type: object
+                                      additionalProperties: false
+                                      properties:
+                                        label:
+                                          type: string
+                                          nullable: true
+                        - allOf:
+                          - not:
+                              properties:
+                                type:
+                                  enum:
+                                  - BarChart
+                          - oneOf:
+                            - allOf:
+                              - properties:
+                                  type:
+                                    enum:
+                                    - SecurityCompliance
+                              - additionalProperties: false
+                                type: object
+                                required:
+                                - type
+                                - series
+                                properties:
+                                  type:
+                                    type: string
+                                    enum:
+                                    - SecurityCompliance
+                                  series:
+                                    type: array
+                                    items:
+                                      type: object
+                                      additionalProperties: false
+                                      required:
+                                      - dataOptions
+                                      - displayOptions
+                                      properties:
+                                        dataOptions:
+                                          oneOf:
+                                          - allOf:
+                                            - properties:
+                                                type:
+                                                  enum:
+                                                  - User
+                                            - description: User options
+                                              type: object
+                                              additionalProperties: false
+                                              required:
+                                              - duration
+                                              - directoryIds
+                                              - type
+                                              properties:
+                                                type:
+                                                  enum:
+                                                  - User
+                                                duration:
+                                                  type: integer
+                                                interval:
+                                                  type: string
+                                                  nullable: true
+                                                directoryIds:
+                                                  type: array
+                                                  items:
+                                                    type: integer
+                                                active:
+                                                  type: boolean
+                                                  nullable: true
+                                          - allOf:
+                                            - not:
+                                                properties:
+                                                  type:
+                                                    enum:
+                                                    - User
+                                            - oneOf:
+                                              - allOf:
+                                                - properties:
+                                                    type:
+                                                      enum:
+                                                      - Deviance
+                                                - description: Deviance options
+                                                  type: object
+                                                  additionalProperties: false
+                                                  required:
+                                                  - duration
+                                                  - directoryIds
+                                                  - type
+                                                  - checkerIds
+                                                  - reasonIds
+                                                  - profileId
+                                                  properties:
+                                                    type:
+                                                      type: string
+                                                      enum:
+                                                      - Deviance
+                                                    duration:
+                                                      type: integer
+                                                    interval:
+                                                      type: string
+                                                      nullable: true
+                                                    profileId:
+                                                      type: integer
+                                                    directoryIds:
+                                                      type: array
+                                                      items:
+                                                        type: integer
+                                                    checkerIds:
+                                                      type: array
+                                                      items:
+                                                        type: integer
+                                                    reasonIds:
+                                                      type: array
+                                                      items:
+                                                        type: integer
+                                              - allOf:
+                                                - not:
+                                                    properties:
+                                                      type:
+                                                        enum:
+                                                        - Deviance
+                                                - x-then:
+                                                    $schema: http://json-schema.org/draft-07/schema#
+                                                    $id: http://localhost:3001/schemas/widget/widget-series-data-options-compliance-score.json
+                                                    description: ComplianceScore options
+                                                    type: object
+                                                    additionalProperties: false
+                                                    required:
+                                                    - duration
+                                                    - directoryIds
+                                                    - type
+                                                    - checkerIds
+                                                    - reasonIds
+                                                    - profileId
+                                                    properties:
+                                                      type:
+                                                        type: string
+                                                        enum:
+                                                        - ComplianceScore
+                                                      duration:
+                                                        type: integer
+                                                      interval:
+                                                        type:
+                                                        - string
+                                                        - 'null'
+                                                      profileId:
+                                                        type: integer
+                                                      directoryIds:
+                                                        type: array
+                                                        items:
+                                                          type: integer
+                                                      checkerIds:
+                                                        type: array
+                                                        items:
+                                                          type: integer
+                                                      reasonIds:
+                                                        type: array
+                                                        items:
+                                                          type: integer
+                                        displayOptions:
+                                          type: object
+                                          additionalProperties: false
+                                          required:
+                                          - categoryId
+                                          properties:
+                                            categoryId:
+                                              type: integer
+                            - allOf:
+                              - not:
+                                  properties:
+                                    type:
+                                      enum:
+                                      - SecurityCompliance
+                              - additionalProperties: false
+                                type: object
+                                required:
+                                - type
+                                - series
+                                properties:
+                                  type:
+                                    type: string
+                                    enum:
+                                    - StepChart
+                                  series:
+                                    type: array
+                                    items:
+                                      type: object
+                                      additionalProperties: false
+                                      required:
+                                      - dataOptions
+                                      - displayOptions
+                                      properties:
+                                        dataOptions:
+                                          oneOf:
+                                          - allOf:
+                                            - properties:
+                                                type:
+                                                  enum:
+                                                  - User
+                                            - description: User options
+                                              type: object
+                                              additionalProperties: false
+                                              required:
+                                              - duration
+                                              - directoryIds
+                                              - type
+                                              properties:
+                                                type:
+                                                  enum:
+                                                  - User
+                                                duration:
+                                                  type: integer
+                                                interval:
+                                                  type: string
+                                                  nullable: true
+                                                directoryIds:
+                                                  type: array
+                                                  items:
+                                                    type: integer
+                                                active:
+                                                  type: boolean
+                                                  nullable: true
+                                          - allOf:
+                                            - not:
+                                                properties:
+                                                  type:
+                                                    enum:
+                                                    - User
+                                            - oneOf:
+                                              - allOf:
+                                                - properties:
+                                                    type:
+                                                      enum:
+                                                      - Deviance
+                                                - description: Deviance options
+                                                  type: object
+                                                  additionalProperties: false
+                                                  required:
+                                                  - duration
+                                                  - directoryIds
+                                                  - type
+                                                  - checkerIds
+                                                  - reasonIds
+                                                  - profileId
+                                                  properties:
+                                                    type:
+                                                      type: string
+                                                      enum:
+                                                      - Deviance
+                                                    duration:
+                                                      type: integer
+                                                    interval:
+                                                      type: string
+                                                      nullable: true
+                                                    profileId:
+                                                      type: integer
+                                                    directoryIds:
+                                                      type: array
+                                                      items:
+                                                        type: integer
+                                                    checkerIds:
+                                                      type: array
+                                                      items:
+                                                        type: integer
+                                                    reasonIds:
+                                                      type: array
+                                                      items:
+                                                        type: integer
+                                              - allOf:
+                                                - not:
+                                                    properties:
+                                                      type:
+                                                        enum:
+                                                        - Deviance
+                                                - x-then:
+                                                    $schema: http://json-schema.org/draft-07/schema#
+                                                    $id: http://localhost:3001/schemas/widget/widget-series-data-options-compliance-score.json
+                                                    description: ComplianceScore options
+                                                    type: object
+                                                    additionalProperties: false
+                                                    required:
+                                                    - duration
+                                                    - directoryIds
+                                                    - type
+                                                    - checkerIds
+                                                    - reasonIds
+                                                    - profileId
+                                                    properties:
+                                                      type:
+                                                        type: string
+                                                        enum:
+                                                        - ComplianceScore
+                                                      duration:
+                                                        type: integer
+                                                      interval:
+                                                        type:
+                                                        - string
+                                                        - 'null'
+                                                      profileId:
+                                                        type: integer
+                                                      directoryIds:
+                                                        type: array
+                                                        items:
+                                                          type: integer
+                                                      checkerIds:
+                                                        type: array
+                                                        items:
+                                                          type: integer
+                                                      reasonIds:
+                                                        type: array
+                                                        items:
+                                                          type: integer
+                                        displayOptions:
+                                          type: object
+                                          additionalProperties: false
+                                          properties:
+                                            label:
+                                              type: string
+                                              nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Widget
+      x-tenablead-required-product-license-type:
+      - ioe
+      - ioaPreview
+      - ioa
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: dashboardId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+    put:
+      summary: Define widget's options by id
+      description: 'Required license type: ioe, ioaPreview, ioa'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Widget
+      x-tenablead-required-product-license-type:
+      - ioe
+      - ioaPreview
+      - ioa
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: dashboardId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - allOf:
+                - properties:
+                    type:
+                      enum:
+                      - BigNumber
+                - additionalProperties: false
+                  type: object
+                  required:
+                  - type
+                  - series
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                      - BigNumber
+                    series:
+                      type: array
+                      items:
+                        type: object
+                        additionalProperties: false
+                        required:
+                        - dataOptions
+                        - displayOptions
+                        properties:
+                          dataOptions:
+                            oneOf:
+                            - allOf:
+                              - properties:
+                                  type:
+                                    enum:
+                                    - User
+                              - description: User options
+                                type: object
+                                additionalProperties: false
+                                required:
+                                - duration
+                                - directoryIds
+                                - type
+                                properties:
+                                  type:
+                                    enum:
+                                    - User
+                                  duration:
+                                    type: integer
+                                  interval:
+                                    type: string
+                                    nullable: true
+                                  directoryIds:
+                                    type: array
+                                    items:
+                                      type: integer
+                                  active:
+                                    type: boolean
+                                    nullable: true
+                            - allOf:
+                              - not:
+                                  properties:
+                                    type:
+                                      enum:
+                                      - User
+                              - oneOf:
+                                - allOf:
+                                  - properties:
+                                      type:
+                                        enum:
+                                        - Deviance
+                                  - description: Deviance options
+                                    type: object
+                                    additionalProperties: false
+                                    required:
+                                    - duration
+                                    - directoryIds
+                                    - type
+                                    - checkerIds
+                                    - reasonIds
+                                    - profileId
+                                    properties:
+                                      type:
+                                        type: string
+                                        enum:
+                                        - Deviance
+                                      duration:
+                                        type: integer
+                                      interval:
+                                        type: string
+                                        nullable: true
+                                      profileId:
+                                        type: integer
+                                      directoryIds:
+                                        type: array
+                                        items:
+                                          type: integer
+                                      checkerIds:
+                                        type: array
+                                        items:
+                                          type: integer
+                                      reasonIds:
+                                        type: array
+                                        items:
+                                          type: integer
+                                - allOf:
+                                  - not:
+                                      properties:
+                                        type:
+                                          enum:
+                                          - Deviance
+                                  - x-then:
+                                      $schema: http://json-schema.org/draft-07/schema#
+                                      $id: http://localhost:3001/schemas/widget/widget-series-data-options-compliance-score.json
+                                      description: ComplianceScore options
+                                      type: object
+                                      additionalProperties: false
+                                      required:
+                                      - duration
+                                      - directoryIds
+                                      - type
+                                      - checkerIds
+                                      - reasonIds
+                                      - profileId
+                                      properties:
+                                        type:
+                                          type: string
+                                          enum:
+                                          - ComplianceScore
+                                        duration:
+                                          type: integer
+                                        interval:
+                                          type:
+                                          - string
+                                          - 'null'
+                                        profileId:
+                                          type: integer
+                                        directoryIds:
+                                          type: array
+                                          items:
+                                            type: integer
+                                        checkerIds:
+                                          type: array
+                                          items:
+                                            type: integer
+                                        reasonIds:
+                                          type: array
+                                          items:
+                                            type: integer
+                          displayOptions:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              label:
+                                type: string
+                                nullable: true
+              - allOf:
+                - not:
+                    properties:
+                      type:
+                        enum:
+                        - BigNumber
+                - oneOf:
+                  - allOf:
+                    - properties:
+                        type:
+                          enum:
+                          - LineChart
+                    - additionalProperties: false
+                      type: object
+                      required:
+                      - type
+                      - series
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                          - LineChart
+                        series:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            required:
+                            - dataOptions
+                            - displayOptions
+                            properties:
+                              dataOptions:
+                                oneOf:
+                                - allOf:
+                                  - properties:
+                                      type:
+                                        enum:
+                                        - User
+                                  - description: User options
+                                    type: object
+                                    additionalProperties: false
+                                    required:
+                                    - duration
+                                    - directoryIds
+                                    - type
+                                    properties:
+                                      type:
+                                        enum:
+                                        - User
+                                      duration:
+                                        type: integer
+                                      interval:
+                                        type: string
+                                        nullable: true
+                                      directoryIds:
+                                        type: array
+                                        items:
+                                          type: integer
+                                      active:
+                                        type: boolean
+                                        nullable: true
+                                - allOf:
+                                  - not:
+                                      properties:
+                                        type:
+                                          enum:
+                                          - User
+                                  - oneOf:
+                                    - allOf:
+                                      - properties:
+                                          type:
+                                            enum:
+                                            - Deviance
+                                      - description: Deviance options
+                                        type: object
+                                        additionalProperties: false
+                                        required:
+                                        - duration
+                                        - directoryIds
+                                        - type
+                                        - checkerIds
+                                        - reasonIds
+                                        - profileId
+                                        properties:
+                                          type:
+                                            type: string
+                                            enum:
+                                            - Deviance
+                                          duration:
+                                            type: integer
+                                          interval:
+                                            type: string
+                                            nullable: true
+                                          profileId:
+                                            type: integer
+                                          directoryIds:
+                                            type: array
+                                            items:
+                                              type: integer
+                                          checkerIds:
+                                            type: array
+                                            items:
+                                              type: integer
+                                          reasonIds:
+                                            type: array
+                                            items:
+                                              type: integer
+                                    - allOf:
+                                      - not:
+                                          properties:
+                                            type:
+                                              enum:
+                                              - Deviance
+                                      - x-then:
+                                          $schema: http://json-schema.org/draft-07/schema#
+                                          $id: http://localhost:3001/schemas/widget/widget-series-data-options-compliance-score.json
+                                          description: ComplianceScore options
+                                          type: object
+                                          additionalProperties: false
+                                          required:
+                                          - duration
+                                          - directoryIds
+                                          - type
+                                          - checkerIds
+                                          - reasonIds
+                                          - profileId
+                                          properties:
+                                            type:
+                                              type: string
+                                              enum:
+                                              - ComplianceScore
+                                            duration:
+                                              type: integer
+                                            interval:
+                                              type:
+                                              - string
+                                              - 'null'
+                                            profileId:
+                                              type: integer
+                                            directoryIds:
+                                              type: array
+                                              items:
+                                                type: integer
+                                            checkerIds:
+                                              type: array
+                                              items:
+                                                type: integer
+                                            reasonIds:
+                                              type: array
+                                              items:
+                                                type: integer
+                              displayOptions:
+                                type: object
+                                additionalProperties: false
+                                properties:
+                                  label:
+                                    type: string
+                                    nullable: true
+                  - allOf:
+                    - not:
+                        properties:
+                          type:
+                            enum:
+                            - LineChart
+                    - oneOf:
+                      - allOf:
+                        - properties:
+                            type:
+                              enum:
+                              - BarChart
+                        - additionalProperties: false
+                          type: object
+                          required:
+                          - type
+                          - series
+                          properties:
+                            type:
+                              type: string
+                              enum:
+                              - BarChart
+                            series:
+                              type: array
+                              items:
+                                type: object
+                                additionalProperties: false
+                                required:
+                                - dataOptions
+                                - displayOptions
+                                properties:
+                                  dataOptions:
+                                    oneOf:
+                                    - allOf:
+                                      - properties:
+                                          type:
+                                            enum:
+                                            - User
+                                      - description: User options
+                                        type: object
+                                        additionalProperties: false
+                                        required:
+                                        - duration
+                                        - directoryIds
+                                        - type
+                                        properties:
+                                          type:
+                                            enum:
+                                            - User
+                                          duration:
+                                            type: integer
+                                          interval:
+                                            type: string
+                                            nullable: true
+                                          directoryIds:
+                                            type: array
+                                            items:
+                                              type: integer
+                                          active:
+                                            type: boolean
+                                            nullable: true
+                                    - allOf:
+                                      - not:
+                                          properties:
+                                            type:
+                                              enum:
+                                              - User
+                                      - oneOf:
+                                        - allOf:
+                                          - properties:
+                                              type:
+                                                enum:
+                                                - Deviance
+                                          - description: Deviance options
+                                            type: object
+                                            additionalProperties: false
+                                            required:
+                                            - duration
+                                            - directoryIds
+                                            - type
+                                            - checkerIds
+                                            - reasonIds
+                                            - profileId
+                                            properties:
+                                              type:
+                                                type: string
+                                                enum:
+                                                - Deviance
+                                              duration:
+                                                type: integer
+                                              interval:
+                                                type: string
+                                                nullable: true
+                                              profileId:
+                                                type: integer
+                                              directoryIds:
+                                                type: array
+                                                items:
+                                                  type: integer
+                                              checkerIds:
+                                                type: array
+                                                items:
+                                                  type: integer
+                                              reasonIds:
+                                                type: array
+                                                items:
+                                                  type: integer
+                                        - allOf:
+                                          - not:
+                                              properties:
+                                                type:
+                                                  enum:
+                                                  - Deviance
+                                          - x-then:
+                                              $schema: http://json-schema.org/draft-07/schema#
+                                              $id: http://localhost:3001/schemas/widget/widget-series-data-options-compliance-score.json
+                                              description: ComplianceScore options
+                                              type: object
+                                              additionalProperties: false
+                                              required:
+                                              - duration
+                                              - directoryIds
+                                              - type
+                                              - checkerIds
+                                              - reasonIds
+                                              - profileId
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                  - ComplianceScore
+                                                duration:
+                                                  type: integer
+                                                interval:
+                                                  type:
+                                                  - string
+                                                  - 'null'
+                                                profileId:
+                                                  type: integer
+                                                directoryIds:
+                                                  type: array
+                                                  items:
+                                                    type: integer
+                                                checkerIds:
+                                                  type: array
+                                                  items:
+                                                    type: integer
+                                                reasonIds:
+                                                  type: array
+                                                  items:
+                                                    type: integer
+                                  displayOptions:
+                                    type: object
+                                    additionalProperties: false
+                                    properties:
+                                      label:
+                                        type: string
+                                        nullable: true
+                      - allOf:
+                        - not:
+                            properties:
+                              type:
+                                enum:
+                                - BarChart
+                        - oneOf:
+                          - allOf:
+                            - properties:
+                                type:
+                                  enum:
+                                  - SecurityCompliance
+                            - additionalProperties: false
+                              type: object
+                              required:
+                              - type
+                              - series
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                  - SecurityCompliance
+                                series:
+                                  type: array
+                                  items:
+                                    type: object
+                                    additionalProperties: false
+                                    required:
+                                    - dataOptions
+                                    - displayOptions
+                                    properties:
+                                      dataOptions:
+                                        oneOf:
+                                        - allOf:
+                                          - properties:
+                                              type:
+                                                enum:
+                                                - User
+                                          - description: User options
+                                            type: object
+                                            additionalProperties: false
+                                            required:
+                                            - duration
+                                            - directoryIds
+                                            - type
+                                            properties:
+                                              type:
+                                                enum:
+                                                - User
+                                              duration:
+                                                type: integer
+                                              interval:
+                                                type: string
+                                                nullable: true
+                                              directoryIds:
+                                                type: array
+                                                items:
+                                                  type: integer
+                                              active:
+                                                type: boolean
+                                                nullable: true
+                                        - allOf:
+                                          - not:
+                                              properties:
+                                                type:
+                                                  enum:
+                                                  - User
+                                          - oneOf:
+                                            - allOf:
+                                              - properties:
+                                                  type:
+                                                    enum:
+                                                    - Deviance
+                                              - description: Deviance options
+                                                type: object
+                                                additionalProperties: false
+                                                required:
+                                                - duration
+                                                - directoryIds
+                                                - type
+                                                - checkerIds
+                                                - reasonIds
+                                                - profileId
+                                                properties:
+                                                  type:
+                                                    type: string
+                                                    enum:
+                                                    - Deviance
+                                                  duration:
+                                                    type: integer
+                                                  interval:
+                                                    type: string
+                                                    nullable: true
+                                                  profileId:
+                                                    type: integer
+                                                  directoryIds:
+                                                    type: array
+                                                    items:
+                                                      type: integer
+                                                  checkerIds:
+                                                    type: array
+                                                    items:
+                                                      type: integer
+                                                  reasonIds:
+                                                    type: array
+                                                    items:
+                                                      type: integer
+                                            - allOf:
+                                              - not:
+                                                  properties:
+                                                    type:
+                                                      enum:
+                                                      - Deviance
+                                              - x-then:
+                                                  $schema: http://json-schema.org/draft-07/schema#
+                                                  $id: http://localhost:3001/schemas/widget/widget-series-data-options-compliance-score.json
+                                                  description: ComplianceScore options
+                                                  type: object
+                                                  additionalProperties: false
+                                                  required:
+                                                  - duration
+                                                  - directoryIds
+                                                  - type
+                                                  - checkerIds
+                                                  - reasonIds
+                                                  - profileId
+                                                  properties:
+                                                    type:
+                                                      type: string
+                                                      enum:
+                                                      - ComplianceScore
+                                                    duration:
+                                                      type: integer
+                                                    interval:
+                                                      type:
+                                                      - string
+                                                      - 'null'
+                                                    profileId:
+                                                      type: integer
+                                                    directoryIds:
+                                                      type: array
+                                                      items:
+                                                        type: integer
+                                                    checkerIds:
+                                                      type: array
+                                                      items:
+                                                        type: integer
+                                                    reasonIds:
+                                                      type: array
+                                                      items:
+                                                        type: integer
+                                      displayOptions:
+                                        type: object
+                                        additionalProperties: false
+                                        required:
+                                        - categoryId
+                                        properties:
+                                          categoryId:
+                                            type: integer
+                          - allOf:
+                            - not:
+                                properties:
+                                  type:
+                                    enum:
+                                    - SecurityCompliance
+                            - additionalProperties: false
+                              type: object
+                              required:
+                              - type
+                              - series
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                  - StepChart
+                                series:
+                                  type: array
+                                  items:
+                                    type: object
+                                    additionalProperties: false
+                                    required:
+                                    - dataOptions
+                                    - displayOptions
+                                    properties:
+                                      dataOptions:
+                                        oneOf:
+                                        - allOf:
+                                          - properties:
+                                              type:
+                                                enum:
+                                                - User
+                                          - description: User options
+                                            type: object
+                                            additionalProperties: false
+                                            required:
+                                            - duration
+                                            - directoryIds
+                                            - type
+                                            properties:
+                                              type:
+                                                enum:
+                                                - User
+                                              duration:
+                                                type: integer
+                                              interval:
+                                                type: string
+                                                nullable: true
+                                              directoryIds:
+                                                type: array
+                                                items:
+                                                  type: integer
+                                              active:
+                                                type: boolean
+                                                nullable: true
+                                        - allOf:
+                                          - not:
+                                              properties:
+                                                type:
+                                                  enum:
+                                                  - User
+                                          - oneOf:
+                                            - allOf:
+                                              - properties:
+                                                  type:
+                                                    enum:
+                                                    - Deviance
+                                              - description: Deviance options
+                                                type: object
+                                                additionalProperties: false
+                                                required:
+                                                - duration
+                                                - directoryIds
+                                                - type
+                                                - checkerIds
+                                                - reasonIds
+                                                - profileId
+                                                properties:
+                                                  type:
+                                                    type: string
+                                                    enum:
+                                                    - Deviance
+                                                  duration:
+                                                    type: integer
+                                                  interval:
+                                                    type: string
+                                                    nullable: true
+                                                  profileId:
+                                                    type: integer
+                                                  directoryIds:
+                                                    type: array
+                                                    items:
+                                                      type: integer
+                                                  checkerIds:
+                                                    type: array
+                                                    items:
+                                                      type: integer
+                                                  reasonIds:
+                                                    type: array
+                                                    items:
+                                                      type: integer
+                                            - allOf:
+                                              - not:
+                                                  properties:
+                                                    type:
+                                                      enum:
+                                                      - Deviance
+                                              - x-then:
+                                                  $schema: http://json-schema.org/draft-07/schema#
+                                                  $id: http://localhost:3001/schemas/widget/widget-series-data-options-compliance-score.json
+                                                  description: ComplianceScore options
+                                                  type: object
+                                                  additionalProperties: false
+                                                  required:
+                                                  - duration
+                                                  - directoryIds
+                                                  - type
+                                                  - checkerIds
+                                                  - reasonIds
+                                                  - profileId
+                                                  properties:
+                                                    type:
+                                                      type: string
+                                                      enum:
+                                                      - ComplianceScore
+                                                    duration:
+                                                      type: integer
+                                                    interval:
+                                                      type:
+                                                      - string
+                                                      - 'null'
+                                                    profileId:
+                                                      type: integer
+                                                    directoryIds:
+                                                      type: array
+                                                      items:
+                                                        type: integer
+                                                    checkerIds:
+                                                      type: array
+                                                      items:
+                                                        type: integer
+                                                    reasonIds:
+                                                      type: array
+                                                      items:
+                                                        type: integer
+                                      displayOptions:
+                                        type: object
+                                        additionalProperties: false
+                                        properties:
+                                          label:
+                                            type: string
+                                            nullable: true
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

@@ -1,0 +1,234 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Applications API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Applications
+  description: 'With the WAS Applications API, you can create web application assets.
+
+
+    For more information, see the [Targets](https://docs.tenable.com/web-app-scanning/Content/WAS/Scans/BasicSettings.htm#Targets) section on the [Basic Settings](https://docs.tenable.com/web-app-scanning/Content/WAS/Scans/BasicSettings.htm) page in the _Tenable Web App Scanning User Guide_.'
+paths:
+  /api/v2/was/applications:
+    post:
+      summary: Add web application
+      description: 'Adds a web application asset. This enables you to manually define application targets with high granularity using a combination of FQDN, port, protocol, and path.
+
+
+        Manually defining assets ensures that cumulative scan data is accurately condensed and attributed to the correct application, providing more precise reporting and analysis. <div class="perms-callout">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+      operationId: was-v2-add-application
+      tags:
+      - Applications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Add-Application'
+      responses:
+        '200':
+          description: Returned if the web application was added successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    https://developer.tenable.com:
+                      success: true
+                      asset_id: 12cc3189-fd1d-4785-9e24-5cb4da4b44dc
+                      is_new: false
+                      is_tracked: true
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputErrorResponse'
+              examples:
+                response:
+                  value:
+                    code: INPUT_FORM_VIOLATION
+                    fields:
+                    - field: .url
+                      message_type: VALUE_MUST_BE_SPECIFIED
+                      value:
+                        message: the value must be specified
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to add an application. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value: {}
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    Add-Application:
+      type: object
+      required:
+      - user_defined_name
+      - url
+      properties:
+        user_defined_name:
+          type: string
+          description: A unique, user-defined name for the web application asset.
+          example: Marketing Site
+        url:
+          type: string
+          description: The primary URL of the application. This can include the protocol, FQDN, port, and specific path to define the target's scope.
+          example: https://my-site.com:8443/marketing
+        tags:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: A list of unique tag identifiers (UUIDs) to associate with the application. Tagging an application enables you to target it specifically when launching or scheduling scans.
+          example:
+          - 37c1e7d7-9e74-4c66-8b5e-79fcc4e725dc
+          - 041f044a-e22e-4bce-a5b3-069d1c5ffabf
+    InputErrorResponse:
+      type: object
+      required:
+      - code
+      - fields
+      description: Tenable Web App Scanning invalid input error response.
+      properties:
+        code:
+          type: string
+          description: The Tenable Web App Scanning error code. The code `INPUT_FORM_VIOLATION` is returned if your request body contains invalid input.
+        fields:
+          type: array
+          description: A list of fields that contain invalid input along with a message about the cause of the input error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning input error.
+            properties:
+              field:
+                type: string
+                description: The JSON path of the invalid field.
+              message_type:
+                type: string
+                description: "The type of input violation. Common input errors include:\n - `VALUE_MUST_BE_SPECIFIED`—Returned if a required body parameter is missing.\n - `VALUE_NOT_POSITIVE`—Returned if your input contains a negative integer when it should be positive.\n - `VALUE_IS_NEGATIVE`—Returned if your input contains a positive integer when it should be negative.\n - `VALUE_CANT_BE_CHANGED`—Returned if you attempted to change a value that cannot be changed.\n - `VALUE_MUST_BE_GREATER`—Returned if your input contains a value that is smaller than the minimum required lower bound.\n - `FIELD_CANT_BE_ADDED`—Returned if your input contains a field that can't be added.\n - `INVALID_TYPE`—Returned if your input contains an invalid type (ex. integer or string).\n - `INVALID_FORMAT`—Returned if your input contains an invalid format."
+                enum:
+                - VALUE_MUST_BE_SPECIFIED
+                - VALUE_NOT_POSITIVE
+                - VALUE_IS_NEGATIVE
+                - VALUE_CANT_BE_CHANGED
+                - VALUE_MUST_BE_GREATER
+                - FIELD_CANT_BE_ADDED
+                - INVALID_TYPE
+                - INVALID_FORMAT
+                - ERROR_MESSAGE
+              value:
+                description: Contains an error message describing the cause of the input validation error.
+                type: object
+    ErrorResponse:
+      type: object
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
+      properties:
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

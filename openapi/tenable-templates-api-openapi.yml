@@ -1,0 +1,1810 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Templates API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Templates
+  description: 'With the Templates API, you can manage scan and user templates. Use these endpoints to retrieve default settings or create custom templates based on organizational policies. Templates serve as the blueprint for creating new scans.
+
+
+    For more information, see [Scan Template Types](https://docs.tenable.com/web-app-scanning/Content/WAS/Scans/ScannerTemplates.htm) in the _Tenable Web App Scanning User Guide_.'
+paths:
+  /was/v2/templates:
+    get:
+      summary: List Tenable-provided templates
+      description: Returns a paginated list of Tenable-provided templates that are available to be used for scan configurations.<div class="perms-callout">Requires the Standard [32] user role or the `WAS.SCAN_WAS_SYSTEM_TEMPLATE.USE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: was-v2-templates-list
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/sort'
+      tags:
+      - Templates
+      responses:
+        '200':
+          description: Returned if the list of Tenable-provided templates was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - pagination
+                - items
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/PaginationResponse'
+                  items:
+                    type: array
+                    description: A list of Tenable-provided templates.
+                    items:
+                      $ref: '#/components/schemas/ConfigTemplate'
+              examples:
+                response:
+                  value:
+                    pagination:
+                      total: 2
+                      offset: 0
+                      limit: 2
+                      sort:
+                      - name: name
+                        order: asc
+                    items:
+                    - template_id: 1ead655c-6638-4075-81c7-7f288e1203bd
+                      name: api
+                      description: A scan that checks an API for vulnerabilities.
+                      plugin_state: open
+                      scanner_types:
+                      - scanner
+                      - container_group
+                      - cloud_group
+                      settings:
+                        timeout: 08:00:00
+                        debug_mode: false
+                        scope:
+                          exclude_path_patterns: []
+                          page_limit: 100
+                          option: null
+                          urls: null
+                          exclude_file_extensions: null
+                          dom_depth_limit: null
+                          directory_depth_limit: null
+                          crawl_script: null
+                          exclude_binaries: null
+                          auto_redundant_paths: null
+                          decompose_paths: null
+                          openapi_file: null
+                          openapi_filename: null
+                          openapi_file_url: null
+                          graphql_file: null
+                          graphql_filename: null
+                          graphql_file_url: null
+                          graphql_introspection: null
+                          soap_file: null
+                          soap_filename: null
+                          soap_file_url: null
+                          crawl_script_filename: null
+                        browser:
+                          analysis: false
+                          screen_width: null
+                          screen_height: null
+                          ignore_images: null
+                          job_timeout: null
+                          pool_size: null
+                        http:
+                          response_max_size: 500000
+                          request_redirect_limit: null
+                          user_agent: WAS/%v
+                          custom_user_agent: false
+                          request_concurrency: 10
+                          request_timeout: 5
+                          request_headers:
+                            Accept: '*/*'
+                            Accept-Language: en-US,en;q=0.5
+                          include_scan_id: false
+                        chrome:
+                          script_finish_wait: null
+                          script_page_load_wait: null
+                          script_command_wait: null
+                          disable_web_security: false
+                        assessment:
+                          enable: true
+                          rfi_remote_url: http://rfi.nessus.org/rfi.txt
+                          element_exclusions: null
+                          dictionary: null
+                          fingerprinting: true
+                        audit:
+                          xmls: true
+                          forms: null
+                          jsons: true
+                          links: true
+                          cookies: true
+                          headers: true
+                          ui_forms: null
+                          ui_inputs: null
+                          parameter_names: false
+                          parameter_values: true
+                          path_parameters: true
+                        plugin:
+                          rate_limiter:
+                            requests_per_second: 25
+                            autothrottle: true
+                            timeout_threshold: 100
+                      defaults:
+                        timeout: 08:00:00
+                        debug_mode: false
+                        scope:
+                          exclude_path_patterns: []
+                          page_limit: 100
+                          option: null
+                          urls: null
+                          exclude_file_extensions: null
+                          dom_depth_limit: null
+                          directory_depth_limit: null
+                          crawl_script: null
+                          exclude_binaries: null
+                          auto_redundant_paths: null
+                          decompose_paths: null
+                          openapi_file: null
+                          openapi_filename: null
+                          openapi_file_url: null
+                          graphql_file: null
+                          graphql_filename: null
+                          graphql_file_url: null
+                          graphql_introspection: null
+                          soap_file: null
+                          soap_filename: null
+                          soap_file_url: null
+                          crawl_script_filename: null
+                        browser:
+                          analysis: false
+                          screen_width: null
+                          screen_height: null
+                          ignore_images: null
+                          job_timeout: null
+                          pool_size: null
+                        http:
+                          response_max_size: 500000
+                          request_redirect_limit: null
+                          user_agent: WAS/%v
+                          custom_user_agent: false
+                          request_concurrency: 10
+                          request_timeout: 5
+                          request_headers:
+                            Accept: '*/*'
+                            Accept-Language: en-US,en;q=0.5
+                          include_scan_id: false
+                        chrome:
+                          script_finish_wait: null
+                          script_page_load_wait: null
+                          script_command_wait: null
+                          disable_web_security: false
+                        assessment:
+                          enable: true
+                          rfi_remote_url: http://rfi.nessus.org/rfi.txt
+                          element_exclusions: null
+                          dictionary: null
+                          fingerprinting: true
+                        audit:
+                          xmls: true
+                          forms: null
+                          jsons: true
+                          links: true
+                          cookies: true
+                          headers: true
+                          ui_forms: null
+                          ui_inputs: null
+                          parameter_names: false
+                          parameter_values: true
+                          path_parameters: true
+                        plugin:
+                          rate_limiter:
+                            requests_per_second: 25
+                            autothrottle: true
+                            timeout_threshold: 100
+                      plugins:
+                      - plugin_id: 112315
+                        name: Apache Tomcat 7.0.23 < 7.0.91 Open Redirect
+                        family: Component Vulnerability
+                        policy:
+                        - pci
+                        - scan
+                        - api
+        '400':
+          description: Returned if your request specifies invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /was/v2/templates/{template_id}:
+    get:
+      tags:
+      - Templates
+      summary: Get Tenable-provided template details
+      description: Returns the details for a Tenable-provided template. Tenable-provided templates can be used to define scan configurations.<div class="perms-callout">Requires the Standard [32] user role or the `WAS.SCAN_WAS_SYSTEM_TEMPLATE.USE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: was-v2-templates-details
+      parameters:
+      - in: path
+        name: template_id
+        required: true
+        description: The UUID of the Tenable-provided template resource.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the details for the specified Tenable-provided template were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigTemplate'
+              examples:
+                response:
+                  value:
+                    template_id: d5b3cb1c-9c72-4974-a936-3dfbd2e2835e
+                    name: config_audit
+                    description: An audit of web application compliance with configuration security guidelines.
+                    plugin_state: locked
+                    scanner_types:
+                    - scanner
+                    - container_group
+                    - cloud_group
+                    settings:
+                      timeout: null
+                      debug_mode: null
+                      input_force: null
+                      scope:
+                        option: paths
+                        urls: null
+                        exclude_file_extensions: null
+                        exclude_path_patterns: null
+                        dom_depth_limit: 1
+                        directory_depth_limit: null
+                        page_limit: 1
+                        crawl_script: null
+                        decompose_paths: null
+                        exclude_binaries: true
+                        auto_redundant_paths: 1
+                      plugin: null
+                      browser:
+                        screen_width: null
+                        screen_height: null
+                        ignore_images: null
+                        job_timeout: null
+                        analysis: false
+                        pool_size: 1
+                      http: null
+                      chrome_script: null
+                      assessment:
+                        rfi_remote_url: null
+                        element_exclusions: null
+                        dictionary: null
+                        fingerprinting: null
+                        enable: true
+                      audit:
+                        forms: false
+                        cookies: false
+                        ui_forms: false
+                        ui_inputs: false
+                        headers: false
+                        links: false
+                        parameter_names: false
+                        parameter_values: false
+                        jsons: false
+                        xmls: false
+                        cookies_extensively: null
+                        with_raw_payloads: false
+                        with_both_http_methods: false
+                        with_extra_parameter: false
+                    defaults:
+                      timeout: 00:10:00
+                      debug_mode: null
+                      input_force: null
+                      scope:
+                        option: paths
+                        urls: null
+                        exclude_file_extensions: null
+                        exclude_path_patterns: null
+                        dom_depth_limit: 1
+                        directory_depth_limit: null
+                        page_limit: 1
+                        crawl_script: null
+                        decompose_paths: null
+                        exclude_binaries: true
+                        auto_redundant_paths: 1
+                      plugin: null
+                      browser:
+                        screen_width: null
+                        screen_height: null
+                        ignore_images: null
+                        job_timeout: null
+                        analysis: false
+                        pool_size: 1
+                      http:
+                        response_max_size: null
+                        request_redirect_limit: null
+                        user_agent: WAS/%v
+                        custom_user_agent: false
+                        request_headers:
+                          Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+                          Accept-Language: en-US,en;q=0.5
+                        request_concurrency: null
+                        request_timeout: null
+                      chrome_script: null
+                      assessment:
+                        rfi_remote_url: null
+                        element_exclusions: null
+                        dictionary: null
+                        fingerprinting: null
+                        enable: true
+                      audit:
+                        forms: false
+                        cookies: false
+                        ui_forms: false
+                        ui_inputs: false
+                        headers: false
+                        links: false
+                        parameter_names: false
+                        parameter_values: false
+                        jsons: false
+                        xmls: false
+                        cookies_extensively: null
+                        with_raw_payloads: false
+                        with_both_http_methods: false
+                        with_extra_parameter: false
+                    plugins:
+                    - plugin_id: 115491
+                      name: SSL/TLS Cipher Suites Supported
+                      family: SSL/TLS
+                    - plugin_id: 98056
+                      name: Missing HTTP Strict Transport Security Policy
+                      family: HTTP Security Header
+                    - plugin_id: 112496
+                      name: TLS 1.0 Weak Protocol
+                      family: SSL/TLS
+                    - plugin_id: 112544
+                      name: HTTP to HTTPS Redirect Not Enabled
+                      family: SSL/TLS
+                    - plugin_id: 112555
+                      name: Report Only Content Security Policy Detected
+                      family: HTTP Security Header
+                    - plugin_id: 98612
+                      name: Missing 'Expect-CT' Header
+                      family: HTTP Security Header
+                    - plugin_id: 112553
+                      name: Missing 'Cache-Control' Header
+                      family: HTTP Security Header
+                    - plugin_id: 112527
+                      name: Disabled 'X-XSS-Protection' Header
+                      family: HTTP Security Header
+                    - plugin_id: 98062
+                      name: Cookie set for parent domain
+                      family: Web Applications
+                    - plugin_id: 112495
+                      name: SSL/TLS Self-Signed Certificate
+                      family: SSL/TLS
+                    - plugin_id: 98618
+                      name: HTTP Header Information Disclosure
+                      family: HTTP Security Header
+                    - plugin_id: 112526
+                      name: Missing 'X-XSS-Protection' Header
+                      family: HTTP Security Header
+                    - plugin_id: 112537
+                      name: SSL/TLS Null Cipher Suites Supported
+                      family: SSL/TLS
+                    - plugin_id: 98617
+                      name: SSL/TLS Forward Secrecy Cipher Suites Not Supported
+                      family: SSL/TLS
+                    - plugin_id: 112542
+                      name: SSL/TLS Certificate Signed Using Weak Hashing Algorithm
+                      family: SSL/TLS
+                    - plugin_id: 112546
+                      name: TLS 1.1 Deprecated Protocol
+                      family: SSL/TLS
+                    - plugin_id: 112493
+                      name: SSL/TLS Certificate Expired
+                      family: SSL/TLS
+                    - plugin_id: 112554
+                      name: Permissive Content Security Policy Detected
+                      family: HTTP Security Header
+                    - plugin_id: 112551
+                      name: Missing Content Security Policy
+                      family: HTTP Security Header
+                    - plugin_id: 98715
+                      name: Permissive HTTP Strict Transport Security Policy Detected
+                      family: HTTP Security Header
+                    - plugin_id: 98648
+                      name: Missing 'Content-Type' Header
+                      family: HTTP Security Header
+                    - plugin_id: 98527
+                      name: Missing Referrer Policy
+                      family: HTTP Security Header
+                    - plugin_id: 98526
+                      name: Missing Feature Policy
+                      family: HTTP Security Header
+                    - plugin_id: 112541
+                      name: SSL/TLS Certificate Common Name Mismatch
+                      family: SSL/TLS
+                    - plugin_id: 115540
+                      name: Cookie Without SameSite Flag Detected
+                      family: Web Applications
+                    - plugin_id: 98057
+                      name: Insecure 'Access-Control-Allow-Origin' header
+                      family: HTTP Security Header
+                    - plugin_id: 98616
+                      name: TLS 1.2 Not Supported Protocol
+                      family: SSL/TLS
+                    - plugin_id: 112539
+                      name: SSL/TLS Weak Cipher Suites Supported
+                      family: SSL/TLS
+                    - plugin_id: 112538
+                      name: SSL/TLS Insecure Cipher Suites Supported
+                      family: SSL/TLS
+                    - plugin_id: 98091
+                      name: Mixed Resource Detection
+                      family: Web Applications
+                    - plugin_id: 112552
+                      name: Deprecated Content Security Policy
+                      family: HTTP Security Header
+                    - plugin_id: 112530
+                      name: SSL/TLS Versions Supported
+                      family: SSL/TLS
+                    - plugin_id: 112491
+                      name: SSL/TLS Certificate Information
+                      family: SSL/TLS
+                    - plugin_id: 112536
+                      name: SSL/TLS Anonymous Cipher Suites Supported
+                      family: SSL/TLS
+                    - plugin_id: 112529
+                      name: Missing 'X-Content-Type-Options' Header
+                      family: HTTP Security Header
+                    - plugin_id: 112494
+                      name: SSL Insecure Protocols
+                      family: SSL/TLS
+                    - plugin_id: 98063
+                      name: Cookie Without HttpOnly Flag Detected
+                      family: Web Applications
+                    - plugin_id: 112540
+                      name: SSL/TLS Certificate RSA Keys Less Than 2048 bits
+                      family: SSL/TLS
+                    - plugin_id: 112543
+                      name: HTTPS Not Detected
+                      family: SSL/TLS
+                    - plugin_id: 98060
+                      name: Missing 'X-Frame-Options' Header
+                      family: HTTP Security Header
+                    - plugin_id: 98064
+                      name: Cookie Without Secure Flag Detected
+                      family: Web Applications
+        '400':
+          description: Returned if your request specifies an invalid template UUID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: INVALID_ID_FORMAT
+                      reason: The provided ID of '10-ABC' must be UUID type
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Web App Scanning cannot find the specified template.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: NOT_FOUND
+                      reason: Resource with id 'f93dfcb4-6eb2-4820-9b64-3dee8893a3f0' not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /was/v2/user-templates/search:
+    post:
+      summary: Search user-defined templates
+      description: Returns a paginated list of user-defined templates that are available to be used for scan configurations.<div class="perms-callout">Requires either the Scan Operator [24] user role, the `WAS.SCAN_WAS.MANAGE` custom role privilege, or the `WAS.SCAN_WAS_USER_TEMPLATE.READ` custom role privilege. Additionally, requires the Can View [16] scan template (policy) permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: was-v2-user-templates-search
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/sort'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - title: Single Filter
+                $ref: '#/components/schemas/AppliedFilters-UserTemplates'
+              - title: Multiple Filters
+                type: object
+                properties:
+                  AND:
+                    type: array
+                    description: An array of filters that must all be satisfied.
+                    items:
+                      $ref: '#/components/schemas/AppliedFilters-UserTemplates'
+                  OR:
+                    type: array
+                    description: An array of filters where at least one must be satisfied.
+                    items:
+                      $ref: '#/components/schemas/AppliedFilters-UserTemplates'
+      tags:
+      - Templates
+      responses:
+        '200':
+          description: Returns a list of user-defined templates.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - pagination
+                - items
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/PaginationResponse'
+                  items:
+                    type: array
+                    description: The list of user-defined templates.
+                    items:
+                      $ref: '#/components/schemas/UserTemplate'
+              examples:
+                response:
+                  value:
+                    pagination:
+                      total: 90
+                      offset: 0
+                      limit: 4
+                      sort:
+                      - name: name
+                        order: asc
+                      - name: created_at
+                        order: desc
+                      - name: updated_at
+                        order: desc
+                    items:
+                    - user_template_id: 0c539366-172d-49bd-9c3d-90a9947ea48e
+                      template_id: f93dfcb4-6eb2-4820-9b64-3dee8893a3f0
+                      created_at: '2020-06-11T15:07:41Z'
+                      updated_at: '2020-08-04T13:54:41.726Z'
+                      name: A1_WAS_scan
+                      description: null
+                      owner_id: ef22f2bf-db1b-4471-984f-9507dcc083e1
+                      container_id: 9f084368-f11e-4d69-be63-df5e2a0b2635
+                      default_permissions: no_access
+                      results_visibility: dashboard
+                      permissions: []
+                      user_permissions: configure
+                      is_shared: false
+                    - user_template_id: bb0e52de-99e5-45f3-bd3c-25ddb8e43f48
+                      template_id: f93dfcb4-6eb2-4820-9b64-3dee8893a3f0
+                      created_at: '2020-08-06T12:58:14.027Z'
+                      updated_at: '2020-08-06T12:58:14.027Z'
+                      name: another template
+                      description: things
+                      owner_id: 01c924ee-e6ab-4d55-b283-dffba6dcce4c
+                      container_id: 9f084368-f11e-4d69-be63-df5e2a0b2635
+                      default_permissions: no_access
+                      results_visibility: dashboard
+                      permissions: []
+                      user_permissions: configure
+                      is_shared: false
+                    - user_template_id: e9911b2e-1e8c-4c47-a4f5-a20b650250fa
+                      template_id: f93dfcb4-6eb2-4820-9b64-3dee8893a3f0
+                      created_at: '2020-08-06T13:43:09.815Z'
+                      updated_at: '2020-08-06T13:43:09.815Z'
+                      name: a whole new template
+                      description: null
+                      owner_id: 01c924ee-e6ab-4d55-b283-dffba6dcce4c
+                      container_id: 9f084368-f11e-4d69-be63-df5e2a0b2635
+                      default_permissions: no_access
+                      results_visibility: dashboard
+                      permissions: []
+                      user_permissions: configure
+                      is_shared: false
+                    - user_template_id: 2cb41447-4fe2-426c-8e43-454cf8f53f49
+                      template_id: f93dfcb4-6eb2-4820-9b64-3dee8893a3f0
+                      created_at: '2020-06-23T11:29:43.718Z'
+                      updated_at: '2020-07-27T20:18:28.369Z'
+                      name: blabla - mode
+                      description: null
+                      owner_id: 01c924ee-e6ab-4d55-b283-dffba6dcce4c
+                      container_id: 9f084368-f11e-4d69-be63-df5e2a0b2635
+                      default_permissions: no_access
+                      results_visibility: dashboard
+                      permissions:
+                      - entity: user
+                        entity_id: eb2b3caa-536f-421a-9aa4-c833677a6e9b
+                        level: configure
+                      user_permissions: configure
+                      is_shared: true
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /was/v2/user-templates/{user_template_id}:
+    parameters:
+    - in: path
+      name: user_template_id
+      required: true
+      description: The UUID of the user-defined template.
+      schema:
+        type: string
+        format: uuid
+    get:
+      summary: Get user-defined template details
+      description: Returns details for a user-defined template. User-defined templates can be used to define scan configurations.<div class="perms-callout">Requires either the Scan Operator [24] user role, the `WAS.SCAN_WAS.MANAGE` custom role privilege, or the `WAS.SCAN_WAS_USER_TEMPLATE.READ` custom role privilege. Additionally, requires the Can View [16] scan template (policy) permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: was-v2-user-templates-details
+      tags:
+      - Templates
+      responses:
+        '200':
+          description: Returns details for the specified user-defined template.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTemplate'
+        '400':
+          description: Returned if your request specifies an invalid UUID for a user-defined template.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: INVALID_ID_FORMAT
+                      reason: The provided ID of '10-ABC' must be UUID type
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Web App Scanning cannot find the specified user-defined template.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: NOT_FOUND
+                      reason: Resource with ID 'b29f198c-eac6-4107-b046-c621f542cd39' not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    put:
+      summary: Update user-defined template
+      description: Updates the specified user-defined template.<div class="perms-callout">Requires the Scan Manager [40] user role or the `WAS.SCAN_WAS_USER_TEMPLATE.MANAGE` custom role privilege. Additionally, requires the Can Edit [64] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: was-v2-user-templates-update
+      tags:
+      - Templates
+      requestBody:
+        description: Specifies the updates you want to make to a user-defined template.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserTemplateInput'
+            example:
+              name: user template
+              description: description
+              permissions: []
+              default_permissions: no_access
+              owner_id: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+              template_id: b223f18e-5a94-4e02-b560-77a4a8246cd3
+              results_visibility: dashboard
+              settings:
+                description: Security scan configuration for test applications.
+                timeout: 08:00:00
+                debug_mode: true
+                input_force: true
+                credentials:
+                  credential_ids: []
+                scope:
+                  option: all
+                  urls: []
+                  exclude_file_extensions: []
+                  exclude_path_patterns: []
+                  dom_depth_limit: 5
+                  directory_depth_limit: 10
+                  page_limit: 10000
+                  crawl_script: {}
+                  decompose_paths: false
+                  exclude_binaries: true
+                  auto_redundant_paths: 1
+                  graphql_introspection: true
+                browser:
+                  screen_width: 1600
+                  screen_height: 1200
+                  ignore_images: true
+                  job_timeout: 10000
+                  analysis: true
+                  pool_size: 2
+                http:
+                  response_max_size: 500000
+                  request_redirect_limit: 1
+                  user_agent: Nessus WAS/%v
+                  custom_user_agent: true
+                  request_headers: {}
+                  request_concurrency: 10
+                  request_timeout: 5000
+                chrome_script:
+                  finish_wait: 5000
+                  page_load_wait: 10000
+                  command_wait: 500
+                  disable_web_security: false
+                assessment:
+                  rfi_remote_url: http://rfi.nessus.org/rfi.txt
+                  dictionary: limited
+                  fingerprinting: true
+                  enable: true
+                  element_exclusions:
+                  - element_type: dom_element
+                    selector_type: text
+                    selector: string
+                audit:
+                  forms: false
+                  cookies: false
+                  ui_forms: false
+                  ui_inputs: false
+                  headers: false
+                  links: false
+                  parameter_names: false
+                  parameter_values: false
+                  jsons: false
+                  xmls: false
+                  cookies_extensively: true
+                  with_raw_payloads: true
+                  with_both_http_methods: true
+                  with_extra_parameter: true
+      responses:
+        '202':
+          description: Returned if Tenable Web App Scanning successfully updated the user-defined template.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTemplate'
+        '400':
+          description: Returned if your request specifies invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: INVALID_ID_FORMAT
+                      reason: The provided ID of '10-ABC' must be UUID type
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    delete:
+      summary: Delete user-defined template
+      description: Deletes the specified user-defined template. You cannot delete a user-defined template if scan configurations currently use the template. You must delete any scan configuration using the template prior to deleting the template. You can delete scan configurations with the [DELETE /was/v2/configs/{config_id}](ref:was-v2-config-delete) endpoint. <div class="perms-callout">Requires the Scan Manager [40] user role or the `WAS.SCAN_WAS_USER_TEMPLATE.MANAGE` custom role privilege. Additionally, requires the Can Edit [64] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: was-v2-user-templates-delete
+      tags:
+      - Templates
+      responses:
+        '202':
+          description: Returned if Tenable Web App Scanning successfully created the deletion job for the user-defined template.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specifies an invalid UUID for a user-defined template.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: INVALID_ID_FORMAT
+                      reason: The provided ID of '10-ABC' must be UUID type
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Web App Scanning cannot find the specified user-defined template.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: NOT_FOUND
+                      reason: Resource with ID 'b29f198c-eac6-4107-b046-c621f542cd39' not found
+        '409':
+          description: Returned if you attempt to delete a user-defined template still in use by a scan configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: NOT_ALLOWED
+                      reason: Can't delete template due to config '9ed690de-212f-4765-94c0-57922c20536a'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    ConfigSettings:
+      type: object
+      description: The scan configuration settings.
+      properties:
+        description:
+          type: string
+          example: Security scan configuration for Facebook applications.
+          description: The description of the scan configuration.
+        timeout:
+          type: string
+          pattern: ^\d{2}:\d{2}:\d{2}$
+          example: 08:00:00
+          description: The maximum duration the scan runs before it stops automatically. The maximum duration you can set for your overall scan max time is 99:59:59 (hours:minutes:seconds).
+        debug_mode:
+          description: Indicates whether scan debug mode is enabled (`true`) or disabled (`false`). Scan debug mode provides additional information to users.
+          type: boolean
+          example: true
+        input_force:
+          description: Indicates whether to force input (`true`) or not (`false`).
+          type: boolean
+        credentials:
+          $ref: '#/components/schemas/Credentials'
+        scope:
+          $ref: '#/components/schemas/ScopeSettings'
+        plugin:
+          $ref: '#/components/schemas/PluginSettings'
+        browser:
+          $ref: '#/components/schemas/BrowserSettings'
+        http:
+          $ref: '#/components/schemas/HttpSettings'
+        chrome_script:
+          $ref: '#/components/schemas/ChromeScript'
+        assessment:
+          $ref: '#/components/schemas/AssessmentSettings'
+        audit:
+          $ref: '#/components/schemas/AuditSettings'
+    UserTemplateInput:
+      type: object
+      required:
+      - name
+      - owner_id
+      - default_permissions
+      - results_visibility
+      - permissions
+      - template_id
+      - settings
+      properties:
+        name:
+          description: The name of the user-defined template.
+          type: string
+        description:
+          description: The description for the user-defined template.
+          type: string
+        owner_id:
+          description: The UUID of the owner of the user-defined template.
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+        default_permissions:
+          $ref: '#/components/schemas/PermissionLevel'
+        results_visibility:
+          $ref: '#/components/schemas/ResultsVisibility'
+        permissions:
+          description: The permissions for the user-defined template.
+          type: array
+          items:
+            $ref: '#/components/schemas/Permissions'
+        template_id:
+          description: Specifies the unique identifier (UUID) of the base template used to create the user-defined template.
+          type: string
+          format: uuid
+          example: 112f3e7f-d83a-4bba-b2c8-df2d22e2fa4c
+        settings:
+          $ref: '#/components/schemas/ConfigSettings'
+    PluginSettings:
+      type: object
+      description: The settings for enabling or disabling individual plugins and/or plugin families to customize your scan.
+      properties:
+        rate_limiter:
+          type: object
+          description: Optional parameters for limiting the rate at which HTTP requests are sent to the target web application.
+          properties:
+            requests_per_second:
+              type: integer
+              description: The maximum number of HTTP requests per second.
+              default: 25
+            autothrottle:
+              description: Indicates whether the scanner slows down the scan when network congestion is detected (`true`). The default value of this parameter is `true`.
+              type: boolean
+              default: true
+            timeout_threshold:
+              type: integer
+              description: The number of consecutive timeouts before Tenable Web App Scanning aborts the scan.
+              default: 100
+        mode:
+          type: string
+          example: disable
+          description: Indicates whether specific plugins and/or plugin families are enabled (`enable`) or disabled (`disable`) for the scan.
+        ids:
+          type: array
+          description: A list of plugin IDs.
+          items:
+            type: integer
+            description: The ID of the plugin.
+          example:
+          - 98000
+          - 98001
+        names:
+          type: array
+          description: A list of plugin names.
+          items:
+            type: string
+            description: The name of the plugin.
+          example:
+          - path_traversal
+        families:
+          type: array
+          description: A list of plugin families.
+          items:
+            type: string
+            description: The name of the plugin family.
+          example:
+          - web_servers
+          - csrf
+    AuditSettings:
+      description: The settings that allow the scan to audit elements other than the ones detected during crawling.
+      type: object
+      properties:
+        forms:
+          type: boolean
+          description: Indicates whether to scan for form vulnerabilities (`true`).
+          default: false
+        cookies:
+          type: boolean
+          description: Indicates whether to scan for cookie vulnerabilities (`true`).
+          default: false
+        ui_forms:
+          type: boolean
+          default: false
+          description: Indicates whether to scan input and button groups associated with JavaScript code (`true`).
+        ui_inputs:
+          type: boolean
+          description: Indicates whether to scan orphan input elements with associated DOM events (`true`).
+          default: false
+        headers:
+          type: boolean
+          description: Indicates whether to scan headers for vulnerabilities and insecure configurations (`true`); for example, missing X-Frame-Options.
+          default: false
+        links:
+          type: boolean
+          description: Indicates whether to scan links and their parameters in vulnerability checks (`true`).
+          default: false
+        parameter_names:
+          type: boolean
+          description: Indicates whether to perform extensive fuzzing of parameter names (`true`).
+          default: false
+        parameter_values:
+          type: boolean
+          description: Indicates whether to perform performs extensive fuzzing of parameter values (`true`).
+          default: false
+        jsons:
+          type: boolean
+          description: Indicates whether to scan JSON request data (`true`).
+          default: false
+        xmls:
+          type: boolean
+          description: Indicates whether to scan XML request data (`true`).
+          default: false
+        cookies_extensively:
+          description: Indicates whether an assessment is enabled (`true`) or disabled (`false`).
+          type: boolean
+        with_raw_payloads:
+          description: Indicates whether parameters should be tested with their raw payloads (`true`) or not (`false`).
+          type: boolean
+        with_both_http_methods:
+          description: Indicates if both GET and POST methods should be used during an assessment (`true`) or not (`false`).
+          type: boolean
+        with_extra_parameter:
+          description: Indicates whether to test non-existing parameters (`true`) or disabled (`false`).
+          type: boolean
+    UserTemplateResponse:
+      type: object
+      required:
+      - template_id
+      - name
+      - owner_id
+      - settings
+      - default_permissions
+      - results_visibility
+      - permissions
+      properties:
+        template_id:
+          description: The UUID of the Tenable-provided template on which the user-defined template is based.
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          description: The name of the user-defined template.
+          type: string
+        description:
+          description: The description for the user-defined template.
+          type: string
+        owner_id:
+          description: The UUID of the owner of the user-defined template.
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+        settings:
+          description: The restricted settings for the user-defined template. This is a free-form object as each template can define different parameters for a configuration.
+          type: object
+          readOnly: true
+        default_permissions:
+          $ref: '#/components/schemas/PermissionLevel'
+        results_visibility:
+          $ref: '#/components/schemas/ResultsVisibility'
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permissions'
+    ErrorResponse:
+      type: object
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
+      properties:
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
+    HttpSettings:
+      type: object
+      description: The HTTP request settings for the scan.
+      properties:
+        response_max_size:
+          type: integer
+          minimum: 1
+          default: 500000
+          description: The maximum load size for an audited page.
+        request_redirect_limit:
+          type: integer
+          minimum: 1
+          default: 1
+          description: The number of redirects the scan follows before it stops trying to crawl the page.
+        user_agent:
+          description: The user-agent header the scanner includes in HTTP requests to the web application.
+          type: string
+          default: Nessus WAS/%v
+        custom_user_agent:
+          description: Indicates whether the scanner includes the `user-agent` header in HTTP requests to the web application (`true`).
+          type: boolean
+        request_headers:
+          description: 'The custom headers the scanner includes in HTTP requests to the web application.
+
+
+            **Note:** If you specify a user-agent header value in this parameter, it overrides the `user_agent` parameter value.'
+          type: object
+        request_concurrency:
+          description: The maximum number of concurrent HTTP connections to the web application.
+          type: integer
+          default: 10
+        request_timeout:
+          type: integer
+          description: HTTP request timeout (in milliseconds).
+          default: 5000
+    Credentials:
+      type: object
+      description: The credentials the scanner uses to run an authenticated scan against the web application. For more information, see the managed credentials category in [Manage Credentials](doc:manage-credentials).
+      required:
+      - credential_ids
+      properties:
+        credential_ids:
+          type: array
+          description: A list of credentials UUIDs.
+          items:
+            type: string
+            format: uuid
+            description: The UUID of the credential.
+    AppliedFilters-UserTemplates:
+      type: object
+      description: A single filter to apply to the user-defined templates search.
+      properties:
+        field:
+          type: string
+          description: The name of the field you want to filter on. You can list available user-defined template filters with the [GET /was/v2/user-templates/filters](ref:was-v2-filters-user-templates-list) endpoint.
+          example: folder_name
+        operator:
+          type: string
+          description: The comparison operator to apply to the filter. You can find available comparison operators for the filter in the `operators` attribute of the objects returned by the [GET /was/v2/user-templates/filters](ref:was-v2-filters-user-templates-list) endpoint.
+          example: match
+        value:
+          type: string
+          description: The value to compare the given field to using the given operator. You can find valid values for the filter in the `control` attribute of the objects returned by the [GET /was/v2/user-templates/filters](ref:was-v2-filters-user-templates-list) endpoint.
+          example: My Scans
+    PermissionLevel:
+      description: The scan permissions level, as described in [Permissions](doc:permissions).
+      type: string
+      enum:
+      - no_access
+      - view
+      - control
+      - configure
+    InputErrorResponse:
+      type: object
+      required:
+      - code
+      - fields
+      description: Tenable Web App Scanning invalid input error response.
+      properties:
+        code:
+          type: string
+          description: The Tenable Web App Scanning error code. The code `INPUT_FORM_VIOLATION` is returned if your request body contains invalid input.
+        fields:
+          type: array
+          description: A list of fields that contain invalid input along with a message about the cause of the input error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning input error.
+            properties:
+              field:
+                type: string
+                description: The JSON path of the invalid field.
+              message_type:
+                type: string
+                description: "The type of input violation. Common input errors include:\n - `VALUE_MUST_BE_SPECIFIED`—Returned if a required body parameter is missing.\n - `VALUE_NOT_POSITIVE`—Returned if your input contains a negative integer when it should be positive.\n - `VALUE_IS_NEGATIVE`—Returned if your input contains a positive integer when it should be negative.\n - `VALUE_CANT_BE_CHANGED`—Returned if you attempted to change a value that cannot be changed.\n - `VALUE_MUST_BE_GREATER`—Returned if your input contains a value that is smaller than the minimum required lower bound.\n - `FIELD_CANT_BE_ADDED`—Returned if your input contains a field that can't be added.\n - `INVALID_TYPE`—Returned if your input contains an invalid type (ex. integer or string).\n - `INVALID_FORMAT`—Returned if your input contains an invalid format."
+                enum:
+                - VALUE_MUST_BE_SPECIFIED
+                - VALUE_NOT_POSITIVE
+                - VALUE_IS_NEGATIVE
+                - VALUE_CANT_BE_CHANGED
+                - VALUE_MUST_BE_GREATER
+                - FIELD_CANT_BE_ADDED
+                - INVALID_TYPE
+                - INVALID_FORMAT
+                - ERROR_MESSAGE
+              value:
+                description: Contains an error message describing the cause of the input validation error.
+                type: object
+    AssessmentSettings:
+      type: object
+      description: 'Assessment settings specify which web application elements you want the scanner to audit as it crawls your URLs. '
+      properties:
+        rfi_remote_url:
+          type: string
+          description: The URL of the file on a remote host to use for Remote File Inclusion (RFI) tests. By default, Tenable Web App Scanning uses a safe file hosted by Tenable for RFI testing. If the scanner cannot reach the internet, you can use an internally hosted file for more accurate RFI testing.
+          format: uri
+          default: http://rfi.nessus.org/rfi.txt
+        dictionary:
+          description: The type of dictionary to use when testing common and backup files. Possible values are `full` or `limited`.
+          type: string
+          enum:
+          - limited
+          - full
+          default: limited
+        fingerprinting:
+          description: Indicates whether fingerprinted should be enabled (`true`) or disabled (`false`).
+          type: boolean
+          default: true
+        enable:
+          description: Indicates whether an assessment is enabled (`true`) or disabled (`false`).
+          type: boolean
+        element_exclusions:
+          type: array
+          description: Element exclusions prevent scans from interacting with specific page elements (ex. logout buttons or forms) and their children. This setting is available for Scan, Overview, and PCI scan templates.
+          items:
+            type: object
+            properties:
+              element_type:
+                type: string
+                description: The type of element to exclude. Currently, only `dom_element` is supported.
+                enum:
+                - dom_element
+              selector_type:
+                type: string
+                description: Specifies the selector type. DOM elements can be selected based on either text values or CSS attributes. Use `text` for text contents or `attribute` for a CSS key and value pair.
+                enum:
+                - text
+                - attribute
+              selector:
+                description: If the `selector_type` is `text`, the selector value is a `string` (option 1). If the `selector_type` is `attribute`, the selector value is an object containing one key and value pair (option 2).
+                oneOf:
+                - type: string
+                - type: object
+                  description: 'An object containing one key-value pair, where the key is the CSS attribute name and the value is the attribute value. For example: `{"id": "logout"}`'
+                  example: '{"id": "logout"}'
+                  additionalProperties: true
+                  maxProperties: 1
+    PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/PaginationResponseSortObject'
+    Plugin:
+      type: object
+      description: The plugin properties.
+      required:
+      - plugin_id
+      - name
+      - family
+      properties:
+        plugin_id:
+          description: The ID of the plugin.
+          type: integer
+          example: 98100
+        name:
+          description: The name of the plugin.
+          type: string
+        family:
+          description: The name of the plugin family.
+          type: string
+    ConfigTemplate:
+      type: object
+      required:
+      - template_id
+      - name
+      - description
+      - timeout
+      - plugin_state
+      - scanner_types
+      - settings
+      - defaults
+      - plugins
+      properties:
+        template_id:
+          description: The UUID of the Tenable-provided template.
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          description: The name of the Tenable-provided template.
+          type: string
+          enum:
+          - scan
+          - overview
+          - pci
+          - ssl_tls
+          - config_audit
+          readOnly: true
+        description:
+          description: The description of the Tenable-provided template.
+          type: string
+          readOnly: true
+        plugin_state:
+          description: "Indicates whether the user of the Tenable-provided template has the ability to redefine the settings for the template. Possible values are: \n - `locked` -- You cannot modify the template. Tenable Web App Scanning rejects any request submitted with settings that differ from the defined template settings.\n - `open` -- You can modify the template without restriction"
+          type: string
+          enum:
+          - locked
+          - open
+          readOnly: true
+        scanner_types:
+          description: "Indicates which scanners you can use to run scans based on the Tenable-provided template. Possible values are: \n - `scanner` -- A single scanner running on premises in the client's own infrastructure or environment. \n - `container_group` -- A group of client scanners running on premises. \n - `cloud-group` -- A group of managed scanners running within Tenable's cloud infrastructure."
+          type: string
+          enum:
+          - scanner
+          - container_group
+          - cloud_group
+          readOnly: true
+        settings:
+          description: The restricted settings for the Tenable-provided template. This is a free-form object as each template can define different parameters for a configuration.
+          type: object
+          readOnly: true
+        defaults:
+          description: The default settings for this template.
+          type: object
+          readOnly: true
+        plugins:
+          description: An array of plugins available to the template.
+          type: array
+          items:
+            $ref: '#/components/schemas/Plugin'
+    BrowserSettings:
+      type: object
+      description: The settings for the virtual browser instance used by the scanner.
+      properties:
+        screen_width:
+          type: integer
+          description: The screen width (in pixels) of the browser embedded into the scanner.
+          default: 1600
+        screen_height:
+          type: integer
+          description: The screen height (in pixels) of the browser embedded into the scanner.
+          default: 1200
+        ignore_images:
+          type: boolean
+          description: Indicates whether the browser should crawl images on web pages (`false`) or ignore those images (`true`) . The default value of this parameter is `true`.
+          default: true
+        job_timeout:
+          type: integer
+          description: The browser timeout (in milliseconds).
+          default: 10000
+        analysis:
+          type: boolean
+          description: Indicates whether DOM page analysis should be enabled (`true`) or (`disabled`) during the scan.
+          default: true
+        pool_size:
+          type: integer
+          description: The number of browser instances used for the scan.
+    ScopeSettings:
+      type: object
+      description: The URLs and file types that you want to include or exclude from your scan.
+      properties:
+        option:
+          type: string
+          description: "Specifies how the scanner handles the URLs it finds during the application crawl. Options include:\n - all—Crawl all detected URLs.\n - paths—Limit crawling to specified URLs, siblings and child paths.\n - children—Limit crawling to specified URLs and child paths.\n - urls—Limit crawling to specified URLs."
+          enum:
+          - all
+          - paths
+          - children
+          - urls
+        urls:
+          type: array
+          description: A list of URLs to include in scan.
+          default: []
+          items:
+            type: string
+            format: uri
+            description: A URL to include in scan.
+        exclude_file_extensions:
+          type: array
+          description: A list of file extensions to exclude from scan.
+          default: []
+          items:
+            type: string
+            example:
+            - css
+            - js
+            - png
+            - jpeg
+            - gif
+            - pdf
+            - csv
+        exclude_path_patterns:
+          type: array
+          description: A list of URL path regex patterns to exclude from scan.
+          default: []
+          items:
+            type: string
+            example:
+            - logout
+            - secrets
+        dom_depth_limit:
+          type: integer
+          description: The maximum depth of HTML DOM elements to crawl.
+          minimum: 1
+          default: 5
+        directory_depth_limit:
+          type: integer
+          description: The maximum number of sub-directories to crawl.
+          minimum: 1
+          default: 10
+        page_limit:
+          type: integer
+          description: The maximum number of unique URLs to crawl.
+          minimum: 1
+          default: 10000
+        crawl_script:
+          type: object
+          description: Selenium crawl script for auditing specific parts of web application.
+        decompose_paths:
+          description: Indicates whether or not the scanner crawls additional URL paths (`true`). For example, if http://example.com/dir1/dir2/dir3/index.html is detected during a scan, then http://example.com/dir1/dir2/dir3/, http://example.com/dir1/dir2/, and http://example.com/dir1/ will be added to the queue.
+          type: boolean
+          default: false
+        exclude_binaries:
+          description: Indicates whether or not to exclude binaries from the assessment.
+          type: boolean
+        auto_redundant_paths:
+          description: Indicates the number of redundant paths to be assessed.
+          type: integer
+          minimum: 1
+        crawl_script_filename:
+          type: string
+          description: The name to use of for the Selenium crawl script. Must have a .side extension.
+        openapi_file:
+          type: string
+          format: base64
+          description: "A base64-encoded OpenAPI file describing the RESTful API that you want to scan. The file should be OpenAPI Specification (v2 or v3) compliant and represented in either JSON or YAML format. \n\nAlternatively, you can provide the OpenAPI specification as a URL via the `openapi_file_url` parameter."
+        openapi_filename:
+          type: string
+          description: The name to use for the base64-encoded OpenAPI file specified in the `openapi_file` parameter. The file extension must be `.json`, `.yaml`, or `.yml`.
+        openapi_file_url:
+          type: string
+          description: "The URL for the OpenAPI specification describing the RESTful API that you want to scan. The URL must start with `http://` or `https://` and end with `.json`, `.yaml`, or `.yml`. \n\nAlternatively, you can provide the OpenAPI specification as a base64-encoded file via the `openapi_file` parameter."
+        graphql_file:
+          type: string
+          format: base64
+          description: "A base64-encoded GraphQL SDL file that defines the API schema to scan. The file must comply with the GraphQL SDL specification. \n\nAlternatively, you can provide the SDL file via a URL using the `graphql_file_url` parameter. \n\n**Note:** The maximum supported file size is 1 MB. For larger schemas, host the file externally and reference it with the `graphql_file_url` parameter."
+        graphql_filename:
+          type: string
+          description: The filename to assign to the GraphQL SDL file provided in the `graphql_file` parameter. The extension must be `.graphql`.
+        graphql_file_url:
+          type: string
+          description: 'A URL to a GraphQL SDL file that defines the API schema to scan. The URL must begin with `http://` or `https://` and end with `.graphql`.
+
+
+            Alternatively, you can supply the SDL file directly as a base64-encoded string using the `graphql_file` parameter.'
+        graphql_introspection:
+          type: boolean
+          description: Specifies whether the WAS scanner should perform a GraphQL introspection query to automatically generate the schema for the target API.
+        soap_file:
+          type: string
+          format: base64
+          description: "A base64-encoded WSDL v1.1 file that defines the API schema to scan. The file must comply with the [WSDL v1.1 specification](https://www.w3.org/TR/2001/NOTE-wsdl-20010315). \n\nAlternatively, you can provide the WSDL file via a URL using the `soap_file_url` parameter. \n\n**Note:** The maximum supported file size is 1 MB. For larger schemas, host the file externally and reference it with the `soap_file_url` parameter."
+        soap_filename:
+          type: string
+          description: The filename to assign to the WSDL file provided in the `soap_file` parameter. The filename must end in `.wsdl`, `.xml`, or `/wsdl/`.
+        soap_file_url:
+          type: string
+          description: "A URL pointing to a WSDL v1.1 file that defines the API schema to scan. The URL must start with `http://` or `https://` and end with `.wsdl`, `.xml`, or `/wsdl/`. \n\nAlternatively, you can provide the WSDL file as a base64-encoded string via the `soap_file` parameter."
+    PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    UserTemplate:
+      type: object
+      required:
+      - user_template_id
+      - container_id
+      - data
+      properties:
+        user_template_id:
+          description: The UUID of the user-defined template resource.
+          type: string
+          format: uuid
+          readOnly: true
+        container_id:
+          description: The UUID of your organization's Tenable Web App Scanning instance.
+          type: string
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+        data:
+          $ref: '#/components/schemas/UserTemplateResponse'
+    ChromeScript:
+      type: object
+      properties:
+        finish_wait:
+          description: The time (in milliseconds) that the scanner waits for the Selenium script to complete before the browser loads any remaining contents.
+          type: integer
+          default: 5000
+        page_load_wait:
+          description: The time (in milliseconds) that page rendering is delayed during the Selenium authentication process. It is recommended to wait for some time if a page is known to take time before its contents are rendered.
+          type: integer
+          default: 10000
+        command_wait:
+          description: The time (in milliseconds) to wait after running each command in the Selenium script.
+          type: integer
+          default: 500
+        disable_web_security:
+          description: Disables enforcement of CORS and the Same-Origin Policy in the browser.
+          type: boolean
+          default: false
+    Permissions:
+      type: object
+      required:
+      - entity
+      - entity_id
+      - level
+      properties:
+        entity:
+          description: 'The type of permissions object: `user` (permissions for an individual user) or `group` (permissions for a user group).'
+          type: string
+          enum:
+          - user
+          - group
+        entity_id:
+          description: The UUID of the user or group granted the specified permissions.
+          type: string
+          format: uuid
+        level:
+          description: The scan permissions level, as described in [Permissions](doc:permissions).
+          $ref: '#/components/schemas/PermissionLevel'
+        permissions_id:
+          description: The UUID of the permissions object.
+          type: string
+          format: uuid
+          deprecated: true
+    ResultsVisibility:
+      description: The visibility of the results (private or dashboard).
+      type: string
+      default: dashboard
+      enum:
+      - private
+      - dashboard
+  parameters:
+    sort:
+      description: 'The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.
+
+
+        If you specify multiple fields, the fields must be separated by commas. For example, `name:desc,created_at:asc` would first sort results by the `name` field in descending order and then by the `created_at` field in ascending order.'
+      example: last_seen:desc,ipv4:asc
+      in: query
+      name: sort
+      required: false
+      schema:
+        type: string
+    offset:
+      description: The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`.
+      in: query
+      name: offset
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+    limit:
+      description: The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses.
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 200
+        default: 10
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

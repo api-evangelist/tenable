@@ -1,0 +1,300 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Server API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Server
+  x-displayName: Server
+paths:
+  /server/status:
+    get:
+      summary: Get server status
+      description: Gets the server status.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: server-status
+      tags:
+      - Server
+      responses:
+        '200':
+          description: "Returns the server status. Status values can include:\n - loading\n - ready\n - corrupt-db\n - feed-expired\n - eval-expired\n - locked\n - register\n - register-locked\n - download-failed\n - feed-error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  code:
+                    type: integer
+              examples:
+                response:
+                  value:
+                    code: 200
+                    status: ready
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returns the server status. Indicates a session destroy is required.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 503
+                    error: Service Unavailable
+                    message: Please wait a moment and try your request again.
+      security:
+      - server_cloud: []
+  /server/properties:
+    get:
+      summary: List server properties
+      description: Lists the server version and other properties.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: server-properties
+      tags:
+      - Server
+      responses:
+        '200':
+          description: Returns the server properties.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  capabilities:
+                    type: object
+                  enterprise:
+                    type: boolean
+                  expiration:
+                    type: integer
+                  expiration_time:
+                    type: integer
+                  idle_timeout:
+                    type: integer
+                  license:
+                    type: object
+                  loaded_plugin_set:
+                    type: string
+                  login_banner:
+                    type: boolean
+                  nessus_type:
+                    type: string
+                  nessus_ui_version:
+                    type: string
+                  notifications:
+                    type: array
+                    items:
+                      type: string
+                  plugin_set:
+                    type: string
+                  scanner_boottime:
+                    type: integer
+                  server_version:
+                    type: string
+                  server_uuid:
+                    type: string
+                  update:
+                    type: object
+                    properties:
+                      href:
+                        type: string
+                      new_version:
+                        type: integer
+                      restart:
+                        type: integer
+                  analytics:
+                    type: object
+                  limitEnabled:
+                    type: boolean
+                  msp:
+                    type: boolean
+                  server_build:
+                    type: string
+                  force_ui_reload:
+                    type: boolean
+                  nessus_ui_build:
+                    type: string
+                  container_db_version:
+                    type: string
+              examples:
+                response:
+                  value:
+                    limitEnabled: false
+                    region: US East
+                    loaded_plugin_set: '201812271241'
+                    server_uuid: b6a6d233-9f14-4ce9-b4cf-7440e027cf5c27789b39c292efc6
+                    update:
+                      href: null
+                      new_version: 0
+                      restart: 0
+                    expiration: 1551160800
+                    nessus_ui_version: 11.0.52
+                    nessus_type: Nessus Cloud
+                    notifications: []
+                    expiration_time: 60
+                    license:
+                      enterprise_pause: false
+                      expiration_date: 1551160800
+                      ips: 1024
+                      agents: 512
+                      users: 10
+                      scanners: 2
+                      evaluation: false
+                      scanners_used: 0
+                      agents_used: 0
+                      apps:
+                        was:
+                          mode: eval
+                          expiration_date: 1549299101
+                    enterprise: true
+                    analytics:
+                      key: 8fbd8613-075b-4dff-99c9-ea5decc0b7cf
+                      enabled: true
+                      site_id: us-2b
+                    msp: true
+                    server_build: C20023
+                    force_ui_reload: true
+                    capabilities:
+                      multi_user: full
+                      multi_scanner: true
+                      report_email_config: true
+                      two_factor:
+                        twilio: true
+                        smtp: false
+                    plugin_set: '201812271241'
+                    idle_timeout: '30'
+                    nessus_ui_build: '161'
+                    scanner_boottime: 1545191736
+                    evaluation:
+                      limitEnabled: true
+                      targets: 25
+                    container_db_version: 10.43.0
+                    login_banner: null
+                    server_version: 6.9.1
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - server_cloud: []
+components:
+  schemas:
+    server_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

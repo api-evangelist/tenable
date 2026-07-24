@@ -1,0 +1,813 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Agent Groups API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Agent Groups
+  x-displayName: Agent Groups
+paths:
+  /scanners/null/agent-groups:
+    post:
+      summary: Create agent group
+      description: Creates an agent group.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.CREATE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: agent-groups-create
+      tags:
+      - Agent Groups
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Specifies the name of the agent group.
+              required:
+              - name
+      responses:
+        '200':
+          description: Returned if the agent group has been created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_group'
+              examples:
+                response:
+                  value:
+                    id: 106592
+                    uuid: 9bd87b50-7349-4a52-8a41-573b9a4b9bb6
+                    name: Western Region
+                    creation_date: 1544455100
+                    last_modification_date: 1544455100
+                    timestamp: 1544455100
+                    shared: 0
+                    owner: system
+                    owner_id: 1
+                    owner_name: system
+                    owner_uuid: 1bd703af-b2aa-4a82-ad8d-b883381a873f
+                    user_permissions: 0
+                    agents_count: 0
+        '400':
+          description: Returned if your request message contains an invalid parameter.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create an agent group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - agent-groups_cloud: []
+    get:
+      summary: List agent groups
+      description: Lists all agent groups.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: agent-groups-list
+      tags:
+      - Agent Groups
+      responses:
+        '200':
+          description: Returned if the list of agent groups was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_groups'
+              examples:
+                response:
+                  value:
+                    groups:
+                    - id: 106592
+                      uuid: 9bd87b50-7349-4a52-8a41-573b9a4b9bb6
+                      name: slibs
+                      creation_date: 1544455100
+                      last_modification_date: 1544455100
+                      timestamp: 1544455100
+                      shared: 1
+                      owner: system
+                      owner_id: 1
+                      owner_name: system
+                      owner_uuid: 1bd703af-b2aa-4a82-ad8d-b883381a873f
+                      user_permissions: 128
+                      agents_count: 0
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the list.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - agent-groups_cloud: []
+  /scanners/null/agent-groups/{group_id}:
+    get:
+      summary: Get agent group details
+      description: Retrieves details for the specified agent group, including the agent records that belong to the group. You can apply filtering, sorting, or pagination to the agent records.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: agent-groups-details
+      tags:
+      - Agent Groups
+      parameters:
+      - description: Specifies the ID or UUID of the agent group to query. You can retrieve the agent group ID or UUID by using the [List agent groups](ref:agent-groups-list) endpoint.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: string
+      - description: Specifies a filter condition in the `field:operator:value` format. For example, `field1:match:sometext` matches any records where the value of `field1` contains `sometext`. You can specify multiple `f` parameters.
+        required: false
+        name: f
+        in: query
+        schema:
+          type: string
+      - description: Specifies whether an `and` or `or` condition is applied when multiple `f` parameters are present. If the filter type is `and`, a record is only returned if all filters match. If the filter type is `or`, a record is returned if any filter matches.
+        required: false
+        name: ft
+        in: query
+        schema:
+          type: string
+          enum:
+          - and
+          - or
+      - description: Specifies a wildcard filter string to match against multiple fields of a record simultaneously. If any supported `wildcard_fields` value matches the filter string, the record matches the wildcard filter. For a record to be returned, it must pass the wildcard filter (if present) AND all standard filters. For example, `w=wild&f=field1:match:one&f=field2:match:two&ft=or` returns records where any supported wildcard field contains `wild`, AND either `field1` contains `one` or `field2` contains `two`.
+        required: false
+        name: w
+        in: query
+        schema:
+          type: string
+      - description: Specifies a comma-separated subset of `wildcard_fields` to search when applying the wildcard filter. For example, `field1,field2`. If `w` is provided but `wf` is omitted, the system searches all supported `wildcard_fields` against the wildcard filter text.
+        required: false
+        name: wf
+        in: query
+        schema:
+          type: string
+      - description: Specifies the number of records to retrieve. If omitted, the system uses the default value of `50`.
+        required: false
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 50
+          minimum: 1
+          maximum: 5000
+      - description: Specifies the starting record to retrieve. If omitted, the system uses the default value of `0`.
+        required: false
+        name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - description: 'Specifies the field and order used to sort the results, in the format `field:order`. The order must be `asc` (ascending) or `desc` (descending). For example, `name:desc` sorts results by the `name` field in descending order.
+
+
+          To sort by multiple fields, separate each field:order pair with a comma. For example, `name:desc,creation_date:asc` sorts first by `name` descending, then by `creation_date` ascending.
+
+
+          **Note:** Sort can only be applied to sortable fields specified by the filter capabilities, and the number of sort columns cannot exceed the `max_sort_fields` value specified by the filter capabilities.'
+        required: false
+        name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the agent group details were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_group'
+              examples:
+                response:
+                  value:
+                    id: 106592
+                    uuid: 9bd87b50-7349-4a52-8a41-573b9a4b9bb6
+                    name: Western Region
+                    creation_date: 1544455100
+                    last_modification_date: 1544455100
+                    timestamp: 1544455100
+                    shared: 1
+                    owner: system
+                    owner_id: 10621200
+                    owner_name: system
+                    owner_uuid: 1bd703af-b2aa-4a82-ad8d-b883381a873f
+                    user_permissions: 128
+                    agents_count: 1
+                    agents:
+                    - id: 9176838
+                      uuid: fdb1812c-2423-424d-9b67-5511e9bf0714
+                      name: my.new-hostname.server
+                      platform: LINUX
+                      distro: es8-x86-64
+                      ip: 172.26.102.78
+                      last_scanned: 1722961087
+                      plugin_feed_id: '202408191220'
+                      core_build: '2391'
+                      core_version: 10.8.0
+                      linked_on: 1722960266
+                      last_connect: 1724170973
+                      status: 'off'
+                      groups:
+                      - name: Western Region
+                        id: 106592
+                      supports_remote_logs: false
+                      network_uuid: 00000000-0000-0000-0000-000000000000
+                      network_name: Default
+                      profile_uuid: 00000000-0000-0000-0000-000000000000
+                      profile_name: Default
+                      supports_remote_settings: true
+                      health: 20
+                      health_state_name: CRITICAL
+                      fredi_status: false
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the agent group.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified agent group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - agent-groups_cloud: []
+    put:
+      summary: Update agent group name
+      description: Changes the name of the agent group.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.EDIT` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: agent-groups-configure
+      tags:
+      - Agent Groups
+      parameters:
+      - description: Specifies the ID of the agent group to change.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Specifies the new name for the agent group.
+              required:
+              - name
+      responses:
+        '200':
+          description: Returned if the configuration was changed.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value:
+                    groups:
+                    - owner_uuid: 2e3a71fc-2442-4024-9fee-085cc61750cb
+                      created: 1595001140400
+                      modified: 1595001217809
+                      container_uuid: d6c3e937-4467-4171-92d8-debf5ef3c917
+                      uuid: e069b272-ed76-487a-8cf9-1c32836698b7
+                      id: 183709
+                      name: NewName
+                      agents_count: 0
+                      default_permissions: 16
+                      shared: 1
+                      user_permissions: 128
+                      created_in_seconds: 1595001140
+                      modified_in_seconds: 1595001217
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified agent group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - agent-groups_cloud: []
+    delete:
+      summary: Delete agent group
+      description: Deletes an agent group.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.DELETE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: agent-groups-delete
+      tags:
+      - Agent Groups
+      parameters:
+      - description: Specifies the ID of the agent group to delete.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the agent group has been successfully deleted.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified agent group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - agent-groups_cloud: []
+  /scanners/null/agent-groups/{group_id}/agents/{agent_id}:
+    put:
+      summary: Add agent to group
+      description: Adds an agent to the agent group. You can use the [GET /scanners/{scanner_id}/agent-groups/{group_id}](ref:agent-groups-details) endpoint to verify that the agent was added to the specified agent group.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: agent-groups-add-agent
+      tags:
+      - Agent Groups
+      parameters:
+      - description: Specifies the ID of the agent group.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: Specifies the ID of the agent to add.
+        required: true
+        name: agent_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the agent was added to the group.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified agent group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - agent-groups_cloud: []
+    delete:
+      summary: Remove agent from group
+      description: Removes an agent from the specified agent group.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: agent-groups-delete-agent
+      tags:
+      - Agent Groups
+      parameters:
+      - description: Specifies the ID of the agent group.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: Specifies the ID of the agent to remove.
+        required: true
+        name: agent_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the agent has been successfully removed from the agent group.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified agent.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - agent-groups_cloud: []
+components:
+  schemas:
+    agent-groups_groups:
+      type: object
+      properties:
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/agent-groups_group'
+    agent-groups_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    agent-groups_response-list-agents:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of the agent.
+        uuid:
+          type: string
+          description: The UUID of the agent. This value corresponds to the ID of the asset where the agent is installed. You can use this property to match agent data to asset data.
+        name:
+          type: string
+          description: The name of the agent.
+        platform:
+          type: string
+          description: The platform of the agent.
+        distro:
+          type: string
+          description: The agent software distribution.
+        ip:
+          type: string
+          description: The IP address of the agent.
+        last_scanned:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the agent last scanned the asset.
+        plugin_feed_id:
+          type: string
+          description: The currently loaded plugin set of the agent (null if the agent has no plugin set loaded).
+        core_build:
+          type: string
+          description: The build number for the agent.
+        core_version:
+          type: string
+          description: The build version for the agent.
+        linked_on:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the link from Tenable Vulnerability Management to the agent was established.
+        last_connect:
+          type: integer
+          format: int64
+          description: The Unix timestamp indicating the date and time when the agent last communicated with Tenable Vulnerability Management.
+        status:
+          type: string
+          description: 'The current status of the agent. Possible statuses are: <ul><li>`on`—The agent has connected recently and is ready to scan.</li><li>`off`—The agent has not been seen recently and should be considered offline.</li><li>`init`—The agent is online, but it is still processing plugin updates and is not ready to scan.</li><ul>'
+          enum:
+          - 'on'
+          - 'off'
+          - init
+        groups:
+          description: 'An array of groups to which the agent belongs. Groups are returned in the form {"name": "group name", "id": "group id"}.'
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the agent group to which the agent belongs.
+              id:
+                type: integer
+                description: The unique ID of the agent group to which the agent belongs.
+        aws_public_ipv4:
+          type: string
+          description: The public IPv4 address of the AWS instance where the agent is installed.
+        aws_public_hostname:
+          type: string
+          description: The public hostname of the AWS instance where the agent is installed.
+        aws_instance_id:
+          type: string
+          description: The instance ID of the AWS instance where the agent is installed.
+        aws_account_id:
+          type: string
+          description: The UUID for the AWS account that created the virtual machine instance. This attribute only appears for Amazon EC2 instances.
+        supports_remote_logs:
+          type: boolean
+          description: Indicates whether or not the agent supports remote logs.
+        network_uuid:
+          type: string
+          description: The UUID of the network that the agent belongs to.
+        network_name:
+          type: string
+          description: The name of the network that the agent belongs to.
+        profile_uuid:
+          type: string
+          description: The UUID of the agent profile that the agent belongs to.
+        profile_name:
+          type: string
+          description: The name of the profile that the agent belongs to.
+        supports_remote_settings:
+          type: boolean
+          description: Indicates whether or not the agent supports remote settings.
+        asset_uuid:
+          type: string
+          description: The UUID of the asset that the agent is linked to.
+        health:
+          type: integer
+          description: The numeric representation of the agent health event's status. `0` indicates a `HEALTHY` status, `10` indicates a `WARNING` status, `20` indicates a `CRITICAL` status, `30` indicates a `SAFE MODE` status, and `999` or `NULL` indicates an `UNKNOWN` status.
+        health_state_name:
+          type: string
+          description: The agent's current health status (`HEALTHY`, `WARNING`, `CRITICAL`, `SAFE MODE`, or `UNKNOWN`).
+        safe_mode:
+          type: integer
+          description: The numeric representation of the agent's safe mode status. `0` indicates that safe mode is disabled and any value greater than `0` indicates that safe mode is enabled.
+        last_safe_mode:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when safe mode was last modified on the agent.
+        fredi_status:
+          type: boolean
+          description: Indicates whether the agent is enabled with continuous assessment scanning via an agent profile.
+    agent-groups_group:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of the agent group.
+        uuid:
+          type: string
+          description: The UUID of the agent group.
+        name:
+          type: string
+          description: The name of the agent group.
+        creation_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the agent group was created.
+        last_modification_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the agent group was last modified.
+        timestamp:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the agent group was last modified.
+        shared:
+          type: integer
+          description: Indicates whether or not the agent group is shared.
+        owner:
+          type: string
+          description: The username for the owner of the agent group.
+        owner_id:
+          type: integer
+          description: The unique ID of the owner of the agent group.
+        owner_name:
+          type: string
+          description: The name of the owner of the agent group.
+        owner_uuid:
+          type: string
+          description: The UUID of the owner of the agent group.
+        user_permissions:
+          type: integer
+          description: The sharing permissions for the agent group.
+        agents_count:
+          type: integer
+          description: The number of agents in the group.
+        agents:
+          $ref: '#/components/schemas/agent-groups_response-list-agents'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

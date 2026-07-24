@@ -1,0 +1,2048 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Recast Rules API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Recast Rules
+  x-displayName: Recast Rules
+paths:
+  /v1/recast/rules:
+    post:
+      summary: Create recast rule
+      description: 'Creates a new recast or accept rule. <div class="perms-callout">Requires the Administrator [64] user role or one of the following custom role privileges: `VM.VM_RECAST.VM_RECAST.CREATE` for Vulnerability Management or `WAS.RECAST_RULE.MANAGE` for Web App Scanning. See [Roles](doc:roles).</div>'
+      operationId: recast-rules-create
+      tags:
+      - Recast Rules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/recast-rules_Request-Create-Recast-Rule'
+            examples:
+              request:
+                value:
+                  rule_name: R1-CVE-2015-9876
+                  description: description1
+                  rule_value:
+                    action: RECAST
+                    severity: '1'
+                    original_severity: '0'
+                  resource_type: HOST
+                  filter:
+                    and:
+                    - property: asset.name
+                      operator: eq
+                      value:
+                      - win-2ovr3hh18lv
+                    - property: definition.cve
+                      operator: eq
+                      value:
+                      - CVE-2015-9876
+                  expires_at: '2025-11-15T23:42:45Z'
+      responses:
+        '200':
+          description: Returned if the recast rule was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_Rule-Object'
+              examples:
+                response:
+                  value:
+                    rule_value:
+                      action: RECAST
+                      false_positive: false
+                      severity: LOW
+                      original_severity: MEDIUM
+                    rule_name: test1
+                    description: description1
+                    rule_id: 810207f8-a9de-4bc8-8b7c-3f149b12ec94
+                    container_id: 1cb2b875-1dc7-4fdc-98ef-527b41be853c
+                    created_by: f9975077-7f1e-4be4-b2e4-e1171d17af1a
+                    created_at: '2025-08-26T19:11:32.052550334Z'
+                    expires_at: '2025-11-15T23:42:45Z'
+                    resource_type: HOST
+                    filter:
+                      and:
+                      - property: asset.name
+                        operator: eq
+                        value:
+                        - win-2ovr3hh18lv
+                      - property: definition.id
+                        operator: eq
+                        value: '10114'
+                      - property: port
+                        operator: eq
+                        value: 8080
+                      - property: definition.cve
+                        operator: eq
+                        value:
+                        - CVE-2015-9876
+                    disabled_details:
+                      disabled: false
+        '400':
+          description: Returned if your request specified invalid parameters, if your request was improperly formatted, or if you attempted to create a duplicate rule.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create recast rules.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - recast-rules_cloud: []
+  /v1/recast/rules/search:
+    post:
+      summary: Search recast rules
+      description: 'Searches for rules that match the requested criteria.<div class="perms-callout">Requires the Administrator [64] user role or one of the following custom role privileges: `VM.VM_RECAST.VM_RECAST.READ` for Vulnerability Management or `WAS.RECAST_RULE.READ` for Web App Scanning. See [Roles](doc:roles).</div>'
+      operationId: recast-rules-search
+      tags:
+      - Recast Rules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resource_type:
+                  description: The type of findings targeted by the recast rules to search for. Supported values are `HOST`, `HOST_AUDIT`, and `WEBAPP`.
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                    - HOST
+                    - HOST_AUDIT
+                    - WEBAPP
+                filter:
+                  $ref: '#/components/schemas/recast-rules_recastFilter'
+                limit:
+                  type: integer
+                  minimum: 1
+                  maximum: 500
+                  default: 100
+                  description: The number of records to retrieve. If this parameter is omitted, Tenable uses the default value of `100`. The minimum value is `1`, and the maximum value is `500`.
+                sort:
+                  description: The property you want to use to sort the results by along with the sort order.
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/recast-rules_recastSortObject'
+                next:
+                  type: string
+                  description: Specifies the token used to retrieve the next page of results for cursor-based pagination. For the initial request, omit this parameter or set it to `null` to return the first page. For subsequent requests, set this parameter to the exact string value returned in the `next` response property of the previous page. If the `next` response property evaluates to `null`, no additional pages are available.
+            examples:
+              request:
+                value:
+                  limit: 200
+                  filter:
+                    and:
+                    - property: original_severity
+                      operator: eq
+                      value:
+                      - CRITICAL
+                  resource_type:
+                  - HOST
+                  sort:
+                  - property: severity
+                    order: asc
+      responses:
+        '200':
+          description: Returned if the search results were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_Response-Recast-Search'
+              examples:
+                response:
+                  value:
+                    rules:
+                    - rule_value:
+                        action: RECAST
+                        false_positive: false
+                        severity: MEDIUM
+                        original_severity: HIGH
+                      rule_name: 'Recast - Plugin ID: 123642 - Created: 2023-03-14'
+                      rule_id: df57ac2f-c6f9-4107-a78e-1165af4396e6
+                      container_id: 3336dfd2-2473-49f3-b405-b91bdd57bf00
+                      created_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      updated_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      created_at: '2023-03-14T08:17:48Z'
+                      expires_at: '2025-11-15T23:42:45Z'
+                      updated_at: '2025-03-03T14:18:07.627099Z'
+                      last_processed_at: '2025-06-04T13:42:28.378701Z'
+                      resource_type: HOST
+                      filter:
+                        and:
+                        - value: '123642'
+                          operator: eq
+                          property: definition.id
+                      disabled_details:
+                        disabled: false
+                    - rule_value:
+                        action: RECAST
+                        false_positive: false
+                        severity: LOW
+                        original_severity: HIGH
+                      rule_name: 'Recast - Plugin ID: 123444 - Created: 2023-03-14'
+                      rule_id: 3f328986-a1f6-47a2-8234-868af9c376dc
+                      container_id: 3336dfd2-2473-49f3-b405-b91bdd57bf00
+                      created_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      updated_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      created_at: '2023-03-14T09:00:27Z'
+                      expires_at: '2025-11-15T23:42:45Z'
+                      updated_at: '2025-03-03T14:18:07.614102Z'
+                      last_processed_at: '2025-06-04T13:42:28.486107Z'
+                      resource_type: HOST
+                      filter:
+                        and:
+                        - or:
+                          - value:
+                            - 198.51.100.1-198.51.100.255
+                            operator: eq
+                            property: asset.ipv4_addresses
+                          - value:
+                            - thishouse.com
+                            operator: eq
+                            property: asset.name
+                          - value:
+                            - 2001:db8::/32
+                            operator: eq
+                            property: asset.ipv6_addresses
+                        - value: '123444'
+                          operator: eq
+                          property: definition.id
+                      disabled_details:
+                        disabled: false
+                    - rule_value:
+                        action: RECAST
+                        false_positive: false
+                        severity: LOW
+                        original_severity: MEDIUM
+                      rule_name: 'Recast - Plugin ID: 111222 - Created: 2023-03-14'
+                      rule_id: c431172a-3543-44f5-8fe8-6ff7bbb5cfdb
+                      container_id: 3336dfd2-2473-49f3-b405-b91bdd57bf00
+                      created_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      updated_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      created_at: '2023-03-14T09:33:50Z'
+                      expires_at: '2025-11-15T23:42:45Z'
+                      updated_at: '2025-03-03T14:18:07.620698Z'
+                      last_processed_at: '2025-06-04T13:42:28.331125Z'
+                      resource_type: HOST
+                      filter:
+                        and:
+                        - or:
+                          - value:
+                            - 0.0.0.0-255.255.255.255
+                            operator: eq
+                            property: asset.ipv4_addresses
+                        - value: '111222'
+                          operator: eq
+                          property: definition.id
+                      disabled_details:
+                        disabled: false
+                    - rule_value:
+                        action: CHANGE_RESULT
+                        comment: Added a comment
+                        false_positive: false
+                        compliance_result: WARNING
+                      rule_name: 'Recast - Audit File: Check 98 - Created: 2023-04-07'
+                      rule_id: bd4edc0c-cfc7-4abb-bae1-3c7e726a1521
+                      container_id: 3336dfd2-2473-49f3-b405-b91bdd57bf00
+                      created_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      updated_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      created_at: '2023-04-07T08:10:53.384754Z'
+                      expires_at: '2025-11-15T23:42:45Z'
+                      updated_at: '2023-04-07T10:36:12.540366Z'
+                      last_processed_at: '2025-06-04T10:12:27.405400Z'
+                      resource_type: HOST_AUDIT
+                      filter:
+                        and:
+                        - value: faker.audit 98
+                          operator: eq
+                          property: compliance.audit_file
+                        - value: Check 98
+                          operator: eq
+                          property: compliance.audit_name
+                        - value: FAILED
+                          operator: eq
+                          property: original_compliance_result
+                      disabled_details:
+                        disabled: true
+                        disabled_at: '2025-11-13T16:37:19.712092Z'
+                        disabled_by: 179e0893-e9cd-481a-993c-df973235bdfa
+                    - rule_value:
+                        action: CHANGE_RESULT
+                        false_positive: false
+                        compliance_result: WARNING
+                      rule_name: 'Recast - Audit File: Check 97 - Created: 2023-04-11'
+                      rule_id: 63d87097-976a-4761-b139-9689c16c0963
+                      container_id: 3336dfd2-2473-49f3-b405-b91bdd57bf00
+                      created_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      updated_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      created_at: '2023-04-11T09:11:46.610317Z'
+                      expires_at: '2025-11-15T23:42:45Z'
+                      updated_at: '2023-04-11T09:11:46.612425Z'
+                      last_processed_at: '2025-06-04T13:42:42.148130Z'
+                      resource_type: HOST_AUDIT
+                      filter:
+                        and:
+                        - value: faker.audit 97
+                          operator: eq
+                          property: compliance.audit_file
+                        - value: Check 97
+                          operator: eq
+                          property: compliance.audit_name
+                        - value: FAILED
+                          operator: eq
+                          property: original_compliance_result
+                      disabled_details:
+                        disabled: true
+                        disabled_at: '2025-11-14T23:42:45Z'
+                        disabled_reason: Rule Expiration
+                    - rule_value:
+                        action: CHANGE_RESULT
+                        false_positive: false
+                        compliance_result: WARNING
+                      rule_name: 'Recast - Audit File: Check 96 - Created: 2023-04-11'
+                      rule_id: d75b76a3-3af2-4f0d-8cec-d7fb43bd9a87
+                      container_id: 3336dfd2-2473-49f3-b405-b91bdd57bf00
+                      created_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      updated_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      created_at: '2023-04-11T14:35:55.974315Z'
+                      expires_at: '2025-11-15T23:42:45Z'
+                      updated_at: '2023-04-11T14:35:55.975352Z'
+                      last_processed_at: '2025-06-04T13:42:42.107976Z'
+                      resource_type: HOST_AUDIT
+                      filter:
+                        and:
+                        - value: faker.audit 96
+                          operator: eq
+                          property: compliance.audit_file
+                        - value: Check 96
+                          operator: eq
+                          property: compliance.audit_name
+                        - value: FAILED
+                          operator: eq
+                          property: original_compliance_result
+                      disabled_details:
+                        disabled: true
+                        disabled_at: '2025-11-13T16:37:19.712092Z'
+                        disabled_by: 179e0893-e9cd-481a-993c-df973235bdfa
+                    - rule_value:
+                        action: CHANGE_RESULT
+                        comment: ''
+                        false_positive: false
+                        compliance_result: WARNING
+                      rule_name: 'Recast - Audit File: Check 95 - Created: 2023-04-12'
+                      rule_id: a0307b59-b4dd-49a8-a306-6de60636ed3d
+                      container_id: 3336dfd2-2473-49f3-b405-b91bdd57bf00
+                      created_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      updated_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      created_at: '2023-04-12T18:04:50.533164Z'
+                      expires_at: '2025-11-15T23:42:45Z'
+                      updated_at: '2023-04-12T18:04:50.535297Z'
+                      last_processed_at: '2025-06-04T13:42:42.133781Z'
+                      resource_type: HOST_AUDIT
+                      filter:
+                        and:
+                        - value: faker.audit 95
+                          operator: eq
+                          property: compliance.audit_file
+                        - value: Check 95
+                          operator: eq
+                          property: compliance.audit_name
+                        - value: FAILED
+                          operator: eq
+                          property: original_compliance_result
+                        - or:
+                          - value:
+                            - 198.51.100.0/24
+                            operator: eq
+                            property: asset.ipv4_addresses
+                      disabled_details:
+                        disabled: true
+                        disabled_at: '2025-11-13T16:37:19.712092Z'
+                        disabled_by: 179e0893-e9cd-481a-993c-df973235bdfa
+                    - rule_value:
+                        action: CHANGE_RESULT
+                        false_positive: false
+                        compliance_result: WARNING
+                      rule_name: 'Recast - Audit File: Check 94 - Created: 2023-04-13'
+                      rule_id: 5d19a27e-b088-449f-99b0-60293ea7ba55
+                      container_id: 3336dfd2-2473-49f3-b405-b91bdd57bf00
+                      created_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      updated_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      created_at: '2023-04-13T10:17:18.082494Z'
+                      expires_at: '2025-11-15T23:42:45Z'
+                      updated_at: '2023-04-13T10:23:28.149125Z'
+                      last_processed_at: '2025-06-04T13:42:43.521235Z'
+                      resource_type: HOST_AUDIT
+                      filter:
+                        and:
+                        - value: faker.audit 94
+                          operator: eq
+                          property: compliance.audit_file
+                        - value: Check 94
+                          operator: eq
+                          property: compliance.audit_name
+                        - or:
+                          - value:
+                            - a.example.com
+                            - b.example.com
+                            - c.example.com
+                            - d.example.com
+                            - e.example.com
+                            operator: match
+                            property: asset.fqdns
+                          - value:
+                            - 198.51.100.0
+                            - 198.51.100.2
+                            - 198.51.100.3
+                            - 198.51.100.4
+                            - 198.51.100.5
+                            - 198.51.100.6
+                            - 198.51.100.7
+                            - 198.51.100.8
+                            - 198.51.100.9
+                            operator: eq
+                            property: asset.ipv4_addresses
+                      disabled_details:
+                        disabled: true
+                        disabled_at: '2025-11-13T16:37:19.712092Z'
+                        disabled_by: 179e0893-e9cd-481a-993c-df973235bdfa
+                    - rule_value:
+                        action: CHANGE_RESULT
+                        false_positive: false
+                        compliance_result: WARNING
+                      rule_name: 'Recast - Audit File: Check 93 - Created: 2023-04-13'
+                      rule_id: 59c0d8e6-15b5-4d36-be76-1dec91abef09
+                      container_id: 3336dfd2-2473-49f3-b405-b91bdd57bf00
+                      created_by: d907f7f7-f3e9-4005-966e-691145f3df2f
+                      updated_by: d907f7f7-f3e9-4005-966e-691145f3df2f
+                      created_at: '2023-04-13T12:15:27.933565Z'
+                      expires_at: '2025-11-15T23:42:45Z'
+                      updated_at: '2023-04-13T12:15:27.934626Z'
+                      last_processed_at: '2025-06-04T13:42:42.203791Z'
+                      resource_type: HOST_AUDIT
+                      filter:
+                        and:
+                        - value: faker.audit 93
+                          operator: eq
+                          property: compliance.audit_file
+                        - value: Check 93
+                          operator: eq
+                          property: compliance.audit_name
+                        - or:
+                          - value:
+                            - a.example.com
+                            - b.example.com
+                            - c.example.com
+                            - d.example.com
+                            - e.example.com
+                            operator: match
+                            property: asset.fqdns
+                          - value:
+                            - 198.51.100.0
+                            - 198.51.100.2
+                            - 198.51.100.3
+                            - 198.51.100.4
+                            - 198.51.100.5
+                            - 198.51.100.6
+                            - 198.51.100.7
+                            - 198.51.100.8
+                            - 198.51.100.9
+                            operator: eq
+                            property: asset.ipv4_addresses
+                      disabled_details:
+                        disabled: true
+                        disabled_at: '2025-11-13T16:37:19.712092Z'
+                        disabled_by: 179e0893-e9cd-481a-993c-df973235bdfa
+                    pagination:
+                      limit: 9
+                      next: eyJsaW1pdCI6MiwibmV4dCI6Ik1nPT0iLCJyZXNvdXJjZV90eXBlIjpbXSwiaW5jbHVkZV9tZXRhZGF0YSI6dHJ1ZX0=
+                      total: 39
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to search recast rules.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - recast-rules_cloud: []
+  /v1/recast/rules/{rule_id}:
+    get:
+      summary: Get recast rule details
+      description: 'Returns the details of the specified recast or accept rule. <div class="perms-callout">Requires the Administrator [64] user role or one of the following custom role privileges: `VM.VM_RECAST.VM_RECAST.READ` for Vulnerability Management or `WAS.RECAST_RULE.READ` for Web App Scanning. See [Roles](doc:roles).</div>'
+      operationId: recast-rules-details
+      tags:
+      - Recast Rules
+      parameters:
+      - description: The UUID of the recast rule to return details for.
+        required: true
+        name: rule_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the details for the specified recast rule were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_Rule-Object'
+              examples:
+                response:
+                  value:
+                    rule_value:
+                      action: RECAST
+                      false_positive: false
+                      severity: LOW
+                      original_severity: MEDIUM
+                    rule_name: test1
+                    rule_id: 810207f8-a9de-4bc8-8b7c-3f149b12ec94
+                    container_id: 1cb2b875-1dc7-4fdc-98ef-527b41be853c
+                    created_by: f9975077-7f1e-4be4-b2e4-e1171d17af1a
+                    created_at: '2025-08-26T19:11:32.052550334Z'
+                    resource_type: HOST
+                    filter:
+                      and:
+                      - property: asset.name
+                        operator: eq
+                        value:
+                        - win-2ovr3hh18lv
+                      - property: definition.id
+                        operator: eq
+                        value: '10114'
+                      - property: port
+                        operator: eq
+                        value: 8080
+                      - property: definition.cve
+                        operator: eq
+                        value:
+                        - CVE-2015-9876
+                    disabled_details:
+                      disabled: true
+                      disabled_at: '2025-11-19T00:06:00.518673Z'
+                      disabled_by: 5aeac72a-1635-4138-b13d-7dc0512e604c
+                      disabled_reason: Temporarily disabled
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to retrieve recast rule details.
+        '404':
+          description: Returned if the specified recast rule was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - recast-rules_cloud: []
+    put:
+      summary: Update recast rule
+      description: 'Updates the specified recast or accept rule with the specified criteria. <div class="perms-callout">Requires the Administrator [64] user role or one of the following custom role privileges: `VM.VM_RECAST.VM_RECAST.EDIT` for Vulnerability Management or `WAS.RECAST_RULE.MANAGE` for Web App Scanning. See [Roles](doc:roles).</div>'
+      operationId: recast-rules-update
+      tags:
+      - Recast Rules
+      parameters:
+      - description: The UUID of the recast rule.
+        required: true
+        name: rule_id
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/recast-rules_Request-Create-Recast-Rule'
+            examples:
+              request:
+                value:
+                  rule_name: R1-CVE-2015-9876
+                  description: description1
+                  rule_value:
+                    action: RECAST
+                    severity: '1'
+                    original_severity: '0'
+                  resource_type: HOST
+                  filter:
+                    and:
+                    - property: asset.name
+                      operator: eq
+                      value:
+                      - win-2ovr3hh18lv
+                    - property: definition.cve
+                      operator: eq
+                      value:
+                      - CVE-2015-9876
+                  expires_at: '2025-11-15T23:42:45Z'
+                  disabled_details:
+                    disabled: true
+      responses:
+        '200':
+          description: Returned if the specified recast rule was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_Rule-Object'
+              examples:
+                response:
+                  value:
+                    rule_value:
+                      action: RECAST
+                      false_positive: false
+                      severity: LOW
+                      original_severity: MEDIUM
+                    rule_name: test1
+                    rule_id: 810207f8-a9de-4bc8-8b7c-3f149b12ec94
+                    container_id: 1cb2b875-1dc7-4fdc-98ef-527b41be853c
+                    created_by: f9975077-7f1e-4be4-b2e4-e1171d17af1a
+                    created_at: '2025-08-26T19:11:32.052550334Z'
+                    expires_at: '2025-11-15T23:42:45Z'
+                    resource_type: HOST
+                    filter:
+                      and:
+                      - property: asset.name
+                        operator: eq
+                        value:
+                        - win-2ovr3hh18lv
+                      - property: definition.id
+                        operator: eq
+                        value: '10114'
+                      - property: port
+                        operator: eq
+                        value: 8080
+                      - property: definition.cve
+                        operator: eq
+                        value:
+                        - CVE-2015-9876
+                    disabled_details:
+                      disabled: true
+                      disabled_at: '2025-11-13T16:37:19.712092Z'
+                      disabled_by: 179e0893-e9cd-481a-993c-df973235bdfa
+        '400':
+          description: Returned if your request specified invalid parameters, if your request was improperly formatted, or if you attempted to create a duplicate rule.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to update recast rules.
+        '404':
+          description: Returned if the specified recast rule was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - recast-rules_cloud: []
+    delete:
+      summary: Delete recast rule
+      description: 'Deletes the specified recast or accept rule. <div class="perms-callout">Requires the Administrator [64] user role or one of the following custom role privileges: `VM.VM_RECAST.VM_RECAST.DELETE` for Vulnerability Management or `WAS.RECAST_RULE.MANAGE` for Web App Scanning. See [Roles](doc:roles).</div>'
+      operationId: recast-rules-delete
+      tags:
+      - Recast Rules
+      parameters:
+      - description: The UUID of the recast rule to delete.
+        required: true
+        name: rule_id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the recast rule was deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to delete recast rules.
+        '404':
+          description: Returned if the specified recast rule was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - recast-rules_cloud: []
+  /v1/recast/rules/filters:
+    get:
+      summary: List recast rule filters
+      description: 'Returns the list of properties that can be used to filter recast rules, including each property''s supported logical operators and value types. <div class="perms-callout">Requires the Administrator [64] user role or one of the following custom role privileges: `VM.VM_RECAST.VM_RECAST.READ` for Vulnerability Management or `WAS.RECAST_RULE.READ` for Web App Scanning. See [Roles](doc:roles).</div>'
+      operationId: recast-rules-filters-list
+      tags:
+      - Recast Rules
+      responses:
+        '200':
+          description: Returned if the recast rule filters were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_recastFilterProperties'
+              examples:
+                response:
+                  value:
+                  - - name: DEFINITION_ID
+                      search_value: definition.id
+                      property_target: FINDINGS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_LT_GT_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - lt
+                        - gt
+                        - lte
+                        - gte
+                        - exists
+                        - nexists
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_LT_GT_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - lt
+                        - gt
+                        - lte
+                        - gte
+                        - exists
+                        - nexists
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: DEFINITION_NAME
+                      search_value: definition.name
+                      property_target: FINDINGS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH_NMATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        - nmatch
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH_NMATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        - nmatch
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: DEFINITION_CVE
+                      search_value: definition.cve
+                      property_target: FINDINGS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH_NMATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        - nmatch
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH_NMATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        - nmatch
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: OUTPUT
+                      search_value: output
+                      property_target: FINDINGS
+                      conditions:
+                      - name: OPTIONAL_AND_MATCH_NO_MATCH
+                        required: false
+                        operators:
+                        - match
+                        - nmatch
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_MATCH_NO_MATCH
+                        required: false
+                        operators:
+                        - match
+                        - nmatch
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: IP_ADDRESS_V4
+                      search_value: asset.ipv4_addresses
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: IP_ADDRESS_V6
+                      search_value: asset.ipv6_addresses
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: HOST_AUDIT
+                      search_only: false
+                    - name: ASSET_NAME
+                      search_value: asset.name
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: ASSET_ID
+                      search_value: asset.id
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQUALS_ONLY
+                        required: false
+                        operators:
+                        - eq
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQUALS_ONLY
+                        required: false
+                        operators:
+                        - eq
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: ASSET_FQDNS
+                      search_value: asset.fqdns
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQUALS_ONLY
+                        required: false
+                        operators:
+                        - eq
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_MATCH_ONLY
+                        required: false
+                        operators:
+                        - match
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQUALS_ONLY
+                        required: false
+                        operators:
+                        - eq
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: ASSET_TAGS
+                      search_value: asset.tags
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQUALS_NEQ
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQUALS_NEQ
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQUALS_NEQ
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: AUDIT_NAME
+                      search_value: compliance.audit_name
+                      property_target: COMPLIANCE_SCANS
+                      conditions:
+                      - name: REQUIRED_AND_EQUALS_EXISTS
+                        required: true
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST_AUDIT
+                      search_only: false
+                    - name: AUDIT_FILE
+                      search_value: compliance.audit_file
+                      property_target: COMPLIANCE_SCANS
+                      conditions:
+                      - name: REQUIRED_AND_EQUALS_EXISTS
+                        required: true
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST_AUDIT
+                      search_only: false
+                    - name: ORIGINAL_COMPLIANCE_RESULT
+                      search_value: original_compliance_result
+                      property_target: COMPLIANCE_SCANS
+                      conditions:
+                      - name: OPTIONAL_AND_EQUALS_ONLY
+                        required: false
+                        operators:
+                        - eq
+                        resource_type: HOST_AUDIT
+                      search_only: false
+                    - name: PROTOCOL
+                      search_value: protocol
+                      property_target: FINDINGS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: PORT
+                      search_value: port
+                      property_target: FINDINGS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_LT_GT_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - lt
+                        - gt
+                        - lte
+                        - gte
+                        - exists
+                        - nexists
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_LT_GT_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - lt
+                        - gt
+                        - lte
+                        - gte
+                        - exists
+                        - nexists
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: NETWORK
+                      search_value: network_id
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: RULE_NAME
+                      search_value: rule_name
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: ACTION
+                      search_value: action
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: ID
+                      search_value: rule_id
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: WEBAPP
+                      search_only: true
+                    - name: DESCRIPTION
+                      search_value: description
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: COMMENT
+                      search_value: comment
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: CREATED_BY
+                      search_value: created_by
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: WEBAPP
+                      search_only: true
+                    - name: UPDATED_BY
+                      search_value: updated_by
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQ_EXISTS
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        resource_type: WEBAPP
+                      search_only: true
+                    - name: CREATED_AT
+                      search_value: created_at
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_LT_GT_EXISTS_BETWEEN
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - lt
+                        - gt
+                        - lte
+                        - gte
+                        - exists
+                        - nexists
+                        - between
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_LT_GT_EXISTS_BETWEEN
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - lt
+                        - gt
+                        - lte
+                        - gte
+                        - exists
+                        - nexists
+                        - between
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQ_LT_GT_EXISTS_BETWEEN
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - lt
+                        - gt
+                        - lte
+                        - gte
+                        - exists
+                        - nexists
+                        - between
+                        resource_type: WEBAPP
+                      search_only: true
+                    - name: UPDATED_AT
+                      search_value: updated_at
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_LT_GT_EXISTS_BETWEEN
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - lt
+                        - gt
+                        - lte
+                        - gte
+                        - exists
+                        - nexists
+                        - between
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_LT_GT_EXISTS_BETWEEN
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - lt
+                        - gt
+                        - lte
+                        - gte
+                        - exists
+                        - nexists
+                        - between
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQ_LT_GT_EXISTS_BETWEEN
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - lt
+                        - gt
+                        - lte
+                        - gte
+                        - exists
+                        - nexists
+                        - between
+                        resource_type: WEBAPP
+                      search_only: true
+                    - name: EXPIRES_AT
+                      search_value: expires_at
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_LT_GT_EXISTS_BETWEEN
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - lt
+                        - gt
+                        - lte
+                        - gte
+                        - exists
+                        - nexists
+                        - between
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_LT_GT_EXISTS_BETWEEN
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - lt
+                        - gt
+                        - lte
+                        - gte
+                        - exists
+                        - nexists
+                        - between
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQ_LT_GT_EXISTS_BETWEEN
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - lt
+                        - gt
+                        - lte
+                        - gte
+                        - exists
+                        - nexists
+                        - between
+                        resource_type: WEBAPP
+                      search_only: true
+                    - name: SEVERITY
+                      search_value: severity
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: ORIGINAL_SEVERITY
+                      search_value: original_severity
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: WEBAPP
+                      search_only: false
+                    - name: COMPLIANCE_RESULT
+                      search_value: compliance_result
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST_AUDIT
+                      search_only: false
+                    - name: COMPLIANCE_ORIGINAL_RESULT
+                      search_value: compliance.original_result
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST_AUDIT
+                      search_only: false
+                    - name: RESOURCE_TYPE
+                      search_value: resource_type
+                      property_target: CUSTOM_TARGETS
+                      conditions:
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: HOST_AUDIT
+                      - name: OPTIONAL_AND_EQ_EXISTS_MATCH
+                        required: false
+                        operators:
+                        - eq
+                        - neq
+                        - exists
+                        - nexists
+                        - match
+                        resource_type: WEBAPP
+                      search_only: false
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list recast rule filters.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recast-rules_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - recast-rules_cloud: []
+components:
+  schemas:
+    recast-rules_Response-Disabled-Details:
+      type: object
+      description: Details about a rule when it is disabled.
+      properties:
+        disabled:
+          type: boolean
+          description: Indicates whether or not the rule is disabled.
+        disabled_at:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time the rule was disabled.
+        disabled_by:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the user who disabled the rule.
+        disabled_reason:
+          type: string
+          description: An explanation for why the rule was disabled.
+    recast-rules_recastFilterProperties:
+      type: array
+      description: Recast filter properties for recast rule creation.
+      items:
+        type: object
+        $ref: '#/components/schemas/recast-rules_recastFilterProperty'
+    recast-rules_filterProperty:
+      type: object
+      properties:
+        property:
+          type: string
+          description: The property of the vulnerability finding to filter by. For a list of supported properties, see the [List recast rule filters](ref:recast-rules-filters-list) endpoint.
+        operator:
+          type: string
+          description: The operator used to compare the property with the specified value.
+        value:
+          description: 'The value to compare the given property to using the specified operator. Example value for an plugin ID: `10114`'
+          oneOf:
+          - title: Single String Value
+            description: A single value to compare with the selected property using the chosen operator.
+            type: string
+          - title: Multiple String Values
+            description: Multiple values to compare with the selected property using the chosen operator.
+            type: array
+            items:
+              type: string
+          example:
+          - property: definition.id
+            operator: eq
+            value: '10114'
+    recast-rules_Rule-Object:
+      type: object
+      properties:
+        rule_value:
+          type: object
+          description: Details of the rule action and its settings.
+          properties:
+            action:
+              description: 'The rule action: `Recast` or `Accept` (for Vulnerabilities and Web Applications) or `Change Result` and `Accept Result` (for Host Audits).'
+              enum:
+              - RECAST
+              - ACCEPT
+              - CHANGE_RESULT
+              - ACCEPT_RESULT
+            comment:
+              type: string
+              description: Optional notes or rationale for the rule.
+            false_positive:
+              type: boolean
+              description: Indicates whether the plugin was flagged as producing inaccurate findings for review.
+            severity:
+              description: For `RECAST` rules only. The reassigned severity of the targeted vulnerabilities.
+              enum:
+              - NONE
+              - LOW
+              - MEDIUM
+              - HIGH
+              - CRITICAL
+            original_severity:
+              description: The original severity assigned to the finding detected by the plugin.
+              enum:
+              - NONE
+              - LOW
+              - MEDIUM
+              - HIGH
+              - CRITICAL
+              - MIXED
+            compliance_result:
+              description: For `CHANGE_RESULT` rules only. The reassigned result of the targeted host audits.
+              enum:
+              - PASSED
+              - FAILED
+              - WARNING
+        rule_name:
+          type: string
+          description: The name assigned to the rule.
+        rule_id:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the rule.
+        container_id:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the container.
+        created_by:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the user who created the rule.
+        updated_by:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the user who last updated the rule.
+        created_at:
+          type: string
+          format: date-time
+          description: An ISO timestamp indicating the date and time when the rule was created.
+        updated_at:
+          type: string
+          format: date-time
+          description: An ISO timestamp indicating the date and time when the rule was last updated.
+        last_processed_at:
+          type: string
+          format: date-time
+          description: An ISO timestamp indicating the date and time when the rule was last processed.
+        description:
+          type: string
+          description: The description of the rule.
+        resource_type:
+          type: string
+          description: The type of findings the rule targets.
+          enum:
+          - HOST
+          - HOST_AUDIT
+          - WEBAPP
+        filter:
+          $ref: '#/components/schemas/recast-rules_recastFilter'
+        expires_at:
+          type: string
+          format: date-time
+          description: Optional date and time indicating when the rule will expire. It has to be an ISO timestamp. If no expiry date is specified, the rule is set to never expire.
+        disabled_details:
+          $ref: '#/components/schemas/recast-rules_Response-Disabled-Details'
+    recast-rules_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    recast-rules_Response-Recast-Search:
+      type: object
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/recast-rules_Rule-Object'
+        pagination:
+          type: object
+          properties:
+            total:
+              type: integer
+              format: int32
+              description: The total number of recast rule records matching your search criteria.
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 500
+              default: 100
+              description: The limit enforced on the number of records when retrieved.
+            next:
+              type: string
+              description: An encrypted token used for fetching the next iteration of data records.
+    recast-rules_Request-Create-Recast-Rule:
+      type: object
+      required:
+      - resource_type
+      - rule_value
+      - filter
+      properties:
+        rule_name:
+          type: string
+          maxLength: 1024
+          description: "A name for the rule. \n\nIf not provided, a default is generated using the following format: rule type (`Recast` or `Accept`), the plugin ID (for Vulnerabilities and Web Applications) or the audit file name (for Host Audits), and the rule creation date. For example, `Recast - Plugin ID: 123642 - Created: 2023-03-14`."
+        description:
+          type: string
+          maxLength: 1024
+          description: A description of the rule.
+        resource_type:
+          type: string
+          description: Specifies the type of findings that the rule will target.
+          enum:
+          - HOST
+          - HOST_AUDIT
+          - WEBAPP
+        rule_value:
+          type: object
+          description: Defines the configuration of the rule based on the selected action.
+          required:
+          - action
+          properties:
+            action:
+              description: "Specifies the type of rule to apply. Values are case sensitive.\n\n Options include `RECAST` or `ACCEPT` for Vulnerabilities and Web Applications, and `CHANGE_RESULT` or `ACCEPT_RESULT` for Host Audits."
+              type: string
+              enum:
+              - RECAST
+              - ACCEPT
+              - CHANGE_RESULT
+              - ACCEPT_RESULT
+            original_severity:
+              description: The original severity of the plugin. Values are case sensitive.
+              type: string
+              enum:
+              - NONE
+              - LOW
+              - MEDIUM
+              - HIGH
+              - CRITICAL
+              - MIXED
+            severity:
+              description: "For `RECAST` rules only. Specifies the new severity level to assign to the targeted vulnerabilities.\n\n **Note:** This parameter is required for Vulnerabilities and Web Applications. Values are case sensitive."
+              type: string
+              enum:
+              - NONE
+              - LOW
+              - MEDIUM
+              - HIGH
+              - CRITICAL
+            compliance_result:
+              type: string
+              description: 'For `CHANGE_RESULT` rules only. Specifies the new result to assign to the targeted Host Audits.
+
+
+                **Note:** This parameter is required for Host Audits. Values are case sensitive.'
+              enum:
+              - PASSED
+              - FAILED
+              - WARNING
+            comment:
+              type: string
+              description: Optional notes or rationale for the rule.
+            false_positive:
+              type: boolean
+              description: Indicates that the finding is a false positive and should be reviewed by Tenable.
+        filter:
+          $ref: '#/components/schemas/recast-rules_recastFilter'
+        expires_at:
+          type: string
+          format: date-time
+          description: The date and time when the rule expires, in ISO 8601 format. If omitted, the rule does not expire.
+        disabled_details:
+          $ref: '#/components/schemas/recast-rules_Request-Disabled-Details'
+    recast-rules_Request-Disabled-Details:
+      type: object
+      description: Specifies details for disabling the rule.
+      properties:
+        disabled:
+          type: boolean
+          description: Indicates whether the rule should be disabled.
+        disabled_reason:
+          type: string
+          description: An optional explanation for disabling the rule.
+    recast-rules_recastFilter:
+      description: Filter rules based on the targeted vulnerabilities. Use the `and` array to combine multiple conditions that all must be true. Use the `or` array to combine multiple conditions where at least one must be true.
+      oneOf:
+      - title: AND (OPTION 1)
+        type: object
+        description: Filter rules based on the targeted vulnerabilities. Use the `and` array to combine multiple conditions that all must be true.
+        properties:
+          and:
+            type: array
+            items:
+              $ref: '#/components/schemas/recast-rules_filterProperty'
+      - title: OR (OPTION 2)
+        type: object
+        description: Filter rules based on the targeted vulnerabilities. Use the `or` array to combine multiple conditions where at least one must be true.
+        properties:
+          or:
+            type: array
+            items:
+              $ref: '#/components/schemas/recast-rules_filterProperty'
+    recast-rules_recastFilterProperty:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the filter property.
+        search_value:
+          type: string
+          description: Property name to be used in the filter as a property name.
+        property_target:
+          type: string
+          description: Type of filter property. FINDINGS if it is an attribute of finding, COMPLIANCE_SCANS if it is a HOST AUDIT finding property, otherwise CUSTOM_TARGETS.
+          enum:
+          - CUSTOM_TARGETS
+          - FINDINGS
+          - COMPLIANCE_SCANS
+        conditions:
+          type: object
+          description: Logical conditions that can be specified with a filter property and it's its values.
+          properties:
+            name:
+              type: string
+              description: Name of a group of logical conditions.
+            required:
+              type: boolean
+              description: If the filter property is required.
+            operators:
+              type: string
+              description: Operator name for a logical condition to be used in a filter.
+            resource_type:
+              type: string
+              description: The type of findings to be targeted by the recast rule to be created.
+              enum:
+              - HOST
+              - HOST_AUDIT
+              - WEBAPP
+        searchOnly:
+          type: boolean
+          description: If the filter can only be used for recast rules search.
+    recast-rules_recastSortObject:
+      type: object
+      properties:
+        property:
+          type: string
+          description: The property to sort the rules by.
+          example: uuid
+        order:
+          type: string
+          description: The sort direction for the specified property.
+          enum:
+          - desc
+          - asc
+          example: desc
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

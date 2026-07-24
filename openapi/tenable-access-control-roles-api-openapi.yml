@@ -1,0 +1,719 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Access Control (Roles) API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Access Control (Roles)
+  x-displayName: Access Control (Roles)
+paths:
+  /access-control/v1/roles:
+    post:
+      summary: Create role
+      description: Creates a custom role with the specified permissions.<div class="perms-callout">Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.MANAGE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: access-control-roles-create
+      tags:
+      - Access Control (Roles)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Specifies the name for the custom role.
+                description:
+                  type: string
+                  description: Specifies a description for the custom role.
+                role_permission_strings:
+                  type: array
+                  items:
+                    type: string
+                  description: Specifies the custom role privilege strings to assign to the role. For a list of supported permission strings, use the [List role permissions](ref:access-control-roles-list-permissions) endpoint. For more information, see [Roles](doc:roles).
+                type:
+                  type: string
+                  description: Specifies the role type. For custom roles, use `CUSTOM`.
+                status:
+                  type: string
+                  description: Specifies the status of the role. Supported values are `ENABLED` and `DISABLED`.
+              required:
+              - name
+              - role_permission_strings
+            examples:
+              request:
+                value:
+                  name: Vulnerability Analyst
+                  description: Custom role for vulnerability analysts with scan and vulnerability permissions.
+                  role_permission_strings:
+                  - TIO_BACKEND.VULNERABILITY.READ
+                  - TIO_BACKEND.SCAN.READ
+                  - TIO_BACKEND.SCAN.MANAGE
+                  - TIO_BACKEND.ASSET.READ
+                  - TIO_BACKEND.REPORT.MANAGE
+                  type: CUSTOM
+                  status: ENABLED
+      responses:
+        '200':
+          description: Returned if the custom role was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_role-object'
+              examples:
+                response:
+                  value:
+                    name: Vulnerability Analyst
+                    uuid: d4e5f6a7-b8c9-0123-def4-567890abcdef
+                    description: Custom role for vulnerability analysts with scan and vulnerability permissions.
+                    role_permission_strings:
+                    - TIO_BACKEND.VULNERABILITY.READ
+                    - TIO_BACKEND.SCAN.READ
+                    - TIO_BACKEND.SCAN.MANAGE
+                    - TIO_BACKEND.ASSET.READ
+                    - TIO_BACKEND.REPORT.MANAGE
+                    type: CUSTOM
+                    status: ENABLED
+                    containerUuid: c1d2e3f4-a5b6-7890-cdef-123456789abc
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse-Error'
+              examples:
+                response:
+                  value:
+                    error: Role permission strings array must be specified in the request.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create roles. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '409':
+          description: Returned if a role with the specified name already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse-Error'
+              examples:
+                response:
+                  value:
+                    error: Duplicate roleName=example-role.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Roles_cloud: []
+    get:
+      summary: List roles
+      description: Lists all roles defined for your Tenable Vulnerability Management instance, including both standard and custom roles.<div class="perms-callout">Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: access-control-roles-list
+      tags:
+      - Access Control (Roles)
+      responses:
+        '200':
+          description: Returned if the list of roles was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Access_Control_Roles_role-object'
+              examples:
+                response:
+                  value:
+                  - name: Administrator
+                    uuid: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                    description: Full administrative access to all features.
+                    role_permission_strings:
+                    - TIO_BACKEND.ACCESS_CONTROL.MANAGE
+                    - TIO_BACKEND.SCAN.MANAGE
+                    - TIO_BACKEND.VULNERABILITY.READ
+                    type: STANDARD
+                    status: ENABLED
+                    containerUuid: c1d2e3f4-a5b6-7890-cdef-123456789abc
+                  - name: Security Analyst
+                    uuid: b2c3d4e5-f6a7-8901-bcde-f12345678901
+                    description: Custom role for security analysts with read-only vulnerability access.
+                    role_permission_strings:
+                    - TIO_BACKEND.VULNERABILITY.READ
+                    - TIO_BACKEND.SCAN.READ
+                    - TIO_BACKEND.ASSET.READ
+                    type: CUSTOM
+                    status: ENABLED
+                    containerUuid: c1d2e3f4-a5b6-7890-cdef-123456789abc
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list roles. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Roles_cloud: []
+  /access-control/v1/roles/{role_uuid}:
+    get:
+      summary: Get role details
+      description: Retrieves the details for the specified role.<div class="perms-callout">Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: access-control-roles-details
+      tags:
+      - Access Control (Roles)
+      parameters:
+      - description: Specifies the unique identifier (UUID) of the role.
+        required: true
+        name: role_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the role details were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_role-object'
+              examples:
+                response:
+                  value:
+                    name: Security Analyst
+                    uuid: b2c3d4e5-f6a7-8901-bcde-f12345678901
+                    description: Custom role for security analysts with read-only vulnerability access.
+                    role_permission_strings:
+                    - TIO_BACKEND.VULNERABILITY.READ
+                    - TIO_BACKEND.SCAN.READ
+                    - TIO_BACKEND.ASSET.READ
+                    - TIO_BACKEND.REPORT.READ
+                    - TIO_BACKEND.DASHBOARD.READ
+                    type: CUSTOM
+                    status: ENABLED
+                    containerUuid: c1d2e3f4-a5b6-7890-cdef-123456789abc
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to retrieve role details. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '404':
+          description: Returned if the specified role was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse-Error'
+              examples:
+                response:
+                  value:
+                    error: 'Not found: containerUuid=a1b2c3d4-e5f6-7890-abcd-ef1234567890, roleUuid=b2c3d4e5-f6a7-8901-bcde-f12345678901'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Roles_cloud: []
+    put:
+      summary: Update role
+      description: Updates the specified custom role.<div class="perms-callout">Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.MANAGE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: access-control-roles-update
+      tags:
+      - Access Control (Roles)
+      parameters:
+      - description: Specifies the unique identifier (UUID) of the role.
+        required: true
+        name: role_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Specifies the updated name for the role.
+                description:
+                  type: string
+                  description: Specifies the updated description for the role.
+                role_permission_strings:
+                  type: array
+                  items:
+                    type: string
+                  description: Specifies the custom role privilege strings to assign to the role. This replaces the existing permission set. For a list of supported permission strings, use the [List role permissions](ref:access-control-roles-list-permissions) endpoint. For more information, see [Roles](doc:roles).
+                type:
+                  type: string
+                  description: Specifies the role type.
+                status:
+                  type: string
+                  description: Specifies the status of the role. Supported values are `ENABLED` and `DISABLED`.
+            examples:
+              request:
+                value:
+                  description: Updated role for security analysts with expanded permissions.
+                  role_permission_strings:
+                  - TIO_BACKEND.VULNERABILITY.READ
+                  - TIO_BACKEND.SCAN.READ
+                  - TIO_BACKEND.SCAN.MANAGE
+                  - TIO_BACKEND.ASSET.READ
+                  - TIO_BACKEND.REPORT.READ
+      responses:
+        '200':
+          description: Returned if the role was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_role-object'
+              examples:
+                response:
+                  value:
+                    name: Security Analyst
+                    uuid: b2c3d4e5-f6a7-8901-bcde-f12345678901
+                    description: Updated role for security analysts with expanded permissions.
+                    role_permission_strings:
+                    - TIO_BACKEND.VULNERABILITY.READ
+                    - TIO_BACKEND.SCAN.READ
+                    - TIO_BACKEND.SCAN.MANAGE
+                    - TIO_BACKEND.ASSET.READ
+                    - TIO_BACKEND.REPORT.READ
+                    type: CUSTOM
+                    status: ENABLED
+                    containerUuid: c1d2e3f4-a5b6-7890-cdef-123456789abc
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to update roles. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '404':
+          description: Returned if the specified role was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse-Error'
+              examples:
+                response:
+                  value:
+                    error: 'Not found: containerUuid=a1b2c3d4-e5f6-7890-abcd-ef1234567890, roleUuid=b2c3d4e5-f6a7-8901-bcde-f12345678901'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Roles_cloud: []
+    delete:
+      summary: Delete role
+      description: Deletes the specified custom role.<div class="perms-callout">Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.MANAGE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: access-control-roles-delete
+      tags:
+      - Access Control (Roles)
+      parameters:
+      - description: Specifies the unique identifier (UUID) of the role.
+        required: true
+        name: role_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Returned if the role was deleted successfully.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to delete roles. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+        '404':
+          description: Returned if the specified role was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse-Error'
+              examples:
+                response:
+                  value:
+                    error: 'Not found: containerUuid=a1b2c3d4-e5f6-7890-abcd-ef1234567890, roleUuid=b2c3d4e5-f6a7-8901-bcde-f12345678901'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Roles_cloud: []
+  /access-control/v1/role-permissions:
+    get:
+      summary: List role permissions
+      description: 'Lists all available role permission strings (custom role privileges) and their metadata, including hierarchical relationships between permissions. Use this endpoint to determine valid values for the `role_permission_strings` property when creating or updating a custom role.
+
+
+        **Note:** Role permission strings are the same as the custom role privileges referenced throughout the Tenable documentation and in the permissions callouts for individual API endpoints.<div class="perms-callout">Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.READ` custom role privilege. See [Roles](doc:roles).</div>'
+      operationId: access-control-roles-list-permissions
+      tags:
+      - Access Control (Roles)
+      responses:
+        '200':
+          description: Returned if the list of role permissions was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Access_Control_Roles_role-permission-object'
+              examples:
+                response:
+                  value:
+                  - role_permission_string: TIO_BACKEND.SCAN.MANAGE
+                    domain: TIO_BACKEND
+                    entity: SCAN
+                    action: MANAGE
+                    category: Scans
+                    uuid: e5f6a7b8-c9d0-1234-ef56-7890abcdef12
+                    name: Manage Scans
+                    direct_children:
+                    - TIO_BACKEND.SCAN.READ
+                    - TIO_BACKEND.SCAN.EXECUTE
+                    direct_parents:
+                    - TIO_BACKEND.ACCESS_CONTROL.MANAGE
+                    included_role_permissions:
+                    - TIO_BACKEND.SCAN.READ
+                    - TIO_BACKEND.SCAN.EXECUTE
+                    including_role_permissions:
+                    - TIO_BACKEND.ACCESS_CONTROL.MANAGE
+                    is_category_toggle: false
+                  - role_permission_string: TIO_BACKEND.SCAN.READ
+                    domain: TIO_BACKEND
+                    entity: SCAN
+                    action: READ
+                    category: Scans
+                    uuid: f6a7b8c9-d0e1-2345-f678-90abcdef1234
+                    name: View Scans
+                    direct_children: []
+                    direct_parents:
+                    - TIO_BACKEND.SCAN.MANAGE
+                    included_role_permissions: []
+                    including_role_permissions:
+                    - TIO_BACKEND.SCAN.MANAGE
+                    - TIO_BACKEND.ACCESS_CONTROL.MANAGE
+                    is_category_toggle: false
+                  - role_permission_string: TIO_BACKEND.SCAN.TOGGLE
+                    domain: TIO_BACKEND
+                    entity: SCAN
+                    action: TOGGLE
+                    category: Scans
+                    uuid: a7b8c9d0-e1f2-3456-7890-abcdef123456
+                    name: Scans Access
+                    direct_children: []
+                    direct_parents: []
+                    included_role_permissions: []
+                    including_role_permissions: []
+                    is_category_toggle: true
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_Roles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_Roles_cloud: []
+components:
+  schemas:
+    Access_Control_Roles_ErrorResponse-Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A brief description of the error.
+    Access_Control_Roles_role-object:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the role.
+        uuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the role.
+        description:
+          type: string
+          description: The description of the role.
+        role_permission_strings:
+          type: array
+          items:
+            type: string
+          description: The role permission strings (custom role privileges) assigned to the role. For more information, see [Roles](doc:roles).
+        type:
+          type: string
+          description: The type of role. Standard roles are Tenable-defined and cannot be modified. Custom roles are user-defined. For more information, see [Roles](doc:roles).
+          enum:
+          - STANDARD
+          - CUSTOM
+        status:
+          type: string
+          description: The status of the role.
+          enum:
+          - ENABLED
+          - DISABLED
+        containerUuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the Tenable Vulnerability Management container.
+    Access_Control_Roles_role-permission-object:
+      type: object
+      properties:
+        role_permission_string:
+          type: string
+          description: The role permission string (custom role privilege) identifier in `DOMAIN.ENTITY.ACTION` format.
+        domain:
+          type: string
+          description: The product domain to which the permission belongs.
+        entity:
+          type: string
+          description: The entity within the domain that the permission controls.
+        action:
+          type: string
+          description: The action that the permission grants on the entity.
+        category:
+          type: string
+          description: The category under which the permission is grouped.
+        uuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the permission.
+        name:
+          type: string
+          description: The display name of the permission.
+        direct_children:
+          type: array
+          items:
+            type: string
+          description: The permission strings that this permission directly includes.
+        direct_parents:
+          type: array
+          items:
+            type: string
+          description: The permission strings that directly include this permission.
+        included_role_permissions:
+          type: array
+          items:
+            type: string
+          description: All permission strings transitively included by this permission.
+        including_role_permissions:
+          type: array
+          items:
+            type: string
+          description: All permission strings that transitively include this permission.
+        is_category_toggle:
+          type: boolean
+          description: Indicates whether this permission is a category toggle that enables access to the associated product area.
+    Access_Control_Roles_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

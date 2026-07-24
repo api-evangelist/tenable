@@ -1,0 +1,1346 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Scanner Groups API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Scanner Groups
+  x-displayName: Scanner Groups
+paths:
+  /scanner-groups:
+    post:
+      summary: Create scanner group
+      description: Creates a new scanner group. You cannot use this endpoint to:<ul><li>Assign the new scanner group to a network object. Tenable Vulnerability Management automatically assigns new scanner groups to the default network object. To assign a scanner group to a network object, use the [POST /networks/{network_id}/scanners/{scanner_uuid}](ref:networks-assign-scanner) endpoint.</li><li>Configure scan routes for the scanner group. Instead, use the [PUT /scanner-groups/group_id/routes](ref:io-scanner-groups-update-routes) endpoint.</li></ul><div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.CREATE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: scanner-groups-create
+      tags:
+      - Scanner Groups
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name for the new scanner group.
+                type:
+                  type: string
+                  description: The type of scanner group. If you omit this parameter, Tenable Vulnerability Management automatically uses the default (`load_balancing`).
+                  enum:
+                  - load_balancing
+              required:
+              - name
+      responses:
+        '200':
+          description: Returned if the scanner group was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_response-create-scanner_group'
+              examples:
+                response:
+                  value:
+                    creation_date: 1545331392
+                    last_modification_date: 1545331392
+                    owner_id: 1
+                    owner: system
+                    owner_uuid: 09d69c34-4b27-469b-b861-04d57834bc25
+                    default_permissions: 16
+                    scan_count: 0
+                    uuid: f2452ce8-8fab-44dc-92ec-08179e219ecd
+                    type: load_balancing
+                    name: Example Group
+                    id: 102826
+                    owner_name: system
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create scanner groups.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Groups_cloud: []
+    get:
+      summary: List scanner groups
+      description: Lists scanner groups for your Tenable Vulnerability Management instance.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: scanner-groups-list
+      tags:
+      - Scanner Groups
+      responses:
+        '200':
+          description: Returned if the list of scanner groups was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  scanner_pools:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Scanner_Groups_object-scanner_group'
+              examples:
+                response:
+                  value:
+                    scanner_pools:
+                    - creation_date: 1545326169
+                      last_modification_date: 1545345793
+                      owner_id: 1
+                      owner: system
+                      owner_uuid: 09d69c34-4b27-469b-b861-04d57834bc25
+                      default_permissions: 16
+                      user_permissions: 128
+                      shared: 1
+                      scan_count: 0
+                      scanner_count: 1
+                      uuid: 58658822-608a-4a27-abbc-80b557a6f922
+                      type: load_balancing
+                      name: New Group Name
+                      network_name: Default
+                      id: 102823
+                      supports_webapp: false
+                      scanner_id: 144057
+                      scanner_uuid: 58658822-608a-4a27-abbc-80b557a6f922
+                      owner_name: system
+                    - creation_date: 1545326198
+                      last_modification_date: 1545345902
+                      owner_id: 1
+                      owner: system
+                      owner_uuid: 09d69c34-4b27-469b-b861-04d57834bc25
+                      default_permissions: 16
+                      user_permissions: 128
+                      shared: 1
+                      scan_count: 0
+                      scanner_count: 1
+                      uuid: 9c14e605-8d0d-4781-90f7-2353e134a721
+                      type: load_balancing
+                      name: Group New Name
+                      network_name: Columbia
+                      id: 102824
+                      scanner_id: 144058
+                      scanner_uuid: 9c14e605-8d0d-4781-90f7-2353e134a721
+                      owner_name: system
+                    - creation_date: 1545331154
+                      last_modification_date: 1545331154
+                      owner_id: 1
+                      owner: system
+                      owner_uuid: 09d69c34-4b27-469b-b861-04d57834bc25
+                      default_permissions: 16
+                      user_permissions: 128
+                      shared: 1
+                      scan_count: 0
+                      scanner_count: 2
+                      uuid: fadf7053-88da-4b99-9da9-ca2ab36e18c5
+                      type: load_balancing
+                      name: test1
+                      network_name: San Francisco
+                      id: 102825
+                      scanner_id: 144059
+                      scanner_uuid: fadf7053-88da-4b99-9da9-ca2ab36e18c5
+                      owner_name: system
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the list of scanner groups.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Groups_cloud: []
+  /scanner-groups/{group_id}:
+    get:
+      summary: List scanner group details
+      description: 'Returns details for the specified scanner group.
+
+
+        **Note:** This endpoint does not return details about scan routes configured for the scanner group. For scan routes, use the [GET /scanner-groups/group_id/routes](ref:io-scanner-groups-list-routes) endpoint instead.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.READ` custom role privilege. See [Roles](doc:roles).</div>'
+      operationId: scanner-groups-details
+      tags:
+      - Scanner Groups
+      parameters:
+      - description: The ID of the scanner group.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the details for the specified scanner group were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_object-scanner_group'
+              examples:
+                response:
+                  value:
+                    creation_date: 1545326169
+                    last_modification_date: 1545326169
+                    owner_id: 1
+                    owner: system
+                    owner_uuid: 09d69c34-4b27-469b-b861-04d57834bc25
+                    default_permissions: 16
+                    user_permissions: 128
+                    shared: 1
+                    scan_count: 0
+                    uuid: 58658822-608a-4a27-abbc-80b557a6f922
+                    type: load_balancing
+                    name: New Scanner Group
+                    network_name: Default
+                    id: 102823
+                    scanner_id: 144057
+                    scanner_uuid: 58658822-608a-4a27-abbc-80b557a6f922
+                    owner_name: system
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the scanner group details.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified scanner group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Groups_cloud: []
+    put:
+      summary: Update scanner group
+      description: Updates a scanner group. You cannot use this endpoint to:<ul><li>Assign a scanner group to a network object. Instead, use the [POST /networks/{network_id}/scanners/{scanner_uuid}](ref:networks-assign-scanner) endpoint.</li><li>Update scan routes configured for the scanner group. Instead, use the [PUT /scanner-groups/group_id/routes](ref:io-scanner-groups-update-routes) endpoint.</li></ul><div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.EDIT` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: scanner-groups-edit
+      tags:
+      - Scanner Groups
+      parameters:
+      - description: The ID of the scanner group.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The new name for the scanner group.
+              required:
+              - name
+      responses:
+        '200':
+          description: Returned if the scanner group was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_response-update-scanner_group'
+              examples:
+                response:
+                  value:
+                    owner_uuid: 09d69c34-4b27-469b-b861-04d57834bc25
+                    created: 1545326169245
+                    modified: 1545345793683
+                    container_uuid: b9999949-330d-4d83-9a4e-3c6ca7bcbfa2
+                    uuid: 58658822-608a-4a27-abbc-80b557a6f922
+                    id: 102823
+                    name: New Group Name
+                    type: load_balancing
+                    distributed: false
+                    default_permissions: 16
+                    network_name: Default
+                    shared: 1
+                    user_permissions: 128
+                    supports_webapp: false
+                    created_in_seconds: 1545326169
+                    modified_in_seconds: 1545345793
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the scanner groups.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified scanner group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Groups_cloud: []
+    delete:
+      summary: Delete a scanner group
+      description: Deletes a scanner group.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.DELETE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: scanner-groups-delete
+      tags:
+      - Scanner Groups
+      parameters:
+      - description: The ID of the scanner group.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the specified scanner group was deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to delete scanner groups.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified scanner group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Groups_cloud: []
+  /scanner-groups/{group_id}/scanners:
+    get:
+      summary: List scanners within scanner group
+      description: 'Lists scanners associated with the scanner group.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>'
+      operationId: scanner-groups-list-scanners
+      tags:
+      - Scanner Groups
+      parameters:
+      - description: The ID of the scanner group.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the list of scanners in the specified group was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  scanners:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Scanner_Groups_response-scanner-object'
+              examples:
+                response:
+                  value:
+                    scanners:
+                    - creation_date: 1543416914
+                      group: true
+                      groups:
+                      - name: scanner-group-a
+                        uuid: ff1a7722-d244-4d17-9083-1a1f6e42e341
+                      - name: scanner-group-b
+                        uuid: 5448d73b-a394-44ff-b0ed-643ba580887c
+                      id: 141483
+                      key: e3eeefeacca0d998c466af126549d68ef0f4e0d0ba3ab04a6e59a1d8a8a57079
+                      last_connect: null
+                      last_modification_date: 1543416914
+                      license: null
+                      linked: 1
+                      name: EU Frankfurt Cloud Scanners
+                      num_scans: 0
+                      owner: system
+                      owner_id: 1
+                      owner_name: system
+                      owner_uuid: 09d69c34-4b27-469b-b861-04d57834bc25
+                      pool: true
+                      scan_count: 0
+                      source: service
+                      status: 'on'
+                      timestamp: 1543416914
+                      type: local
+                      uuid: 91b9c1be-2c9d-4106-bf26-6b6b0de8fc23ea8cce60f523eeef
+                      profile_uuid: 00000000-0000-0000-0000-000000000000
+                      profile_name: Default
+                    - creation_date: 1543416914
+                      group: true
+                      id: 141482
+                      key: 83520d0f4da8265cb52f7b558a3319ecb36d4b0ea490d4f9ec4ca9f2e1eee8b9
+                      last_connect: null
+                      last_modification_date: 1543416914
+                      license: null
+                      linked: 1
+                      name: AP Singapore Cloud Scanners
+                      num_scans: 0
+                      owner: system
+                      owner_id: 1
+                      owner_name: system
+                      owner_uuid: 09d69c34-4b27-469b-b861-04d57834bc25
+                      pool: true
+                      scan_count: 0
+                      source: service
+                      status: 'on'
+                      timestamp: 1543416914
+                      type: local
+                      uuid: 5415f6ea-4286-4755-9c78-866705128c060523d1e84e3fef44
+                      profile_uuid: 00000000-0000-0000-0000-000000000000
+                      profile_name: Default
+                    - creation_date: 1545331392
+                      group: true
+                      id: 144060
+                      key: 7ceeb2b90a14d640093e5c6b6a163d0e625e575f71ee7dec9b4d97b90a874d98
+                      last_connect: null
+                      last_modification_date: 1545331392
+                      linked: 1
+                      name: Example Group
+                      num_scans: 0
+                      owner: system
+                      owner_id: 1
+                      owner_name: system
+                      owner_uuid: 09d69c34-4b27-469b-b861-04d57834bc25
+                      pool: true
+                      scan_count: 0
+                      source: service
+                      status: 'on'
+                      timestamp: 1545331392
+                      type: pool
+                      uuid: f2452ce8-8fab-44dc-92ec-08179e219ecd
+                      profile_uuid: 00000000-0000-0000-0000-000000000000
+                      profile_name: Default
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list scanners within scanner groups.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified scanner group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Groups_cloud: []
+  /scanner-groups/{group_id}/scanners/{scanner_id}:
+    post:
+      summary: Add scanner to scanner group
+      description: 'Adds a scanner to the scanner group. You can use the [GET /scanner-groups/{group_id}/scanners](ref:scanner-groups-list-scanners) endpoint to verify that the scanner has been added to the specified scanner group.<div class="perms-callout">Requires the Basic [16] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See [Roles](doc:roles).</div>'
+      operationId: scanner-groups-add-scanner
+      tags:
+      - Scanner Groups
+      parameters:
+      - description: The ID of the scanner group.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: The ID of the scanner to add to the scanner group.
+        required: true
+        name: scanner_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the scanner was added to the scanner group successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to add scanners to scanner groups.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified scanner or scanner group.
+        '409':
+          description: Returned if you attempt to add a scanner to a scanner group that the scanner is already a member of.
+          content:
+            text/html:
+              examples:
+                response:
+                  value:
+                    error: Scanner 00000000-0000-0000-0000-00000000000000000000000000001 already exists in group 58658822-608a-4a27-abbc-80b557a6f922
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Groups_cloud: []
+    delete:
+      summary: Remove scanner from scanner group
+      description: 'Remove a scanner from the scanner group.<div class="perms-callout">Requires the Basic [16] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See [Roles](doc:roles).</div>'
+      operationId: scanner-groups-delete-scanner
+      tags:
+      - Scanner Groups
+      parameters:
+      - description: The ID of the scanner group.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: The ID of the scanner to remove from the scanner group.
+        required: true
+        name: scanner_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the scanner from the scanner group was removed successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to remove scanners from scanner groups.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified scanner or scanner group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Groups_cloud: []
+  /scanner-groups/{group_id}/routes:
+    get:
+      summary: List scan routes
+      description: List the hostnames, wildcards, IP addresses, and IP address ranges that Tenable Vulnerability Management matches against targets in auto-routed scans. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats). <div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: io-scanner-groups-list-routes
+      tags:
+      - Scanner Groups
+      parameters:
+      - description: The ID of the scanner group. Corresponds to the `id` element in the 200 response for the [GET /scanner-groups](ref:scanner-groups-list) endpoint.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the scan routes list for the specified scanner group was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_route_objects'
+              examples:
+                response:
+                  value:
+                  - route: example.com
+                  - route: 10.1.2.3
+                  - route: 2001:db8::/64
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the scan routes list.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified scanner group.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Groups_cloud: []
+    put:
+      summary: Update scan routes
+      description: Updates the hostnames, hostname wildcards, IP addresses, and IP address ranges that Tenable Vulnerability Management matches against targets in auto-routed scans. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats). <div class="perms-callout">Requires the Scan Manager [40] user role and the Can Edit [64] scan permission. Alternatively, requires the `VM.VM_SENSOR.SCANNER_GROUP.EDIT` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: io-scanner-groups-update-routes
+      tags:
+      - Scanner Groups
+      parameters:
+      - description: The ID of the scanner group. Corresponds to the `id` element in the 200 response for the [GET /scanner-groups](ref:scanner-groups-list) endpoint.
+        required: true
+        name: group_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Scanner_Groups_routes'
+            example:
+              routes:
+              - example.com
+              - '*.example.net'
+              - 192.0.2.0/8
+              - 2001:db8::1
+              - 192.0.2.1-192.0.2.255
+      responses:
+        '200':
+          description: Returned if the scan routes for the specified scanner group was updated successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters, if your request was improperly formatted, if one or more scan routes are in an unrecognized format, or if there are too many scan routes assigned to a single scanner group.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Error message
+                properties:
+                  error:
+                    type: string
+                    description: A brief description of the cause of the error.
+              examples:
+                bad hostname:
+                  value:
+                    error: '192.0.2.257: Unrecognized target format'
+                wrong order:
+                  value:
+                    error: '192.0.2.255-192.0.2.1: IP ranges must be in increasing order'
+                bad cidr:
+                  value:
+                    error: '192.0.2.0/33: Invalid mask length used: 33'
+                too many routes:
+                  value:
+                    error: Too many scan routes.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified scanner group.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Error message
+                properties:
+                  error:
+                    type: string
+                    description: A brief description of the cause of the error.
+              examples:
+                response:
+                  value:
+                    error: ScannerGroup not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Groups_cloud: []
+components:
+  schemas:
+    Scanner_Groups_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Scanner_Groups_route_objects:
+      type: array
+      items:
+        $ref: '#/components/schemas/Scanner_Groups_route'
+    Scanner_Groups_response-scanner-object:
+      type: object
+      properties:
+        creation_date:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the scanner was created. This attribute specifies the original creation date if the scanner was migrated.
+        distro:
+          type: string
+          description: The scanner operating system distribution.
+        engine_version:
+          type: string
+          description: The version of the scanner.
+        group:
+          type: boolean
+          description: Indicates whether the scanner belongs to a scanner group ('true') or not ('false').
+        groups:
+          type: array
+          description: A list of scanner groups that the scanner belongs to.
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the scanner group.
+              uuid:
+                type: string
+                description: The UUID of the scanner group.
+        hostname:
+          type: string
+          description: The hostname of the scanner.
+        id:
+          type: integer
+          description: The unique ID of the scanner.
+        ip_addresses:
+          description: A list of IP addresses associated with the scanner.
+          type: array
+          items:
+            type: string
+        key:
+          type: string
+          description: The linking key, that is, the alpha-numeric sequence of characters you use to link a scanner to Tenable Vulnerability Management. For more information about linking a scanner, see the [Link a Sensor](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/LinkaSensor.htm) in the Tenable Vulnerability Management User Guide.
+        last_connect:
+          type: string
+          description: The Unix timestamp when any of the scanner's tasks have provided its last update.
+        last_modification_date:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the scanner was last modified.
+        linked:
+          type: integer
+          description: Specifies whether you disabled (`0`) or enabled (`1`) the scanner. For more information, see the [PUT /scanners/{scanner_id}/link](ref:scanners-toggle-link-state) endpoint.
+        loaded_plugin_set:
+          type: string
+          description: The current plugin set on the scanner.
+        registration_code:
+          type: string
+          description: The registration code of the scanner.
+        license:
+          type: object
+          properties:
+            type:
+              type: string
+              description: The license type.
+            ips:
+              type: integer
+              description: The number of hosts the scanner is licensed to use.
+            agents:
+              type: integer
+              description: The number of agents the scanner is licensed to use.
+            scanners:
+              type: integer
+              description: The number of scanners the scanner is licensed to use.
+            apps:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: The Tenable products licensed on the scanner.
+                consec:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: Indicates that the scanner is licensed to perform Tenable Container Security scans.
+                    mode:
+                      type: string
+                      description: Indicates whether the product license is an evaluation license (`eval`) or standard license (`standard`).
+                    expiration_date:
+                      type: integer
+                      format: int64
+                      description: The Unix timestamp when the license expires.
+                    activation_code:
+                      type: integer
+                      description: The activation code you used to enable the license. This value is present for standard licenses only.
+                    max_gb:
+                      type: integer
+                      description: The maximum memory (in GB) on the scanner allotted for the Tenable licensed application.
+                was:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: Indicates that the scanner is licensed to perform Tenable Web App Scanning scans.
+                    mode:
+                      type: string
+                      description: Indicates whether the product license is an evaluation license (`eval`) or standard license (`standard`).
+                    expiration_date:
+                      type: integer
+                      format: int64
+                      description: The Unix timestamp when the license expires.
+                    activation_code:
+                      type: integer
+                      description: The activation code you used to enable the license. This value is present for standard licenses only.
+                    web_assets:
+                      type: integer
+                      description: The number of web assets which your license authorizes you to scan.
+        name:
+          type: string
+          description: The user-defined name of the scanner.
+        network_name:
+          type: string
+          description: The name of the network object associated with the scanner. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        num_scans:
+          type: integer
+          description: The number of scans (tasks) the scanner is currently executing.
+        owner:
+          type: string
+          description: The owner of the scanner.
+        owner_id:
+          type: integer
+          description: The ID of the owner of the scanner.
+        owner_name:
+          type: string
+          description: The username of the owner of the scanner.
+        owner_uuid:
+          type: string
+          description: The UUID of the owner of the scanner.
+        platform:
+          type: string
+          description: The platform of the scanner.
+        pool:
+          type: boolean
+          description: Indicates whether the scanner is part of a scanner group ('true') or not ('false'). For more information about scanner groups, see the [Scanner Groups](ref:scanner-groups) endpoints.
+        scan_count:
+          type: integer
+          description: The number of scans that the scanner is currently running.
+        shared:
+          type: boolean
+          description: Indicates whether anyone other than the scanner owner has explicit access to the scanner (`1`).
+        source:
+          type: string
+          description: Always set to `service`.
+        status:
+          type: string
+          description: The status of the scanner (`on` or `off`).
+        timestamp:
+          type: integer
+          description: Equivalent to the `last_modification_date` attribute.
+        type:
+          type: string
+          description: The type of scanner (`local`, `managed`, `managed_pvs`, `pool`, `remote`, or `webapp`).
+        ui_build:
+          type: integer
+          description: The backend build of Nessus that is running on the scanner.
+        ui_version:
+          type: string
+          description: The backend version of Nessus that is running on the scanner.
+        user_permissions:
+          type: integer
+          description: The permissions you (the current user) have been assigned for the scanner. See [Permissions](doc:permissions).
+        uuid:
+          type: string
+          description: The UUID of the scanner.
+        remote_uuid:
+          type: string
+          description: The UUID of the Nessus installation on the scanner.
+        supports_remote_logs:
+          type: boolean
+          description: Indicates if the scanner supports remote logging.
+        supports_webapp:
+          type: boolean
+          description: Indicates if the scanner supports Tenable Web App Scanning.
+        aws_update_interval:
+          type: integer
+          description: Specifies how often, in minutes, the scanner checks in with Tenable Vulnerability Management (Amazon Web Services scanners only).
+        profile_uuid:
+          type: string
+          description: The unique ID (UUID) of the scanner profile that the scanner belongs to.
+        profile_name:
+          type: string
+          description: The name of the scanner profile that the scanner belongs to.
+    Scanner_Groups_routes:
+      type: object
+      properties:
+        routes:
+          type: array
+          items:
+            type: string
+          description: A list of zero or more hostnames, hostname wildcards, IP addresses, CIDR addresses, or IP ranges. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats).
+      required:
+      - routes
+    Scanner_Groups_object-scanner_group:
+      type: object
+      properties:
+        creation_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the scanner group was created.
+        last_modification_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the scanner group was last modified.
+        owner_id:
+          type: integer
+          description: The unique ID of the owner of the scanner group.
+        owner:
+          type: string
+          description: The username of the owner of the scanner group.
+        default_permissions:
+          type: integer
+          description: The access permissions for the Default group.
+        user_permissions:
+          type: integer
+          description: The sharing permissions for the scanner group.
+        shared:
+          type: integer
+          description: Indicates whether or not the scanner group is shared.
+        scan_count:
+          type: integer
+          description: The number of scans currently tasked to the scanner group.
+        scanner_count:
+          type: string
+          description: The number of scanners associated with this scanner group.
+        uuid:
+          type: string
+          description: The UUID of the scanner group.
+        token:
+          type: string
+          description: The unique token for a scanner group.
+        flag:
+          type: string
+          description: The flag indicating what type of scanner group.
+        type:
+          type: string
+          description: The type of scanner group. This is set to "load_balancing" by default.
+        name:
+          type: string
+          description: The name of the scanner group.
+        network_name:
+          type: string
+          description: The name of the network object associated with the scanner group. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        id:
+          type: integer
+          description: The unique ID of the scanner group.
+        supports_webapp:
+          type: boolean
+          description: Indicates whether or not the scanner group supports Tenable Web App Scanning scanners.
+        scanner_id:
+          type: integer
+          description: The unique scanner ID of the scanner group.
+        scanner_uuid:
+          type: string
+          description: The UUID of the scanner group.
+        owner_name:
+          type: string
+          description: The username of the owner of the scanner group.
+    Scanner_Groups_response-update-scanner_group:
+      type: object
+      properties:
+        owner_uuid:
+          type: integer
+          description: The UUID of the owner of the scanner group.
+        created:
+          type: integer
+          format: int64
+          description: A Unix timestamp (milliseconds precision) indicating the date and time when the scanner group was created.
+        modified:
+          type: integer
+          format: int64
+          description: A Unix timestamp (milliseconds precision) indicating the date and time when the scanner group was last modified.
+        container_uuid:
+          type: string
+          description: The UUID of the container.
+        uuid:
+          type: string
+          description: The UUID of the scanner group.
+        id:
+          type: integer
+          description: The unique ID of the scanner group.
+        name:
+          type: string
+          description: The name of the scanner group.
+        type:
+          type: string
+          description: The type of scanner group. This is set to "load_balancing" by default.
+        distributed:
+          type: boolean
+          description: Indicates whether or not the scanner group is distributed.
+        network_name:
+          type: string
+          description: The name of the network object associated with the scanner group. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        default_permissions:
+          type: integer
+          description: The access permissions for the Default group.
+        shared:
+          type: integer
+          description: Indicates whether or not the scanner group is shared.
+        user_permissions:
+          type: integer
+          description: The sharing permissions for the scanner group.
+        supports_webapp:
+          type: boolean
+          description: Indicates whether or not the scanner group supports Tenable Web App Scanning scanners.
+        created_in_seconds:
+          type: integer
+          format: int64
+          description: A Unix timestamp (seconds precision) indicating the date and time when the scanner group was created.
+        modified_in_seconds:
+          type: integer
+          description: A Unix timestamp (seconds precision) indicating the date and time when the scanner group was last modified.
+    Scanner_Groups_route:
+      type: object
+      properties:
+        route:
+          type: string
+          description: A hostname, hostname wildcard, IP address, CIDR address, or IP range. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats).
+      required:
+      - route
+    Scanner_Groups_response-create-scanner_group:
+      type: object
+      properties:
+        creation_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the scanner group was created.
+        last_modification_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the scanner group was last modified.
+        owner_id:
+          type: integer
+          description: The unique ID of the owner of the scanner group.
+        owner:
+          type: string
+          description: The username of the owner of the scanner group.
+        owner_uuid:
+          type: integer
+          description: The UUID of the owner of the scanner group.
+        default_permissions:
+          type: integer
+          description: The access permissions for the Default group.
+        scan_count:
+          type: integer
+          description: The number of scans currently tasked to the scanner group.
+        uuid:
+          type: string
+          description: The UUID of the scanner group.
+        type:
+          type: string
+          description: The type of scanner group. This is set to "load_balancing" by default.
+        name:
+          type: string
+          description: The name of the scanner group.
+        id:
+          type: integer
+          description: The unique ID of the scanner group.
+        owner_name:
+          type: string
+          description: The username of the owner of the scanner group.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

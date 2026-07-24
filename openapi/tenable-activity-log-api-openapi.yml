@@ -1,0 +1,387 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Activity Log API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Activity Log
+  x-displayName: Activity Log
+paths:
+  /audit-log/v1/events:
+    get:
+      summary: List activity log events
+      description: "Returns a list of activity log events for all users in your organization's Tenable Vulnerability Management account. \n\nEach event includes details such as the timestamp, action taken, actor, and other relevant metadata. You can apply filters to narrow the results and specify the number of events to return. By default, the response includes up to 50 events. \n\nFor more information, see [Activity Logs](doc:vm-activity-log) in the developer documentation. \n\n**Note:** Tenable retains activity log data for three years, after which it is permanently deleted from the database. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+      operationId: audit-log-events
+      tags:
+      - Activity Log
+      parameters:
+      - description: 'Specifies a filter condition in the `field.operator:value` format. Filter conditions can include:
+
+          * `date.gt:<ISO Date/Time>` — Returns events only if the timestamp when the events occurred is after the date or time you specify. For example: `f=date.gt:2017-12-31`, `f=date.gt:2017-12-31T13:14:15.678Z`
+
+          * `date.gte:<ISO Date/Time>` — Returns events only if the timestamp when the events occurred is at or after the date or time you specify. For example: `f=date.gte:2017-12-31`, `f=date.gte:2017-12-31T13:14:15.678Z`
+
+          * `date.lt:<ISO Date/Time>` — Returns events only if the timestamp when the events occurred is before the date or time you specify. For example: `f=date.lt:2017-12-31`, `f=date.lt:2023-03-04T14:15:16.123-05:30`
+
+          * `date.lte:<ISO Date/Time>` — Returns events only if the timestamp when the events occurred is at or before the date or time you specify. For example: `f=date.lte:2017-12-31`, `f=date.lte:2023-03-04T14:15:16.123-05:30`
+
+          * `actor_id.eq:<UUID>` — Returns only the events with a matching actor UUID. For example: `f=actor_id.eq:ee512c41-282e-489c-a2cf-8bda1151e630`
+
+          * `target_id.eq:<UUID>` — Returns only the events with a matching target UUID. For example: `f=target_id.eq:ee512c41-282e-489c-a2cf-8bda1151e630`
+
+          * `action.eq:<String>` — Returns only the events with a matching action. For example: `f=action.eq:audit.log.view`
+
+
+          You can specify multiple `f` parameters, separated by ampersand (`&`) characters. For example: `?f=date.gte:2019-12-30&f=date.lt:2019-12-31&f=actor_id.eq:f54eeec5-84e0-44bb-9ebe-64898bea0e59&limit=5000`'
+        required: false
+        name: f
+        in: query
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            example: action.eq:audit.log.view
+      - description: Specifies whether an `and` or `or` condition is applied when multiple `f` parameters are present. If omitted, the system uses the default value of `and`.
+        required: false
+        name: ft
+        in: query
+        schema:
+          type: string
+          default: and
+          enum:
+          - and
+          - or
+      - description: Specifies the maximum number of records to retrieve per request. If omitted, the system uses the default value of `50`. The maximum value is `10000`.
+        required: false
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 50
+          maximum: 10000
+          example: 5000
+      - description: Specifies the starting record to retrieve. If omitted, the system uses the default value of `0`.
+        required: false
+        name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - description: 'Specifies the field and order used to sort the results, in the format `field:order`. The order must be `asc` (ascending) or `desc` (descending). For example, `received:desc` sorts results by the `received` field in descending order.
+
+
+          **Note:** Currently, the only supported sort field is `received`.'
+        required: false
+        name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the activity log was successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/activity-log_Response-Events-Object'
+                  pagination:
+                    $ref: '#/components/schemas/activity-log_Response-Pagination'
+              examples:
+                response:
+                  value:
+                    events:
+                    - id: a4e9177aa45c48c9d46a2f24c5f97b24
+                      action: user.authenticate.password
+                      crud: u
+                      is_failure: true
+                      received: '2018-12-31T23:09:40Z'
+                      description: null
+                      actor:
+                        id: da1499fd-afdb-4fb9-bfb6-9defec2f0f09
+                        name: user2@example.com
+                      is_anonymous: null
+                      target:
+                        id: da1499fd-afdb-4fb9-bfb6-9defec2f0f09
+                        name: user2@example.com
+                        type: User
+                      fields:
+                      - key: message
+                        value: Invalid credentials.
+                      - key: sessionToken
+                        value: '-'
+                      - key: X-Forwarded-For
+                        value: 192.0.2.57, 192.0.2.57
+                      - key: X-Request-Uuid
+                        value: 71a6630e83148694260ad838ddff5dce:dd19f39e7ec84ba80dec:8d7f958f8c3b770767af
+                    - id: 9ed34e87d3474ff985759d14ss703e4c
+                      action: session.create
+                      crud: c
+                      is_failure: false
+                      received: '2018-12-31T23:33:01Z'
+                      description: null
+                      actor:
+                        id: null
+                        name: null
+                      is_anonymous: true
+                      target:
+                        id: b569d85a-2e80-44fa-9eb6-2693d656df41
+                        name: user2@example.com
+                        type: User
+                      fields:
+                      - key: X-Access-Type
+                        value: Created by username
+                    - id: dca7681afaf24048baff7b4e90b668d7
+                      action: session.delete
+                      crud: d
+                      is_failure: false
+                      received: '2018-12-31T23:40:57Z'
+                      description: null
+                      actor:
+                        id: b569d85a-2e80-44fa-9eb6-2693d656df41
+                        name: user2@example.com
+                      is_anonymous: null
+                      target:
+                        id: bcce340
+                        name: null
+                        type: Session
+                      fields:
+                      - key: message
+                        value: session timeout
+                    - id: a2498a85cb5740a28e532814c0ba8369
+                      action: user.impersonation.start
+                      crud: u
+                      is_failure: false
+                      received: '2018-12-31T09:23:12Z'
+                      description: null
+                      actor:
+                        id: ff24b723-d9d6-44ed-9a2d-bfe067cca6ca
+                        name: monitoring@example.com
+                      is_anonymous: null
+                      target:
+                        id: fc13b837-c4e1-4779-9897-8edef55a88a3
+                        name: user2@example.com
+                        type: User
+                      fields:
+                      - key: sessionToken
+                        value: '-'
+                      - key: X-Access-Type
+                        value: apikey
+                      - key: X-Forwarded-For
+                        value: 192.0.2.57
+                      - key: X-Request-Uuid
+                        value: 63e024e7fe25ed24ce1c7142781527ac:43cf99b77f783a962a1a
+                    - id: eaac53481de04f67bc7eeea07d2fb0f5
+                      action: session.delete
+                      crud: d
+                      is_failure: false
+                      received: '2018-12-31T01:40:07Z'
+                      description: null
+                      actor:
+                        id: d2667922-5a27-4c4a-9207-f591fbdc9d23
+                        name: user2@example.com
+                      is_anonymous: null
+                      target:
+                        id: 12d024e
+                        name: null
+                        type: Session
+                      fields:
+                      - key: message
+                        value: session timeout
+                    pagination:
+                      offset: 0
+                      limit: 50
+                      count: 50
+                      total: 64
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/activity-log_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the activity log.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/activity-log_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - activity-log_cloud: []
+components:
+  schemas:
+    activity-log_Response-Pagination:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        offset:
+          description: The starting record you requested (or zero if omitted).
+          type: integer
+          format: int32
+        limit:
+          description: The number of records requested (or the default value if omitted from the request).
+          type: integer
+          format: int32
+        count:
+          description: The number of records in the current response.
+          type: integer
+          format: int32
+        total:
+          description: The total number of events that match the search criteria.
+          type: integer
+          format: int32
+    activity-log_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    activity-log_Response-Events-Object:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of the event.
+        action:
+          type: string
+          description: The action that was taken by the user.
+        crud:
+          type: string
+          description: Indicates whether the action taken was creating (c), reading (r), updating (u), or deleting (d) an entity.
+        is_failure:
+          type: boolean
+          description: Indicates whether the action the user took succeeded or failed. Every event is logged regardless of whether a user action succeeds.
+        received:
+          type: string
+          description: A timestamp in ISO 8601 format indicating when the event occurred.
+        description:
+          type: string
+          description: A description of the event.
+        actor:
+          $ref: '#/components/schemas/activity-log_actor'
+        is_anonymous:
+          type: boolean
+          description: Indicates whether the action was performed anonymously.
+        target:
+          $ref: '#/components/schemas/activity-log_target'
+        fields:
+          $ref: '#/components/schemas/activity-log_fields'
+    activity-log_pair:
+      type: object
+      properties:
+        key:
+          type: string
+          description: A key. The exact string varies based on the action that was taken.
+        value:
+          type: string
+          description: A value that corresponds to the key. The exact value varies based on the action that was taken.
+    activity-log_actor:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The UUID of the user that took the action.
+        name:
+          type: string
+          description: The username of the user that took the action.
+    activity-log_target:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The UUID of the target entity. For example, a user UUID.
+        name:
+          type: string
+          description: The name of the target entity. For example, a username.
+        type:
+          type: string
+          description: The type of entity that was the target of the action. For example, a user.
+    activity-log_fields:
+      type: array
+      items:
+        $ref: '#/components/schemas/activity-log_pair'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

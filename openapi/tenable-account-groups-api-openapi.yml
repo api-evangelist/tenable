@@ -1,0 +1,483 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Account Groups API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Account Groups
+  description: "The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. The account group endpoints in the Tenable MSSP Portal API enable users to create, list, update, and delete account groups. Account groups enable you to group similar customer accounts and facilitates the search for specific accounts. \n\nFor more information about account groups in the Tenable MSSP Portal, see [Create an Account Group](https://docs.tenable.com/managed-security-service-provider/Content/CreateAccountGroup.htm) in the Tenable Managed Security Service Provider (MSSP) User Guide."
+paths:
+  /mssp/accountGroup:
+    post:
+      tags:
+      - Account Groups
+      summary: Create account group
+      description: Creates a new account group. <div class="perms-callout">Requires ADMINISTRATOR [64] user permissions. See [Permissions](doc:permissions).</div>
+      operationId: mssp-account-groups-create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request-Create-Account-Group'
+      responses:
+        '200':
+          description: Returned if the account group was created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  account_group_uuid:
+                    type: string
+                    format: uuid
+                    description: The UUID of the account group.
+              examples:
+                response:
+                  value:
+                    account_group_uuid: 04435a26-9da9-48f1-a782-63b2d2ca45fa
+        '400':
+          description: Returned if your request specified invalid parameters, if your request was improperly formatted, or if an account group with the specified name already exists.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Account group with this name already exists
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to create an account group. For more information, see [Permissions](doc:permissions).
+        '404':
+          description: Returned if the Tenable MSSP Platform could not find the specified accounts.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    get:
+      tags:
+      - Account Groups
+      summary: List account groups
+      description: Returns a list of account groups. <div class="perms-callout">Requires BASIC [16] user permissions. See [Permissions](doc:permissions).</div>
+      operationId: mssp-account-groups-list
+      responses:
+        '200':
+          description: Returned if the list of account groups was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Response-Account-Groups'
+              examples:
+                response:
+                  value:
+                  - accountGroupUuid: 3d58776e-830d-4b1c-bfc4-ac9160364224
+                    parentContainerUuid: 14c45ae7-9ac6-40f4-a841-252e6e8db4eb
+                    name: APAC Accounts
+                    lastModified: 1710256733
+                    count: 5
+                    accountUuids:
+                    - 24518810-a27d-4244-8c68-9d8195b84312
+                    - a7eb056c-1a94-4fd2-8345-36430dd44d84
+                    - cc9a724e-cdbd-4ae0-8316-670fff1cf94b
+                    - 3dff8123-f2ae-4bcd-8fd0-9e7a0bcb37f2
+                    - 5f74fbec-3bf5-4ac3-9b41-b3200bb377eY
+                  - accountGroupUuid: 1e5c1006-68c4-4c7d-a3b9-1326f7051830
+                    parentContainerUuid: 14c45ae7-9ac6-40f4-a841-252e6e8db4eb
+                    name: Example Group
+                    lastModified: 1712163685
+                    count: 2
+                    accountUuids:
+                    - 2c89c3-3863-4ff6-9922-2defa283affb
+                    - 1c8a54c-e431-4889-b37d-79e0234d0e2f
+                  - accountGroupUuid: bc3f43f5-500f-4467-b5d1-717937543f54
+                    parentContainerUuid: 14c45ae7-9ac6-40f4-a841-252e6e8db4eb
+                    name: EMEA Accounts
+                    lastModified: 1710256717
+                    count: 5
+                    accountUuids:
+                    - 3ed176de-6b00-4de7-9f36-f49f43cee892
+                    - c7eb056c-1a94-4fd2-8345-36430dd44d87
+                    - be0caf78-edae-4d7f-9610-cc37eb4e3df8
+                    - ac9a724e-cdbd-4ae0-8316-670fff1cf949
+                    - 167feab6-0501-412a-8a06-48e1633377cc
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to to retrieve the list of account groups. For more information, see [Permissions](doc:permissions).
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /mssp/accountGroup/{account_group_uuid}:
+    get:
+      tags:
+      - Account Groups
+      summary: Get account group details
+      description: Returns the details for the specified account group. <div class="perms-callout">Requires BASIC [16] user permissions. See [Permissions](doc:permissions).</div>
+      operationId: mssp-account-groups-details-list
+      parameters:
+      - name: account_group_uuid
+        in: path
+        description: The UUID of the account group to retrieve details for.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: Returned if the details for the specified account group were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response-Account-Groups'
+              examples:
+                response:
+                  value:
+                    accountGroupUuid: bc3f43f5-500f-4467-b5d1-717937543f54
+                    parentContainerUuid: 14c45ae7-9ac6-40f4-a841-252e6e8db4eb
+                    name: EMEA Accounts
+                    lastModified: 1710256717
+                    count: 5
+                    accountUuids:
+                    - 3ed176de-6b00-4de7-9f36-f49f43cee892
+                    - c7eb056c-1a94-4fd2-8345-36430dd44d87
+                    - be0caf78-edae-4d7f-9610-cc37eb4e3df8
+                    - ac9a724e-cdbd-4ae0-8316-670fff1cf949
+                    - 167feab6-0501-412a-8a06-48e1633377cc
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to retrieve the details for the specified account group. For more information, see [Permissions](doc:permissions).
+        '404':
+          description: Returned if the Tenable MSSP Platform could not find the specified account group.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: AG:bc3f43f5-500f-4467-b5d1-717937543f54 could not be found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    put:
+      tags:
+      - Account Groups
+      summary: Update account group
+      description: Updates the specified account group. <div class="perms-callout">Requires ADMINISTRATOR [64] user permissions. See [Permissions](doc:permissions).</div>
+      operationId: mssp-account-groups-update
+      parameters:
+      - name: account_group_uuid
+        in: path
+        description: The UUID of the account group to update.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request-Create-Account-Group'
+      responses:
+        '200':
+          description: Returned if the specified account group was updated successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to update the specified account group. For more information, see [Permissions](doc:permissions).
+        '404':
+          description: Returned if the Tenable MSSP Platform could not find the specified account group.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: AG:dbf88beb-d20c-4ace-9681-777546cc9953 that you are trying to update could not be found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    delete:
+      tags:
+      - Account Groups
+      summary: Delete account group
+      description: Deletes the specified account group in the Tenable MSSP Portal. <div class="perms-callout">Requires ADMINISTRATOR [64] user permissions. See [Permissions](doc:permissions).</div>
+      operationId: mssp-account-groups-delete
+      parameters:
+      - name: account_group_uuid
+        description: The UUID of the account group to delete.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the specified account group was deleted successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to delete the specified account group. For more information, see [Permissions](doc:permissions).
+        '404':
+          description: Returned if the Tenable MSSP Platform could not find the specified account group.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Account Group with given uuid bb288beb-a20c-4ace-9631-777546cc9953 not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    Request-Create-Account-Group:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: 'The name of the account group.
+
+
+            **Note:** Account group names can only contain letters, numbers, and whitespace.'
+        accountUuids:
+          description: An array of account UUIDs to add to the account group.
+          type: array
+          items:
+            type: string
+            format: uuid
+    Response-Account-Groups:
+      type: object
+      properties:
+        accountGroupUuid:
+          type: string
+          format: uuid
+          description: The UUID of the account group.
+        parentContainerUuid:
+          type: string
+          format: uuid
+          description: The UUID of the account group's parent container.
+        name:
+          type: string
+          description: The name of the account group.
+        lastModified:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the account group was last modified. For example, `1710256733`.
+        count:
+          type: integer
+          description: The number of accounts contained in the account group.
+        accountUuids:
+          description: An array of account UUIDs that belong to the account group.
+          type: array
+          items:
+            type: string
+            format: uuid
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

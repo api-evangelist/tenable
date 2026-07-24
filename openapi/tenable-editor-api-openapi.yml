@@ -1,0 +1,2230 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Editor API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Editor
+  x-displayName: Editor
+paths:
+  /editor/{type}/{id}:
+    get:
+      summary: Get configuration details
+      description: 'Gets the configuration details for the scan or user-defined template (policy).
+
+
+        **Note:** The returned attributes can vary depending on the Tenable-provided template used to create the scan or user-defined template (policy).<div class="perms-callout">Requires the Standard [32] user role. See [Roles](doc:roles).</div>'
+      operationId: editor-details
+      tags:
+      - Editor
+      parameters:
+      - description: The type of object (`scan` or `policy`).
+        required: true
+        name: type
+        in: path
+        schema:
+          type: string
+          default: scan
+          enum:
+          - scan
+          - policy
+      - description: The unique ID of the scan or user-defined template (policy).
+        required: true
+        name: id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the object data was retrieved successfully. The returned attributes can vary depending on the Tenable-provided template used to create the scan or user-defined template (policy).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_was:
+                    type: boolean
+                    description: Indicates whether the scan or user-defined template (policy) can be used in Tenable Web App Scanning.
+                  user_permissions:
+                    type: integer
+                    description: The scan or policy permissions that the requesting user has for the specified scan or user-defined template (policy). For more information, see [Permissions](doc:permissions).
+                  owner:
+                    type: string
+                    description: The username of the owner of the scan or user-defined template (policy).
+                  title:
+                    type: string
+                    description: 'For scans, the standard text, `Custom Scan`. For user-defined templates (policies), the name of the Tenable-provided template used to create the user-defined template. '
+                  is_agent:
+                    type: boolean
+                    description: Indicates whether the scan or user-defined template (policy) can be used for agent scans.
+                  uuid:
+                    type: string
+                    description: The UUID of the scan or user-defined template (policy).
+                  filter_attributes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/editor_filter'
+                  settings:
+                    $ref: '#/components/schemas/editor_settings'
+                  credentials:
+                    $ref: '#/components/schemas/editor_credentials'
+                  compliance:
+                    $ref: '#/components/schemas/editor_compliance'
+                  plugins:
+                    $ref: '#/components/schemas/editor_plugins'
+                  name:
+                    type: string
+                    description: For scans, the standard text, `custom`. For user-defined templates (policies), the system name for the Tenable-provided template used to create the scan or user-defined template.
+              examples:
+                response:
+                  value:
+                    is_was: null
+                    user_permissions: 128
+                    owner: user2@example.com
+                    title: Custom Scan
+                    is_agent: null
+                    uuid: 04a0d852-0dc2-4e62-874d-a81e33b4a9f24e51e1f403febe40
+                    settings:
+                      basic:
+                        inputs:
+                        - type: entry
+                          name: Name
+                          id: name
+                          default: KitchenSinkScan
+                          required: true
+                        - type: textarea
+                          name: Description
+                          id: description
+                          default: null
+                        - type: select
+                          id: include_aggregate
+                          name: Scan results
+                          default: true
+                          options:
+                          - name: Show in dashboard
+                            value: 'true'
+                        - type: select
+                          id: folder_id
+                          name: Folder
+                          default: 9
+                          options:
+                          - name: My Scans
+                            id: 9
+                          - name: Trash
+                            id: 8
+                        - type: select
+                          id: use_dashboard
+                          name: Dashboard
+                          default: false
+                          options:
+                          - name: Enabled
+                            value: 'true'
+                          - name: Disabled
+                            value: 'false'
+                        title: Basic
+                        groups:
+                        - title: Permissions
+                          name: permissions
+                          acls:
+                          - permissions: 0
+                            owner: null
+                            display_name: null
+                            name: null
+                            id: null
+                            type: default
+                          - permissions: 128
+                            owner: 1
+                            display_name: user2@example.com
+                            name: user2@example.com
+                            id: 2
+                            type: user
+                        sections: []
+                    filter_attributes:
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: NUMBER
+                        type: entry
+                        regex: ^[0-9]+$
+                        maxlength: 18
+                      name: bid
+                      readable_name: Bugtraq ID
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploit_framework_canvas
+                      readable_name: CANVAS Exploit Framework
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - CANVAS
+                        - D2ExploitPack
+                        - White_Phosphorus
+                      name: canvas_package
+                      readable_name: CANVAS Package
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'Cert VU reference (ie: 10031)'
+                        type: entry
+                        regex: ^[0-9]+$
+                        maxlength: 18
+                      name: cert
+                      readable_name: CERT Vulnerability ID
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploit_framework_core
+                      readable_name: CORE Exploit Framework
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: cpe
+                      readable_name: CPE
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'CVE-YYYY-ID (ie: CVE-2011-0018)'
+                        type: entry
+                        regex: ^(CVE|CAN)-(1999|20[01][0-9])-[0-9]{4,}$
+                      name: cve
+                      readable_name: CVE
+                    - operators:
+                      - lt
+                      - gt
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: '7.5'
+                        type: entry
+                        regex: ^[0-9]+(\.[0-9]+)?$
+                      name: cvss_base_score
+                      readable_name: CVSS Base Score
+                    - operators:
+                      - lt
+                      - gt
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: '4.2'
+                        type: entry
+                        regex: ^[0-9]+(\.[0-9]+)$
+                      name: cvss_temporal_score
+                      readable_name: CVSS Temporal Score
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: ^CVSS2#E:(U|POC|F|H|ND)/RL:(OF|T|W|U|ND)/RC:(UC|UR|C|ND)$
+                      name: cvss_temporal_vector
+                      readable_name: CVSS Temporal Vector
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: ^CVSS2#AV:(L|A|N)/AC:(H|M|L)/Au:(N|S|M)/C:(N|P|C)/I:(N|P|C)/A:(N|P|C)$
+                      name: cvss_vector
+                      readable_name: CVSS Vector
+                    - operators:
+                      - lt
+                      - gt
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: '7.5'
+                        type: entry
+                        regex: ^[0-9]+(\.[0-9]+)?$
+                      name: cvss3_base_score
+                      readable_name: CVSS v3.0 Base Score
+                    - operators:
+                      - lt
+                      - gt
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: '4.2'
+                        type: entry
+                        regex: ^[0-9]+(\.[0-9]+)$
+                      name: cvss3_temporal_score
+                      readable_name: CVSS v3.0 Temporal Score
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: ^CVSS:3.0/E:(U|POC|F|H|ND)/RL:(OF|T|W|U|ND)/RC:(UC|UR|C|ND)$
+                      name: cvss3_temporal_vector
+                      readable_name: CVSS v3.0 Temporal Vector
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: ^CVSS:3.0/AV:(N|A|L|P)/AC:(L|H)/PR:(N,L,H)/UI:(N|R)/S:(U|C)/C:(H|L|N)/I:(H|L|N)/A:(H|L|N)$
+                      name: cvss3_vector
+                      readable_name: CVSS v3.0 Vector
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'CWE reference (ie: 200)'
+                        type: entry
+                        regex: ^([0-9]+)$
+                      name: cwe
+                      readable_name: CWE
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: default_account
+                      readable_name: Default/Known Accounts
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploit_framework_d2_elliot
+                      readable_name: Elliot Exploit Framework
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: d2_elliot_name
+                      readable_name: Elliot Exploit Name
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploit_available
+                      readable_name: Exploit Available
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: NUMBER
+                        type: entry
+                        regex: ^[0-9]+$
+                        maxlength: 18
+                      name: edb-id
+                      readable_name: Exploit Database ID
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploit_framework_exploithub
+                      readable_name: ExploitHub
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - Exploits are available
+                        - No exploit is required
+                        - No known exploits are available
+                      name: exploitability_ease
+                      readable_name: Exploitability Ease
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploited_by_malware
+                      readable_name: Exploited By Malware
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploited_by_nessus
+                      readable_name: Exploited By Nessus
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'IAVA reference (ie: 2011-A-0151)'
+                        type: entry
+                        regex: ^[0-9]+-[A-Za-z]-[0-9]+$
+                      name: iava
+                      readable_name: IAVA ID
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'IAVB reference (ie: 2011-B-0151)'
+                        type: entry
+                        regex: ^[0-9]+-[A-Za-z]-[0-9]+$
+                      name: iavb
+                      readable_name: IAVB ID
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'IAVM Severity (ie: IV)'
+                        type: entry
+                        regex: ^[ivIV]+
+                      name: stig_severity
+                      readable_name: IAVM Severity
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'IAVT reference (ie: 2011-A-0151)'
+                        type: entry
+                        regex: ^[0-9]+-[A-Za-z]-[0-9]+$
+                      name: iavt
+                      readable_name: IAVT ID
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: in_the_news
+                      readable_name: In The News
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: malware
+                      readable_name: Malware
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploit_framework_metasploit
+                      readable_name: Metasploit Exploit Framework
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: metasploit_name
+                      readable_name: Metasploit Name
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: MS0X-YZT
+                        type: entry
+                        regex: ^MS[0-9]+-[0-9]+$
+                      name: msft
+                      readable_name: Microsoft Bulletin
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: NUMBER
+                        type: entry
+                        regex: ^[0-9]+$
+                        maxlength: 18
+                      name: osvdb
+                      readable_name: OSVDB ID
+                    - operators:
+                      - date-lt
+                      - date-gt
+                      - date-eq
+                      - date-neq
+                      control:
+                        readable_regex: YYYY/MM/DD
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                      name: patch_publication_date
+                      readable_name: Patch Publication Date
+                    - operators:
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: description
+                      readable_name: Plugin Description
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: NUMBER
+                        type: entry
+                        regex: ^[0-9, ]+$
+                        maxlength: 9
+                      name: plugin_id
+                      readable_name: Plugin ID
+                    - operators:
+                      - date-lt
+                      - date-gt
+                      - date-eq
+                      - date-neq
+                      control:
+                        readable_regex: YYYY/MM/DD
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                      name: plugin_modification_date
+                      readable_name: Plugin Modification Date
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: plugin_name
+                      readable_name: Plugin Name
+                    - operators:
+                      - date-lt
+                      - date-gt
+                      - date-eq
+                      - date-neq
+                      control:
+                        readable_regex: YYYY/MM/DD
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                      name: plugin_publication_date
+                      readable_name: Plugin Publication Date
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - local
+                        - remote
+                      name: plugin_type
+                      readable_name: Plugin Type
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - None
+                        - Low
+                        - Medium
+                        - High
+                        - Critical
+                      name: risk_factor
+                      readable_name: Risk Factor
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: NUMBER
+                        type: entry
+                        regex: ^[0-9]+$
+                        maxlength: 18
+                      name: secunia
+                      readable_name: Secunia ID
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: see_also
+                      readable_name: See Also
+                    - operators:
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: solution
+                      readable_name: Solution
+                    - operators:
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: synopsis
+                      readable_name: Synopsis
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: unsupported_by_vendor
+                      readable_name: Unsupported By Vendor
+                    - operators:
+                      - date-lt
+                      - date-gt
+                      - date-eq
+                      - date-neq
+                      control:
+                        readable_regex: YYYY/MM/DD
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                      name: vuln_publication_date
+                      readable_name: Vulnerability Publication Date
+                    name: custom
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/editor_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to open the object.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified object.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/editor_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - editor_cloud: []
+  /editor/{type}/templates:
+    get:
+      summary: List templates
+      description: Lists Tenable-provided scan templates. Tenable provides a number of scan templates to facilitate the creation of scans and scan policies. For a full description of these scan templates, see the [Scan Templates](https://docs.tenable.com/vulnerability-management/Content/Scans/Templates.htm) in the Tenable Vulnerability Management User Guide. <div class="perms-callout">Requires the Standard [32] user role. See [Roles](doc:roles).</div>
+      operationId: editor-list-templates
+      tags:
+      - Editor
+      parameters:
+      - description: The type of templates to retrieve (scan, policy, or remediation).
+        required: true
+        name: type
+        in: path
+        schema:
+          type: string
+          default: scan
+          enum:
+          - scan
+          - policy
+          - remediation
+      responses:
+        '200':
+          description: Returns the template list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/editor_templates'
+              examples:
+                response:
+                  value:
+                    templates:
+                    - unsupported: false
+                      cloud_only: false
+                      desc: A full system scan suitable for any host.
+                      order: null
+                      subscription_only: false
+                      is_was: null
+                      title: Basic Network Scan
+                      is_agent: null
+                      uuid: aa17696a-f0ad-458a-a103-973c8f63752a7bd788d6be818b65
+                      manager_only: false
+                      name: basic
+                    - unsupported: false
+                      cloud_only: false
+                      desc: Audit systems connected via Nessus Agents.
+                      order: null
+                      subscription_only: false
+                      is_was: null
+                      title: Policy Compliance Auditing
+                      is_agent: true
+                      uuid: 54a0c38a-9deb-4ed6-833c-525e01cb0c8ed9c901634c382c2d
+                      manager_only: false
+                      name: agent_compliance
+                    - unsupported: false
+                      cloud_only: false
+                      desc: Scan for malware on systems connected via Nessus Agents.
+                      order: null
+                      subscription_only: false
+                      is_was: null
+                      title: Malware Scan
+                      is_agent: true
+                      uuid: cb0d8586-af21-4d52-96a8-a12acaac4132621fbb0e783517bc
+                      manager_only: false
+                      name: agent_malware
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/editor_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the list.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/editor_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - editor_cloud: []
+  /editor/{type}/templates/{wizard_uuid}:
+    get:
+      summary: Get template details
+      description: Gets details for the specified template.<div class="perms-callout">Requires the Standard [32] user role. See [Roles](doc:roles).</div>
+      operationId: editor-template-details
+      tags:
+      - Editor
+      parameters:
+      - description: The type of template to retrieve (scan, policy, or remediation).
+        required: true
+        name: type
+        in: path
+        schema:
+          type: string
+          default: scan
+          enum:
+          - scan
+          - policy
+          - remediation
+      - description: The UUID for the template.
+        required: true
+        name: wizard_uuid
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the template details. Note that the fields can vary for different template types.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_was:
+                    type: boolean
+                    description: If `true`, the template can be used for Tenable Web App Scanning only. For Vulnerability Management templates, this value is always `null`.
+                  title:
+                    type: string
+                    description: The long name of the template.
+                  name:
+                    type: string
+                    description: The short name of the template.
+                  is_agent:
+                    type: boolean
+                    description: If `true`, the template is for agent scans.
+                  filter_attributes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/editor_filter'
+                  settings:
+                    $ref: '#/components/schemas/editor_settings'
+                  credentials:
+                    $ref: '#/components/schemas/editor_credentials'
+                  compliance:
+                    $ref: '#/components/schemas/editor_compliance'
+                  plugins:
+                    $ref: '#/components/schemas/editor_plugins'
+              examples:
+                response:
+                  value:
+                    is_was: null
+                    user_permissions: null
+                    owner: null
+                    title: Host Discovery
+                    is_agent: null
+                    uuid: d883b87b-a09d-4eea-89ae-317d2777ec4d08c3a05ec2812bcf
+                    settings:
+                      basic:
+                        inputs:
+                        - type: entry
+                          name: Name
+                          id: name
+                          required: true
+                        - type: textarea
+                          name: Description
+                          id: description
+                        - type: select
+                          id: include_aggregate
+                          name: Scan results
+                          default: true
+                          options:
+                          - name: Keep private
+                            value: 'false'
+                          - name: Show in dashboard
+                            value: 'true'
+                        - type: select
+                          id: folder_id
+                          name: Folder
+                          options:
+                          - name: My Scans
+                            id: 9
+                          - name: Trash
+                            id: 8
+                        - type: select
+                          id: use_dashboard
+                          name: Dashboard
+                          default: false
+                          options:
+                          - name: Enabled
+                            value: 'true'
+                          - name: Disabled
+                            value: 'false'
+                        - type: select
+                          id: scanner_id
+                          name: Scanner
+                          default: null
+                          options:
+                          - id: 00000000-0000-0000-0000-00000000000000000000000000001
+                            name: US Cloud Scanner
+                            type: local
+                            network_name: Default
+                            linked: true
+                            status: 'on'
+                          - id: e920304e-0c95-425b-a215-74d530dddedf0523d1e84e3fef44
+                            name: AP Singapore Cloud Scanners
+                            type: local
+                            network_name: Default
+                            linked: true
+                            status: 'on'
+                          - id: 5b0a4c7b-4fad-4a9a-b587-5b6361be4f9e7165fe2e344196bb
+                            name: Demo Scanner
+                            type: local
+                            network_name: Default
+                            linked: true
+                            status: 'on'
+                          - id: abc0c813-7fd3-4c2d-b30e-ed3d6d9c18cfea8cce60f523eeef
+                            name: EU Frankfurt Cloud Scanners
+                            type: local
+                            network_name: Default
+                            linked: true
+                            status: 'on'
+                          - id: 479c77c2-9e4b-47b1-8853-d49b58eef45d812e6cf942b4fd2e
+                            name: US East Cloud Scanners
+                            type: local
+                            network_name: Default
+                            linked: true
+                            status: 'on'
+                          - id: 9736bd1c-18f6-4978-bbee-4fa23f9c632eeba88f8d1e7d24b3
+                            name: US West Cloud Scanners
+                            type: local
+                            network_name: Default
+                            linked: true
+                            status: 'on'
+                        - type: multi_select
+                          deprecated_by: target_groups
+                          id: asset_lists
+                          name: Target Groups
+                          default: []
+                          options:
+                          - acls:
+                            - permissions: 64
+                              owner: null
+                              display_name: null
+                              name: null
+                              id: null
+                              type: default
+                            - permissions: 128
+                              owner: 1
+                              display_name: system
+                              name: nessus_ms_agent
+                              id: 1
+                              type: user
+                            - permissions: 64
+                              owner: 0
+                              display_name: user@example.com
+                              name: user@example.com
+                              id: 2
+                              type: user
+                            default_list: 0
+                            type: system
+                            members: host.domain.com, host1.domain.com
+                            name: modified_test_group_yet_again_and-again
+                            owner: nessus_ms_agent
+                            shared: 1
+                            user_permissions: 64
+                            last_modification_date: 1533583518
+                            creation_date: 1533577166
+                            owner_id: 1
+                            id: 13
+                          - acls:
+                            - permissions: 64
+                              owner: null
+                              display_name: null
+                              name: null
+                              id: null
+                              type: default
+                            - permissions: 128
+                              owner: 1
+                              display_name: system
+                              name: nessus_ms_agent
+                              id: 1
+                              type: user
+                            - permissions: 64
+                              owner: 0
+                              display_name: user@example.com
+                              name: user@example.com
+                              id: 2
+                              type: user
+                            default_list: 0
+                            type: system
+                            members: testtest1
+                            name: test group
+                            owner: nessus_ms_agent
+                            shared: 1
+                            user_permissions: 64
+                            last_modification_date: 1533580228
+                            creation_date: 1533246042
+                            owner_id: 1
+                            id: 12
+                        - type: textarea
+                          id: text_targets
+                          name: Targets
+                          placeholder: 'Example: 192.0.2.57-192.0.2.60, 192.0.2.8/24, test.com'
+                          required: true
+                        - type: file
+                          id: file_targets
+                          name: Upload Targets
+                        title: Basic
+                        groups:
+                        - title: Schedule
+                          name: schedule
+                        - inputs:
+                          - type: textarea
+                            name: Email Recipient(s)
+                            placeholder: 'Example: me@example.com, you@example.com'
+                          title: Notifications
+                          name: email
+                          filters: []
+                        - title: Permissions
+                          name: permissions
+                          acls: null
+                        sections: []
+                      discovery:
+                        inputs: null
+                        modes:
+                          id: discovery_mode
+                          name: mode
+                          type: ui_radio
+                          default: Host enumeration
+                          options:
+                          - desc: <ul><li>General Settings:<ul><li>Always test the local Nessus host</li></ul></li><li>Ping hosts using:<ul><li>TCP</li><li>ARP</li><li>ICMP (2 retries)</li></ul></li></ul>
+                            name: Host enumeration
+                          - desc: <ul><li>General Settings:<ul><li>Always test the local Nessus host</li></ul></li><li>Ping hosts using:<ul><li>TCP</li><li>ARP</li><li>ICMP</li></ul></li></ul>
+                            name: OS Identification
+                          - desc: <ul><li>General Settings:<ul><li>Always test the local Nessus host</li></ul></li><li>Port Scanner Settings:<ul><li>Scan common ports</li><li>Use netstat if credentials are provided</li><li>Use SYN scanner if necessary</li></ul></li><li>Ping hosts using:<ul><li>TCP</li><li>ARP</li><li>ICMP (2 retries)</li></ul></li></ul>
+                            name: Port scan (common ports)
+                          - desc: <ul><li>General Settings:<ul><li>Always test the local Nessus host</li></ul></li><li>Port Scanner Settings:<ul><li>Scan all ports (1-65535)</li><li>Use netstat if credentials are provided</li><li>Use SYN scanner if necessary</li></ul></li><li>Ping hosts using:<ul><li>TCP</li><li>ARP</li><li>ICMP (2 retries)</li></ul></li></ul>
+                            name: Port scan (all ports)
+                          - desc: <ul><li>Choose your own discovery settings.</li></ul>
+                            name: Custom
+                        title: Discovery
+                        groups:
+                        - inputs:
+                          - type: ui_checkbox
+                            name: Ping the remote host
+                            id: ping_the_remote_host
+                            default: 'yes'
+                            options:
+                            - inputs: null
+                              name: 'no'
+                            - inputs: null
+                              name: 'yes'
+                              sections:
+                              - inputs:
+                                - type: checkbox
+                                  id: fast_network_discovery
+                                  label: Use fast network discovery
+                                  default: 'no'
+                                  hint: If a host responds to ping, Nessus attempts to avoid false positives, performing additional tests to verify the response did not come from a proxy or load balancer. Fast network discovery bypasses those additional tests.
+                                title: General Settings
+                                name: general
+                              - inputs:
+                                - type: checkbox
+                                  id: arp_ping
+                                  label: ARP
+                                  default: 'yes'
+                                - name: TCP
+                                  inputs:
+                                  - type: medium-entry
+                                    name: Destination ports
+                                    id: tcp_ping_dest_ports
+                                    default: built-in
+                                  type: ui_group
+                                  id: tcp_ping
+                                  default: 'yes'
+                                - name: ICMP
+                                  inputs:
+                                  - type: checkbox
+                                    id: icmp_unreach_means_host_down
+                                    label: Assume ICMP unreachable from the gateway means the host is down
+                                    default: 'no'
+                                  - type: medium-entry
+                                    name: Maximum number of retries
+                                    id: icmp_ping_retries
+                                    default: '2'
+                                    regex: ^\d+$
+                                  type: ui_group
+                                  id: icmp_ping
+                                  default: 'yes'
+                                - type: checkbox
+                                  id: udp_ping
+                                  label: UDP
+                                  default: 'no'
+                                title: Ping Methods
+                                name: protocols
+                          title: Host Discovery
+                          name: host_discovery
+                          sections:
+                          - inputs:
+                            - type: checkbox
+                              id: scan_network_printers
+                              label: Scan Network Printers
+                              default: 'no'
+                            - type: checkbox
+                              id: scan_netware_hosts
+                              label: Scan Novell Netware hosts
+                              default: 'no'
+                            - type: checkbox
+                              id: scan_ot_devices
+                              label: Scan Operational Technology devices
+                              default: 'no'
+                            title: Fragile Devices
+                            name: fragile_devices
+                          - inputs:
+                            - type: file
+                              name: List of MAC addresses
+                              id: wol_mac_addresses
+                              callback: wol_mac_upload
+                            - type: medium-entry
+                              name: Boot time wait (in minutes)
+                              id: wol_wait_time
+                              default: '5'
+                              regex: ^\d+$
+                            title: Wake-on-LAN
+                            name: wol
+                          - inputs:
+                            - type: radio
+                              name: Network Type
+                              id: network_type
+                              options:
+                              - Mixed (use RFC 1918)
+                              - Private LAN
+                              - Public WAN (Internet)
+                              default: Mixed (use RFC 1918)
+                            title: Network Type
+                            name: network_type
+                        - inputs: null
+                          title: Port Scanning
+                          name: network_discovery
+                          sections:
+                          - inputs:
+                            - type: checkbox
+                              id: unscanned_closed
+                              label: Consider unscanned ports as closed
+                              default: 'no'
+                            - type: medium-entry
+                              id: portscan_range
+                              label: 'Port scan range:'
+                              default: default
+                            title: Ports
+                            name: ports
+                          - inputs:
+                            - id: tcp_scanner
+                              type: ui_group
+                              inputs:
+                              - type: radio-group
+                                id: tcp_firewall_detection
+                                label: Override automatic firewall detection
+                                default: Automatic (normal)
+                                options:
+                                - Automatic (normal)
+                                - Do not detect RST rate limitation (soft)
+                                - Ignore closed ports (aggressive)
+                                - Disabled (softer)
+                                optionsLabels:
+                                - ''
+                                - Use soft detection
+                                - Use aggressive detection
+                                - Disable detection
+                              no_windows: true
+                              no_darwin: true
+                              default: 'no'
+                              name: TCP
+                            - name: SYN
+                              inputs:
+                              - type: radio-group
+                                id: syn_firewall_detection
+                                label: Override automatic firewall detection
+                                default: Automatic (normal)
+                                options:
+                                - Automatic (normal)
+                                - Do not detect RST rate limitation (soft)
+                                - Ignore closed ports (aggressive)
+                                - Disabled (softer)
+                                optionsLabels:
+                                - ''
+                                - Use soft detection
+                                - Use aggressive detection
+                                - Disable detection
+                              type: ui_group
+                              id: syn_scanner
+                              default: 'yes'
+                            - type: checkbox
+                              id: udp_scanner
+                              label: UDP
+                              default: 'no'
+                              hint: Due to the nature of the protocol, it is generally not possible for a port scanner to tell the difference between open and filtered UDP ports.  Enabling the UDP port scanner may dramatically increase the scan time and produce unreliable results. Consider using the netstat or SNMP port enumeration options instead if possible.
+                            title: Network Port Scanners
+                            name: network_scanners
+                        sections: []
+                      report:
+                        inputs: null
+                        modes:
+                        - desc: <ul><li>Report processing:<ul><li>Normal report verbosity</li><li>Silent dependencies</li></ul></li><li>Report output:<ul><li>Allow users to edit scan results</li></ul></li></ul>
+                          id: default
+                          name: Default
+                          default: true
+                        - desc: <ul><li>Report output:<ul><li>Allow users to edit scan results</li></ul></li></ul>
+                          id: default_output
+                          name: Default
+                          default: true
+                        - desc: <ul><li>Choose your own report settings.</li></ul>
+                          custom: true
+                          id: custom
+                          name: Custom
+                        title: Report
+                        groups: []
+                        sections:
+                        - inputs:
+                          - type: checkbox
+                            id: reverse_lookup
+                            label: Designate hosts by their DNS name
+                            default: 'no'
+                          - type: checkbox
+                            id: log_live_hosts
+                            label: Display hosts that respond to ping
+                            default: 'yes'
+                          - type: checkbox
+                            id: display_unreachable_hosts
+                            label: Display unreachable hosts
+                            default: 'no'
+                          title: Output
+                          name: report_output
+                    filter_attributes:
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: NUMBER
+                        type: entry
+                        regex: ^[0-9]+$
+                        maxlength: 18
+                      name: bid
+                      readable_name: Bugtraq ID
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploit_framework_canvas
+                      readable_name: CANVAS Exploit Framework
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - CANVAS
+                        - D2ExploitPack
+                        - White_Phosphorus
+                      name: canvas_package
+                      readable_name: CANVAS Package
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'Cert VU reference (ie: 10031)'
+                        type: entry
+                        regex: ^[0-9]+$
+                        maxlength: 18
+                      name: cert
+                      readable_name: CERT Vulnerability ID
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploit_framework_core
+                      readable_name: CORE Exploit Framework
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: cpe
+                      readable_name: CPE
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'CVE-YYYY-ID (ie: CVE-2011-0018)'
+                        type: entry
+                        regex: ^(CVE|CAN)-(1999|20[01][0-9])-[0-9]{4,}$
+                      name: cve
+                      readable_name: CVE
+                    - operators:
+                      - lt
+                      - gt
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: '7.5'
+                        type: entry
+                        regex: ^[0-9]+(\.[0-9]+)?$
+                      name: cvss_base_score
+                      readable_name: CVSS Base Score
+                    - operators:
+                      - lt
+                      - gt
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: '4.2'
+                        type: entry
+                        regex: ^[0-9]+(\.[0-9]+)$
+                      name: cvss_temporal_score
+                      readable_name: CVSS Temporal Score
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: ^CVSS2#E:(U|POC|F|H|ND)/RL:(OF|T|W|U|ND)/RC:(UC|UR|C|ND)$
+                      name: cvss_temporal_vector
+                      readable_name: CVSS Temporal Vector
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: ^CVSS2#AV:(L|A|N)/AC:(H|M|L)/Au:(N|S|M)/C:(N|P|C)/I:(N|P|C)/A:(N|P|C)$
+                      name: cvss_vector
+                      readable_name: CVSS Vector
+                    - operators:
+                      - lt
+                      - gt
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: '7.5'
+                        type: entry
+                        regex: ^[0-9]+(\.[0-9]+)?$
+                      name: cvss3_base_score
+                      readable_name: CVSS v3.0 Base Score
+                    - operators:
+                      - lt
+                      - gt
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: '4.2'
+                        type: entry
+                        regex: ^[0-9]+(\.[0-9]+)$
+                      name: cvss3_temporal_score
+                      readable_name: CVSS v3.0 Temporal Score
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: ^CVSS:3.0/E:(U|POC|F|H|ND)/RL:(OF|T|W|U|ND)/RC:(UC|UR|C|ND)$
+                      name: cvss3_temporal_vector
+                      readable_name: CVSS v3.0 Temporal Vector
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: ^CVSS:3.0/AV:(N|A|L|P)/AC:(L|H)/PR:(N,L,H)/UI:(N|R)/S:(U|C)/C:(H|L|N)/I:(H|L|N)/A:(H|L|N)$
+                      name: cvss3_vector
+                      readable_name: CVSS v3.0 Vector
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'CWE reference (ie: 200)'
+                        type: entry
+                        regex: ^([0-9]+)$
+                      name: cwe
+                      readable_name: CWE
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: default_account
+                      readable_name: Default/Known Accounts
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploit_framework_d2_elliot
+                      readable_name: Elliot Exploit Framework
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: d2_elliot_name
+                      readable_name: Elliot Exploit Name
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploit_available
+                      readable_name: Exploit Available
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: NUMBER
+                        type: entry
+                        regex: ^[0-9]+$
+                        maxlength: 18
+                      name: edb-id
+                      readable_name: Exploit Database ID
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploit_framework_exploithub
+                      readable_name: ExploitHub
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - Exploits are available
+                        - No exploit is required
+                        - No known exploits are available
+                      name: exploitability_ease
+                      readable_name: Exploitability Ease
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploited_by_malware
+                      readable_name: Exploited By Malware
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploited_by_nessus
+                      readable_name: Exploited By Nessus
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'IAVA reference (ie: 2011-A-0151)'
+                        type: entry
+                        regex: ^[0-9]+-[A-Za-z]-[0-9]+$
+                      name: iava
+                      readable_name: IAVA ID
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'IAVB reference (ie: 2011-B-0151)'
+                        type: entry
+                        regex: ^[0-9]+-[A-Za-z]-[0-9]+$
+                      name: iavb
+                      readable_name: IAVB ID
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'IAVM Severity (ie: IV)'
+                        type: entry
+                        regex: ^[ivIV]+
+                      name: stig_severity
+                      readable_name: IAVM Severity
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: 'IAVT reference (ie: 2011-A-0151)'
+                        type: entry
+                        regex: ^[0-9]+-[A-Za-z]-[0-9]+$
+                      name: iavt
+                      readable_name: IAVT ID
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: in_the_news
+                      readable_name: In The News
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: malware
+                      readable_name: Malware
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: exploit_framework_metasploit
+                      readable_name: Metasploit Exploit Framework
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: metasploit_name
+                      readable_name: Metasploit Name
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: MS0X-YZT
+                        type: entry
+                        regex: ^MS[0-9]+-[0-9]+$
+                      name: msft
+                      readable_name: Microsoft Bulletin
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: NUMBER
+                        type: entry
+                        regex: ^[0-9]+$
+                        maxlength: 18
+                      name: osvdb
+                      readable_name: OSVDB ID
+                    - operators:
+                      - date-lt
+                      - date-gt
+                      - date-eq
+                      - date-neq
+                      control:
+                        readable_regex: YYYY/MM/DD
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                      name: patch_publication_date
+                      readable_name: Patch Publication Date
+                    - operators:
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: description
+                      readable_name: Plugin Description
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: NUMBER
+                        type: entry
+                        regex: ^[0-9, ]+$
+                        maxlength: 9
+                      name: plugin_id
+                      readable_name: Plugin ID
+                    - operators:
+                      - date-lt
+                      - date-gt
+                      - date-eq
+                      - date-neq
+                      control:
+                        readable_regex: YYYY/MM/DD
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                      name: plugin_modification_date
+                      readable_name: Plugin Modification Date
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: plugin_name
+                      readable_name: Plugin Name
+                    - operators:
+                      - date-lt
+                      - date-gt
+                      - date-eq
+                      - date-neq
+                      control:
+                        readable_regex: YYYY/MM/DD
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                      name: plugin_publication_date
+                      readable_name: Plugin Publication Date
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - local
+                        - remote
+                      name: plugin_type
+                      readable_name: Plugin Type
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - None
+                        - Low
+                        - Medium
+                        - High
+                        - Critical
+                      name: risk_factor
+                      readable_name: Risk Factor
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: NUMBER
+                        type: entry
+                        regex: ^[0-9]+$
+                        maxlength: 18
+                      name: secunia
+                      readable_name: Secunia ID
+                    - operators:
+                      - eq
+                      - neq
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: see_also
+                      readable_name: See Also
+                    - operators:
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: solution
+                      readable_name: Solution
+                    - operators:
+                      - match
+                      - nmatch
+                      control:
+                        readable_regex: TEXT
+                        type: entry
+                        regex: .*
+                      name: synopsis
+                      readable_name: Synopsis
+                    - operators:
+                      - eq
+                      - neq
+                      control:
+                        type: dropdown
+                        list:
+                        - 'true'
+                        - 'false'
+                      name: unsupported_by_vendor
+                      readable_name: Unsupported By Vendor
+                    - operators:
+                      - date-lt
+                      - date-gt
+                      - date-eq
+                      - date-neq
+                      control:
+                        readable_regex: YYYY/MM/DD
+                        type: datefield
+                        regex: ^[0-9]{4}/[0-9]{2}/[0-9]{2}$
+                      name: vuln_publication_date
+                      readable_name: Vulnerability Publication Date
+                    name: discovery
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/editor_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to open the template.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified template.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/editor_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - editor_cloud: []
+  /editor/policy/{policy_id}/families/{family_id}/plugins/{plugin_id}:
+    get:
+      summary: Get plugin details
+      description: Gets the details of the plugin associated with the scan or policy.<div class="perms-callout">Requires the Standard [32] user role. See [Roles](doc:roles).</div>
+      operationId: editor-plugin-description
+      tags:
+      - Editor
+      parameters:
+      - description: The ID of the policy to look up.
+        required: true
+        name: policy_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: The ID of the family to lookup within the policy.
+        required: true
+        name: family_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: The ID of the plugin to lookup within the family.
+        required: true
+        name: plugin_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returns the plugin output.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plugindescription:
+                    $ref: '#/components/schemas/editor_plugindescription'
+              examples:
+                response:
+                  value:
+                    plugindescription:
+                      severity: null
+                      pluginname: 'Ubuntu 10.04 LTS / 10.10 / 11.04 / 11.10 : clamav vulnerability (USN-1258-1)'
+                      pluginattributes:
+                        synopsis: The remote Ubuntu host is missing a security-related patch.
+                        description: 'Stephane Chazelas discovered the bytecode engine of ClamAV improperly handled recursion under certain circumstances. This could allow a remote attacker to craft a file that could cause ClamAV to crash, resulting in a denial of service.
+
+
+                          Note that Tenable Network Security has extracted the preceding description block directly from the Ubuntu security advisory. Tenable has attempted to automatically clean and format it as much as possible without introducing additional issues.'
+                        risk_information:
+                          cvss_vector: CVSS2#AV:N/AC:M/Au:N/C:N/I:N/A:P
+                          risk_factor: Medium
+                          cvss_base_score: '4.3'
+                          cvss_temporal_score: '3.2'
+                          cvss_temporal_vector: CVSS2#E:U/RL:OF/RC:C
+                        ref_information:
+                          ref:
+                          - name: bid
+                            values:
+                              value:
+                              - '50183'
+                            url: http://www.securityfocus.com/bid/
+                          - name: usn
+                            values:
+                              value:
+                              - 1258-1
+                            ext: /
+                            url: http://www.ubuntu.com/usn/usn-
+                          - name: cve
+                            values:
+                              value:
+                              - CVE-2011-3627
+                            url: http://web.nvd.nist.gov/view/vuln/detail?vulnId=
+                        plugin_name: 'Ubuntu 10.04 LTS / 10.10 / 11.04 / 11.10 : clamav vulnerability (USN-1258-1)'
+                        see_also:
+                        - https://usn.ubuntu.com/1258-1/
+                        fname: ubuntu_USN-1258-1.nasl
+                        usn: 1258-1
+                        plugin_information:
+                          plugin_version: '1.8'
+                          plugin_id: 56777
+                          plugin_type: local
+                          plugin_publication_date: 2011/11/11
+                          plugin_family: Ubuntu Local Security Checks
+                          plugin_modification_date: 2018/12/01
+                        solution: Update the affected libclamav6 package.
+                        vuln_information:
+                          cpe: 'cpe:/o:canonical:ubuntu_linux:10.04:-:lts
+
+                            cpe:/o:canonical:ubuntu_linux:10.10
+
+                            cpe:/o:canonical:ubuntu_linux:11.04
+
+                            cpe:/o:canonical:ubuntu_linux:11.10'
+                          exploitability_ease: No known exploits are available
+                          exploit_available: 'false'
+                          patch_publication_date: 2011/11/10
+                      pluginfamily: Ubuntu Local Security Checks
+                      pluginid: '56777'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/editor_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/editor_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - editor_cloud: []
+  /editor/{type}/{object_id}/audits/{file_id}:
+    get:
+      summary: Download audit file
+      description: Downloads the specified custom audit file associated with the scan or policy. The file ID can be found in the scan or policy details using the /editor/{type}/{object_id} endpoint.<div class="perms-callout">Requires Can Execute [32] scan template (policy) permissions. See [Permissions](doc:permissions).</div>
+      operationId: editor-audits
+      tags:
+      - Editor
+      parameters:
+      - description: The type of template to retrieve (scan or policy).
+        required: true
+        name: type
+        in: path
+        schema:
+          type: string
+          default: scan
+          enum:
+          - scan
+          - policy
+      - description: The unique ID of the object.
+        required: true
+        name: object_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: The ID of the file to export.
+        required: true
+        name: file_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returns the audit file.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+              examples:
+                response:
+                  value: "#\r\n# (C) 2013-2017 Tenable, Inc.\r\n#\r\n# This script is released under the Tenable Subscription License and\r\n# may not be used from within scripts released under another license\r\n# without authorization from Tenable Network Security, Inc.\r\n#\r\n# See the following licenses for details:\r\n#\r\n# http://static.tenable.com/prod_docs/Nessus_6_SLA_and_Subscription_Agreement.pdf\r\n#\r\n# @PROFESSIONALFEED@\r\n# $Revision: 1.0 $\r\n# $Date: 2018/01/02 $\r\n#\r\n# Description:\r\n#\r\n# This document consists of a list of general Red Hat Linux best practices as suggested by the IT-Grundschutz BSI-Standard 100-2.\r\n# Tenable has made a best effort to map the settings specified in the standard to a proprietary\r\n# .audit format that will be used by the Unix compliance module to perform the audit.\r\n#\r\n# See Also :\r\n# https://www.bsi.bund.de/cae/servlet/contentblob/471430/publicationFile/28223/standard_100-2_e_pdf.pdf\r\n# https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Grundschutz/download/it-grundschutz-kataloge_2005_pdf_en_zip.zip?__blob=publicationFile\r\n#\r\n#<ui_metadata>\r\n#<display_name>BSI-100-2 Red Hat Linux 2005</display_name>\r\n#<spec> [the rest of the audit spec file]..."
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/editor_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to export the audit file.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified audit file.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/editor_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - editor_cloud: []
+components:
+  schemas:
+    editor_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    editor_plugins:
+      description: The settings for compliance audit checks.
+      type: object
+      properties: {}
+    editor_credentials:
+      description: Credentials that grant the scanner access to the target system without requiring an agent. Credentialed scans can perform a wider variety of checks than non-credentialed scans, which can result in more accurate scan results. This facilitates scanning of a very large network to determine local exposures or compliance violations. You can configure credentials for Cloud Services, Database, Host, Miscellaneous, Mobile Device Management, and Plaintext Authentication.
+      type: object
+      properties: {}
+    editor_templates:
+      type: array
+      description: The list of available templates.
+      items:
+        $ref: '#/components/schemas/editor_template'
+    editor_filter:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The short name of the filter.
+        readable_name:
+          type: string
+          description: The long name of the filter.
+        operators:
+          description: The comparison options for the filter.
+          type: array
+          items:
+            type: object
+        control:
+          type: object
+          properties:
+            type:
+              type: string
+              description: The input type (entry or dropdown).
+            readable_regest:
+              type: string
+              description: The placeholder for the input.
+            regex:
+              type: string
+              description: A regex for checking the value of the input.
+            options:
+              description: A list of options if the input is a dropdown.
+              type: array
+              items:
+                type: object
+    editor_plugindescription:
+      description: The detailed information for a Tenable Vulnerability Management plugin.
+      type: object
+      properties:
+        severity:
+          type: string
+          description: The severity level of the vulnerabilities targeted by the plugin
+        pluginname:
+          type: string
+          description: The name of the plugin.
+        pluginattributes:
+          type: object
+          description: The attributes of the plugin, including synopsis, description, solution, and risk information.
+        pluginfamily:
+          type: string
+          description: The name of the plugin family.
+        pluginid:
+          type: integer
+          description: The ID of the plugin.
+    editor_template:
+      type: object
+      description: Templates are used to create scans or policies with predefined parameters.
+      properties:
+        unsupported:
+          type: boolean
+          description: If `true`, the template is not supported.
+        cloud_only:
+          type: boolean
+          description: If `true`, the template is only available on the cloud.
+        desc:
+          type: string
+          description: The description of the template.
+        subscription_only:
+          type: boolean
+          description: If `true`, the template is only available for subscribers.
+        is_was:
+          type: boolean
+          description: If `true`, the template can be used for Tenable Web App Scanning only.
+        title:
+          type: string
+          description: The long name of the template.
+        is_agent:
+          type: boolean
+          description: If `true`, the template can only be used for agent scans.
+        uuid:
+          type: string
+          description: The UUID for the template. Use this value to specify the template when creating scans and policies.
+        manager_only:
+          type: boolean
+          description: If `true`, can only be used by manager.
+        name:
+          type: string
+          description: The short name of the template.
+    editor_settings:
+      description: Scan or policy settings organized into the Basic, Discovery, Assessment, Report, and Advanced configuration categories.
+      type: object
+      properties:
+        basic:
+          type: object
+          description: The Basic scan settings are used to specify certain organizational and security-related aspects of the scan or policy, including the name of the scan, its targets, whether the scan is scheduled, and who has access to the scan, among other settings.
+        discovery:
+          type: object
+          description: The Discovery settings relate to discovery and port scanning, including port ranges and methods.
+        assessment:
+          type: object
+          description: You can use Assessment settings to configure how a scan identifies vulnerabilities, as well as what vulnerabilities are identified. This includes identifying malware, assessing the vulnerability of a system to brute force attacks, and the susceptibility of web applications.
+        advanced:
+          type: object
+          description: The Advanced settings provide increased control over scan efficiency and the operations of a scan, as well as the ability to enabled plugin debugging.
+    editor_compliance:
+      description: Plugins options enables you to select security checks by Plugin Family or individual plugins checks.
+      type: object
+      properties: {}
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

@@ -1,0 +1,362 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Scanner Profiles API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Scanner Profiles
+  x-displayName: Scanner Profiles
+paths:
+  /scanners/scanners/bulkAssignToProfile:
+    post:
+      summary: Assign to scanner profile
+      description: "Assigns one or more scanners to a specific scanner profile. This request initiates an asynchronous bulk operation task to process the assignments. \n\n**Note:** You can create a scanner profile using the [Create profile](ref:profiles-create) endpoint.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.EDIT` custom role privilege. See [Roles](doc:roles).</div>"
+      operationId: scanner-profile-assign-bulk
+      tags:
+      - Scanner Profiles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profile_uuid:
+                  description: The unique identifier (UUID) of the scanner profile to which you want to assign scanners.
+                  type: string
+                  format: uuid
+                scanner_uuids:
+                  type: array
+                  description: A list of unique identifiers (UUIDs) of the scanners that you want to assign to the specified profile.
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Returned if the bulk operation task to assign the specified scanners to the specified profile was created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    description: A short message confirming if the request was received or denied.
+                    type: string
+                  request_status_id:
+                    description: The unique identifier (UUID) of the asynchronous task. You can use the [Get scanner task status](ref:scanner-task-status) endpoint to check the status of the task.
+                    type: string
+                    format: uuid
+              examples:
+                response:
+                  value:
+                    message: Request has been received.
+                    request_status_id: c2e286d0-fe88-47ce-ba57-1c8e8a69eeb2
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to assign scanners to scanner profiles.
+        '404':
+          description: Returned if one of the specified scanner profiles were not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Profiles_ErrorResponse-400'
+              examples:
+                response:
+                  value:
+                    error: Scanner Profile UUID not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Profiles_cloud: []
+    delete:
+      summary: Remove from scanner profile
+      description: Removes one or more scanners from a specific scanner profile. This request initiates an asynchronous bulk operation task to process the removals. <div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.EDIT` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: scanner-profile-remove-bulk
+      tags:
+      - Scanner Profiles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profile_uuid:
+                  description: The unique identifier (UUID) of the scanner profile for which you want to remove scanners.
+                  type: string
+                  format: uuid
+                scanner_uuids:
+                  type: array
+                  description: A list of unique identifiers (UUIDs) of the scanners that you want to remove from the specified profile.
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Returned if the bulk operation task to remove the specified scanners from the specified profile was created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    description: A short message confirming if the request was received or denied.
+                    type: string
+                  request_status_id:
+                    description: The unique identifier (UUID) of the asynchronous task. You can use the [Get scanner task status](ref:scanner-task-status) endpoint to check the status of the task.
+                    type: string
+                    format: uuid
+              examples:
+                response:
+                  value:
+                    message: Request has been received.
+                    request_status_id: c2e286d0-fe88-47ce-ba57-1c8e8a69eeb2
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to remove scanners to scanner profiles.
+        '404':
+          description: Returned if one of the specified scanner profiles were not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Profiles_ErrorResponse-400'
+              examples:
+                response:
+                  value:
+                    error: Scanner Profile UUID not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Profiles_cloud: []
+  /scanners/request-status/{request_status_id}:
+    get:
+      summary: Get scanner task status
+      description: "Retrieves the current status of a specific asynchronous bulk operation task. \n\nUse the `request_status_id` or `id` value returned by supported endpoints to track the progress or completion of the asynchronous task.\n\n**Note:** This endpoint currently only supports task status retrieval for operations initiated by the [Assign to scanner profile](ref:scanner-profile-assign-bulk) and [Remove from scanner profile](ref:scanner-profile-remove-bulk) endpoints. <div class=\"perms-callout\">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>"
+      operationId: scanner-task-status
+      tags:
+      - Scanner Profiles
+      parameters:
+      - name: request_status_id
+        in: path
+        required: true
+        description: The unique identifier of the asynchronous task whose status you want to retrieve. This identifier corresponds to the `request_status_id` or `id` returned by supported endpoints.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the status of the asynchronous scanner task was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Profiles_response-scanner-task-status'
+              examples:
+                response:
+                  value:
+                    container_uuid: c050dec4-78a7-4d9a-9905-ab9cb3757766
+                    type: service-scanner-bulk-operation
+                    id: e0ab9f07-dd4e-4891-9eed-01b47db5ead6
+                    status: completed
+                    created: 1738350594
+                    modified: 1738350594
+                    expiration: 1738352394
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Profiles_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to retrieve the status of the scanner task.
+        '404':
+          description: Returned if the specified scanner task was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Profiles_ErrorResponse-400'
+              examples:
+                response:
+                  value:
+                    error: No shared collection found with uuid=f5751411-308d-4c56-b85e-48829707c5f3
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Profiles_cloud: []
+components:
+  schemas:
+    Scanner_Profiles_response-scanner-task-status:
+      type: object
+      properties:
+        container_uuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the container where the task took place.
+          example: 999ec76a-1a16-4bfb-bf20-f23908475372
+        type:
+          type: string
+          description: The type of asynchronous task. For scanners, the type is always `service-scanner-bulk-operation`.
+          example: service-scanner-bulk-operation
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) for tracking the status of the asynchronous task. This identifier corresponds to the `request_status_id` or `id` returned by supported endpoints.
+          example: 62a9f498-1738-42d1-bb1b-01b68fce7cc3
+        status:
+          type: string
+          description: The status of the asynchronous operation. The possible statuses are `completed`, `received`, `processing`, and `aborted`.
+          example: completed
+        created:
+          type: string
+          description: A Unix timestamp indicating the date and time when the asynchronous task was created.
+          example: '1734376507'
+        modified:
+          type: string
+          description: A Unix timestamp indicating the date and time when the asynchronous task was modified.
+          example: '1734376665'
+    Scanner_Profiles_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Scanner_Profiles_ErrorResponse-400:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

@@ -1,0 +1,340 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Checker option API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Checker option
+  description: Security profile options relative to checkers (Indicator of Exposure)
+paths:
+  /api/profiles/{profileId}/checkers/{checkerId}/checker-options:
+    get:
+      summary: Get all the checker options related to a profile and checker.
+      description: 'Required license type: ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the get /checker-options response
+                type: array
+                items:
+                  description: A checker-option instance
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - codename
+                  - profileId
+                  - checkerId
+                  - directoryId
+                  - value
+                  - valueType
+                  - staged
+                  properties:
+                    id:
+                      type: number
+                      description: ' Unique numeric identifier of the option'
+                    codename:
+                      type: string
+                      description: Unique string identifier of the option
+                    profileId:
+                      type: number
+                      description: Identifier of the profile the option belongs to
+                    checkerId:
+                      type: number
+                      description: Identifier of the checker the option belongs to
+                    directoryId:
+                      type: number
+                      description: Identifier of the directory on which the option applies, if null it applies on all of them
+                      nullable: true
+                    value:
+                      type: string
+                      description: JSON-stringified value of the option
+                    valueType:
+                      type: string
+                      enum:
+                      - string
+                      - regex
+                      - float
+                      - integer
+                      - boolean
+                      - date
+                      - object
+                      - array/string
+                      - array/regex
+                      - array/integer
+                      - array/boolean
+                      - array/select
+                      - array/object
+                      - array/cron
+                      description: Type of the option value
+                    name:
+                      type: string
+                      default: null
+                      description: Localized name of the option
+                      nullable: true
+                    description:
+                      type: string
+                      default: null
+                      description: Localized description of the option
+                      nullable: true
+                    translations:
+                      type: array
+                      items:
+                        type: string
+                    staged:
+                      type: boolean
+                      description: Whether the option is still in draft
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Checker option
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: profileId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: checkerId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: staged
+        in: query
+        schema:
+          type: string
+          enum:
+          - '0'
+          - '1'
+        required: false
+        deprecated: false
+      security:
+      - ApiKey: []
+    post:
+      summary: Create checker options related to a profile and checker.
+      description: 'Required license type: ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the get /profiles/:profileId/checkers/:checkerId/checker-options response
+                type: array
+                items:
+                  description: A checker-option instance
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - codename
+                  - profileId
+                  - checkerId
+                  - directoryId
+                  - value
+                  - valueType
+                  - staged
+                  properties:
+                    id:
+                      type: number
+                      description: ' Unique numeric identifier of the option'
+                    codename:
+                      type: string
+                      description: Unique string identifier of the option
+                    profileId:
+                      type: number
+                      description: Identifier of the profile the option belongs to
+                    checkerId:
+                      type: number
+                      description: Identifier of the checker the option belongs to
+                    directoryId:
+                      type: number
+                      description: Identifier of the directory on which the option applies, if null it applies on all of them
+                      nullable: true
+                    value:
+                      type: string
+                      description: JSON-stringified value of the option
+                    valueType:
+                      type: string
+                      enum:
+                      - string
+                      - regex
+                      - float
+                      - integer
+                      - boolean
+                      - date
+                      - object
+                      - array/string
+                      - array/regex
+                      - array/integer
+                      - array/boolean
+                      - array/select
+                      - array/object
+                      - array/cron
+                      description: Type of the option value
+                    name:
+                      type: string
+                      default: null
+                      description: Localized name of the option
+                      nullable: true
+                    description:
+                      type: string
+                      default: null
+                      description: Localized description of the option
+                      nullable: true
+                    translations:
+                      type: array
+                      items:
+                        type: string
+                    staged:
+                      type: boolean
+                      description: Whether the option is still in draft
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Checker option
+      x-tenablead-required-product-license-type:
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: profileId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      - name: checkerId
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates the POST /profiles/:profileId/checkers/:checkerId/checker-options request
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required:
+                - codename
+                - value
+                - valueType
+                properties:
+                  codename:
+                    type: string
+                  directoryId:
+                    type: number
+                    default: null
+                    nullable: true
+                  value:
+                    type: string
+                  valueType:
+                    type: string
+                    enum:
+                    - string
+                    - regex
+                    - float
+                    - integer
+                    - boolean
+                    - date
+                    - object
+                    - array/string
+                    - array/regex
+                    - array/integer
+                    - array/boolean
+                    - array/select
+                    - array/object
+                    - array/cron
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

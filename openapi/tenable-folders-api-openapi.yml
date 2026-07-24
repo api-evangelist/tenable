@@ -1,0 +1,719 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Folders API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Folders
+  x-displayName: Folders
+paths:
+  /folders:
+    post:
+      summary: Create folder
+      description: Creates a new custom folder for the current user. There is a rate limit of 10 folder creation requests per minute. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: folders-create
+      tags:
+      - Folders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'The name of the folder.
+
+
+                    **Note:** Folder names must be unique. Folder names can include any UTF-8 characters.'
+              required:
+              - name
+      responses:
+        '200':
+          description: Returned if the folder list for the current user was successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: The ID of the created folder.
+              examples:
+                response:
+                  value:
+                    id: 55
+        '400':
+          description: Returned if your request body is invalid or if you specify a folder name with invalid characters.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: 'Invalid ''name'' field: '
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folders_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create a folder.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folders_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - folders_cloud: []
+    get:
+      summary: List folders
+      description: Lists both Tenable-provided folders and the current user's custom folders.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: folders-list
+      tags:
+      - Folders
+      responses:
+        '200':
+          description: Returned if the folder list for the current user was successfully retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folders_folders'
+              examples:
+                response:
+                  value:
+                    folders:
+                    - unread_count: 0
+                      custom: 0
+                      default_tag: 0
+                      type: trash
+                      name: Trash
+                      id: 18
+                    - unread_count: 6
+                      custom: 0
+                      default_tag: 1
+                      type: main
+                      name: My Scans
+                      id: 19
+                    - unread_count: 0
+                      custom: 1
+                      default_tag: 0
+                      type: custom
+                      name: Linux Scans
+                      id: 50
+                    - unread_count: 0
+                      custom: 1
+                      default_tag: 0
+                      type: custom
+                      name: Daily Scans
+                      id: 55
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folders_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to view the folder list.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folders_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - folders_cloud: []
+  /folders/{folder_id}:
+    put:
+      summary: Rename folder
+      description: Renames a folder for the current user. You cannot rename Tenable-provided scan folders or custom folder that belong to other users (even if your account has administrator privileges). <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: folders-edit
+      tags:
+      - Folders
+      parameters:
+      - description: The ID of the folder to edit.
+        required: true
+        name: folder_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'The name of the folder.
+
+                    **Note:** Folder names must be unique. Folder names can include any UTF-8 characters.'
+              required:
+              - name
+      responses:
+        '200':
+          description: Returned if the folder was renamed successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folders_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you attempted to rename a system-provided folder. For system-provided folders, the `custom` attribute is set to `0`.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified folder.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folders_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - folders_cloud: []
+    delete:
+      summary: Delete folder
+      description: Deletes a folder. If you delete a folder that contains scans, Tenable Vulnerability Management automatically moves those scans to the Trash folder. You cannot delete Tenable-provided folders or custom folders that belong to other users (even if you use an administrator account). <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: folders-delete
+      tags:
+      - Folders
+      parameters:
+      - description: The ID of the custom folder to delete. Use the [GET /folders](/reference#folders-list) endpoint to determine the ID of the custom folder you want to delete.
+        required: true
+        name: folder_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the folder was deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folders_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you attempt to delete a Tenable-provided folder (a folder where the `custom` attribute is set to `0`).
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the folder specified in the request.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folders_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - folders_cloud: []
+  /was/v2/folders:
+    post:
+      summary: Create folder
+      description: Creates a new custom folder for the current user.<div class="perms-callout">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: was-v2-folders-create
+      tags:
+      - Folders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  description: 'The name of the folder.
+
+
+                    **Note:** Folder names can only contain letters, numbers, underscores, hyphens, and whitespace.'
+      responses:
+        '200':
+          description: Returned if the folder was successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderResponse'
+              examples:
+                response:
+                  value:
+                    folder_id: 178fe279-4e37-49ee-a5dc-8a447dd7043a
+                    name: Southern Region
+        '400':
+          description: Returned if your request body is invalid or if you specify a folder name with invalid characters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: INVALID_JSON_BODY
+                      reason: "Invalid message body: Could not decode JSON: {\n  \"name\" : \"asdf$#\"\n}"
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have user permissions to create a folder. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    get:
+      summary: List folders
+      description: Lists the current user's custom folders.<div class="perms-callout">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: was-v2-folders-list
+      tags:
+      - Folders
+      responses:
+        '200':
+          description: Returned if the folder list for the current user was successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: array
+                description: A list of folders.
+                items:
+                  $ref: '#/components/schemas/FolderResponse'
+              examples:
+                response:
+                  value:
+                  - folder_id: d6280b0f-8cc2-4cbb-bf94-375079e94fef
+                    name: Western Region
+                  - folder_id: 71bd4347-db84-41e5-9e2f-9600f8f846f2
+                    name: Eastern Region
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to view the folder list. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /was/v2/folders/{folder_id}:
+    put:
+      summary: Rename folder
+      description: Renames a folder for the current user. You cannot rename Tenable-provided scan folders or custom folders that belong to other users (even if your account has administrator privileges). <div class="perms-callout">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: was-v2-folders-update
+      tags:
+      - Folders
+      parameters:
+      - $ref: '#/components/parameters/folder_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  description: 'The name of the folder.
+
+
+                    **Note:** Folder names can only contain letters, numbers, underscores, hyphens, and whitespace.'
+      responses:
+        '200':
+          description: Returned if the folder was renamed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderResponse'
+              examples:
+                response:
+                  value:
+                    folder_id: 91843ecb-ecb8-48a3-b623-d4682c25948c
+                    name: Northern Region
+        '400':
+          description: Returned if your request body is invalid or if you specify a folder name with invalid characters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: INVALID_JSON_BODY
+                      reason: "Invalid message body: Could not decode JSON: {\n  \"name\" : \"Northern Region 2#$\"\n}"
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have user permissions to modify a folder with the given ID. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    delete:
+      summary: Delete folder
+      description: Deletes a folder. If you delete a folder that contains scans, Tenable Web App Scanning automatically moves those scans to the Trash folder. You cannot delete Tenable-provided folders or custom folders that belong to other users (even if you use an administrator account). <div class="perms-callout">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: was-v2-folders-delete
+      tags:
+      - Folders
+      parameters:
+      - $ref: '#/components/parameters/folder_id'
+      responses:
+        '202':
+          description: Returned if the request to delete the folder was accepted.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have user permissions to delete a folder with the given ID. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    folders_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    FolderResponse:
+      type: object
+      description: Folder data
+      required:
+      - name
+      - folder_id
+      properties:
+        folder_id:
+          type: string
+          format: uuid
+          description: The UUID of the folder.
+        name:
+          type: string
+          description: The name of the folder.
+    folders_folders:
+      type: array
+      items:
+        $ref: '#/components/schemas/folders_folder'
+    ErrorResponse:
+      type: object
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
+      properties:
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
+    folders_folder:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of the folder.
+        name:
+          type: string
+          description: "The name of the folder. This value corresponds to the folder type as follows:\n - main—My Scans\n - trash—Trash\n-custom—user-defined string."
+        type:
+          type: string
+          description: "The type of the folder:\n- main—Tenable-provided folder. Contains all scans that you create but do not assign to a custom folder, as well as any scans shared with you by other users. If you do not specify a scan folder when creating a scan, Tenable Vulnerability Management stores scans in this folder by default. This folder corresponds to the **My Scans** folder in the Tenable Vulnerability Management user interface.\n - trash—Tenable-provided folder. This folder corresponds to the **Trash** folder in the Tenable Vulnerability Management user interface. It contains all scans that the current user has moved to the trash folder. After you move a scan to the trash folder, the scan remains in the trash folder until a user with at least Can Edit [64] scan permissions permanently deletes the scan.\n - custom—User-created folder. Contains scans as assigned by the current user. You can create custom folders to meet your organizational needs."
+        default_tag:
+          type: integer
+          description: "Indicates whether or not the folder is the default:\n - 1—The folder is the default.\n - 0—The folder is not the default.\n\nThe main folder is the default folder. You cannot change the default folder."
+        custom:
+          type: integer
+          description: "Indicates whether or not the folder is a custom folder:\n - 1—User-created folder. You can rename or delete this folder.\n - 0—System-created folder. You cannot rename or delete this folder."
+        unread_count:
+          type: integer
+          description: The number of scans in the folder that the current user has not yet viewed in the Tenable Vulnerability Management user interface.
+  parameters:
+    folder_id:
+      description: The UUID of the folder.
+      example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+      in: path
+      name: folder_id
+      required: true
+      schema:
+        type: string
+        format: uuid
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

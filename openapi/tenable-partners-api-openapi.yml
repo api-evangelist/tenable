@@ -1,0 +1,326 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Partners API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Partners
+  description: "The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage their partner information. Partner endpoints in the Tenable MSSP Portal API enables customers to retrieve partner, distributor, and license information. \n\nFor more information about the Tenable MSSP Portal, see the [Tenable MSSP Portal User Guide](https://docs.tenable.com/managed-security-service-provider/Content/Welcome.htm)."
+paths:
+  /mssp/partner/details:
+    get:
+      tags:
+      - Partners
+      summary: Get partner details
+      description: Returns partner details for the account associated with the user's API credentials. <div class="perms-callout">Requires BASIC [16] user permissions. See [Permissions](doc:permissions).</div>
+      operationId: mssp-partner-details
+      responses:
+        '200':
+          description: Returned if the partner details were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response-Partner-Details'
+              examples:
+                response:
+                  value:
+                    partner:
+                      id: 001We0000024vrNIAQ
+                      name: Partner_1
+                      lms_customer_id: '629774'
+                      contact_email: example@partner.com
+                    distributor:
+                    - id: 0013a00001nzGalAAE
+                      name: Example Networks Ltd
+                      lms_customer_id: '68062'
+                      countries:
+                      - US
+                      - AI
+                      - AG
+                      - AR
+                      - AW
+                      - BS
+                      - BB
+                      - BZ
+                      - BM
+                      - BO
+                      - BR
+                      - CA
+                      - KY
+                      - CL
+                      - CO
+                      - CR
+                      - DM
+                      - DO
+                      - EC
+                      - SV
+                      - FK
+                      - GF
+                      - GD
+                      - GP
+                      - GU
+                      - GT
+                      - GY
+                      - HT
+                      - HN
+                      - JM
+                      - MQ
+                      - MX
+                      - MS
+                      - AN
+                      - NI
+                      - PA
+                      - PY
+                      - PE
+                      - PR
+                      - KN
+                      - LC
+                      - PM
+                      - VC
+                      - SR
+                      - TT
+                      - TC
+                      - UY
+                      - VE
+                      - VG
+                      - VI
+                    - id: 001f200001NnN1LAAV
+                      name: Example Company
+                      lms_customer_id: '923'
+                      countries:
+                      - US
+                      - AI
+                      - AG
+                      - AR
+                      - AW
+                      - BS
+                      - BB
+                      - BZ
+                      - BM
+                      - BO
+                      - BR
+                      - CA
+                      - KY
+                      - CL
+                      - CO
+                      - CR
+                      - DM
+                      - DO
+                      - EC
+                      - SV
+                      - FK
+                      - GF
+                      - GD
+                      - GP
+                      - GU
+                      - GT
+                      - GY
+                      - HT
+                      - HN
+                      - JM
+                      - MQ
+                      - MX
+                      - MS
+                      - AN
+                      - NI
+                      - PA
+                      - PY
+                      - PE
+                      - PR
+                      - KN
+                      - LC
+                      - PM
+                      - VC
+                      - SR
+                      - TT
+                      - TC
+                      - UY
+                      - VE
+                      - VG
+                      - VI
+                    products:
+                    - name: Tenable Vulnerability Management
+                      sku: TIOVM
+                      minQuantity: 1011
+                      maxQuantity: 1111
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    Response-Partner-Details-Products:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Tenable Vulnerability Management
+          description: The name of the product that the partner is licensed to distribute.
+        sku:
+          type: string
+          example: TIOVM
+          description: The SKU of the Tenable product that the partner is licensed for.
+        minQuantity:
+          type: integer
+          description: The minimum number of assets that can be requested when creating a quote with the [Create quote](ref:mssp-accounts-quote) endpoint.
+        maxQuantity:
+          type: integer
+          description: The maximum number of assets that can be requested when creating a quote with the [Create quote](ref:mssp-accounts-quote) endpoint.
+    Object-Partner:
+      type: object
+      required:
+      - id
+      - name
+      - lms_customer_id
+      properties:
+        id:
+          type: string
+          example: 001We0000024vrNIAQ
+          description: The ID of the partner in the Tenable MSSP Portal.
+        name:
+          type: string
+          description: The name of the partner in the Tenable MSSP Portal.
+        lms_customer_id:
+          type: string
+          description: The partner's licensing management system customer ID.
+    Response-Partner-Details-Distributor:
+      allOf:
+      - $ref: '#/components/schemas/Object-Distributor'
+      - type: object
+        properties:
+          countries:
+            type: array
+            description: An array of strings defining the list of countries where the partner is allowed to operate.
+            items:
+              type: string
+    Object-Distributor:
+      type: object
+      required:
+      - id
+      - name
+      - lms_customer_id
+      properties:
+        id:
+          type: string
+          example: 001We0000024vrNIAQ
+          description: The ID of the distributor in the Tenable MSSP Portal.
+        name:
+          type: string
+          description: The name of the distributor in the Tenable MSSP Portal.
+        lms_customer_id:
+          type: string
+          description: The distributor's licensing management system customer ID.
+    Response-Partner:
+      allOf:
+      - $ref: '#/components/schemas/Object-Partner'
+      - type: object
+        properties:
+          contact_email:
+            type: string
+            description: The email address used for contacting the partner.
+    Response-Partner-Details:
+      type: object
+      properties:
+        partner:
+          $ref: '#/components/schemas/Response-Partner'
+        distributor:
+          type: array
+          description: A list of the partner's distributors.
+          items:
+            $ref: '#/components/schemas/Response-Partner-Details-Distributor'
+        products:
+          type: array
+          description: A list of the partner's available products.
+          items:
+            $ref: '#/components/schemas/Response-Partner-Details-Products'
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

@@ -1,0 +1,544 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Scan History API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Scan History
+  x-displayName: Scan History
+paths:
+  /scans/{scan_id}/history:
+    get:
+      summary: Get scan history
+      description: 'Returns a list of objects, each of which represent an individual run of the specified scan.
+
+
+        **Note:** Scans with `agent_scan_launch_type` set to `triggered` will not have scan history. <div class="perms-callout">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+      operationId: scans-history
+      tags:
+      - Scan History
+      parameters:
+      - description: The unique identifier for the scan. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [List scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`.
+        required: true
+        name: scan_id
+        in: path
+        schema:
+          type: string
+      - description: The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `50`.
+        required: false
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`.
+        required: false
+        name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: 'The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `start_date:desc` would sort results by the `start_date` field in descending order.
+
+
+          If you specify multiple fields, the fields must be separated by commas. For example, `start_date:desc,status:asc` would first sort results by the `start_date` field in descending order and then by the `status` field in ascending order.'
+        example: start_date:desc,status:asc
+        in: query
+        name: sort
+        required: false
+        schema:
+          type: string
+      - description: Indicates whether or not to exclude rollover scans from the scan history. If no value is provided for this parameter, Tenable Vulnerability Management uses the default value `false`.
+        in: query
+        name: exclude_rollover
+        required: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Returns a list of scan history objects.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_History_history_list_response'
+              examples:
+                response:
+                  value:
+                    pagination:
+                      offset: 0
+                      total: 8
+                      sort:
+                      - order: DESC
+                        name: start_date
+                      limit: 50
+                    history:
+                    - time_end: 1545945607
+                      scan_uuid: fc9dc7c5-8eec-4d39-ad9c-20e833cca69b
+                      id: 10535512
+                      is_archived: true
+                      time_start: 1545945482
+                      visibility: public
+                      targets:
+                        custom: false
+                        default: null
+                      status: canceled
+                    - time_end: 1545945457
+                      scan_uuid: 9e3a89e5-f3d0-4708-9ec9-403a34e7cd5e
+                      id: 10535505
+                      is_archived: true
+                      time_start: 1545945321
+                      visibility: public
+                      targets:
+                        custom: false
+                        default: null
+                      status: completed
+                    - time_end: 1545944767
+                      scan_uuid: 72c44ea9-8fcb-4874-b528-eb3537cc0d12
+                      id: 10535496
+                      is_archived: true
+                      time_start: 1545944637
+                      visibility: public
+                      targets:
+                        custom: false
+                        default: null
+                      status: completed
+                    - time_end: 1545877987
+                      scan_uuid: 350c369f-f7fb-4243-b27b-f3dfcb8c373d
+                      id: 10534608
+                      is_archived: true
+                      time_start: 1545877843
+                      visibility: public
+                      targets:
+                        custom: false
+                        default: null
+                      status: aborted
+                    - time_end: 1545877717
+                      scan_uuid: 4f1251a2-b60c-4d53-b284-c64dce001416
+                      id: 10534601
+                      is_archived: true
+                      time_start: 1545877590
+                      visibility: public
+                      targets:
+                        custom: false
+                        default: null
+                      status: aborted
+                    - time_end: 1545877057
+                      scan_uuid: f0b4a414-c798-498d-a08e-8487f96294dd
+                      id: 10534598
+                      is_archived: true
+                      time_start: 1545876907
+                      visibility: public
+                      targets:
+                        custom: false
+                        default: null
+                      status: aborted
+                    - time_end: 1545871897
+                      scan_uuid: 5eb404a0-e2ef-4661-b666-a979fbe78929
+                      id: 10534540
+                      is_archived: true
+                      time_start: 1545871758
+                      visibility: public
+                      targets:
+                        custom: false
+                        default: null
+                      status: aborted
+                    - time_end: 1545871177
+                      scan_uuid: 44c3c504-a0da-4537-8fb8-8d524236675e
+                      id: 10534536
+                      is_archived: true
+                      time_start: 1545871035
+                      visibility: public
+                      targets:
+                        custom: false
+                        default: null
+                      status: aborted
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_History_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified `scan_id`.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_History_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_History_cloud: []
+  /scans/{scan_id}/history/{history_uuid}:
+    get:
+      summary: Get scan history details
+      description: Returns the details of a previous run of the specified scan. Scan details include information about when and where the scan ran, as well as the scan results for the target hosts.<div class="perms-callout">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: scans-history-details
+      tags:
+      - Scan History
+      parameters:
+      - description: The unique identifier for the scan in your Tenable Vulnerability Management instance. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`.
+        required: true
+        name: scan_id
+        in: path
+        schema:
+          type: string
+      - description: The UUID of the historical scan result to return details about. This identifier corresponds to the `history.scan_uuid` attribute of the response message from the [Get scan history](ref:scans-history) endpoint.
+        required: true
+        name: history_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returns details of the historical scan result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_History_history-in-history-details-response'
+              examples:
+                response:
+                  value:
+                    owner_id: 2
+                    schedule_uuid: template-2abaec51-c243-444a-afe3-673af35b165ac98ab9a2d2e18e78
+                    status: aborted
+                    is_archived: true
+                    scan_start: 1543870842
+                    owner_uuid: 842f4ba8-1163-4ae4-85bf-c84eefa62cb6
+                    owner: user2@example.com
+                    targets: ''
+                    object_id: 10509951
+                    uuid: 63d15524-fce5-4555-bcd1-5b3172f41925
+                    scan_end: null
+                    scan_type: remote
+                    name: Advanced Windows Servers Scan
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_History_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified `scan_id` or `history_uuid`.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_History_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scan_History_cloud: []
+    delete:
+      summary: Delete scan history
+      description: Deletes historical results from a scan. Note that rollover scan data is also deleted.<div class="perms-callout">Requires the Scan Operator [24] user role and Can Edit [64] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: scans-delete-history
+      tags:
+      - Scan History
+      parameters:
+      - description: The unique identifier for the scan. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`.
+        required: true
+        name: scan_id
+        in: path
+        schema:
+          type: string
+      - description: The unique identifier of the historical data that you want Tenable Vulnerability Management to delete. This identifier corresponds to the `history.scan_uuid` attribute of the response message from the [GET scan history](ref:scans-history) endpoint.
+        required: true
+        name: history_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      - description: 'Indicates whether or not to delete scan rollover history. If `true`, the scan history and its associated rollover scan data are deleted. If `false` or null and the scan has rollover data, you receive a 409 error: "This scan contains rollover scan data. If you want to delete it and all the associated rollover scan data, use query parameter `delete_rollovers=true`."'
+        required: false
+        name: delete_rollovers
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Returned if the specified scan results were deleted successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_History_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management cannot find the specified scan results.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan_History_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '501':
+          description: Returned if Tenable Vulnerability Management does not support deleting historical scan results.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    statusCode: 501
+                    error: Not Implemented
+                    message: This feature is not yet implemented.
+      security:
+      - Scan_History_cloud: []
+components:
+  schemas:
+    Scan_History_targets-history-response-object:
+      type: object
+      description: The target parameters used to launch the scan.
+      properties:
+        custom:
+          type: boolean
+          description: If `true`, custom parameters were used to launch the scan.
+        default:
+          type: boolean
+          description: If `true`, default parameters were used to launch the scan.
+    Scan_History_PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    Scan_History_PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/Scan_History_PaginationResponseSortObject'
+    Scan_History_history_list:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the specific scan run.
+        status:
+          type: string
+          description: The status of the scan. For a list of possible values, see [Scan Status](doc:scan-status-tio).
+        reporting_mode:
+          type: string
+          description: 'Indicates the reporting mode for Nessus Agent scans: <ul><li>baseline—A scan that always reports all detected findings regardless of severity level. For baseline scans, the Nessus Agent creates a local cache of the plugin outputs generated by the scan. The cache is then used as the base for differential comparisons in subsequent scans.</li><li>differential—A scan that produces smaller results by removing plugin outputs that have not changed since the last scan.</li><li>null—A normal Nessus Agent scan that does not support baseline or differential reporting modes.</li></ul>'
+        is_archived:
+          type: boolean
+          description: Indicates whether the scan results are older than 35 days (`true`). If this parameter is `true`, Tenable Vulnerability Management returns limited data for the scan run. For complete scan results that are older than 35 days, use the [POST /scans/{scan_id}/export](ref:scans-export-request) endpoint instead.
+        visibility:
+          type: string
+          description: The visibility of the scan results in workbenches (`public` or `private`).
+        targets:
+          $ref: '#/components/schemas/Scan_History_targets-history-response-object'
+        time_end:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the scan stopped.
+        scan_uuid:
+          type: string
+          description: The UUID for the specific scan run.
+        time_start:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the scan started running.
+    Scan_History_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Scan_History_history-in-history-details-response:
+      type: object
+      description: A history object containing data about a run of the specified scan.
+      properties:
+        owner_id:
+          type: integer
+          description: The unique ID of the owner of the scan.
+        schedule_uuid:
+          type: string
+          description: The UUID for a specific instance in the scan schedule.
+        status:
+          type: string
+          description: The terminal status of the scan run. For possible values, see [Scan Status](doc:scan-status-tio).
+        reporting_mode:
+          type: string
+          description: 'Indicates the reporting mode for Nessus Agent scans: <ul><li>baseline—A scan that always reports all detected findings regardless of severity level. For baseline scans, the Nessus Agent creates a local cache of the plugin outputs generated by the scan. The cache is then used as the base for differential comparisons in subsequent scans.</li><li>differential—A scan that produces smaller results by removing plugin outputs that have not changed since the last scan.</li><li>null—A normal Nessus Agent scan that does not support baseline or differential reporting modes.</li></ul>'
+        is_archived:
+          type: boolean
+          description: Indicates whether the scan results are older than 35 days (`true`). If this parameter is `true`, Tenable Vulnerability Management returns limited data for the scan run. For complete scan results that are older than 35 days, use the [POST /scans/{scan_id}/export](ref:scans-export-request) endpoint instead.
+        scan_start:
+          type: integer
+          description: The Unix timestamp when the scan run started.
+          format: int64
+        owner_uuid:
+          type: integer
+          description: The UUID of the owner of the scan when the scan run occurred.
+        owner:
+          type: string
+          description: The username of the owner of the scan when the scan run occurred.
+        targets:
+          type: string
+          description: The hosts that the scan targeted.
+        object_id:
+          type: integer
+          description: The unique ID of the scan result object.
+          format: int32
+        uuid:
+          type: string
+          description: The UUID of the historical data.
+        scan_end:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the scan run finished.
+        scan_type:
+          type: string
+          description: 'The type of scan: `ps` (a scan performed over the network by a cloud scanner), `remote` (a  scan performed over the network by a local scanner), `agent` (a scan on a local host that a Nessus agent performs directly), or `null` (the scan has never been launched, or the scan is imported).'
+        name:
+          type: string
+          description: The name of the scan.
+    Scan_History_history_list_response:
+      type: object
+      properties:
+        pagination:
+          $ref: '#/components/schemas/Scan_History_PaginationResponse'
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/Scan_History_history_list'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

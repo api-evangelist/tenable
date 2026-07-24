@@ -1,0 +1,963 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Access Groups v1 API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Access Groups v1
+  x-displayName: Access Groups v1
+paths:
+  /access-groups:
+    post:
+      summary: Create access group
+      description: 'Creates an access group.
+
+
+        **Caution:** Access groups were deprecated in Tenable Vulnerability Management on February 4th, 2022. Tenable recommends that customers use [access control](ref:io-v3-access-control-permission-create) instead to manage user and group access to resources in Tenable Vulnerability Management. Please update any existing integrations that your organization has. For more information about access control, see [Access Control](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/AccessControl.htm) in the Tenable Vulnerability Management User Guide. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+      operationId: io-v1-access-groups-create
+      deprecated: true
+      tags:
+      - Access Groups v1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: "The name of the access group you want to create. This name must be:  \n* Unique within your Tenable Vulnerability Management instance.  \n* A maximum of 255 characters.  \n* Alphanumeric, but can include limited special characters (underscore, dash, parenthesis, brackets, colon).  \n  \n**Note:** You can add a maximum of 5,000 access groups to an individual container."
+                  type: string
+                all_assets:
+                  description: This parameter must always be `false` or omitted from create requests to specify that the access group is a user-created group. If you submit a create request with this parameter set to `true`, the create request fails.
+                  type: boolean
+                all_users:
+                  description: "Specifies whether assets in the access group can be viewed by all or only some users in your organization:  \n* If `true`, all users in your organization have Can View access to the assets defined in the rules parameter. Tenable Vulnerability Management ignores any principal parameters in your request.  \n* If `false`, only specified users have Can View access to the assets defined in the rules parameter. You define which users or user groups have access in the principals parameter of the request.  \n  \nIf you omit this parameter, Tenable Vulnerability Management sets the parameter to `false` by default."
+                  type: boolean
+                rules:
+                  items:
+                    $ref: '#/components/schemas/access-groups_AssetRule'
+                  description: An array of asset rules. Tenable Vulnerability Management uses these rules to assign assets to the access group. You can specify a maximum of 1,000 rules for an individual access group. If you specify multiple rules for an access group, Tenable Vulnerability Management assigns an asset to the access group if the asset matches any of the rules. You can only add rules to access groups if the `all_assets` parameter is set to `false`.
+                  type: array
+                principals:
+                  items:
+                    $ref: '#/components/schemas/access-groups_AssetRulePrincipal'
+                  description: "An array of principals. Each principal represents a user or user group assigned to the access group. You cannot add an access group as a principal to another access group. \n  \nTenable Vulnerability Management handles data in this array based on the `all_users` parameter of the request:  \n* If `all_users` is `true`, Tenable Vulnerability Management ignores any principal data in the request. You can omit this parameter from the request.  \n* If `all_users` is `false`, Tenable Vulnerability Management adds the principal data to the access group."
+                  type: array
+              required:
+              - name
+              - rules
+      responses:
+        '200':
+          description: Returned if an access group was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_AccessGroup'
+              examples:
+                response:
+                  value:
+                    container_uuid: c568aa2d-8e09-44f2-96fd-f669832ab34b
+                    created_at: '2018-11-31T18:17:04.827Z'
+                    updated_at: '2018-12-31T18:17:04.827Z'
+                    id: 89b7cfad-c783-4d34-90a7-5372be71c234
+                    name: Headquarters
+                    all_assets: false
+                    all_users: false
+                    status: COMPLETED
+                    rules:
+                    - type: aws_account
+                      operator: eq
+                      terms:
+                      - '123456789012'
+                    - type: fqdn
+                      operator: eq
+                      terms:
+                      - www.example.com
+                    - type: ipv4
+                      operator: eq
+                      terms:
+                      - 192.0.2.57
+                    created_by_uuid: 01403792-01c1-452d-a6f5-1352a327e9d9
+                    updated_by_uuid: 01403792-01c1-452d-a6f5-1352a327e9d9
+                    updated_by_name: user3@example.com
+                    created_by_name: user3@example.com
+                    processing_percent_complete: 100
+        '400':
+          description: "Returned if Tenable Vulnerability Management encountered any of the following error conditions:\n - max_entries—your request exceeds the maximum number of 5,000 access groups.\n - duplicate—an access group with the name you specified already exists.\n - protected—you attempted to set the all_assets parameter  to `true`, and you cannot create the system-provided access group, All Assets."
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create access groups.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - access-groups_cloud: []
+    get:
+      summary: List access groups
+      description: 'Lists access groups without associated rules.
+
+
+        **Caution:** Access groups were deprecated in Tenable Vulnerability Management on February 4th, 2022. Tenable recommends that customers use [access control](ref:io-v3-access-control-permission-create) instead to manage user and group access to resources in Tenable Vulnerability Management. Please update any existing integrations that your organization has. For more information about access control, see [Access Control](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/AccessControl.htm) in the Tenable Vulnerability Management User Guide. <div class="perms-callout">Requires the Basic [16] user role to list access groups to which you are assigned. Requires the Administrator [64] user role to list all access groups for your organization. See [Roles](doc:roles).</div>'
+      operationId: io-v1-access-groups-list
+      deprecated: true
+      tags:
+      - Access Groups v1
+      parameters:
+      - description: 'A filter condition in the following format: `field:operator:value`. For a list of possible fields and operators, use the [GET /access-groups/filters](ref:io-v1-access-groups-list-filters) endpoint. You can specify multiple `f` parameters, separated by ampersand (&) characters. If you specify multiple `f` parameters, use the `ft` parameter to specify how Tenable Vulnerability Management applies the multiple filter conditions.'
+        name: f
+        in: query
+        schema:
+          type: string
+      - description: If multiple `f` parameters are present, specifies whether Tenable Vulnerability Management applies `AND` or `OR` to conditions. Supported values are `and` and `or`. If you omit this parameter when using multiple `f` parameters, Tenable Vulnerability Management applies `AND` by default.
+        name: ft
+        in: query
+        schema:
+          type: string
+      - description: The search value that Tenable Vulnerability Management applies across the wildcard fields. Wildcard fields are specified in the `wf` parameter.
+        name: w
+        in: query
+        schema:
+          type: string
+      - description: A comma-separated list of fields where Tenable Vulnerability Management applies the search value specified in the `w` parameter. For a list of supported wildcard fields, use the [GET /access-groups/filters](ref:io-v1-access-groups-list-filters) endpoint.
+        name: wf
+        in: query
+        schema:
+          type: string
+      - description: Specifies whether or not to include the `rules` and `principals` objects in the response. Tenable Vulnerability Management defaults to `false` if this parameter is omitted.
+        name: fullypopulateresponse
+        in: query
+        schema:
+          type: boolean
+      - description: The number of records to retrieve.
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`.
+        name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: 'The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.
+
+
+          If you specify multiple fields, the fields must be separated by commas. For example, `name:desc,created_at:asc` would first sort results by the `name` field in descending order and then by the `created_at` field in ascending order.
+
+
+          For a list of supported sort fields, use the [GET /access-groups/filters](ref:io-v1-access-groups-list-filters) endpoint.'
+        name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a list of access groups that you have permission to view.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_groups:
+                    $ref: '#/components/schemas/access-groups_AccessGroup'
+                  pagination:
+                    $ref: '#/components/schemas/access-groups_PaginationResponse'
+              examples:
+                response:
+                  value:
+                    access_groups:
+                    - container_uuid: c568aa2d-8e09-44f2-96fd-f669832ab34b
+                      created_at: '2018-11-31T21:26:00.397Z'
+                      updated_at: '2018-12-31T21:26:00.397Z'
+                      id: 54f7ece1-eca9-4823-b5f9-e9981fb7c643
+                      name: Atlanta Office
+                      all_assets: false
+                      all_users: false
+                      status: COMLETED
+                      created_by_uuid: 01403792-01c1-452d-a6f5-1352a327e9d9
+                      updated_by_uuid: 01403792-01c1-452d-a6f5-1352a327e9d9
+                      updated_by_name: user@example.com
+                      created_by_name: user@example.com
+                      processing_percent_complete: 100
+                    pagination:
+                      offset: 0
+                      limit: 2
+                      total: 7
+                      sort:
+                      - name: allAssets
+                        order: desc
+                      - name: updatedAt
+                        order: asc
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view access groups.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - access-groups_cloud: []
+  /access-groups/{id}:
+    put:
+      summary: Update access group
+      description: 'Modifies an access group. This method overwrites the existing data.
+
+
+        **Caution:** Access groups were deprecated in Tenable Vulnerability Management on February 4th, 2022. Tenable recommends that customers use [access control](ref:io-v3-access-control-permission-create) instead to manage user and group access to resources in Tenable Vulnerability Management. Please update any existing integrations that your organization has. For more information about access control, see [Access Control](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/AccessControl.htm) in the Tenable Vulnerability Management User Guide. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+      operationId: io-v1-access-groups-edit
+      deprecated: true
+      tags:
+      - Access Groups v1
+      parameters:
+      - description: The UUID for the access group you want to modify.
+        required: true
+        name: id
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: The name of the access group you want to modify.
+                  type: string
+                all_assets:
+                  description: "Specifies whether the access group you want to modify is the All Assets group or a user-defined group:  \n* If you want to refine membership in the All Assets access group (the only change you can make to the All Assets group), this parameter must be `true`. Tenable Vulnerability Management ignores any rules parameters in your request, but overwrrites existing principals parameters with those in the request based on the `all_users` and principals parameters in the request.  \n* If you want to modify a user-defined access group, this parameter must be `false`. Tenable Vulnerability Management overwrites the existing rules parameters with the rules parameters you specify in this request, and overwrites existing principals parameters based on the `all_users` and principals parameters in the request."
+                  type: boolean
+                all_users:
+                  description: "Specifies whether assets in the access group can be viewed by all or only some users in your organization:  \n* If `true`, all users in your organization have Can View access to the assets defined in the rules parameter. Tenable Vulnerability Management ignores any principal parameters in your request.  \n* If `false`, only specified users have Can View access to the assets defined in the rules parameter. You define which users or user groups have access in the principals parameter of the request.  \n  \nIf you omit this parameter, Tenable Vulnerability Management sets the parameter to `false` by default."
+                  type: boolean
+                rules:
+                  items:
+                    $ref: '#/components/schemas/access-groups_AssetRule'
+                  description: An array of asset rules. Tenable Vulnerability Management uses these rules to assign assets to the access group. You can specify a maximum of 1,000 rules for an individual access group. If you specify multiple rules for an access group, Tenable Vulnerability Management assigns an asset to the access group if the asset matches any of the rules. You can only add rules to access groups if the `all_assets` parameter is set to `false`.
+                  type: array
+                principals:
+                  items:
+                    $ref: '#/components/schemas/access-groups_AssetRulePrincipal'
+                  description: An array of principals. Each principal represents a user or user group assigned to the access group. You cannot add an access group as a principal to another access group.
+                  type: array
+      responses:
+        '200':
+          description: Returned if the access group was updated successfully, or if a new access group was created because the system could not find an existing access group with the specified UUID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_AccessGroupDetails'
+              examples:
+                response:
+                  value:
+                    container_uuid: c568aa2d-8e09-44f2-96fd-f669832ab34b
+                    created_at: '2018-11-31T18:17:04.827Z'
+                    updated_at: '2018-12-31T18:17:04.827Z'
+                    id: 89b7cfad-c783-4d34-90a7-5372be71c234
+                    name: Headquarters
+                    all_assets: false
+                    all_users: false
+                    status: COMPLETED
+                    rules:
+                    - type: aws_account
+                      operator: eq
+                      terms:
+                      - '123456789012'
+                    - type: fqdn
+                      operator: eq
+                      terms:
+                      - www.example.com
+                    - type: ipv4
+                      operator: eq
+                      terms:
+                      - 192.0.2.57
+                    principals:
+                    - type: user
+                      principal_id: 15fa205e-11f1-4123-a34b-7f95b3c33be7
+                      principal_name: user1@example.com
+                    - type: user
+                      principal_id: 01403792-01c1-452d-a6f5-1352a327e9d9
+                      principal_name: user2@example.com
+                    created_by_uuid: 01403792-01c1-452d-a6f5-1352a327e9d9
+                    updated_by_uuid: 01403792-01c1-452d-a6f5-1352a327e9d9
+                    updated_by_name: user3@example.com
+                    created_by_name: user3@example.com
+                    processing_percent_complete: 100
+        '400':
+          description: "Returned if Tenable Vulnerability Management encountered any of the following error conditions:\n - incomplete—the body of your request did not include the required fields.\n - duplicate—an access group with the name you specified already exists.\n - protected—you attempted to update an access group where the `all_assets` parameter is set to `true`, and you cannot update the system-provided `All Assets` access group."
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have sufficient permissions to modify access groups.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - access-groups_cloud: []
+    delete:
+      summary: Delete access group
+      description: 'Deletes an access group.
+
+
+        **Caution:** Access groups were deprecated in Tenable Vulnerability Management on February 4th, 2022. Tenable recommends that customers use [access control](ref:io-v3-access-control-permission-create) instead to manage user and group access to resources in Tenable Vulnerability Management. Please update any existing integrations that your organization has. For more information about access control, see [Access Control](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/AccessControl.htm) in the Tenable Vulnerability Management User Guide. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+      operationId: io-v1-access-groups-delete
+      deprecated: true
+      tags:
+      - Access Groups v1
+      parameters:
+      - description: The UUID for the access group you want to delete.
+        required: true
+        name: id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the access group you specified was deleted successfully.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have sufficient permissions to delete an access group.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the access group you specified.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - access-groups_cloud: []
+    get:
+      summary: Get access group details
+      description: 'Returns details for a specific access group.
+
+
+        **Caution:** Access groups were deprecated in Tenable Vulnerability Management on February 4th, 2022. Tenable recommends that customers use [access control](ref:io-v3-access-control-permission-create) instead to manage user and group access to resources in Tenable Vulnerability Management. Please update any existing integrations that your organization has. For more information about access control, see [Access Control](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/AccessControl.htm) in the Tenable Vulnerability Management User Guide. <div class="perms-callout">Requires the Basic [16] user role to view details for an access group to which you are assigned; however, details do not include principals information. Requires the Administrator [64] user role to view details for any access group in your organization; in this case, details include principals information. See [Roles](doc:roles).</div>'
+      operationId: io-v1-access-groups-details
+      deprecated: true
+      tags:
+      - Access Groups v1
+      parameters:
+      - description: The UUID of the access group where you want to view details.
+        required: true
+        name: id
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the access group details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_AccessGroupDetails'
+              examples:
+                response:
+                  value:
+                    container_uuid: d38c2376-44a2-4f1c-ae49-03d428c48299
+                    created_at: '2018-11-31T21:17:18.883Z'
+                    updated_at: '2018-12-31T22:12:02.414Z'
+                    id: 1a55b8d1-9fdd-47b9-8279-0fa5babd1fa3
+                    name: Western Region
+                    all_assets: false
+                    all_users: false
+                    version: 2
+                    status: COMPLETED
+                    rules:
+                    - type: ipv4
+                      operator: eq
+                      terms:
+                      - 192.0.2.57
+                      principals:
+                      - type: user
+                        principal_id: f35a8524-e683-4367-9c3e-bab03d8e5889
+                        principal_name: user1@example.com
+                      - type: user
+                        principal_id: 55fda9c5-62c1-49fd-b414-e4cfeead2717
+                        principal_name: user2@example.com
+                      created_by_uuid: fdeb27bc-a55f-4fe9-8b6b-f861f3e47b99
+                      updated_by_uuid: fdeb27bc-a55f-4fe9-8b6b-f861f3e47b99
+                      updated_by_name: administrator@example.com
+                      created_by_name: administrator@example.com
+                      processing_percent_complete: 100
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permissions to view the access group details.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the access group you specified.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - access-groups_cloud: []
+  /access-groups/filters:
+    get:
+      summary: List access group filters
+      description: 'Lists available filters for access groups.
+
+
+        **Caution:** Access groups were deprecated in Tenable Vulnerability Management on February 4th, 2022. Tenable recommends that customers use [access control](ref:io-v3-access-control-permission-create) instead to manage user and group access to resources in Tenable Vulnerability Management. Please update any existing integrations that your organization has. For more information about access control, see [Access Control](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/AccessControl.htm) in the Tenable Vulnerability Management User Guide. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+      operationId: io-v1-access-groups-list-filters
+      deprecated: true
+      tags:
+      - Access Groups v1
+      responses:
+        '200':
+          description: "Returns a list of available filters for access groups. The response includes supported filter operators for each filter. Filter operators can include:\n - eq—Filters on exact matches of the specified value.\n - match—Filters on partial matches of the specified value.\n - date-lt —Filters on dates earlier than the specified date.\n - date-gt—Filters on dates later than the specified date.\n - date-eq—Filters on dates equal to the specified date.\n - set-has—Filters on exact matches of the specified `tag_uuid`.\n\nThe response sample shown does not represent a complete list of supported filters."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_AccessGroupFilters'
+              examples:
+                response:
+                  value:
+                    wildcard_fields:
+                    - name
+                    - created_by_name
+                    - updated_by_name
+                    filters:
+                    - operators:
+                      - eq
+                      - match
+                      control:
+                        type: entry
+                      name: name
+                      readable_name: Access Group Name
+                    sort:
+                      sortable_fields:
+                      - name
+                      - created_at
+                      - created_by_name
+                      - updated_at
+                      - updated_by_name
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - access-groups_cloud: []
+  /access-groups/rules/filters:
+    get:
+      summary: List asset rule filters
+      description: 'Lists available filters for asset rules.
+
+
+        **Caution:** Access groups were deprecated in Tenable Vulnerability Management on February 4th, 2022. Tenable recommends that customers use [access control](ref:io-v3-access-control-permission-create) instead to manage user and group access to resources in Tenable Vulnerability Management. Please update any existing integrations that your organization has. For more information about access control, see [Access Control](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/AccessControl.htm) in the Tenable Vulnerability Management User Guide. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+      operationId: io-v1-access-groups-list-rule-filters
+      deprecated: true
+      tags:
+      - Access Groups v1
+      responses:
+        '200':
+          description: Returns a list of filters. The response sample shown does not represent a complete list of supported filters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_AssetRuleFilters'
+              examples:
+                response:
+                  value:
+                    rules:
+                    - operators:
+                      - eq
+                      name: aws_account
+                      readable_name: AWS Account ID
+                      placeholder: 'Ex: 12345'
+                      control:
+                        type: tag
+                        regex: ^\d+$
+                    - operators:
+                      - eq
+                      name: ipv4
+                      readable_name: IPv4 Address
+                      placeholder: 'Ex: 192.0.2.57'
+                      control:
+                        type: tag
+                        regex: ^(?=\d+\.\d+\.\d+\.\d+(($|\/)|($|-)))(([1-9]?\d|1\d\d|2[0-4]\d|25[0-5])\.?){4}((\/([0-9]|[1-2][0-9]|3[0-2]))|(-(([1-9]?\d|1\d\d|2[0-4]\d|25[0-5])\.?){4}))?$
+                    - operators:
+                      - eq
+                      - match
+                      - starts
+                      - ends
+                      name: fqdn
+                      readable_name: FQDN/Hostname
+                      placeholder: 'Ex: company.com'
+                      control:
+                        type: tag
+                        regex: ^[a-zA-Z0-9-.*]+$
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-groups_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - access-groups_cloud: []
+components:
+  schemas:
+    access-groups_AssetRule:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of asset rule. The asset rule type corresponds to the type of data you can specify in the `terms` parameter. For a complete list of supported rule types, use the [GET /access-groups/filters](ref:io-v1-access-groups-list-filters) endpoint.
+        operator:
+          type: string
+          description: "The operator that specifies how Tenable Vulnerability Management matches the terms value to asset data. \n\nPossible operators include: \n - eq—Tenable Vulnerability Management matches the rule to assets based on an exact match of the specified term. Note: Tenable Vulnerability Management interprets the operator as `equals` for ipv4 rules that specify a single IP address, but interprets the operator as `contains` for ipv4 rules that specify an IP range or CIDR range.\n - match—Tenable Vulnerability Management matches the rule to assets based a partial match of the specified term.\n - starts—Tenable Vulnerability Management matches the rule to assets that start with the specified term.\n - ends—Tenable Vulnerability Management matches the rule to assets that end with the specified term.\n - set-has—Tenable Vulnerability Management matches the rule to assets based on an exact match of the specified `tag_uuid`.\n\nFor a complete list of operators by rule type, use the [GET /access-groups/rules/filters](ref:io-v1-access-groups-list-rule-filters) endpoint."
+        terms:
+          description: "The values that Tenable Vulnerability Management uses to match an asset to the rule. A term must correspond to the rule type.\n\nFor example:\n - If the rule type is `aws_account`, the term is an AWS account ID.\n - If the rule type is `fqdn`, the term is a hostname or a fully-qualified domain name (FQDN).\n - If the rule type is `ipv4`, the term is an individual IPv4 address, a range of IPv4 addresses (for example, 192.0.2.57-192.0.2.60), or a CIDR range (for example, 192.0.2.57/24). \n\nFor a complete list of supported values by rule type, use the [GET /access-groups/rules/filters](ref:io-v1-access-groups-list-rule-filters) endpoint.  \n\nIf you specify multiple terms values, Tenable Vulnerability Management includes an asset in the access group if the asset's attributes match any of the terms in the rule.\n<br >You can specify up to 100,000 terms per asset rule."
+          type: array
+          items:
+            type: string
+    access-groups_AssetRulePrincipal:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "(Required) The type of principal. Valid values include:\n - user—Grants access to the user you specify.\n - group—Grants access to all users assigned to the user group you specify."
+        principal_id:
+          type: string
+          description: The UUID of a user or user group. This parameter is required if the request omits the `principal_name` parameter.
+        principal_name:
+          type: string
+          description: The name of the user or user group. This parameter is required if the request omits the `principal_id` parameter. If a request includes both `principal_id` and `principal_name`, Tenable Vulnerability Management assigns the user or user group to the access group based on the `principal_id` parameter, and ignores the `principal_name` parameter in the request.
+    access-groups_AccessGroupFilter:
+      type: object
+      properties:
+        operators:
+          description: Corresponds to the operator component of the `f` parameter.
+          type: array
+          items:
+            type: string
+        control:
+          description: Indicates how the parameter appears in the Tenable Vulnerability Management user interface.
+          type: string
+        name:
+          description: Corresponds to the field component of the `f` parameter.
+          type: string
+        readable_name:
+          description: The name of the parameter as it appears in the Tenable Vulnerability Management user interface.
+          type: string
+    access-groups_AssetRuleFilter:
+      type: object
+      properties:
+        operators:
+          description: "The operator that specifies how Tenable Vulnerability Management matches the terms value to asset data. Corresponds to the operator component of the rules parameter. Possible operators include:  \n* eq—Tenable Vulnerability Management matches the rule to assets based on an exact match of the specified term. Note: Tenable Vulnerability Management interprets the operator as `equals` for ipv4 rules that specify a single IP address, but interprets the operator as `contains` for ipv4 rules that specify an IP range or CIDR range.  \n* match—Tenable Vulnerability Management matches the rule to assets based a partial match of the specified term.  \n* starts—Tenable Vulnerability Management matches the rule to assets that start with the specified term.  \n* ends—Tenable Vulnerability Management matches the rule to assets that end with the specified term.\n * set-has—Tenable Vulnerability Management matches the rule to assets based on an exact match of the specified `tag_uuid`.\n\nFor a complete list of operators by rule type, use the [GET /access-groups/filters](ref:io-v1-access-groups-list-filters) endpoint."
+          type: array
+          items:
+            type: string
+        control:
+          description: Indicates how the field appears in the Tenable Vulnerability Management user interface.
+          type: string
+        name:
+          description: The name of the filter parameter. Corresponds to the asset rule type.
+          type: string
+        readable_name:
+          description: The name of the field as it appears in the Tenable Vulnerability Management user interface.
+          type: string
+    access-groups_AccessGroup:
+      type: object
+      properties:
+        container_uuid:
+          type: string
+          description: The UUID of your Tenable Vulnerability Management instance.
+        created_at:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the access group was created.
+        updated_at:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the access group was last modified.
+        id:
+          type: string
+          description: The UUID of the access group.
+        name:
+          type: string
+          description: "The name of the access group. This name must be:  \n* Unique within your Tenable Vulnerability Management instance.  \n* A maximum of 255 characters.  \n* Alphanumeric, but can include limited special characters (underscore, dash, parenthesis, brackets, colon)."
+        all_assets:
+          type: boolean
+          description: "Specifies whether the access group is the system-provided All Assets access group: \n - If `true`, the access group is the All Assets access group. The only change you can make to this access group is to refine user membership in the group. For more information, see descriptions of the all_users and principals parameters for the [PUT /access-groups/{id}](ref:io-v1-access-groups-edit) endpoint.\n - If `false`, the access group is a user-defined access group, and you can change all parameters for the group. This parameter is `false` for all access groups you create."
+        all_users:
+          type: boolean
+          description: "Specifies whether assets in the access group can be viewed by all or only some users in your organization:\n - If `true`, all users in your organization have Can View access to the assets defined in the rules parameter. If `true` in a [POST /access-groups](ref:io-v1-access-groups-create) or [PUT /access-groups/{id}](ref:io-v1-access-groups-edit) request, Tenable Vulnerability Management ignores any principal parameters in the request. \n - If `false`, only specified users have Can View access to the assets defined in the rules parameter. You define which users or user groups have access in the principals parameter of a [POST /access-groups](ref:io-v1-access-groups-create) or [PUT /access-groups/{id}](ref:io-v1-access-groups-edit) request. \n\n**Note:** If a [PUT /access-groups/{id}]ref:io-v1-access-groups-edit) endpoint request sets this parameter to `true` for an access group where the parameter was previously set to `false`, Tenable Vulnerability Management removes all principal data previously associated with the access group."
+        status:
+          type: string
+          description: "The status of the process evaluating and assigning assets to the access group. Possible values are: \n - PROCESSING—Tenable Vulnerability Management is currently evaluating assets against the asset rules for the access group. For an indication of evaluation progress, see the `processing_percent_complete` attribute for the access group.\n - COMPLETED—Tenable Vulnerability Management has successfully completed its evaluation of assets against the asset rules for the group.\n - ERROR—Tenable Vulnerability Management encountered an error while evaluating assets against asset rules for the access group. Rule validation typically prevents this status from occurring. However, if you encounter an ERROR status, Tenable recommends that you delete the existing asset rules, then recreate the rules after a short time has elapsed."
+        created_by_uuid:
+          type: string
+          description: The UUID of the user who created the access group.
+        created_by_name:
+          type: string
+          description: The name of the user who created the access group.
+        updated_by_uuid:
+          type: string
+          description: The UUID of the user who last modified the access group.
+        updated_by_name:
+          type: string
+          description: The name of the user who last modified the access group.
+        processing_percent_complete:
+          type: integer
+          description: The percentage of assets that Tenable Vulnerability Management has evaluated against the asset rules for the access group.
+    access-groups_PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/access-groups_Response-PaginationSortObject'
+    access-groups_AssetRuleFilters:
+      type: object
+      properties:
+        filters:
+          description: An array specifying values to use when constructing an asset rule for the [POST /access-groups](ref:io-v1-access-groups-create) and [PUT /access-groups/{id}](ref:io-v1-access-groups-edit) methods.
+          type: array
+          items:
+            $ref: '#/components/schemas/access-groups_AssetRuleFilter'
+    access-groups_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    access-groups_Response-PaginationSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    access-groups_AccessGroupFilterSort:
+      type: object
+      properties:
+        sortable_fields:
+          description: The names of the fields you can use when constructing `sort` parameter values for the [GET /access-groups](ref:io-v1-access-groups-list) endpoint.
+          type: string
+    access-groups_AccessGroupDetails:
+      type: object
+      properties:
+        container_uuid:
+          type: string
+          description: The UUID of your Tenable Vulnerability Management instance.
+        created_at:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the access group was created.
+        updated_at:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the access group was last modified.
+        id:
+          type: string
+          description: The UUID of the access group.
+        name:
+          type: string
+          description: "The name of the access group. This name must be:  \n* Unique within your Tenable Vulnerability Management instance.  \n* A maximum of 255 characters.  \n* Alphanumeric, but can include limited special characters (underscore, dash, parenthesis, brackets, colon)."
+        all_assets:
+          type: boolean
+          description: "Specifies whether the access group is the system-provided All Assets access group: \n - If `true`, the access group is the All Assets access group. The only change you can make to this access group is to refine user membership in the group. For more information, see descriptions of the all_users and principals parameters for the [PUT /access-groups/{id}](ref:io-v1-access-groups-edit) endpoint.\n - If `false`, the access group is a user-defined access group, and you can change all parameters for the group. This parameter is `false` for all access groups you create."
+        all_users:
+          type: boolean
+          description: "Specifies whether assets in the access group can be viewed by all or only some users in your organization:\n - If `true`, all users in your organization have Can View access to the assets defined in the rules parameter. If `true` in a [POST /access-groups](ref:io-v1-access-groups-create) or [PUT /access-groups/{id}](ref:io-v1-access-groups-edit) request, Tenable Vulnerability Management ignores any principal parameters in the request. \n - If `false`, only specified users have Can View access to the assets defined in the rules parameter. You define which users or user groups have access in the principals parameter of a [POST /access-groups](ref:io-v1-access-groups-create) or [PUT /access-groups/{id}](ref:io-v1-access-groups-edit) request. \n\n**Note:** If a [PUT /access-groups/{id}](ref:io-v1-access-groups-edit) endpoint request sets this parameter to `true` for an access group where the parameter was previously set to `false`, Tenable Vulnerability Management removes all principal data previously associated with the access group."
+        status:
+          type: string
+          description: "The status of the process evaluating and assigning assets to the access group. Possible values are: \n - PROCESSING—Tenable Vulnerability Management is currently evaluating assets against the asset rules for the access group. For an indication of evaluation progress, see the `processing_percent_complete` attribute for the access group.\n - COMPLETED—Tenable Vulnerability Management has successfully completed its evaluation of assets against the asset rules for the group.\n - ERROR—Tenable Vulnerability Management encountered an error while evaluating assets against asset rules for the access group. Rule validation typically prevents this status from occurring. However, if you encounter an ERROR status, Tenable recommends that you delete the existing asset rules, then recreate the rules after a short time has elapsed."
+        rules:
+          description: An array of asset rules. Tenable Vulnerability Management uses these rules to assign assets to the access group. You can specify a maximum of 1,000 rules for an individual access group. If you specify multiple rules for an access group, Tenable Vulnerability Management assigns an asset to the access group if the asset matches any of the rules. You can only add rules to access groups if the `all_assets` parameter is set to `false`.
+          type: array
+          items:
+            $ref: '#/components/schemas/access-groups_AssetRule'
+        principals:
+          description: An array of principals. Each principal represents a user or user group assigned to the access group. You cannot add an access group as a principal to another access group.
+          type: array
+          items:
+            $ref: '#/components/schemas/access-groups_AssetRulePrincipal'
+        created_by_uuid:
+          type: string
+          description: The UUID of the user who created the access group.
+        created_by_name:
+          type: string
+          description: The name of the user who created the access group.
+        updated_by_uuid:
+          type: string
+          description: The UUID of the user who last modified the access group.
+        updated_by_name:
+          type: string
+          description: The name of the user who last modified the access group.
+        processing_percent_complete:
+          type: integer
+          description: The percentage of assets that Tenable Vulnerability Management has evaluated against the asset rules for the access group.
+    access-groups_AccessGroupFilters:
+      type: object
+      properties:
+        wildcard_fields:
+          description: The fields you can use as a wildcard (`wf` parameter) value in the [GET /access-groups](ref:io-v1-access-groups-list) endpoint.
+          type: array
+          items:
+            type: string
+        filters:
+          description: The filters and operators for each field you can use when constructing filter (`f` parameter) values in the [GET /access-groups](ref:io-v1-access-groups-list) endpoint.
+          type: array
+          items:
+            $ref: '#/components/schemas/access-groups_AccessGroupFilter'
+        sort:
+          description: The fields you can use when constructing `sort` parameter values for the [GET /access-groups](ref:io-v1-access-groups-list) endpoint.
+          type: array
+          items:
+            $ref: '#/components/schemas/access-groups_AccessGroupFilterSort'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

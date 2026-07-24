@@ -1,0 +1,690 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Logos API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Logos
+  description: "The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage the logos of their customer's instances. By default, the Tenable logo appears in the header of your customer's instances. The logo endpoints enables customers to replace the Tenable logo with a logo appropriate to a customer's business context. Use these endpoints to add, assign, and delete logos. \n\nFor background information about logos in the Tenable MSSP Portal, see [Logos](https://docs.tenable.com/managed-security-service-provider/Content/Logos.htm) in Tenable MSSP Portal User Guide."
+paths:
+  /mssp/logos:
+    post:
+      tags:
+      - Logos
+      summary: Add logo
+      description: Adds a logo to the Tenable MSSP Portal. After you add a logo to the Tenable MSSP Portal, use the [PUT /mssp/accounts/logos](ref:io-mssp-logos-assign) endpoint to assign the logo to a customer account.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-logos-create
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - logo
+              - name
+              properties:
+                logo:
+                  type: string
+                  description: The logo to upload. The logo must be in PNG format and no larger than 246x52 pixels.
+                  format: binary
+                name:
+                  type: string
+                  description: An identifiable, user-defined name for the logo.
+      responses:
+        '200':
+          description: Returned if the logo was added successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoUuidResponse'
+              examples:
+                response:
+                  value:
+                    uuid: 09fe899c-12c9-4d69-a13f-38851d47a482
+        '400':
+          description: Returned if your request specifies invalid query parameter values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse-400'
+              examples:
+                response:
+                  value:
+                    error: request should be multipart and include a single 'name' part
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    get:
+      tags:
+      - Logos
+      summary: List logos
+      description: Returns a list of logos you have uploaded to the Tenable MSSP Portal. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-logos-list
+      parameters: []
+      responses:
+        '200':
+          description: Returned if the list of logos was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoListResponse'
+              examples:
+                response:
+                  value:
+                    logos:
+                    - uuid: 61a36add-d29b-4a52-bbce-c8215952ede5
+                      container_uuid: 78093a9e-0992-4952-a984-328c44355804
+                      name: AMZN
+                      filename: amzn-logo.png
+                    - uuid: ef646e13-137f-4931-88ed-17cb7aad8a1d
+                      container_uuid: 78093a9e-0992-4952-a984-328c44355804
+                      name: goog
+                      filename: goodlogo.png
+                    - uuid: 853038f0-057a-4853-aa42-4dd85b22f735
+                      container_uuid: 78093a9e-0992-4952-a984-328c44355804
+                      name: Atos white
+                      filename: atos-logo-white.png
+                    - uuid: 14e90536-8259-40da-91a0-0bbde4fc9e92
+                      container_uuid: 78093a9e-0992-4952-a984-328c44355804
+                      name: small
+                      filename: small-logo.png
+                    - uuid: 46cf08ec-8d67-4232-848e-b229faa86e7a
+                      container_uuid: 78093a9e-0992-4952-a984-328c44355804
+                      name: FLOOOOOP
+                      filename: floop-logo.png
+                    - uuid: d4985710-7619-49d5-b31c-314b95d32457
+                      container_uuid: 78093a9e-0992-4952-a984-328c44355804
+                      name: TestLogo
+                      filename: mssp-logo.png
+                    - uuid: db111869-b47d-4c60-840e-bec83f00cb8e
+                      container_uuid: 78093a9e-0992-4952-a984-328c44355804
+                      name: brand new
+                      filename: mssp-logo.png
+                    - uuid: 46519267-81d0-4fb6-89dc-39fe8280ee79
+                      container_uuid: 78093a9e-0992-4952-a984-328c44355804
+                      name: NASA
+                      filename: nasa-logo.png
+                    - uuid: 5cc5d763-52a1-4943-a3b4-9bca84e9ae27
+                      container_uuid: 78093a9e-0992-4952-a984-328c44355804
+                      name: ZONE 88
+                      filename: mssp-logo.png
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /mssp/logos/{logo_uuid}:
+    get:
+      tags:
+      - Logos
+      summary: Get logo details
+      description: Returns details for the specified logo in the Tenable MSSP Portal. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-logos-details
+      parameters:
+      - name: logo_uuid
+        description: The UUID of the logo for which you want to view details.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returns logo details for the requested logo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoObject'
+              examples:
+                response:
+                  value:
+                    uuid: 61a36add-d29b-4a52-bbce-c8215952ede5
+                    container_uuid: 78093a9e-0992-4952-a984-328c44355804
+                    name: AMZN
+                    filename: amzn-logo.png
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if the Tenable MSSP Portal cannot find the specified logo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse-404'
+              examples:
+                response:
+                  value: {}
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    patch:
+      tags:
+      - Logos
+      summary: Update logo
+      description: Updates a logo in the Tenable MSSP Portal. This update overwrites the existing logo.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-logos-update
+      parameters:
+      - name: logo_uuid
+        description: The UUID of the logo to update.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - logo
+              - name
+              properties:
+                logo:
+                  type: string
+                  description: The logo to upload. The logo must be in PNG format and no larger than 246x52 pixels.
+                  format: binary
+                name:
+                  type: string
+                  description: An identifiable, user-defined name for the logo.
+      responses:
+        '200':
+          description: Returned if the logo was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoUuidResponse'
+              examples:
+                response:
+                  value:
+                    uuid: 6a902a71-22a3-4d53-a6cb-4b0d5e1058fd
+        '400':
+          description: Returned if your request specifies invalid query parameter values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse-400'
+              examples:
+                response:
+                  value:
+                    error: request should be multipart and include a single 'name' part
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if the Tenable MSSP Portal cannot find the specified logo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse-404'
+              examples:
+                response:
+                  value:
+                    error: logo with uuid 8d20527a-c651-457e-9f9f-c26503045011 not found on container d6eacae7-7e1e-457e-9e4f-e86716db564e
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    delete:
+      tags:
+      - Logos
+      summary: Delete logo
+      description: Deletes the specified logo in the Tenable MSSP Portal. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-logos-delete
+      parameters:
+      - name: logo_uuid
+        description: The UUID of the logo to delete.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the specified logo was deleted successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if the Tenable MSSP Portal cannot find the specified logo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse-404'
+              examples:
+                response:
+                  value: {}
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /mssp/accounts/logos:
+    put:
+      tags:
+      - Logos
+      summary: Assign logo
+      description: Assigns a logo to one or more customer accounts in the Tenable MSSP Portal. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-logos-assign
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoAssignmentBulk'
+      responses:
+        '200':
+          description: Returned if the specified logo to the specified account(s) was assigned successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specifies an invalid `logo_uuid` or `account_uuids` query parameter value.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse-400'
+              examples:
+                response:
+                  value:
+                    error: logo_uuid was not found
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /mssp/logos/{logo_uuid}/logo.png:
+    get:
+      tags:
+      - Logos
+      summary: Download logo (PNG)
+      description: Returns a logo file in PNG format. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-logos-png-download
+      parameters:
+      - name: logo_uuid
+        description: The UUID of the logo to download.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the PNG file is downloaded successfully.
+          content:
+            image/png:
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /mssp/logos/{logo_uuid}/logo.base64:
+    get:
+      tags:
+      - Logos
+      summary: Download logo (Base64)
+      description: Returns a logo file in Base64 format. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-logos-base64-download
+      parameters:
+      - name: logo_uuid
+        description: The UUID of the logo to download.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the file is downloaded successfully.
+          content:
+            text/plain;charset=UTF-8:
+              schema:
+                type: string
+                format: byte
+              examples:
+                response:
+                  value: data:image/png;base64,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
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    LogoObject:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: The UUID of the logo.
+        container_uuid:
+          type: string
+          description: The UUID of the container that contains the logo.
+        name:
+          type: string
+          description: The user-defined name of the logo.
+        filename:
+          type: string
+          description: The filename of the logo.
+    LogoAssignmentBulk:
+      type: object
+      required:
+      - logo_uuid
+      - account_uuids
+      properties:
+        logo_uuid:
+          type: string
+          description: The UUID of a logo in the Tenable MSSP Portal.
+        account_uuids:
+          type: array
+          description: An array of customer account UUIDs in the Tenable MSSP Portal.
+          items:
+            type: string
+    LogoListResponse:
+      type: object
+      properties:
+        logos:
+          description: An array of logo objects.
+          type: array
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/LogoObject'
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    LogoUuidResponse:
+      type: object
+      required:
+      - uuid
+      properties:
+        uuid:
+          type: string
+          description: The UUID of the logo.
+    ErrorResponse-400:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A brief message about the missing or invalid parameter value(s).
+    ErrorResponse-404:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A brief message about the object that could not be found.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

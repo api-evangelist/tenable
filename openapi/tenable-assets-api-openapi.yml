@@ -1,0 +1,1769 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Assets API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Assets
+  x-displayName: Assets
+paths:
+  /assets:
+    get:
+      summary: List assets
+      description: 'Lists up to 5,000 assets.
+
+
+        **Note:** You can use the [POST /assets/v2/export](ref:export-assets-v2) endpoint to export data for all assets. For more information about exporting assets, see [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+      operationId: assets-list-assets
+      tags:
+      - Assets
+      responses:
+        '200':
+          description: Returned if the list of assets was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  assets:
+                    type: array
+                    description: An object containing an array of assets.
+                    items:
+                      $ref: '#/components/schemas/assets_Response-List-Assets'
+                  total:
+                    type: integer
+                    description: The total number of assets returned in the result set.
+              examples:
+                response:
+                  value:
+                    assets:
+                    - id: 436224b4-e3e7-4761-ad47-e32daaebec6b
+                      has_agent: true
+                      last_seen: '2025-04-30T12:45:41.039Z'
+                      last_scan_target: 192.0.2.151
+                      sources:
+                      - name: NESSUS_SCAN
+                        first_seen: '2025-04-18T10:31:22.214Z'
+                        last_seen: '2025-04-18T13:39:54.799Z'
+                      - name: NESSUS_AGENT
+                        first_seen: '2025-04-18T11:48:03.328Z'
+                        last_seen: '2025-04-30T12:45:41.039Z'
+                      - name: ExternalAttackSurfaceMap
+                        first_seen: '2024-05-30T07:40:27.030Z'
+                        last_seen: '2025-05-25T07:31:16.777Z'
+                      acr_score: 5
+                      acr_drivers:
+                      - driver_name: device_type
+                        driver_value:
+                        - general_purpose
+                      - driver_name: device_capability
+                        driver_value:
+                        - pci
+                      - driver_name: internet_exposure
+                        driver_value:
+                        - internal
+                      exposure_score: 686
+                      scan_frequency: null
+                      ipv4:
+                      - 192.0.2.151
+                      ipv6:
+                      - 2001:db8:1a7e:90bb:e562:7e41:3c98:86b0
+                      fqdn:
+                      - lab.example.com
+                      mac_address:
+                      - 10:50:56:a6:90:fb
+                      netbios_name: []
+                      operating_system:
+                      - Oracle Linux Server 8.7
+                      hostname:
+                      - ol-euk-8.4.support.lab.tenablesecurity.com
+                      agent_name:
+                      - example-name
+                      aws_ec2_name: []
+                      security_protection_level: null
+                      security_protections: []
+                      exposure_confidence_value: null
+                    - id: a3f9c21d-55c5-4ed4-9a11-1e876790a630
+                      has_agent: true
+                      last_seen: '2025-06-16T08:23:24.640Z'
+                      last_scan_target: 198.51.100.227
+                      sources:
+                      - name: NESSUS_AGENT
+                        first_seen: '2024-10-03T07:31:15.437Z'
+                        last_seen: '2024-11-13T07:25:28.000Z'
+                      - name: NESSUS_SCAN
+                        first_seen: '2025-06-16T08:23:24.640Z'
+                        last_seen: '2025-06-16T08:23:24.640Z'
+                      acr_score: 4
+                      acr_drivers:
+                      - driver_name: device_type
+                        driver_value:
+                        - general_purpose
+                      - driver_name: device_capability
+                        driver_value:
+                        - pci
+                      - driver_name: internet_exposure
+                        driver_value:
+                        - internal
+                      exposure_score: 622
+                      scan_frequency: null
+                      ipv4:
+                      - 198.51.100.227
+                      ipv6:
+                      - 2001:db8:d0ec:46a:c221:c1fc:5ec8:ed3c
+                      - 2001:db8:98e8:ceea:18b8:2d3b:1cfc:3114
+                      fqdn:
+                      - lab2.example.com
+                      mac_address:
+                      - 40:50:56:a6:ba:36
+                      netbios_name: []
+                      operating_system:
+                      - SLES for SAP 15.3
+                      - Linux Kernel 5.3.18-150300.59.98-default on SLES_SAP15.3
+                      hostname:
+                      - example-suse15sp3
+                      agent_name:
+                      - genie-suse15
+                      aws_ec2_name: []
+                      security_protection_level: null
+                      security_protections: []
+                      exposure_confidence_value: null
+                    - id: 377bd14b-8395-418b-b8f1-c948a05c49af
+                      has_agent: false
+                      last_seen: '2025-06-16T08:23:24.640Z'
+                      last_scan_target: 203.0.113.144
+                      sources:
+                      - name: NESSUS_SCAN
+                        first_seen: '2025-06-16T08:23:24.640Z'
+                        last_seen: '2025-06-16T08:23:24.640Z'
+                      acr_score: 5
+                      acr_drivers:
+                      - driver_name: device_type
+                        driver_value:
+                        - general_purpose
+                      - driver_name: device_capability
+                        driver_value:
+                        - pci
+                      - driver_name: internet_exposure
+                        driver_value:
+                        - internal
+                      exposure_score: 628
+                      scan_frequency: null
+                      ipv4:
+                      - 203.0.113.144
+                      ipv6:
+                      - 2001:db8:578a:266c:f8e5:9fc4:c566:8e93
+                      - 2001:db8:6430:4b72:6ec4:931a:56f:2fb1
+                      fqdn:
+                      - lab3.example.com
+                      mac_address:
+                      - 02:50:56:a6:2a:0f
+                      netbios_name: []
+                      operating_system:
+                      - Oracle Linux 8.10
+                      - Linux Kernel 5.15.0-303.171.5.2.1.el8uek.x86_64 on Oracle Linux Server release 8.10
+                      hostname:
+                      - example-host
+                      agent_name: []
+                      aws_ec2_name: []
+                      security_protection_level: null
+                      security_protections: []
+                      exposure_confidence_value: null
+                    total: 3
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list assets.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - assets_cloud: []
+  /assets/{asset_uuid}:
+    get:
+      summary: Get asset details
+      description: Returns details of the specified asset.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: assets-asset-info
+      tags:
+      - Assets
+      parameters:
+      - description: The UUID of the asset.
+        required: true
+        name: asset_uuid
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the details for the specified asset were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_Response-Asset-Details'
+              examples:
+                response:
+                  value:
+                    name: example-asset
+                    id: 236224b4-e3e7-4761-ad47-e32daaebec6b
+                    has_agent: true
+                    created_at: '2025-04-18T10:31:22.214Z'
+                    updated_at: '2025-07-02T00:53:32.864Z'
+                    terminated_at: null
+                    deleted_at: null
+                    aes_score_v3: 757
+                    acr_score_v3: 6
+                    first_seen: '2025-04-18T10:31:22.000Z'
+                    last_seen: '2025-04-30T12:45:41.039Z'
+                    last_scan_target: 172.26.90.79
+                    last_authentication_attempt_date: '2025-04-18T13:39:54.799Z'
+                    last_authentication_success_date: '2025-04-18T13:39:54.799Z'
+                    last_authenticated_scan_date: '2025-04-18T14:20:36.407Z'
+                    last_licensed_scan_date: '2025-04-18T14:20:36.407Z'
+                    last_scan_id: 1bd973b9-85d2-4a4d-90c6-60d399238435
+                    last_schedule_id: template-83dfa4ac-32cc-92dd-4a5e-2ff4136cecaa9f62a41bc3058712
+                    sources:
+                    - name: NESSUS_SCAN
+                      first_seen: '2025-04-18T10:31:22.214Z'
+                      last_seen: '2025-04-18T13:39:54.799Z'
+                    - name: NESSUS_AGENT
+                      first_seen: '2025-04-18T11:48:03.328Z'
+                      last_seen: '2025-04-30T12:45:41.039Z'
+                    tags: []
+                    acr_score: 5
+                    acr_drivers:
+                    - driver_name: device_type
+                      driver_value:
+                      - general_purpose
+                    - driver_name: device_capability
+                      driver_value:
+                      - pci
+                    - driver_name: internet_exposure
+                      driver_value:
+                      - internal
+                    exposure_score: 686
+                    scan_frequency:
+                    - interval: 90
+                      frequency: 3
+                      licensed: false
+                    - interval: 30
+                      frequency: 1
+                      licensed: false
+                    - interval: 60
+                      frequency: 1
+                      licensed: false
+                    interfaces:
+                    - ipv4:
+                      - 192.0.2.80
+                      ipv6:
+                      - 2001:db8:d15:6fab:2728:12c1:35cd:1500
+                      fqdn:
+                      - lab.example.com
+                      mac_address:
+                      - 10:50:56:a6:90:fb
+                      name: ens192
+                      virtual: null
+                      aliased: null
+                    network_id:
+                    - 00000000-0000-0000-0000-000000000000
+                    ipv4:
+                    - 192.0.2.80
+                    ipv6:
+                    - 2001:db8:d15:6fab:2728:12c1:35cd:1500
+                    fqdn:
+                    - lab2.example.com
+                    mac_address:
+                    - 10:50:56:a6:90:fb
+                    netbios_name: []
+                    operating_system:
+                    - Oracle Linux Server 8.7
+                    system_type:
+                    - general-purpose
+                    tenable_uuid:
+                    - 76cd04c276c9431ebeabd8a98ec2af69
+                    hostname:
+                    - ol-euk-8.4.support.lab.tenablesecurity.com
+                    agent_name:
+                    - jradman-test
+                    bios_uuid:
+                    - 9b922642-7e01-6c78-e9b3-8618c18f023d
+                    aws_ec2_instance_id: []
+                    aws_ec2_instance_ami_id: []
+                    aws_owner_id: []
+                    aws_availability_zone:
+                    - us-west-1a
+                    aws_region:
+                    - us-west-1
+                    aws_vpc_id:
+                    - vpc-1a2b3c4d
+                    ssh_fingerprint: []
+                    mcafee_epo_guid: []
+                    mcafee_epo_agent_guid: []
+                    qualys_asset_id: []
+                    qualys_host_id: []
+                    servicenow_sysid: []
+                    installed_software:
+                    - cpe:/a:openbsd:openssh:8.0
+                    - cpe:/a:pivotal_software:redis:5.0.3
+                    - cpe:/a:gnupg:libgcrypt:1.8.5
+                    - cpe:/a:haxx:curl:7.61.1
+                    - cpe:/a:haxx:libcurl:7.61.1
+                    - cpe:/a:openssl:openssl:1.1.1k
+                    - cpe:/a:tenable:nessus_agent:10.8.4
+                    - cpe:/a:tukaani:xz:5.2.4
+                    - cpe:/a:vmware:open_vm_tools:12.0.5
+                    bigfix_asset_id: []
+                    security_protection_level: null
+                    security_protections: []
+                    exposure_confidence_value: null
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view information about an asset.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - assets_cloud: []
+  /api/v2/assets/bulk-jobs/acr:
+    post:
+      summary: Update ACR
+      description: 'Overwrites the Tenable-provided Asset Criticality Rating (ACR) for the specified assets. Tenable assigns an ACR to each asset on your network to represent the asset''s relative risk as an integer from 1 to 10. For more information about ACR, see [Lumin metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+        You must have a Lumin license to update the ACR for assets in your organization.<div class="perms-callout">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>'
+      operationId: assets-bulk-update-acr
+      tags:
+      - Assets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/assets_assetsBulkUpdateAcrObject'
+      responses:
+        '202':
+          description: Returned if Tenable Vulnerability Management successfully queued the update request.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to update the ACR for the specified asset.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified asset.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - assets_cloud: []
+  /api/v2/assets/bulk-jobs/move-to-network:
+    post:
+      summary: Move assets
+      description: 'Moves assets from the specified network to another network. You can use this endpoint to move assets from the default network to a user-defined network, from a user-defined network to the default network, and from one user-defined network to another user-defined network. This request creates an asynchronous job in Tenable Vulnerability Management.
+
+
+        For information about the assets move workflow and payload examples, see [Bulk Asset Operations](doc:bulk-asset-operations).<div class="perms-callout">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>'
+      operationId: assets-bulk-move
+      tags:
+      - Assets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/assets_assetsBulkMoveRequest'
+      responses:
+        '202':
+          description: Returned if Tenable Vulnerability Management successfully moved the assets to the specified network.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_data'
+              examples:
+                response:
+                  value:
+                    response:
+                      data:
+                        asset_count: 512
+        '400':
+          description: Returned if Tenable Vulnerability Management could not find the specified assets.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to move assets.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - assets_cloud: []
+  /api/v2/assets/bulk-jobs/delete:
+    post:
+      summary: Bulk delete assets
+      description: 'Deletes the specified assets. This request creates an asynchronous delete job in Tenable Vulnerability Management.
+
+
+        For information about the assets bulk delete workflow and payload examples, see [Bulk Asset Operations](doc:bulk-asset-operations).<div class="perms-callout">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>'
+      operationId: assets-bulk-delete
+      tags:
+      - Assets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - query
+              properties:
+                hard_delete:
+                  type: boolean
+                  default: false
+                  description: 'Indicates whether or not to hard delete the specified assets.
+
+
+                    <span style="color:red">**Caution:** Deleting assets completely removes the assets from your licensed asset count along with all related data and the deleted assets are not available for restoration. This occurs whether `hard_delete` is set to `true` or `false`.</span>
+
+
+                    When `hard_delete` is set to `true`, deleted assets are no longer visible in the user interface or available through the API. When `hard_delete` is set to `false`, deleted assets can only be retrieved via the API using a direct asset UUID, and are available for export via the API for 90 days. The primary goal of setting `hard_delete` to `false` is to reflect those deletions through integrations.
+
+
+                    If this parameter is omitted, Tenable Vulnerability Management uses the default value of `false`.'
+                query:
+                  description: The query filters for selecting assets to delete. The format for a single query filter is different from the format for multiple query filters so you must select one or the other.
+                  $ref: '#/components/schemas/assets_query'
+      responses:
+        '202':
+          description: Returned if Tenable Vulnerability Management successfully deleted the requested assets.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/assets_data'
+              examples:
+                response:
+                  value:
+                    response:
+                      data:
+                        asset_count: 512
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted. For example, if you specify an invalid asset query using a malformed IPv4 address.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to bulk delete assets.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if Tenable Vulnerability Management is unavailable or not ready to process the request. Wait a moment and try your request again.
+      security:
+      - assets_cloud: []
+  /import/assets:
+    post:
+      summary: Import assets
+      description: 'Imports asset data in JSON format.
+
+
+        The request size cannot exceed 5 MB. For example, if the average asset record you want to import is about 2 KB, you can import approximately 2,500 assets in a single request.
+
+
+        **Note:** This endpoint does not support the network_id attribute in asset objects for import. Tenable Vulnerability Management automatically assigns imported assets to the default network object. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).<div class="perms-callout">Requires the Scan Manager [40] user role and Can Edit [64] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+      operationId: assets-import
+      tags:
+      - Assets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assets:
+                  type: array
+                  description: 'An array of asset objects to import. Each asset object requires a value for at least one of the following properties: fqdn, ipv4, netbios\_name, mac\_address.
+
+
+                    For an example of this request body, see [Add Asset Data to Vulnerability Management](doc:add-asset-data-to-tenableio). For the complete list of importable asset attributes, see [Common Asset Attributes](doc:common-asset-attributes#section-asset-attribute-definitions).
+
+
+                    **Caution:** AWS, Azure, and GCP asset data must be imported separately even if the data is associated with the same asset. For example, Azure imports should only contain Azure data in the payload. The import fails if AWS data is included with the Azure data in the payload.'
+                  example: '[{"ipv4":"192.0.2.57","operating_system":"Windows 7 x64"}]'
+                  items:
+                    $ref: '#/components/schemas/assets_Request-Import-Asset'
+                source:
+                  type: string
+                  description: A user-defined name for the source of the import containing the asset records. You can specify only one source for each import.
+                  example: Custom Import
+              required:
+              - assets
+              - source
+      responses:
+        '200':
+          description: Returned if the import job was queued successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  asset_import_job_uuid:
+                    type: string
+                    description: The unique identifier of the asset import job.
+              examples:
+                response:
+                  value:
+                    asset_import_job_uuid: 467e5338-7783-4a0d-915a-5d00584784a0
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to import assets.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - assets_cloud: []
+  /import/asset-jobs:
+    get:
+      summary: List asset import jobs
+      description: Lists asset import jobs.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: assets-list-import-jobs
+      tags:
+      - Assets
+      responses:
+        '200':
+          description: Returned if the list of asset import jobs was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  asset_import_jobs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/assets_Response-Asset-Import-Job'
+              examples:
+                response:
+                  value:
+                    asset_import_jobs:
+                    - job_id: 3c824793-73d8-4c2e-bfc3-c2f78afa3bbf
+                      container_id: 1a2d819b-c818-40a8-a2eb-3f746c4b0ab3
+                      source: test1
+                      batches: 1
+                      uploaded_assets: 0
+                      failed_assets: 0
+                      start_time: 1544480303548
+                      last_update_time: 1544484511492
+                      end_time: 1544484511492
+                      status: ERROR
+                      status_message: Job failed by exceeding time limit
+                    - job_id: 98dd5659-70a3-430b-8b10-4ef0b6215582
+                      container_id: 1a2d819b-c818-40a8-a2eb-3f746c4b0ab3
+                      source: test2
+                      batches: 1
+                      uploaded_assets: 0
+                      failed_assets: 0
+                      start_time: 1544480429785
+                      last_update_time: 1544484511496
+                      end_time: 1544484511496
+                      status: ERROR
+                      status_message: Job failed by exceeding time limit
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list asset import jobs.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - assets_cloud: []
+  /import/asset-jobs/{asset_import_job_uuid}:
+    get:
+      summary: Get import job status
+      description: Gets information about the specified import job.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: assets-import-job-info
+      tags:
+      - Assets
+      parameters:
+      - description: The UUID of the asset import job.
+        required: true
+        name: asset_import_job_uuid
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the details for the specified asset import job were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_Response-Asset-Import-Job'
+              examples:
+                response:
+                  value:
+                    job_id: 3c824793-73d8-4c2e-bfc3-c2f78afa3bbf
+                    container_id: 1a2d819b-c818-40a8-a2eb-3f746c4b0ab3
+                    source: test
+                    batches: 1
+                    uploaded_assets: 0
+                    failed_assets: 0
+                    start_time: 1544480303548
+                    last_update_time: 1544480303569
+                    end_time: 1544480303548
+                    status: IN_PROGRESS
+                    status_message: Example message.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to list asset import jobs.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/assets_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - assets_cloud: []
+components:
+  schemas:
+    assets_subquery:
+      type: object
+      description: The query for selecting the assets to delete. Includes an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint.
+      properties:
+        field:
+          type: string
+          description: The name of the asset attribute to match. Asset attributes can include tags, for example, `tag.city`.
+        operator:
+          type: string
+          description: The operator to apply to the matched value, for example, `eq` (equals), `neq` (does not equal), or `match` (contains).
+        value:
+          type: string
+          description: "The asset attribute value to match.\n\n **Note:** The value is case sensitive when used with the `match` (contains) or `nmatch` (does not contain) operators."
+    assets_data:
+      type: object
+      description: Bulk operations results. Contains the number of assets affected by the operation (moved or deleted).
+      properties:
+        asset_count:
+          type: integer
+          description: The number of assets affected by the operation.
+    assets_Response-List-Assets:
+      description: An object containing information about an asset
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier of the asset. Use this value as the unique key for the asset.
+        has_agent:
+          type: boolean
+          description: Indicates if a Tenable Agent scan detected the asset.
+        last_seen:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time of the scan that most recently detected the asset.
+        last_scan_target:
+          type: string
+          description: The IPv4 address, IPv6 address, or fully qualified domain name (FQDN) last used by the scanner to evaluate the asset.
+        sources:
+          type: array
+          description: A list of sources that identified the asset.
+          items:
+            $ref: '#/components/schemas/assets_sources'
+        acr_score:
+          type: integer
+          description: 'The Asset Criticality Rating (ACR) assigned to the asset. Tenable assigns an ACR to each asset on your network to represent the asset''s relative risk as an integer from 1 to 10. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+        acr_drivers:
+          type: array
+          description: "The key drivers Tenable used to calculate the asset's Tenable-provided Asset Criticality Rating (ACR). For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*. \n\nNote: This attribute is available only with a Tenable Lumin license."
+          items:
+            $ref: '#/components/schemas/assets_AcrDriversObject'
+        exposure_score:
+          type: integer
+          description: 'The Asset Exposure Score (AES) assigned to the asset. Tenable assigns an AES to each asset on your network to represent the asset''s relative exposure as an integer between 0 and 1000. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+        scan_frequency:
+          type: array
+          description: 'Information about how often scans were run against the asset during specified time intervals. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+          items:
+            $ref: '#/components/schemas/assets_AcrScanFrequencyObject'
+        ipv4:
+          description: A list of IPv4 addresses associated with the asset.
+          type: array
+          items:
+            type: string
+        ipv6:
+          description: A list of IPv6 addresses associated with the asset.
+          type: array
+          items:
+            type: string
+        fqdn:
+          description: A list of fully qualified domain names (FQDNs) associated with the asset.
+          type: array
+          items:
+            type: string
+        mac_address:
+          type: array
+          description: A list of MAC addresses associated with the asset.
+          items:
+            type: string
+        netbios_name:
+          type: array
+          description: A list of NetBIOS names associated with the asset.
+          items:
+            type: string
+        operating_system:
+          type: array
+          description: A list of operating systems associated with the asset.
+          items:
+            type: string
+        hostname:
+          type: array
+          description: A list of host names associated with the asset.
+          items:
+            type: string
+        agent_name:
+          type: array
+          description: A list of Tenable agents that scanned and identified the asset.
+          items:
+            type: string
+        aws_ec2_name:
+          type: array
+          description: A list of virtual machine instance names in AWS EC2 associated with the asset.
+          items:
+            type: string
+        security_protection_level:
+          type: integer
+          description: The security protection level associated with the asset.
+        security_protections:
+          type: array
+          description: A list of security protection mitigations that contributed to the security protection level.
+          items:
+            type: string
+        exposure_confidence_value:
+          type: integer
+          description: The exposure confidence value associated with the asset.
+    assets_AcrScanFrequencyObject:
+      type: object
+      description: The interval, frequency, and licensing information for the scans of the asset.
+      properties:
+        interval:
+          type: integer
+          description: The number of days in the interval during which Tenable checks for scans involving the asset.
+        frequency:
+          type: integer
+          description: The number of times a scan was run against the asset during the specified interval.
+        licensed:
+          type: boolean
+          description: Indicates whether the asset was licensed at the time of the scans.
+    assets_AcrDriversObject:
+      type: object
+      description: Asset characteristic that factored into the Asset Criticality Rating (ACR) calculation. For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+      properties:
+        driver_name:
+          type: string
+          description: The ACR key driver. ACR key drivers reflect the global threat landscape associated with the asset's characteristics.
+          enum:
+          - device_type
+          - device_capability
+          - internet_exposure
+        driver_value:
+          type: array
+          description: 'The ACR key driver''s value. For example, for the `device_type` key driver, values can include `hypervisor`, `printer`, etc. '
+          items:
+            type: string
+    assets_tags:
+      type: object
+      properties:
+        tag_uuid:
+          type: string
+          description: The unique identifier of the tag.
+        tag_key:
+          type: string
+          description: The tag key, representing the category portion of a category:value tag pair.
+        tag_value:
+          type: string
+          description: The tag value, representing the value portion of a category:value tag pair.
+        added_by:
+          type: string
+          description: The unique identifier of the user who assigned the tag to the asset.
+        added_at:
+          type: string
+          description: A timestamp in ISO 8601 format indicating the date and time the tag was assigned to the asset.
+    assets_query:
+      oneOf:
+      - title: Single Query Filter
+        type: object
+        description: The query filter for selecting the assets to delete. A filter must include an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint.
+        properties:
+          field:
+            type: string
+            description: The name of the asset attribute to match. Asset attributes can include tags, for example, `tag.city`.
+          operator:
+            type: string
+            description: The operator to apply to the matched value, for example, `eq` (equals), `neq` (does not equal), or `match` (contains).
+          value:
+            type: string
+            description: "The asset attribute value to match.\n\n **Note:** The value is case sensitive when used with the `match` (contains) or `nmatch` (does not contain) operators."
+      - title: Multiple Query Filters
+        type: object
+        description: 'The query filters for selecting the assets to delete. Must include one or more filters. A filter must include an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint. Sets of multiple filters must be specified inside `and` or `or` arrays.
+
+
+          **Note:** You can also nest conditions, for example, specify a set of `or` sub-conditions for a condition inside the `and` array. Tenable Vulnerability Management supports up to 1,000 conditions (filters) within the query object.'
+        properties:
+          and:
+            type: array
+            description: To select assets that match all of multiple conditions, specify the conditions inside the `and` array.
+            items:
+              $ref: '#/components/schemas/assets_subquery'
+          or:
+            type: array
+            description: To select assets that match any of multiple conditions, specify the conditions inside the `or` array.
+            items:
+              $ref: '#/components/schemas/assets_subquery'
+    assets_Response-Asset-Import-Job:
+      type: object
+      properties:
+        job_id:
+          type: string
+          description: The unique identifier of the asset import job.
+        container_id:
+          type: string
+          description: The UUID of your Tenable Vulnerability Management container.
+        source:
+          type: string
+          description: A user-defined name for the source of the import containing the asset records. You can specify only one source for each import.
+        batches:
+          type: integer
+          description: The number of batches in the asset import job.
+          format: int32
+        uploaded_assets:
+          type: integer
+          description: The number of assets from the import job that Tenable Vulnerability Management successfully imported.
+          format: int32
+        failed_assets:
+          type: integer
+          description: The number of assets from the import job that Tenable Vulnerability Management failed to import.
+        start_time:
+          type: integer
+          description: The Unix timestamp when Tenable Vulnerability Management started processing the import job.
+          format: int64
+        last_update_time:
+          type: integer
+          description: The Unix timestamp when Tenable Vulnerability Management performed an action on the import job.
+          format: int64
+        end_time:
+          type: integer
+          description: The Unix timestamp when Tenable Vulnerability Management completed processing the import job.
+          format: int64
+        status:
+          type: string
+          description: 'The status of the import job. Possible values include: COMPLETE, IN_PROGRESS, or ERROR.'
+        status_message:
+          type: string
+          description: The description of why a job failed.
+    assets_sources:
+      description: An object containing source information.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the entity that reported the asset details. Sources can include Tenable sensors, third-party data connectors, cloud platforms, or API imports. Your organization can customize source names—for example, by specifying a name when importing asset records. If not customized, the system-generated default source names are listed below.
+          enum:
+          - ACUNETIX_360
+          - ACUNETIX_PREMIUM
+          - AQUA_CSPM
+          - AQUA_CWPP
+          - ARMIS
+          - ASM
+          - AWS
+          - AWS_CONFIG
+          - AWS_EC2
+          - AWS_INSPECTOR_CLASSIC
+          - AWS_INSPECTOR_V2
+          - AWS_SECURITY_HUB
+          - AXONIUS
+          - AZURE
+          - AZURE_FA
+          - BIT_SIGHT
+          - BURPSUITE
+          - CARBON_BLACK
+          - CLONE_SYSTEMS
+          - CLOUD
+          - CONSEC
+          - CORE_CLOUDRESOURCE
+          - CORTEX_XDR
+          - CROWDSTRIKE
+          - CROWDSTRIKE_ENTERPRISE
+          - CYCOGNITO
+          - DETECTIFY
+          - FORTIFY_DAST
+          - GCP
+          - HACKER_ONE
+          - INTUNE
+          - JAMF
+          - MICROSOFT_AZURE
+          - MICROSOFT_DEFENDER
+          - MICROSOFT_DEFENDER_CLOUD
+          - MICROSOFT_TVM
+          - NESSUS_AGENT
+          - NESSUS_SCAN
+          - NETSPARKER
+          - NODE_ZERO
+          - ORCA
+          - OUTPOST24
+          - PRISMACLOUD
+          - PRISMACLOUD_CSPM
+          - PURPLEMET
+          - PVS
+          - QUALYS
+          - QUALYS_WAS
+          - RAPID7_INSIGHT_APP_SEC
+          - RAPID7_INSIGHTVM
+          - RAPID7_INSIGHTVM_CLOUD
+          - RAPID_7
+          - RED_HAT_INSIGHTS
+          - RISK_RECON
+          - SECURITY_CENTER
+          - SECURITY_SCORE_CARD
+          - SENTINEL_ONE
+          - SERVICE_NOW
+          - SSM
+          - T.CS
+          - T.IO
+          - T.OT
+          - TANIUM
+          - TIE AD
+          - TIE MEID
+          - TIE
+          - UNCLASSIFIED
+          - VERACODE_DAST
+          - WAS
+          - WHITEHAT
+          - WIZ_CONFIGURATION
+          - WIZ_ISSUES
+          - WIZ_VULNERABILITY_MANAGEMENT
+        first_seen:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time the source first reported the asset.
+        last_seen:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time the source last reported the asset.
+    assets_assetsBulkUpdateAcrObject:
+      type: object
+      required:
+      - acr_score
+      - asset
+      description: Parameters to update the ACR for an asset. For a request body example, see "Update ACR for assets" in [Bulk Asset Operations](doc:bulk-asset-operations).
+      properties:
+        acr_score:
+          type: integer
+          description: The ACR score you want to assign to the asset. The ACR must be an integer from 1 to 10.
+        reason:
+          type: array
+          description: "The reasons you are updating the ACR for the assets. Supported values include:\n\n - Business Critical\n - In Scope For Compliance\n - Existing Mitigation Control\n - Dev only \n - Key drivers does not match \n - Other\n\nThis parameter corresponds to the **Overwrite Reasoning** parameter when editing an ACR in the Tenable Vulnerability Management Lumin user interface. For more information, see [Edit an ACR](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminEditACR.htm)."
+          items:
+            type: string
+            enum:
+            - Business Critical
+            - In Scope For Compliance
+            - Existing Mitigation Control
+            - Dev only
+            - Key drivers does not match
+            - Other
+        note:
+          type: string
+          description: 'Any notes you want to add to clarify the circumstances behind the update. This parameter corresponds to the **Note** parameter when editing an ACR in the Tenable Vulnerability Management Lumin user interface. For more information, see [Edit an ACR](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminEditACR.htm).  '
+        asset:
+          type: array
+          description: The identifiers of the assets to update to the specified ACR. At least one asset object is required in this array.
+          items:
+            $ref: '#/components/schemas/assets_AssetIdentifierObject'
+    assets_Response-Asset-Details:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the asset.
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier of the asset. Use this value as the unique key for the asset.
+        has_agent:
+          type: boolean
+          description: Indicates if a Tenable Agent scan detected the asset.
+        created_at:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time the asset record was created.
+        updated_at:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time the asset record was last updated.
+        terminated_at:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time the asset was terminated from a cloud platform (for example, Amazon Web Services [AWS]).
+        deleted_at:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time a user deleted the asset record. After deletion, the asset record is retained until it ages out of the license count.
+        aes_score_v3:
+          type: number
+          format: float
+          maximum: 1000
+          minimum: 0
+          description: The version 3 Tenable-defined Asset Exposure Score (AES) for the asset. This metric weighs an asset's [Vulnerability Priority Rating (VPR)](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm#VPR) and [Asset Criticality Rating (AES)](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm#ACR) and then assigns a number from 1 to 1000, with higher numbers for more exposed assets. For more information, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the _Tenable Vulnerability Management User Guide_.
+        acr_score_v3:
+          type: number
+          format: float
+          maximum: 10
+          minimum: 0
+          description: 'The version 3 Asset Criticality Rating (ACR) assigned to the asset. Tenable assigns an ACR to each asset on your network to represent the asset''s relative risk as an integer from 1 to 10. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+        first_seen:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time a scan first identified the asset.
+        last_seen:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time of the scan that most recently detected the asset.
+        last_scan_target:
+          type: string
+          description: The IPv4 address, IPv6 address, or fully qualified domain name (FQDN) last used by the scanner to evaluate the asset.
+        last_authentication_attempt_date:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time a scan last attempted to authenticate using SSH (on Unix-based systems) or SMB (on Windows systems).
+        last_authentication_success_date:
+          type: string
+          format: date-time
+          description: 'A timestamp in ISO 8601 format indicating the date and time a scan last authenticated successfully. Note: This property is not updated by Tenable Agent scans, as agents do not perform login-based authentication.'
+        last_authenticated_scan_date:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time of the most recent credentialed scan performed on the asset.
+        last_licensed_scan_date:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time of the last scan that identified the asset as licensed. An asset is considered licensed if a scan has returned results from a non-discovery plugin within the past 90 days.
+        last_scan_id:
+          type: string
+          format: uuid
+          description: The unique identifier of the scan configuration used for the most recent scan of the asset.
+        last_schedule_id:
+          type: string
+          description: The `schedule_uuid` of the scan schedule used for the most recent scan of the asset.
+        sources:
+          type: array
+          description: A list of sources that identified the asset.
+          items:
+            $ref: '#/components/schemas/assets_sources'
+        tags:
+          type: array
+          description: A list of tags assigned to the asset.
+          items:
+            $ref: '#/components/schemas/assets_tags'
+        acr_score:
+          type: number
+          format: float
+          maximum: 10
+          minimum: 0
+          description: 'The Asset Criticality Rating (ACR) assigned to the asset. Tenable assigns an ACR to each asset on your network to represent the asset''s relative risk as an integer from 1 to 10. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+        acr_drivers:
+          type: array
+          description: "The key drivers Tenable used to calculate the asset's Tenable-provided Asset Criticality Rating (ACR). For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*. \n\nNote: This attribute is available only with a Tenable Lumin license."
+          items:
+            $ref: '#/components/schemas/assets_AcrDriversObject'
+        exposure_score:
+          type: number
+          format: float
+          maximum: 1000
+          minimum: 0
+          description: 'The Asset Exposure Score (AES) assigned to the asset. Tenable assigns an AES to each asset on your network to represent the asset''s relative exposure as an integer between 0 and 1000. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+        scan_frequency:
+          type: array
+          description: 'Information about how often scans were run against the asset during specified time intervals. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+          items:
+            $ref: '#/components/schemas/assets_AcrScanFrequencyObject'
+        network_id:
+          type: array
+          description: The unique identifier of the network object to which the asset is assigned. For more information, see [Manage Networks](doc:manage-networks-tio).
+          items:
+            type: string
+        ipv4:
+          description: A list of IPv4 addresses associated with the asset.
+          type: array
+          items:
+            type: string
+        ipv6:
+          description: A list of IPv6 addresses associated with the asset.
+          type: array
+          items:
+            type: string
+        fqdn:
+          description: A list of fully qualified domain names (FQDNs) associated with the asset.
+          type: array
+          items:
+            type: string
+        mac_address:
+          type: array
+          description: A list of MAC addresses associated with the asset.
+          items:
+            type: string
+        netbios_name:
+          type: array
+          description: A list of NetBIOS names associated with the asset.
+          items:
+            type: string
+        operating_system:
+          type: array
+          description: A list of operating systems associated with the asset.
+          items:
+            type: string
+        system_type:
+          type: array
+          description: A list of systems types assigned to the asset as reported by Plugin ID 54615. Possible values include `router`, `general-purpose`, `scan-host`, and `embedded`.
+          items:
+            type: string
+          enum:
+          - router
+          - general-purpose
+          - scan-host
+          - embedded
+        tenable_uuid:
+          type: array
+          description: This identifier can originate from either an agent or a credentialed remote Nessus scan. If no agent is present on the asset, a UUID is assigned by Tenable Vulnerability Management during a credentialed scan when the [Create unique identifier on hosts scanned with credentials](https://docs.tenable.com/vulnerability-management/Content/Scans/AdvancedSettings.htm) option is enabled. Note that no UUID is set for an uncredentialed non-agent scans.
+          items:
+            type: string
+        hostname:
+          type: array
+          description: A list of host names associated with the asset.
+          items:
+            type: string
+        agent_name:
+          type: array
+          description: A list of Tenable agents that scanned and identified the asset.
+          items:
+            type: string
+        bios_uuid:
+          type: array
+          description: A list of BIOS UUIDs associated with the asset.
+          items:
+            type: string
+        aws_ec2_instance_id:
+          type: array
+          description: A list of Linux instance identifiers in Amazon Elastic Compute Cloud (Amazon EC2) associated with the asset. For more information, see the Amazon Elastic Compute Cloud documentation.
+          items:
+            type: string
+        aws_ec2_instance_ami_id:
+          type: array
+          description: A list of Linux AMI image identifiers in Amazon Elastic Compute Cloud (Amazon EC2) associated with the asset. For more information, see the Amazon Elastic Compute Cloud documentation.
+          items:
+            type: string
+        aws_owner_id:
+          type: array
+          description: A list of canonical user identifiers for the AWS account associated with the virtual machine instance. For example, `79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be`. For more information, see AWS Account Identifiers in the AWS documentation.
+          items:
+            type: string
+        aws_availability_zone:
+          type: array
+          description: A list of availability zones where Amazon Web Services hosts the virtual machine instance. For example, `us-east-1a`. Availability zones are subdivisions of AWS regions. For more information, see Regions and Availability Zones in the AWS documentation.
+          items:
+            type: string
+        aws_region:
+          type: array
+          description: A list of regions where AWS hosts the virtual machine instance. For example, `us-east-1`. For more information, see Regions and Availability Zones in the AWS documentation.
+          items:
+            type: string
+        aws_vpc_id:
+          type: array
+          description: A list of virtual public cloud identifiers that hosts the AWS virtual machine instance. For more information, see the Amazon Virtual Private Cloud User Guide.
+          items:
+            type: string
+        aws_ec2_instance_group_name:
+          type: array
+          description: A list of virtual machine instance groups in AWS.
+          items:
+            type: string
+        aws_ec2_instance_state_name:
+          type: array
+          description: A list of virtual machine instance states in AWS at the time of the scan. For more information on instance states, see the AWS documentation.
+          items:
+            type: string
+        aws_ec2_instance_type:
+          type: array
+          description: A list of instance types in AWS EC2.
+          items:
+            type: string
+        aws_subnet_id:
+          type: array
+          description: A list of unique identifiers of AWS subnets where the virtual machine instance was running at the time of the scan.
+          items:
+            type: string
+        aws_ec2_product_code:
+          type: array
+          description: A list of product codes associated with the AMI used to launch the virtual machine instance in AWS EC2.
+          items:
+            type: string
+        aws_ec2_name:
+          type: array
+          description: A list of virtual machine instance names in AWS EC2 associated with the asset.
+          items:
+            type: string
+        azure_vm_id:
+          type: array
+          description: A list of unique identifiers of Microsoft Azure virtual machine instances. For more information, see "Accessing and Using Azure VM Unique ID" in the Microsoft Azure documentation.
+          items:
+            type: string
+        azure_resource_id:
+          type: array
+          description: A list of unique identifiers of the resources in the Azure Resource Manager. For more information, see the Azure Resource Manager Documentation.
+          items:
+            type: string
+        gcp_project_id:
+          type: array
+          description: A list of customized names of projects to which the virtual machine instance belongs in Google Cloud Platform (GCP). For more information, see "Creating and Managing Projects" in the GCP documentation.
+          items:
+            type: string
+        gcp_zone:
+          type: array
+          description: A list of zones where the virtual machine instance runs in GCP. For more information, see "Regions and Zones" in the GCP documentation.
+          items:
+            type: string
+        gcp_instance_id:
+          type: array
+          description: A list of unique identifiers of virtual machine instances in GCP.
+          items:
+            type: string
+        ssh_fingerprint:
+          type: array
+          description: A list of SSH key fingerprints associated with the asset.
+          items:
+            type: string
+        mcafee_epo_guid:
+          type: array
+          description: A list of unique identifiers assigned to the asset in McAfee ePolicy Orchestrator (ePO). For more information, see the McAfee documentation.
+          items:
+            type: string
+        mcafee_epo_agent_guid:
+          type: array
+          description: A list of unique identifiers of the McAfee ePO agents that identified the asset. For more information, see the McAfee documentation.
+          items:
+            type: string
+        qualys_asset_id:
+          type: array
+          description: A list of unique identifiers for the asset in Qualys. For more information, see the Qualys documentation.
+          items:
+            type: string
+        qualys_host_id:
+          type: array
+          description: A list of host identifiers for the asset in Qualys. For more information, see the Qualys documentation.
+          items:
+            type: string
+        servicenow_sysid:
+          type: array
+          description: A list of unique record identifiers for the asset in ServiceNow. For more information, see the ServiceNow documentation.
+          items:
+            type: string
+        installed_software:
+          type: array
+          description: 'A list of Common Platform Enumeration (CPE) values that represent software applications a scan identified as present on an asset. This attribute supports the CPE 2.2 format. For more information, see the "Component Syntax" section of the [CPE Specification, Version 2.2](https://cpe.mitre.org/files/cpe-specification_2.2.pdf). For assets identified in Tenable scans, this attribute contains data only if a scan using [Nessus Plugin ID 45590](https://www.tenable.com/plugins/nessus/45590) has evaluated the asset.
+
+
+            **Note:** If no scan detects an application within 30 days of the scan that originally detected the application, Tenable Vulnerability Management considers the detection of that application expired. As a result, the next time a scan evaluates the asset, Tenable Vulnerability Management removes the expired application from the installed_software attribute. This activity is logged as a `remove` type of `attribute_change` update in the asset activity log.'
+          items:
+            type: string
+        security_protection_level:
+          type: integer
+          description: The security protection level associated with the asset.
+        security_protections:
+          type: array
+          description: A list of security protection mitigations that contributed to the security protection level.
+          items:
+            type: string
+        exposure_confidence_value:
+          type: integer
+          description: The exposure confidence value associated with the asset.
+    assets_Request-Import-Asset:
+      type: object
+      properties:
+        mac_address:
+          type: array
+          maxItems: 100
+          description: A list of MAC addresses to assign to the asset. You can import a maximum of 100 MAC addresses.
+          items:
+            type: string
+        netbios_name:
+          type: string
+          description: The NetBIOS name to assign to the asset.
+        fqdn:
+          type: array
+          description: A list of FQDNs to assign to the asset.
+          items:
+            type: string
+        ip_address:
+          type: array
+          description: A list of IPv4 addresses to assign to the asset. Tenable Vulnerability Management supports this legacy field for backwards compatibility, but for new requests, this field should be replaced by the ipv4 field.
+          items:
+            type: string
+        ipv4:
+          type: array
+          description: A list of IPv4 addresses to assign to the asset.
+          items:
+            type: string
+        ipv6:
+          type: array
+          description: A list of IPv6 addresses to assign to the asset.
+          items:
+            type: string
+        hostname:
+          type: array
+          description: A list of hostnames to assign to the asset.
+          items:
+            type: string
+        operating_system:
+          type: array
+          description: The operating systems that scans have associated with the asset record.
+          items:
+            type: string
+        ssh_fingerprint:
+          type: string
+          description: The SSH key fingerprint to associate with the asset record.
+        bios_uuid:
+          type: string
+          description: The BIOS UUID of the asset.
+        manufacturer_tpm_id:
+          type: string
+          description: The manufacturer's unique identifier of the Trusted Platform Module (TPM) associated with the asset.
+        mcafee_epo_guid:
+          type: string
+          description: The unique identifier of the asset in McAfee ePolicy Orchestrator (ePO). For more information, see the McAfee documentation.
+        mcafee_epo_agent_guid:
+          type: string
+          description: The unique identifier of the McAfee ePO agent that identified the asset. For more information, see the McAfee documentation.
+        symantec_ep_hardware_key:
+          type: string
+          description: The hardware key for the asset in Symantec Endpoint Protection.
+        qualys_asset_id:
+          type: string
+          description: The Asset ID of the asset in Qualys. For more information, see the Qualys documentation.
+        qualys_host_id:
+          type: string
+          description: The Host ID of the asset in Qualys. For more information, see the Qualys documentation.
+        servicenow_sys_id:
+          type: string
+          description: The unique record identifier of the asset in ServiceNow. For more information, see the ServiceNow documentation.
+        gcp_project_id:
+          type: string
+          description: The customized name of the project to which the virtual machine instance belongs in Google Cloud Platform (GCP). For more information see "Creating and Managing Projects" in the GCP documentation.
+        gcp_zone:
+          type: string
+          description: The zone where the virtual machine instance runs in GCP. For more information, see "Regions and Zones" in the GCP documentation.
+        gcp_instance_id:
+          type: string
+          description: The unique identifier of the virtual machine instance in GCP.
+        azure_vm_id:
+          type: string
+          description: The unique identifier of the Microsoft Azure virtual machine instance. For more information, see "Accessing and Using Azure VM Unique ID" in the Microsoft Azure documentation.
+        azure_resource_id:
+          type: string
+          description: 'The unique identifier of the resource in the Azure Resource Manager. For more information, see the Azure Resource Manager Documentation.
+
+
+            **Note:** Do not include AWS or GCP data in the payload when importing Azure asset data.'
+        aws_availability_zone:
+          type: string
+          description: The availability zone where Amazon Web Services hosts the virtual machine instance, for example, `us-east-1a`. Availability zones are subdivisions of AWS regions. For more information, see "Regions and Availability Zones" in the AWS documentation.
+        aws_ec2_instance_id:
+          type: string
+          description: The unique identifier of the Linux instance in Amazon EC2. For more information, see the Amazon Elastic Compute Cloud Documentation.
+        aws_ec2_instance_ami_id:
+          type: string
+          description: The unique identifier of the Linux AMI image in Amazon Elastic Compute Cloud (Amazon EC2). For more information, see the Amazon Elastic Compute Cloud Documentation.
+        aws_ec2_instance_group_name:
+          type: string
+          description: The virtual machine instance's group in AWS.
+        aws_ec2_instance_state_name:
+          type: string
+          description: The state of the virtual machine instance in AWS at the time of the scan. For more information on instance states, see the AWS documentation.
+        aws_ec2_instance_type:
+          type: string
+          description: The type of instance in AWS EC2.
+        aws_ec2_name:
+          type: string
+          description: The name of the virtual machine instance in AWS EC2 associated with the asset.
+        aws_ec2_product_code:
+          type: string
+          description: The product code associated with the AMI used to launch the virtual machine instance in AWS EC2.
+        aws_owner_id:
+          type: string
+          description: 'The canonical user identifier for the AWS account associated with the asset. For more information, see "AWS Account Identifiers" in the AWS documentation.
+
+
+            **Note:** Do not include Azure or GCP data in the payload when importing AWS asset data.'
+        aws_region:
+          type: string
+          description: The region where AWS hosts the virtual machine instance, for example, `us-east-1`. For more information, see "Regions and Availability Zones" in the AWS documentation.
+        aws_subnet_id:
+          type: string
+          description: The unique identifier of the AWS subnet where the virtual machine instance was running at the time of the scan.
+        aws_vpc_id:
+          type: string
+          description: The unique identifier of the public cloud that hosts the AWS virtual machine instance. For more information, see the Amazon Virtual Private Cloud User Guide.
+        installed_software:
+          type: array
+          description: 'A list of Common Platform Enumeration (CPE) values that represent software applications a scan identified as present on an asset. The strings in this array must be valid CPE 2.2 values. For more information, see the "Component Syntax" section of the [CPE Specification, Version 2.2](https://cpe.mitre.org/files/cpe-specification_2.2.pdf).
+
+
+            **Note:** If no scan detects an application within 30 days of the scan that originally detected the application, Tenable Vulnerability Management considers the detection of that application expired. As a result, the next time a scan evaluates the asset, Tenable Vulnerability Management removes the expired application from the installed_software attribute. This activity is logged as a `remove` type of `attribute_change` update in the asset activity log.'
+          items:
+            type: string
+        bigfix_asset_id:
+          type: array
+          items:
+            type: string
+          description: The unique identifiers of the asset in HCL BigFix. For more information, see the HCL BigFix documentation.
+    assets_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    assets_assetsBulkMoveRequest:
+      type: object
+      required:
+      - source
+      - destination
+      - targets
+      description: The parameters for moving assets from one network to another.
+      properties:
+        source:
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+          description: The unique identifier of the network currently associated with the assets. Use the [GET /networks](ref:networks-list) endpoint with the name attribute as filter to find the UUID of the network.
+        destination:
+          type: string
+          description: The unique identifier of the network to associate with the specified assets. Use the [GET /networks](ref:networks-list) endpoint with the name filter to find the UUID of the network.
+          example: 4dee97b4-592b-4b5b-a8a9-d7a605a3723a
+        targets:
+          type: string
+          description: The IPv4 addresses of the assets to move. The addresses can be represented as a comma-separated list, a range, or CIDR, for example `1.1.1.1, 2.2.2.2-2.2.2.200, 3.3.3.0/24`.
+          example: 192.0.2.57-192.0.2.69
+    assets_AssetIdentifierObject:
+      type: object
+      description: Each object can contain a single instance of the properties described below. You can combine multiple instances of this object, each containing a different single property.
+      properties:
+        id:
+          type: string
+          description: The unique identifier for a specific asset. Use this value as the unique key for the asset.
+        fqdn:
+          type: array
+          description: A list of fully-qualified domain names (FQDNs) associated with the asset or assets.
+          items:
+            type: string
+        mac_address:
+          type: array
+          description: A list of MAC addresses associated with the asset or assets.
+          items:
+            type: string
+        netbios_name:
+          type: array
+          description: A list of NetBIOS names associated with the asset or assets.
+          items:
+            type: string
+        ipv4:
+          type: array
+          description: A list of IPv4 addresses associated with the asset or assets.
+          items:
+            type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

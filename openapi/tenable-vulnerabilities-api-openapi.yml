@@ -1,0 +1,1165 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Vulnerabilities API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Vulnerabilities
+  x-displayName: Vulnerabilities
+paths:
+  /import/vulnerabilities:
+    post:
+      summary: Import vulnerabilities v1
+      description: 'Imports a list of vulnerabilities in JSON format. The request cannot exceed 15 MB in total size. In addition, the request can contain a maximum of 50 asset objects. For request body examples, see [Add Vulnerability Data to Vulnerability Management](doc:add-vulnerability-data-to-tenableio).
+
+
+        **Caution** This endpoint is deprecated. Tenable recommends that you use the [Import vulnerabilities v2](#vulnerabilities-import-v2) endpoint instead.
+
+
+        **Note:** This endpoint can only import Tenable scan data. It cannot import vulnerability information from third-party vendors. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+      operationId: vulnerabilities-import
+      deprecated: true
+      tags:
+      - Vulnerabilities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source:
+                  type: string
+                  description: "The source of the scan that generated the vulnerability data. If you want to categorize the imported vulnerabilities in the same way that Tenable Vulnerability Management categorizes vulnerabilities detected in scans it manages, use the following values: \n - security_center—A Nessus scan identified the vulnerabilities you want to import. Use this value for all Nessus scans, regardless of the scan manager (Tenable Vulnerability Management, Tenable Security Center, or Nessus Manager)."
+                  example: nessus
+                type:
+                  type: string
+                  description: "The type of scan that identified the vulnerabilities you want to import. If you want to categorize the imported vulnerabilities in the same way that Tenable Vulnerability Management categorizes vulnerabilities detected in scans it manages, use the following values: \n - vm—A Vulnerability Management scan identified the vulnerabilities.\n - was—A Tenable Web App Scanning scan identified the vulnerabilities.\n - pc—A scan of a personal computer identified the vulnerabilities."
+                  example: vm
+                assets:
+                  type: array
+                  description: 'An array of asset objects with vulnerabilities information. A valid asset record requires at least one valid network_interface object.
+
+
+                    **Note:** Tenable Vulnerability Management supports a maximum of 50 individual asset objects per request message. In addition, because Tenable Vulnerability Management supports a total size limit of 15 MB for the request message, you may want to limit the number of asset objects you include in an individual request, depending on the number of vulnerabilities identified on the assets and the size of the related vulnerability output.
+
+
+                    **Note:** This endpoint does not support the network_id attribute in asset objects for import. Tenable Vulnerability Management automatically assigns imported assets to the default network object. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).'
+                  items:
+                    $ref: '#/components/schemas/vulnerabilities_asset'
+                checks_ran:
+                  type: array
+                  description: An array of objects, each representing a check that the scan used to detect the vulnerabilities you are importing. This parameter supports Tenable plugin checks only. For more information, see [Plugins](https://www.tenable.com/plugins).
+                  items:
+                    $ref: '#/components/schemas/vulnerabilities_checks_ran_object'
+              required:
+              - source
+              - type
+              - assets
+      responses:
+        '200':
+          description: Returned if the vulnerabilities were imported successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if you submitted an invalid request.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to import vulnerabilities.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+      security:
+      - vulnerabilities_cloud: []
+  /api/v2/vulnerabilities:
+    post:
+      summary: Import vulnerabilities v2
+      description: 'Imports a list of vulnerabilities in JSON format. The request cannot exceed 15 MB in total size. In addition, the request can contain a maximum of 50 asset objects. For request body examples, see [Add Vulnerability Data to Vulnerability Management](doc:add-vulnerability-data-to-tenableio).
+
+
+        **Note:** This endpoint can only import Tenable scan data. It cannot import vulnerability information from third-party vendors. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+      operationId: vulnerabilities-import-v2
+      tags:
+      - Vulnerabilities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vendor:
+                  type: string
+                  description: "The company that owns the product that is the source of the vulnerability data. To categorize the imported vulnerabilities in the same way that Tenable Vulnerability Management categorizes vulnerabilities detected in scans it manages, use the following values: \n - tenable—A Nessus scan identified the vulnerabilities you want to import. Use this value for all Nessus scans, regardless of the scan manager (Tenable Vulnerability Management, Tenable Security Center, or Nessus Manager)."
+                  example: tenable
+                product:
+                  type: string
+                  description: "The name of the product from the vendor that is the source of the vulnerability data being imported. \n - Tenable Security Center—The vulnerability data source is Tenable Security Center."
+                  example: Tenable Security Center
+                data_type:
+                  type: string
+                  description: "The type of scan that identified the vulnerabilities you want to import. To categorize the imported vulnerabilities in the same way that Tenable Vulnerability Management categorizes vulnerabilities detected in scans it manages, use the following values: \n - vm—A Vulnerability Management scan identified the vulnerabilities."
+                  example: vm
+                source:
+                  type: string
+                  description: 'A unique string value used to track the set of assets and vulnerabilities that Tenable Vulnerability Management is importing and processing. For data imported from Tenable Security Center via [Lumin synchronization](https://docs.tenable.com/security-center/Content/LuminSynchronization.htm), this value has the following format:
+
+                    scan_uuid:scan_chunk_uuid
+
+
+                    where scan_uuid is the unique identifier for the scan in Tenable Security Center (equivalent to the scan id used in [Tenable Security Center API requests](https://docs.tenable.com/security-center/api/Scan.html)), and `scan_chunk_uuid` is the unique identifier that Tenable Security Center assigns to individual chunks of scan data during the Lumin synchronization process.'
+                  example: 634585bd-0f0c-4fa0-99b7-2494a5217b14:b973ea38-8c03-499b-b90a-667a833eb01a0
+                assets:
+                  type: array
+                  description: 'An array of asset objects with vulnerabilities information. A valid asset record requires at least one valid network_interface object.
+
+
+                    **Note:** Tenable Vulnerability Management supports a maximum of 50 individual asset objects per request message. In addition, because Tenable Vulnerability Management supports a total size limit of 15 MB for the request message, you may want to limit the number of asset objects you include in an individual request, depending on the number of vulnerabilities identified on the assets and the size of the related vulnerability output.
+
+
+                    **Note:** This endpoint does not support the network_id attribute in asset objects for import. Tenable Vulnerability Management automatically assigns imported assets to the default network object. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).'
+                  items:
+                    $ref: '#/components/schemas/vulnerabilities_asset_v2'
+                coverage:
+                  type: object
+                  description: .
+                  properties:
+                    ids:
+                      type: string
+                      description: A string or range of IDs that each represents a check that the scan used to detect vulnerabilities you are importing. This parameter supports Tenable plugin checks only. For more information, see [Plugins](https://www.tenable.com/plugins).
+                      example: 24531,76010-76023,88107
+              required:
+              - vendor
+              - product
+              - data_type
+              - source
+              - assets
+      responses:
+        '200':
+          description: Returned if the vulnerabilities were imported successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/vulnerabilities_vuln-import-response'
+              examples:
+                response:
+                  value:
+                    job_uuid: ''
+        '400':
+          description: Returned if you submit an invalid request.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to import vulnerabilities.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/vulnerabilities_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+        '503':
+          description: Returned if a Tenable Vulnerability Management service is unavailable. Wait a moment, and try your request again.
+      security:
+      - vulnerabilities_cloud: []
+  /was/v2/vulnerabilities/{vuln_id}:
+    get:
+      summary: Get vulnerability details
+      description: Returns vulnerability details for a specific vulnerability instance. <div class="perms-callout">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: was-v2-vulns-details
+      tags:
+      - Vulnerabilities
+      parameters:
+      - in: path
+        name: vuln_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The UUID of the vulnerability instance. To determine the UUID of a vulnerability, use either the [POST /was/v2/vulnerabilities/search](ref:was-v2-vulns-search) endpoint or the [POST /was/v2/scans/{scan_id}/vulnerabilities/search](ref:was-v2-scans-details-vulns-search) endpoint.
+      responses:
+        '200':
+          description: Returns the specified vulnerability instance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VulnerabilityWithMetadata'
+              examples:
+                response:
+                  value:
+                    vuln_id: 1790eedf-2118-45ea-abff-bcaf3d9d1e0a
+                    scan_id: ffab19d4-7d09-412b-bfc9-3addb0d569e5
+                    plugin_id: 98123
+                    created_at: '2021-02-23T20:40:06Z'
+                    uri: http://example.com/foo
+                    is_page: false
+                    details:
+                      input_name: cmd
+                      input_type: form
+                      output: 'URL
+
+                        -----
+
+                        http://example.com/foo
+
+
+
+                        Detection Information
+
+                        -----------------------
+
+                        ...'
+                      proof: :x:0:0:root:/root:/bin/bash
+                      payload: ' ; /bin/cat /etc/passwd ; '
+                      selector: //form[@action = "/foo"]
+                      selector_url: http://example.com/foo
+                      signature: (?-mix::.+:\d+:\d+:.+:[0-9a-zA-Z\/]+)
+                      request:
+                        headers: "POST /foo HTTP/1.1\r\nHost: example.com\r\nAccept-Encoding: gzip, deflate, br\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4158.0 Safari/537.36\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-US,en;q=0.5\r\nCookie: connect.sid=s%3Ay3k1L2I5PIi-zFG7ehLmOqGU3qBzhub-.%2Fy6MOtJ9IU%2FTakY4S04dq9UnZApXaaPSLkr6QcTdsds\r\nContent-Length: 52\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\n"
+                        body: 'cmd -->  ; /bin/cat /etc/passwd ; '
+                      response:
+                        headers: "HTTP/1.1 200 OK\r\nX-Powered-By: Express\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: 631\r\nETag: W/\"277-e4iTZHwiFfIpaHe7fGNMbJngvU4\"\r\nDate: Tue, 23 Feb 2021 20:39:58 GMT\r\nConnection: keep-alive\r\n\r\n"
+                        body: '
+
+                          root:x:0:0:root:/root:/bin/bash'
+                        time: 0.330748
+                    attachments:
+                    - attachment_id: 09974297-afc0-4544-b1ff-00a4157fd8f7
+                      created_at: '2021-02-23T20:40:35.784674Z'
+                      attachment_name: HTTP Request
+                      md5: md5:635b587d0ec8dfb01d31a6683f3c5325
+                      file_type: text/plain
+                      size: 575
+                    - attachment_id: eae5163e-61b5-4697-b96a-489185c3a0a5
+                      created_at: '2021-02-23T20:40:35.947036Z'
+                      attachment_name: HTTP Response
+                      md5: md5:6c0981f85ed170488f7f69237e74898c
+                      file_type: text/plain
+                      size: 838
+        '400':
+          description: Returned if your request specifies an invalid vulnerability ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: INVALID_ID_FORMAT
+                      reason: The provided ID of '1234567' must be UUID type
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Web App Scanning cannot find the specified vulnerability instance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: NOT_FOUND
+                      reason: Resource with ID 'b29f198c-eac6-4107-b046-c621f542cd39' not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /was/v2/vulnerabilities/search:
+    post:
+      tags:
+      - Vulnerabilities
+      summary: Search vulnerabilities
+      description: Returns a list of vulnerabilities detected by Tenable Web App Scanning API v2 scans.<div class="perms-callout">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      operationId: was-v2-vulns-search
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/sort'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - title: Single Filter
+                $ref: '#/components/schemas/AppliedFilters-Vulnerabilities'
+              - title: Multiple Filters
+                type: object
+                properties:
+                  AND:
+                    type: array
+                    description: An array of filters that must all be satisfied.
+                    items:
+                      $ref: '#/components/schemas/AppliedFilters-Vulnerabilities'
+                  OR:
+                    type: array
+                    description: An array of filters where at least one must be satisfied.
+                    items:
+                      $ref: '#/components/schemas/AppliedFilters-Vulnerabilities'
+      responses:
+        '200':
+          description: Returns a list of vulnerabilities.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - pagination
+                - items
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/PaginationResponse'
+                  items:
+                    type: array
+                    description: A list of vulnerabilities.
+                    items:
+                      $ref: '#/components/schemas/Vulnerability'
+              examples:
+                response:
+                  value:
+                    pagination:
+                      total: 632
+                      offset: 0
+                      limit: 3
+                      sort:
+                      - name: created_at
+                        order: desc
+                    items:
+                    - vuln_id: 240ae95d-3830-498e-8598-d44097ec64cf
+                      scan_id: 0d94f5b4-f811-44cb-802a-7f1c600818c3
+                      plugin_id: 98000
+                      created_at: '2020-12-07T20:01:19Z'
+                      uri: http://example.com/
+                      is_page: false
+                      details:
+                        input_name: null
+                        input_type: null
+                        output: '
+
+                          Engine Version      1.8.0_DEVELOP_SNAPSHOT-1518
+
+                          Scan ID             0d94f5b4-f811-44cb-802a-7f1c600818c3
+
+
+                          Start Time          2020-12-07 20:01:00 +0000
+
+                          Duration            00:00:17
+
+
+                          Requests            163
+
+                          Requests/s          19.6194
+
+                          Mean Response Time  0.0917s
+
+
+                          Bandwidth Usage
+
+                          - Data to Target    54.5 KB
+
+                          - Data from Target  43 KB
+
+
+                          Timeouts Encountered
+
+                          Network Timeouts    0
+
+                          Browser Timeouts    0
+
+
+
+                          HTTP Protocols Detected
+
+                          - HTTP
+
+                          - HTTPs
+
+
+
+                          Authentication Identified
+
+                          - None
+
+
+
+                          Plugins
+
+                          - 50 have been included per scan policy
+
+                          - 69 have been started based on target information collected
+
+
+                          List of plugins is available in ''plugins.csv'' attachment.
+
+
+
+                          Settings used to conduct this scan are available in ''configuration.csv'' attachment.
+
+                          '
+                        proof: null
+                        payload: null
+                        selector: null
+                        selector_url: null
+                        signature: null
+                        request: null
+                        response: null
+                      attachments:
+                      - attachment_id: cfde7d28-82f2-4733-b5d8-e003fc27a620
+                        created_at: '2020-12-07T20:01:23.650014Z'
+                        attachment_name: configuration.csv
+                        md5: md5:48be107f67f1cdc0e9d63a8f6cafc27e
+                        file_type: text/plain
+                        size: 2184
+                      - attachment_id: 23056170-5fcd-4b7c-9831-c62c94dd4b01
+                        created_at: '2020-12-07T20:01:23.595659Z'
+                        attachment_name: plugins.csv
+                        md5: md5:3ad245715cdb6856430dd1e71f7cb522
+                        file_type: text/plain
+                        size: 3236
+                    - vuln_id: 22713757-636a-415c-a9f8-1e09f2e071fc
+                      scan_id: 0d94f5b4-f811-44cb-802a-7f1c600818c3
+                      plugin_id: 98059
+                      created_at: '2020-12-07T20:01:19Z'
+                      uri: http://example.com/
+                      is_page: false
+                      details:
+                        input_name: null
+                        input_type: null
+                        output: 'The framework has detected the following technologies in the target application:
+
+
+                          - Bootstrap (version unknown)
+
+                          - Apache (v2.4.6)'
+                        proof: null
+                        payload: null
+                        selector: null
+                        selector_url: null
+                        signature: null
+                        request: null
+                        response: null
+                      attachments:
+                      - attachment_id: c4429383-fcb3-4b07-8a34-eb27c85f174f
+                        created_at: '2020-12-07T20:01:23.451700Z'
+                        attachment_name: technologies.csv
+                        md5: md5:aa89c953c21f31a1a7b01b3cafce50ab
+                        file_type: text/plain
+                        size: 254
+                    - vuln_id: 5dff45a8-efbb-4ec7-8f70-067ae81c87f2
+                      scan_id: 0d94f5b4-f811-44cb-802a-7f1c600818c3
+                      plugin_id: 98009
+                      created_at: '2020-12-07T20:01:19Z'
+                      uri: http://example.com/
+                      is_page: false
+                      details:
+                        input_name: null
+                        input_type: null
+                        output: 'The scan has discovered 1 distinct URL.
+
+
+                          The following is a breakdown of which URLs were audited:
+
+
+                          - 1 effectively audited
+
+
+                          For URLs we received responses for, here is a distribution of the content type headers:
+
+
+                          - 1 text/html; charset=utf-8
+
+
+                          Response times ranged between 0.156857s and 0.156857s.
+
+
+                          You can access the complete list of URLs with the information collected by the scan as an attachment to this plugin.'
+                        proof: null
+                        payload: null
+                        selector: null
+                        selector_url: null
+                        signature: null
+                        request: null
+                        response: null
+                      attachments:
+                      - attachment_id: b9e19a4b-ca18-4322-8fcc-f8cc45b0310e
+                        created_at: '2020-12-07T20:01:23.509304Z'
+                        attachment_name: sitemap.csv
+                        md5: md5:7534a6027dfa163d99e12359bfbd033a
+                        file_type: text/plain
+                        size: 290
+        '400':
+          description: Returned if your request specifies invalid query parameter values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: INVALID_JSON_BODY
+                      reason: 'Query decoding Instant failed: Text ''2019-06-24T19:48:00'' could not be parsed at index 19'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    VulnerabilityDetails:
+      type: object
+      description: The details for the vulnerability.
+      readOnly: true
+      properties:
+        input_name:
+          type: string
+          example: cmd
+          description: The vulnerable input of the page element where the payload has been injected.
+          readOnly: true
+        input_type:
+          type: string
+          example: form
+          description: The type of the page element containing the vulnerable input.
+          readOnly: true
+        output:
+          type: string
+          example: 'The backup directory detected at URL: http://webscantest.com/rfplaces/somedir1.rar
+
+            Identified by converting the original directory name of ''somedir1'' to ''somedir1.rar''.'
+          description: The output from the plugin.
+          readOnly: true
+        proof:
+          type: string
+          example: <xss_9a3511f8-7852-4096-a7c0-6065ff8ebad3/>
+          description: The output from the web application corroborating that the vulnerability is present.
+          readOnly: true
+        payload:
+          type: string
+          example: alert('xss')
+          description: The attack payload used to detect the vulnerability.
+          readOnly: true
+        selector:
+          type: string
+          example: //form[@action = "/foo"]
+          description: The path to the element in the document.
+          readOnly: true
+        selector_url:
+          type: string
+          example: http://webscantest.com/rfplaces/somedir1
+          description: The URL where the element is located.
+          readOnly: true
+        signature:
+          type: string
+          example: (?-mix::.+:\d+:\d+:.+:[0-9a-zA-Z\/]+)
+          description: The pattern used to validate the vulnerability.
+          readOnly: true
+    vulnerabilities_checks_ran_object:
+      type: object
+      properties:
+        tenable_plugin_id:
+          type: string
+          description: The Tenable plugin ID.
+        port:
+          type: integer
+          description: The port on the asset where the check ran.
+        protocol:
+          type: string
+          description: The protocol used to communicate with the asset while running the check.
+    ErrorResponse:
+      type: object
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
+      properties:
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
+    VulnerabilityWithMetadata:
+      type: object
+      required:
+      - vuln_id
+      - scan_id
+      - plugin_id
+      - created_at
+      - uri
+      - details
+      - attachments
+      properties:
+        vuln_id:
+          type: string
+          format: uuid
+          example: 9ef6f286-f79c-443f-a495-8376142d0e8e
+          description: The UUID of the vulnerability.
+        scan_id:
+          type: string
+          format: uuid
+          example: 16af9226-699a-4cb9-9543-6082617a9cd0
+          description: The UUID of the scan that detected the vulnerability in the web application.
+        plugin_id:
+          type: integer
+          example: 98100
+          description: The ID of the plugin associated with the vulnerability.
+        created_at:
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when Tenable Web App Scanning detected the vulnerability, for example, `2018-12-31T13:51:17.243Z`.
+        uri:
+          type: string
+          format: uri
+          example: http://example.com
+          description: The URI of the web application associated with the vulnerability.
+        details:
+          type: object
+          $ref: '#/components/schemas/VulnerabilityDetailsWithMetadata'
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+    vulnerabilities_asset:
+      type: object
+      properties:
+        network_interfaces:
+          type: array
+          description: 'A valid network_interface object must contain at least one of the following parameters: `ipv4`, `netbios_name`, `fqdn`.'
+          items:
+            $ref: '#/components/schemas/vulnerabilities_network_interface'
+        hostname:
+          type: string
+          description: The asset's hostname.
+        servicenow_sysid:
+          type: string
+          description: The unique record identifier of the asset in ServiceNow. For more information, see the ServiceNow documentation.
+        ssh_fingerprint:
+          type: string
+          description: The SSH key fingerprint that the scan has associated with the asset.
+        bios_uuid:
+          type: string
+          description: The BIOS UUID of the asset.
+        netbios_name:
+          type: string
+          description: The NetBIOS name that the scan has associated with the asset.
+        tenable_agent_id:
+          type: integer
+          description: The unique ID of the Nessus agent installed on the asset. This parameter is supported only if the `source` parameter for the request is `security_center`.
+        vulnerabilities:
+          type: array
+          description: 'A valid vulnerability object must contain at least one of the following parameters: `tenable_plugin_id` or `cve`.'
+          items:
+            $ref: '#/components/schemas/vulnerabilities_vuln_finding'
+    PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/PaginationResponseSortObject'
+    Attachment:
+      type: object
+      description: The report attachments for the vulnerability.
+      required:
+      - attachment_id
+      - created_at
+      - attachment_name
+      - md5
+      - file_type
+      properties:
+        attachment_id:
+          type: string
+          format: uuid
+          description: The UUID of the attachment file.
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          example: '2018-12-31T13:51:17.243Z'
+          description: An ISO timestamp indicating the date and time when a scan generated the attachment file, for example, `2018-12-31T13:51:17.243Z`.
+          readOnly: true
+        attachment_name:
+          description: The name of the attachment file.
+          type: string
+          readOnly: true
+        md5:
+          type: string
+          description: The MD5 hash of the attachment file.
+          readOnly: true
+        file_type:
+          type: string
+          description: The MIME type of the attachment file.
+          readOnly: true
+    vulnerabilities_network_interface:
+      type: object
+      properties:
+        ipv4:
+          type: array
+          description: A list of IPv4 address that the scan identified as associated with the network interface.
+          items:
+            type: string
+        ipv6:
+          type: array
+          description: A list of IPv6 addresses that the scan identified as associated with the network interface.
+          items:
+            type: string
+        mac_address:
+          type: string
+          description: The MAC address of the network interface.
+        netbios_name:
+          type: string
+          description: The NETBIOS name of the network interface.
+        fqdn:
+          type: string
+          description: The fully-qualified domain name (FQDN) of the network interface.
+    Vulnerability:
+      type: object
+      required:
+      - vuln_id
+      - scan_id
+      - plugin_id
+      - created_at
+      - uri
+      - details
+      - attachments
+      properties:
+        vuln_id:
+          type: string
+          format: uuid
+          example: 9ef6f286-f79c-443f-a495-8376142d0e8e
+          description: The UUID of the vulnerability.
+        scan_id:
+          type: string
+          format: uuid
+          example: 16af9226-699a-4cb9-9543-6082617a9cd0
+          description: The UUID of the scan that detected the vulnerability in the web application.
+        plugin_id:
+          type: integer
+          example: 98100
+          description: The ID of the plugin associated with the vulnerability.
+        created_at:
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when Tenable Web App Scanning detected the vulnerability, for example, `2018-12-31T13:51:17.243Z`.
+        uri:
+          type: string
+          format: uri
+          example: http://example.com
+          description: The URI of the web application associated with the vulnerability.
+        details:
+          type: object
+          $ref: '#/components/schemas/VulnerabilityDetails'
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+    vulnerabilities_vuln_finding_v2:
+      type: object
+      properties:
+        tenable_plugin_id:
+          type: string
+          description: The ID of the Nessus plugin that identified the vulnerability. This parameter is required if the vulnerability object does not specify a cve value.
+        cve:
+          type: string
+          description: The Common Vulnerability and Exposure (CVE) ID for the vulnerability. This parameter is required if the vulnerability object does not specify a `tenable_plugin_id` value.
+        port:
+          type: integer
+          description: The port the scanner used to communicate with the asset.
+          format: int32
+        protocol:
+          type: string
+          description: The protocol the scanner used to communicate with the asset.
+        authenticated:
+          type: boolean
+          description: A value specifying whether the scan that identified the vulnerability was an authenticated (credentialed) scan.
+        last_found:
+          type: integer
+          description: The date (in Unix time) when a scan last identified the vulnerability on the asset.
+          format: int64
+        output:
+          type: string
+          description: (Required) The text output of the scanner, up to 2,000 maximum characters.
+    PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    VulnerabilityDetailsWithMetadata:
+      type: object
+      description: The details for the vulnerability.
+      readOnly: true
+      properties:
+        input_name:
+          type: string
+          example: cmd
+          description: The vulnerable input of the page element where the payload has been injected.
+          readOnly: true
+        input_type:
+          type: string
+          example: form
+          description: The type of the page element containing the vulnerable input.
+          readOnly: true
+        output:
+          type: string
+          example: 'The backup directory detected at URL: http://webscantest.com/rfplaces/somedir1.rar
+
+            Identified by converting the original directory name of ''somedir1'' to ''somedir1.rar''.'
+          description: The text output from the plugin that detected the finding.
+          readOnly: true
+        proof:
+          type: string
+          example: <xss_9a3511f8-7852-4096-a7c0-6065ff8ebad3/>
+          description: The output from the web application corroborating that the vulnerability is present.
+          readOnly: true
+        payload:
+          type: string
+          example: alert('xss')
+          description: The attack payload used to detect the vulnerability.
+          readOnly: true
+        selector:
+          type: string
+          example: //form[@action = "/foo"]
+          description: The path to the element in the document.
+          readOnly: true
+        selector_url:
+          type: string
+          example: http://webscantest.com/rfplaces/somedir1
+          description: The URL where the element is located.
+          readOnly: true
+        signature:
+          type: string
+          example: (?-mix::.+:\d+:\d+:.+:[0-9a-zA-Z\/]+)
+          description: The pattern used to validate the vulnerability.
+          readOnly: true
+    vulnerabilities_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    vulnerabilities_asset_v2:
+      type: object
+      properties:
+        network_interfaces:
+          type: array
+          description: 'A valid network_interface object must contain at least one of the following parameters: `ipv4`, `netbios_name`, `fqdn`.'
+          items:
+            $ref: '#/components/schemas/vulnerabilities_network_interface'
+        hostname:
+          type: string
+          description: The asset's hostname.
+        servicenow_sysid:
+          type: string
+          description: The unique record identifier of the asset in ServiceNow. For more information, see the ServiceNow documentation.
+        ssh_fingerprint:
+          type: string
+          description: The SSH key fingerprint that the scan has associated with the asset.
+        bios_uuid:
+          type: string
+          description: The BIOS UUID of the asset.
+        netbios_name:
+          type: string
+          description: The NetBIOS name that the scan has associated with the asset.
+        operating_systems:
+          type: string
+          description: The operating system the asset is running.
+        authenticated:
+          type: boolean
+          description: Specifies that the asset has been scanned with credentials for OS or application authentication.
+        tenable_agent_id:
+          type: string
+          description: The unique ID of the Nessus agent installed on the asset. This parameter is supported only if the `vendor` parameter for the request is `tenable`.
+        tenable_network_id:
+          type: string
+          description: The unique identifier for the [network](doc:manage-networks-tio) where Tenable Vulnerability Management assigns the asset during import.
+        vulnerabilities:
+          type: array
+          description: 'A valid vulnerability object must contain at least one of the following parameters: `tenable_plugin_id` or `cve`.'
+          items:
+            $ref: '#/components/schemas/vulnerabilities_vuln_finding_v2'
+    vulnerabilities_vuln-import-response:
+      type: object
+      properties:
+        job_uuid:
+          type: string
+          description: This attribute is always empty. An empty value does not indicate an error condition.
+    AppliedFilters-Vulnerabilities:
+      type: object
+      description: A single filter to apply to the vulnerabilities search.
+      properties:
+        field:
+          type: string
+          description: The name of the field you want to filter on. You can list available vulnerability filters with the [GET /was/v2/vulnerabilities/filters](ref:was-v2-filters-vulns-list) endpoint.
+          example: folder_name
+        operator:
+          type: string
+          description: The comparison operator to apply to the filter. You can find available comparison operators for the filter in the `operators` attribute of the objects returned by the [GET /was/v2/vulnerabilities/filters](ref:wwas-v2-filters-vulns-list) endpoint.
+          example: match
+        value:
+          type: string
+          description: The value to compare the given field to using the given operator. You can find valid values for the filter in the `control` attribute of the objects returned by the [GET /was/v2/vulnerabilities/filters](ref:was-v2-filters-vulns-list) endpoint.
+          example: My Scans
+    vulnerabilities_vuln_finding:
+      type: object
+      properties:
+        tenable_plugin_id:
+          type: string
+          description: The ID of the Nessus plugin that identified the vulnerability. This parameter is required if the vulnerability object does not specify a cve value.
+        cve:
+          type: string
+          description: The Common Vulnerability and Exposure (CVE) ID for the vulnerability. This parameter is required if the vulnerability object does not specify a `tenable_plugin_id` value.
+        port:
+          type: integer
+          description: The port the scanner used to communicate with the asset.
+          format: int32
+        protocol:
+          type: string
+          description: The protocol the scanner used to communicate with the asset.
+        authenticated:
+          type: boolean
+          description: A value specifying whether the scan that identified the vulnerability was an authenticated (credentialed) scan.
+        first_found:
+          type: integer
+          description: The date (in Unix time) when a scan first identified the vulnerability on the asset.
+          format: int64
+        last_found:
+          type: integer
+          description: The date (in Unix time) when a scan last identified the vulnerability on the asset.
+          format: int64
+        last_fixed:
+          type: integer
+          description: The date (in Unix time) when the vulnerability state was changed to `fixed`. Tenable Vulnerability Management updates the vulnerability state to fixed when a scan no longer detects a previously detected vulnerability on the asset.
+          format: int64
+        output:
+          type: string
+          description: (Required) The text output of the scanner, up to 2,000 maximum characters.
+  parameters:
+    sort:
+      description: 'The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.
+
+
+        If you specify multiple fields, the fields must be separated by commas. For example, `name:desc,created_at:asc` would first sort results by the `name` field in descending order and then by the `created_at` field in ascending order.'
+      example: last_seen:desc,ipv4:asc
+      in: query
+      name: sort
+      required: false
+      schema:
+        type: string
+    offset:
+      description: The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`.
+      in: query
+      name: offset
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+    limit:
+      description: The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses.
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 200
+        default: 10
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

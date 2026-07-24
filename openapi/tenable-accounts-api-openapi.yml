@@ -1,0 +1,846 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Accounts API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Accounts
+  description: "The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Account endpoints in the Tenable MSSP Portal API enables customers to view and manage your MSSP customer accounts. \n\nFor more information about the Tenable MSSP Portal, see the [Tenable MSSP Portal User Guide](https://docs.tenable.com/managed-security-service-provider/Content/Welcome.htm)."
+paths:
+  /mssp/accounts/eval:
+    post:
+      tags:
+      - Accounts
+      summary: Create evaluation account v1
+      description: "Creates an evaluation account. \n\n**Caution:** This endpoint is deprecated. Tenable recommends that customers use the [Create evaluation account v2](ref:mssp-accounts-eval-v2) endpoint instead. Please update any existing integrations that your organization has. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+      operationId: io-mssp-accounts-eval
+      deprecated: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request-Create-Eval-Account-v1'
+      responses:
+        '200':
+          description: Returned if the evaluation account was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response-Create-Eval-Account'
+              examples:
+                response:
+                  value:
+                    success: 'true'
+                    message: successfully created new eval container and sfdc evaluation
+                    name: test.com-405343267
+                    uuid: 1649d324-8525-41af-995a-8b03abf52ba0
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /mssp/accounts/v2/eval:
+    post:
+      tags:
+      - Accounts
+      summary: Create evaluation account v2
+      description: Creates an evaluation account. <div class="perms-callout">Requires ADMINISTRATOR [64] user permissions. See [Permissions](doc:permissions).</div>
+      operationId: mssp-accounts-eval-v2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request-Create-Eval-Account-v2'
+      responses:
+        '200':
+          description: Returned if the evaluation account was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response-Create-Eval-Account'
+              examples:
+                response:
+                  value:
+                    success: 'true'
+                    message: successfully created new eval container and sfdc evaluation
+                    name: test.com-405343267
+                    uuid: 1649d324-8525-41af-995a-8b03abf52ba0
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /mssp/accounts/quote:
+    post:
+      tags:
+      - Accounts
+      summary: Create quote
+      description: Creates a quote for a customer. <div class="perms-callout">Requires ADMINISTRATOR [64] user permissions. See [Permissions](doc:permissions).</div>
+      operationId: mssp-accounts-quote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request-Create-Quote'
+      responses:
+        '200':
+          description: Returned if the quote was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response-Create-Quote'
+              examples:
+                response:
+                  value:
+                    success: 'true'
+                    message: Quote created successfully.
+                    name: test_mssp@example.com
+                    uuid: 5119f020-778f-46f9-8764-67d16b5dfc02
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse-400'
+              examples:
+                response:
+                  value:
+                    error: partner.name:Example Inc is invalid
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /mssp/accounts:
+    get:
+      tags:
+      - Accounts
+      summary: List child accounts
+      description: "Returns a list of child accounts in the Tenable MSSP Portal.\n\n A child account contains information about a customer instance of a Tenable product, including product license information and user-defined notes that can include valuable internal tracking or customer contact information. <div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      operationId: io-mssp-accounts-list
+      parameters:
+      - description: The UUID of an account group. This parameter can be used to retrieve only child accounts in the specified account group.
+        required: false
+        name: group
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - description: "A filter condition in the format `field:operator:value`. For example, `f=container_name:match:tenable`. \n\n**Note:** To retrieve a list of filters to use with this endpoint, see the  [GET /filters/mssp/accounts](ref:io-mssp-filters-account-list) endpoint. \n\nSee the list below for additional examples of possible filter combinations:  \n* uuid:neq:afe4fa83-8430-4f7b-a4dd-c25bcfd21317  \n* licensed_assets:gte:222  \n* license_utilization:lt:100  \n* license_expiration_date:gt:90  \n* licensed_apps:eq:was,lumin  \n* region:eq:US"
+        required: false
+        name: f
+        in: query
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - description: If multiple `f` parameters are present, specifies whether Tenable MSSP applies `AND` or `OR` to conditions. Supported values are `and` and `or`. If you omit this parameter when using multiple `f` parameters, Tenable applies `AND` by default.
+        required: false
+        name: ft
+        in: query
+        schema:
+          type: string
+      - description: Wildcard filter text. Wildcard search is a mechanism where multiple fields of a record are filtered against one specific filter string. If any one of the wildcard\_fields' values matches against the filter string, then the record matches the wildcard filter. For a record to be returned, it must pass the wildcard filter (if there is one) AND the set of standard filters. For example, if `w=wild&f=field1:match:one&f=field2:match:two&ft=or`, the record would match if the value of any supported wildcard\_fields contained `wild`, AND either field1's value contained `one` or field2's value contained `two`.
+        required: false
+        name: w
+        in: query
+        schema:
+          type: string
+      - description: "A comma-delimited subset of wildcard\\_fields to search when applying the wildcard filter. For example, `field1,field2`. If `w` is provided, but `wf` is not, then all wildcard\\_fields' values are searched against the wildcard filter text. \n\n**Note:** To retrieve a list of fields that can be used as wild cards, see the [GET /filters/mssp/accounts](ref:io-mssp-filters-account-list) endpoint."
+        required: false
+        name: wf
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the list of child accounts was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChildAccountListResponse'
+              examples:
+                response:
+                  value:
+                    accounts:
+                    - uuid: c3f75679-3e5f-4e14-a5c9-5f3d45e2c831
+                      container_name: container1
+                      lms_customer_id: '123456'
+                      custom_name: Child Account 1
+                      sso_username: child1
+                      region: us-west-2
+                      site_id: site1
+                      licensed_assets: 10
+                      licensed_assets_limit: 50
+                      license_utilization: 0.2
+                      license_expiration_date: 1618051200000
+                      licensed_apps:
+                      - app1
+                      - app2
+                      - app3
+                      notes: Some notes about this child account
+                      logo_uuid: d2f75679-3e5f-4e14-a5c9-5f3d45e2c831
+                      domains:
+                      - child1.com
+                      - child1.net
+                      created: '2021-01-16T12:00:00Z'
+                      modified: '2021-01-16T12:00:00Z'
+                    - uuid: d3f75679-3e5f-4e14-a5c9-5f3d45e2c831
+                      container_name: container2
+                      lms_customer_id: '234567'
+                      custom_name: Child Account 2
+                      sso_username: child2
+                      region: us-west-2
+                      site_id: site1
+                      licensed_assets: 20
+                      licensed_assets_limit: 100
+                      license_utilization: 0.2
+                      license_expiration_date: 1618051200000
+                      licensed_apps:
+                      - app1
+                      - app2
+                      - app3
+                      notes: Some notes about this child account
+                      logo_uuid: e2f75679-3e5f-4e14-a5c9-5f3d45e2c831
+                      domains:
+                      - child2.com
+                      - child2.net
+                      created: '2021-01-16T12:00:00Z'
+                      modified: '2021-01-16T12:00:00Z'
+        '400':
+          description: Returned if you specify invalid input parameters.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /mssp/accounts/{account_uuid}:
+    get:
+      tags:
+      - Accounts
+      summary: Get child account details
+      description: Returns details for the specified child account. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-accounts-details
+      parameters:
+      - name: account_uuid
+        in: path
+        description: The UUID of the child account you want to retrieve details for.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: Returned if the details for the specified child account were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChildAccountResponse-Object'
+              examples:
+                response:
+                  value:
+                    uuid: c3f75679-3e5f-4e14-a5c9-5f3d45e2c831
+                    container_name: container1
+                    lms_customer_id: '123456'
+                    custom_name: Child Account 1
+                    sso_username: child1
+                    region: us-west-2
+                    site_id: site1
+                    licensed_assets: 10
+                    licensed_assets_limit: 50
+                    license_utilization: 0.2
+                    license_expiration_date: 1618051200000
+                    licensed_apps:
+                    - app1
+                    - app2
+                    - app3
+                    notes: Some notes about this child account
+                    logo_uuid: d2f75679-3e5f-4e14-a5c9-5f3d45e2c831
+                    domains:
+                    - child1.com
+                    - child1.net
+                    created: '2021-01-16T12:00:00Z'
+                    modified: '2021-01-16T12:00:00Z'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if the Tenable MSSP Platform could not find the specified child account.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /mssp/accounts/{account_uuid}/domains:
+    get:
+      tags:
+      - Accounts
+      summary: List domains
+      description: Returns a list of domains for the specified child account. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-accounts-domains-list
+      parameters:
+      - name: account_uuid
+        in: path
+        description: The UUID of the child account you want to retrieve domains for.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: Returned if the list of domains for the specified child account was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response-Accounts-Domains'
+              examples:
+                response:
+                  value:
+                    domains:
+                    - label: child1.com
+                      value: child1.com
+                    - label: child1.net
+                      value: child1.net
+                    - label: child1.org
+                      value: child1.org
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if the Tenable MSSP Platform could not find the specified child account.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    Licensed-Apps-Quote-Object:
+      type: object
+      properties:
+        sku:
+          type: string
+          example: TIOVM
+          description: The product SKU for the Tenable application you're requesting. You can use the [Get partner details](ref:mssp-partner-details) endpoint to retrieve the list of SKUs that can be requested from the specified partner.
+        assets:
+          type: integer
+          description: The number of assets you want to license for the requested Tenable product. This number must fall between the `minQuantity` and `maxQuantity` range for the Tenable application's SKU from the partner. You can retrieve these values from the [Get partner details](ref:mssp-partner-details) endpoint.
+        expiration_date:
+          type: string
+          description: The date when the account expires. The expiration date must be specified in YYYY-MM-DD format and it must be at least 90 days in the future.
+    Response-Create-Quote:
+      type: object
+      properties:
+        success:
+          type: string
+          example: 'true'
+          description: Indicates whether or not Tenable MSSP successfully created the quote.
+        message:
+          type: string
+          example: Quote created successfully.
+          description: A short message about the creation of the quote.
+        name:
+          type: string
+          example: example.com-830759035
+          description: The name associated with the quote. This corresponds with the `admin_username`.
+        uuid:
+          type: string
+          format: uuid
+          description: The UUID of the quote.
+    ChildAccountListResponse:
+      type: object
+      required:
+      - accounts
+      properties:
+        accounts:
+          description: An array of customer account objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/ChildAccountResponse-Object'
+    Request-Create-Quote:
+      type: object
+      required:
+      - customer_name
+      - admin_username
+      - partner
+      - distributor
+      - licensed_apps
+      - contact
+      - region
+      - requester
+      - licensee
+      properties:
+        admin_username:
+          type: string
+          description: A unique username for the evaluation account. It must be in email format, ex. `customer@partner.com`, and the domain name of the email address must match the MSSP partner's domain name.
+        customer_name:
+          type: string
+          description: The name of the customer account.
+        partner:
+          description: The customer's partner information.
+          $ref: '#/components/schemas/Object-Partner'
+        distributor:
+          description: The customer's distributor information.
+          $ref: '#/components/schemas/Object-Distributor'
+        licensed_apps:
+          type: array
+          description: An array of licensed Tenable applications and the amount of assets per application.
+          items:
+            $ref: '#/components/schemas/Licensed-Apps-Quote-Object'
+        contact:
+          description: The customer's contact information.
+          $ref: '#/components/schemas/Object-Contact'
+        region:
+          type: string
+          example: US
+          description: The primary contact's country in ISO 3166-1 alpha-2 format. Valid country codes are `AU`, `BR`, `CA`, `EU`, `IN`, `JP`, `SG`, `UK`, and `US`.
+        requester:
+          description: The quote requester's first and last name.
+          $ref: '#/components/schemas/Object-Requester'
+        licensee:
+          description: The quote licensee's first and last name.
+          $ref: '#/components/schemas/Object-Requester'
+    Response-Accounts-Domains-Object:
+      type: object
+      properties:
+        label:
+          type: string
+          description: The domain label.
+        value:
+          type: string
+          description: The domain value.
+    Object-Distributor:
+      type: object
+      required:
+      - id
+      - name
+      - lms_customer_id
+      properties:
+        id:
+          type: string
+          example: 001We0000024vrNIAQ
+          description: The ID of the distributor in the Tenable MSSP Portal.
+        name:
+          type: string
+          description: The name of the distributor in the Tenable MSSP Portal.
+        lms_customer_id:
+          type: string
+          description: The distributor's licensing management system customer ID.
+    Object-Partner:
+      type: object
+      required:
+      - id
+      - name
+      - lms_customer_id
+      properties:
+        id:
+          type: string
+          example: 001We0000024vrNIAQ
+          description: The ID of the partner in the Tenable MSSP Portal.
+        name:
+          type: string
+          description: The name of the partner in the Tenable MSSP Portal.
+        lms_customer_id:
+          type: string
+          description: The partner's licensing management system customer ID.
+    ChildAccountResponse-Object:
+      type: object
+      required:
+      - uuid
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
+          description: The UUID of the customer account in the Tenable MSSP Portal.
+        container_name:
+          type: string
+          example: Dallas Office
+          description: The name of the customer account in the Tenable MSSP Portal.
+        lms_customer_id:
+          type: string
+          description: The customer's licensing management system customer ID.
+        custom_name:
+          type: string
+          description: A custom name in addition to the container name to help you more easily identify the customer / container.
+        sso_username:
+          type: string
+          description: The sso_username.
+        region:
+          type: string
+          example: US East
+          description: The Tenable AWS cloud region that contains the customer account. Customer account regions correspond to the regions used for [cloud sensors](https://docs.tenable.com/vulnerability-management/Content/Platform/Settings/Sensors/CloudSensors.htm). To avoid latency issues, Tenable recommends that scans in the customer instance use scanners in the same region as the customer account.
+        licensed_assets:
+          type: integer
+          format: int64
+          description: The number of assets currently counted against the customer's license.
+        licensed_assets_limit:
+          type: integer
+          format: int64
+          description: The number of assets which the customer is licensed to scan.
+        license_utilization:
+          type: number
+          multipleOf: 0.1
+          description: The current license utilization.
+        licensed_apps:
+          $ref: '#/components/schemas/Licensed-Apps'
+        notes:
+          type: string
+          description: User-defined text; for example, internal tracking or customer contact information.
+        logo_uuid:
+          type: string
+          description: The UUID of the logo assigned to the customer account in the Tenable MSSP Portal. This attribute is only present if a custom logo is assigned to the account.
+        domains:
+          type: array
+          description: A list of the customer domains.
+          items:
+            type: string
+        created:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the container was created; for example, `2021-01-16T12:00:00Z`.
+        modified:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the container was last modified; for example, `2021-01-16T12:00:00Z`.
+    Object-Contact:
+      type: object
+      required:
+      - email
+      - street
+      - city
+      - state
+      - zip
+      - country
+      - website
+      properties:
+        email:
+          type: string
+          description: The default email address used for contacting the customer. The domain name of the email address must match the MSSP partner's domain name.
+        street:
+          type: string
+          description: The street address for the customer's address.
+        city:
+          type: string
+          description: The city for the customer's address.
+        state:
+          type: string
+          description: The state for the customer's address. For example `MD`.
+        zip:
+          type: string
+          description: The zip code for the customer's address.
+        country:
+          type: string
+          example: US
+          description: The customer's country in ISO 3166-1 alpha-2 format. For example, `US`. The country should match one of the countries from the chosen distributor. You can use the [Get partner details](ref:mssp-partner-details) endpoint to retrieve a list of a distributor's countries.
+        website:
+          type: string
+          description: The customer's website.
+    Response-Create-Eval-Account:
+      type: object
+      properties:
+        success:
+          type: string
+          example: 'true'
+          description: Indicates whether or not Tenable MSSP successfully created the new evaluation account.
+        message:
+          type: string
+          example: successfully created new eval container and sfdc evaluation
+          description: A short message about the creation of the evaluation account.
+        name:
+          type: string
+          example: example.com-830759035
+          description: The name of the evaluation account. The name is the specified email domain followed by a dash and random integers. For example `example.com-830759035`.
+        uuid:
+          type: string
+          format: uuid
+          description: The UUID of the new evaluation account.
+    Request-Create-Eval-Account-v2:
+      type: object
+      required:
+      - customer_name
+      - licensed_apps
+      - default_contact_email
+      - default_admin_username
+      - country
+      properties:
+        customer_name:
+          type: string
+          description: The name of the customer account.
+        licensed_apps:
+          $ref: '#/components/schemas/Licensed-Apps'
+        default_contact_email:
+          type: string
+          description: The default email address used for contacting the owner of the evaluation account. The domain name of the email address must match the MSSP partner's domain name.
+        admin_username:
+          type: string
+          description: A unique username for the evaluation account. It must be in email format, ex. `customer@partner.com`, and the domain name of the email address must match the MSSP partner's domain name.
+        country:
+          type: string
+          description: The primary contact's country in ISO 3166-1 alpha-2 format. Valid country codes are `AU`, `BR`, `CA`, `EU`, `IN`, `JP`, `SG`, `UK`, and `US`.
+    Response-Accounts-Domains:
+      type: object
+      properties:
+        domains:
+          description: An array of domain objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/Response-Accounts-Domains-Object'
+    Object-Requester:
+      type: object
+      required:
+      - firstname
+      - lastname
+      properties:
+        firstname:
+          type: string
+          description: The first name of the customer that requested the quote.
+        lastname:
+          type: string
+          description: The last name of the customer that requested the quote.
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Request-Create-Eval-Account-v1:
+      type: object
+      required:
+      - email
+      - country
+      properties:
+        email:
+          type: string
+          description: The MSSP partner's email address. A valid email address must be in the format `name@domain`.
+        country:
+          type: string
+          description: The primary contact's country in ISO 3166-1 alpha-2 format. Valid country codes are `AU`, `BR`, `CA`, `EU`, `IN`, `JP`, `SG`, `UK`, and `US`.
+    Licensed-Apps:
+      type: array
+      description: 'An array of strings defining the list of licensed Tenable applications For example, `["vm", "was", "lumin"]`. Valid strings include the following: <ul><li>ad—Tenable Identity Exposure</li><li>asm—Tenable Attack Surface Management</li><li>lumin—Tenable Lumin</li><li>one—Tenable One</li><li>vm—Tenable Vulnerability Management</li><li>was—Tenable Web App Scanning</li></ul>'
+      items:
+        type: string
+    ErrorResponse-400:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A brief message about the missing or invalid parameter value(s).
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

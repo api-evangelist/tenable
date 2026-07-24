@@ -1,0 +1,220 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Scanner Config API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Scanner Config
+  x-displayName: Scanner Config
+paths:
+  /scanners/config:
+    get:
+      summary: Get scanner configuration
+      description: Returns the global scanner configuration settings, including concurrent update limits. <div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: scanner-config-details
+      tags:
+      - Scanner Config
+      responses:
+        '200':
+          description: Returned if the global scanner configuration was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Config_response-global-scanner-settings'
+              examples:
+                response:
+                  value:
+                    concurrent_update:
+                      enabled: 'true'
+                      max_concurrent_update: 5
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Config_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the global scanner configuration.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Config_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Config_cloud: []
+    put:
+      summary: Update scanner configuration
+      description: Updates the global scanner configuration settings. <div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: scanner-config-edit
+      tags:
+      - Scanner Config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                concurrent_update:
+                  type: object
+                  description: Specifies settings for controlling concurrent scanner updates.
+                  properties:
+                    enabled:
+                      type: boolean
+                      description: Enables or disables limiting the number of scanners that can update simultaneously.
+                    max_concurrent_update:
+                      type: integer
+                      description: Specifies the maximum number of scanners that can update plugins at the same time. A value of `0` prevents scanners from updating plugins. The maximum value is `1000`.
+                      format: int32
+                      minimum: 0
+                      maximum: 1000
+      responses:
+        '200':
+          description: Returned if the global scanner configuration was successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Config_response-global-scanner-settings'
+              examples:
+                response:
+                  value:
+                    concurrent_update:
+                      enabled: 'true'
+                      max_concurrent_update: 5
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Config_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to update the global scanner configuration.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Config_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Config_cloud: []
+components:
+  schemas:
+    Scanner_Config_response-global-scanner-settings:
+      type: object
+      properties:
+        concurrent_update:
+          type: object
+          description: An object containing settings for concurrent scanner updates.
+          properties:
+            enabled:
+              type: boolean
+              description: Indicates whether limiting concurrent scanner updates is enabled.
+            max_concurrent_update:
+              type: integer
+              description: The maximum number of scanners that are allowed to update plugins simultaneously. A value of `0` prevents scanners from updating plugins. The maximum value is `1000`.
+              format: int32
+              minimum: 0
+              maximum: 1000
+    Scanner_Config_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

@@ -1,0 +1,1294 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Plugins API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Plugins
+  x-displayName: Plugins
+paths:
+  /plugins/plugin:
+    get:
+      summary: List plugins
+      description: 'Returns a paginated list of Tenable plugins sorted by plugin ID with detailed plugin information.
+
+
+        You can filter the list on the value of the `last_updated` date field. However, note that the `last_updated` parameter does not take VPR updates into account. See the note on the `last_updated` parameter description for special considerations.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+      operationId: io-plugins-list
+      tags:
+      - Plugins
+      parameters:
+      - description: "The last updated date to filter on in the `YYYY-MM-DD` format. Tenable Vulnerability Management returns only the plugins that have been updated after the specified date. \n\n**Note:** This parameter does not take VPR updates into account. If you need to filter the plugin list by VPR update date, you should use a `last_updated` date of `1970-01-01` to return all plugins, and then filter the result set manually based on the `updated` field in the `vpr` object."
+        required: false
+        name: last_updated
+        in: query
+        schema:
+          type: string
+      - description: The number of records to include in the result set. Default is 1,000. The maximum size is 10,000.
+        required: false
+        name: size
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - description: The index of the page to return relative to the specified page size. For example, to return records 10-19 with page size 10, you must specify page 2. If you omit this parameter, Tenable Vulnerability Management applies the default value of 1.
+        required: false
+        name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the paginated list of available plugins was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_plugins_list_response'
+              examples:
+                response:
+                  value:
+                    data:
+                      plugin_details:
+                      - id: 13670
+                        name: 'Fedora Core 1 : kernel-2.4.22-1.2140.nptl (2003-047)'
+                        attributes:
+                          plugin_modification_date: '2018-07-19T00:00:00Z'
+                          plugin_version: '1.17'
+                          exploited_by_malware: false
+                          description: "Various RTC drivers had the potential to leak small amounts of kernel memory to userspace through IOCTL's. \n\nThe Common Vulnerabilities and Exposures project (cve.mitre.org) has assigned the name CVE-2003-0984 to this issue.\n\nNote that Tenable Network Security has extracted the preceding description block directly from the Fedora security advisory. Tenable has attempted to automatically clean and format it as much as possible without introducing additional issues."
+                          unsupported_by_vendor: false
+                          cvss_temporal_score: 0
+                          patch_publication_date: '2004-01-07T00:00:00Z'
+                          see_also:
+                          - http://www.nessus.org/u?07bc9e7f
+                          default_account: false
+                          exploit_available: false
+                          cve:
+                          - CVE-2003-0984
+                          exploit_framework_canvas: false
+                          cvss_base_score: 4.6
+                          solution: Update the affected packages.
+                          cvss_vector:
+                            raw: AV:L/AC:L/Au:N/C:P/I:P/A:P
+                            AccessVector: Local-access
+                            Availability-Impact: Partial
+                            Authentication: None required
+                            Integrity-Impact: Partial
+                            AccessComplexity: Low
+                            Confidentiality-Impact: Partial
+                          exploit_framework_exploithub: false
+                          cpe:
+                          - p-cpe:/a:fedoraproject:fedora:kernel-source
+                          - cpe:/o:fedoraproject:fedora_core:1
+                          - p-cpe:/a:fedoraproject:fedora:kernel-BOOT
+                          - p-cpe:/a:fedoraproject:fedora:kernel-debuginfo
+                          - p-cpe:/a:fedoraproject:fedora:kernel
+                          - p-cpe:/a:fedoraproject:fedora:kernel-doc
+                          - p-cpe:/a:fedoraproject:fedora:kernel-smp
+                          plugin_publication_date: '2004-07-23T00:00:00Z'
+                          exploit_framework_core: false
+                          in_the_news: false
+                          has_patch: true
+                          xref:
+                          - FEDORA:2003-047
+                          malware: false
+                          exploit_framework_d2_elliot: false
+                          xrefs:
+                          - type: FEDORA
+                            id: 2003-047
+                          risk_factor: Medium
+                          synopsis: The remote Fedora Core host is missing a security update.
+                          cvss3_temporal_score: 0
+                          exploited_by_nessus: false
+                          cvss3_base_score: 0
+                          exploit_framework_metasploit: false
+                          plugin_type: local
+                      - id: 13671
+                        name: 'Fedora Core 1 : mc-4.6.0-8.4 (2004-058)'
+                        attributes:
+                          plugin_modification_date: '2018-07-19T00:00:00Z'
+                          plugin_version: '1.14'
+                          exploited_by_malware: false
+                          description: "- Sat Jan 31 2004 Jakub Jelinek <jakub at redhat.com>     4.6.0-8.4\n\n  - fix previous patch\n\n  - Fri Jan 30 2004 Jakub Jelinek <jakub at redhat.com>     4.6.0-8.3\n\n  - update php.syntax file (#112645)\n\n    - fix crash with large syntax file (#112644)\n\n  - Fri Jan 23 2004 Jakub Jelinek <jakub at redhat.com>     4.6.0-8.2\n\n  - update CVE-2003-1023 fix to still make vfs symlinks     relative, but with bounds checking\n\n  - Sat Jan 17 2004 Warren Togami <wtogami at redhat.com>     4.6.0-8.1\n\n  - rebuild for FC1\n\n  - Sat Jan 17 2004 Warren Togami <wtogami at redhat.com>     4.6.0-7\n\n  - BuildRequires glib2-devel, slang-devel, XFree86-devel,     e2fsprogs-devel, gettext\n\n  - Copyright -> License\n\n    - PreReq -> Requires\n\n    - Explicit zero epoch in versioned dev dep\n\n    - /usr/share/mc directory ownership\n\n    - Improve summary\n\n    - (Seth Vidal QA) fix for CVE-2003-1023 (Security)\n\nNote that Tenable Network Security has extracted the preceding description block directly from the Fedora security advisory. Tenable has attempted to automatically clean and format it as much as possible without introducing additional issues."
+                          unsupported_by_vendor: false
+                          cvss_temporal_score: 0
+                          patch_publication_date: '2004-02-09T00:00:00Z'
+                          see_also:
+                          - http://www.nessus.org/u?ea1a95cb
+                          default_account: false
+                          exploit_available: false
+                          cve:
+                          - CVE-2003-1023
+                          exploit_framework_canvas: false
+                          cvss_base_score: 7.5
+                          solution: Update the affected mc and / or mc-debuginfo packages.
+                          cvss_vector:
+                            raw: AV:N/AC:L/Au:N/C:P/I:P/A:P
+                            AccessVector: Network
+                            Availability-Impact: Partial
+                            Authentication: None required
+                            Integrity-Impact: Partial
+                            AccessComplexity: Low
+                            Confidentiality-Impact: Partial
+                          exploit_framework_exploithub: false
+                          cpe:
+                          - cpe:/o:fedoraproject:fedora_core:1
+                          - p-cpe:/a:fedoraproject:fedora:mc-debuginfo
+                          - p-cpe:/a:fedoraproject:fedora:mc
+                          plugin_publication_date: '2004-07-23T00:00:00Z'
+                          exploit_framework_core: false
+                          in_the_news: false
+                          has_patch: true
+                          xref:
+                          - FEDORA:2004-058
+                          malware: false
+                          exploit_framework_d2_elliot: false
+                          xrefs:
+                          - type: FEDORA
+                            id: 2004-058
+                          risk_factor: High
+                          synopsis: The remote Fedora Core host is missing a security update.
+                          cvss3_temporal_score: 0
+                          exploited_by_nessus: false
+                          cvss3_base_score: 0
+                          exploit_framework_metasploit: false
+                          plugin_type: local
+                      - id: 13672
+                        name: 'Fedora Core 1 : mailman-2.1.4-1 (2004-060)'
+                        attributes:
+                          plugin_modification_date: '2018-07-19T00:00:00Z'
+                          plugin_version: '1.12'
+                          exploited_by_malware: false
+                          description: 'A cross-site scripting (XSS) vulnerability exists in the admin CGI script for Mailman before 2.1.4. This update moves Mailman to version 2.1.4 which is not vulnerable to this issue.
+
+
+                            Updated packages were made available in February 2004 however the original update notification email did not make it to fedora-announce-list at that time.
+
+
+                            Note that Tenable Network Security has extracted the preceding description block directly from the Fedora security advisory. Tenable has attempted to automatically clean and format it as much as possible without introducing additional issues.'
+                          unsupported_by_vendor: false
+                          cvss_temporal_score: 0
+                          patch_publication_date: '2004-02-26T00:00:00Z'
+                          see_also:
+                          - http://www.nessus.org/u?564bb3fe
+                          default_account: false
+                          exploit_available: false
+                          exploit_framework_canvas: false
+                          cvss_base_score: 0
+                          solution: Update the affected mailman and / or mailman-debuginfo packages.
+                          exploit_framework_exploithub: false
+                          cpe:
+                          - cpe:/o:fedoraproject:fedora_core:1
+                          - p-cpe:/a:fedoraproject:fedora:mailman-debuginfo
+                          - p-cpe:/a:fedoraproject:fedora:mailman
+                          plugin_publication_date: '2004-07-23T00:00:00Z'
+                          exploit_framework_core: false
+                          in_the_news: false
+                          has_patch: true
+                          xref:
+                          - FEDORA:2004-060
+                          malware: false
+                          exploit_framework_d2_elliot: false
+                          xrefs:
+                          - type: FEDORA
+                            id: 2004-060
+                          risk_factor: High
+                          synopsis: The remote Fedora Core host is missing a security update.
+                          cvss3_temporal_score: 0
+                          exploited_by_nessus: false
+                          cvss3_base_score: 0
+                          exploit_framework_metasploit: false
+                          plugin_type: local
+                    size: 1000
+                    params:
+                      page: 3
+                      size: 1000
+                      last_updated: '2018-01-01'
+                    total_count: 75621
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - plugins_cloud: []
+  /plugins/plugin/{id}:
+    get:
+      summary: Get plugin details
+      description: Returns details for a specified plugin.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-plugins-details
+      tags:
+      - Plugins
+      parameters:
+      - description: The ID of the plugin.
+        required: true
+        name: id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the details for the specified plugin were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_plugin'
+              examples:
+                response:
+                  value:
+                    attributes:
+                    - attribute_value: aix_IY19744.nasl
+                      attribute_name: fname
+                    - attribute_value: 'AIX 5.1 : IY19744'
+                      attribute_name: plugin_name
+                    - attribute_value: '$Revision: 1.5 $'
+                      attribute_name: script_version
+                    - attribute_value: http://www-912.ibm.com/eserver/support/fixes/
+                      attribute_name: solution
+                    - attribute_value: High
+                      attribute_name: risk_factor
+                    - attribute_value: 'The remote host is missing AIX Critical Security Patch number IY19744
+
+                        (SECURITY: Buffer Overflow in xntpd).
+
+
+                        You should install this patch for your system to be up-to-date.'
+                      attribute_name: description
+                    - attribute_value: 2006/09/16
+                      attribute_name: plugin_publication_date
+                    - attribute_value: The remote host is missing a vendor-supplied security patch
+                      attribute_name: synopsis
+                    family_name: AIX Local Security Checks
+                    name: 'AIX 5.1 : IY19744'
+                    id: 22372
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified plugin ID.
+          content: {}
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - plugins_cloud: []
+  /plugins/families:
+    get:
+      summary: List plugin families
+      description: Returns the list of plugin families.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-plugins-families-list
+      tags:
+      - Plugins
+      parameters:
+      - description: Specifies whether to return all plugin families. If `true`, the plugin families hidden in Tenable Vulnerability Management UI, for example, Port Scanners, are included in the list.
+        required: false
+        name: all
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Returned if the list of plugin families was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  families:
+                    type: array
+                    items:
+                      properties:
+                        count:
+                          type: integer
+                          description: The number of plugins in the family.
+                        name:
+                          type: string
+                          description: The name of the family.
+                        id:
+                          type: integer
+                          description: The unique ID of the family.
+              examples:
+                response:
+                  value:
+                    families:
+                    - count: 11342
+                      name: AIX Local Security Checks
+                      id: 1
+                    - count: 1164
+                      name: Amazon Linux Local Security Checks
+                      id: 35
+                    - count: 114
+                      name: Backdoors
+                      id: 17
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - plugins_cloud: []
+  /plugins/families/{id}:
+    get:
+      summary: List plugins in family (ID)
+      description: Returns the list of plugins for the specified family ID.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-plugins-family-details-id
+      tags:
+      - Plugins
+      parameters:
+      - description: The ID of the plugin family you want to retrieve the list of plugins for.
+        required: true
+        name: id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returned if the list of plugins for the specified family ID was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_ResponsePluginsList'
+              examples:
+                response:
+                  value:
+                    plugins:
+                    - id: 22372
+                      name: 'AIX 5.1 : IY19744'
+                    - id: 22373
+                      name: 'AIX 5.1 : IY20486'
+                    - id: 22374
+                      name: 'AIX 5.1 : IY21309'
+                    name: AIX Local Security Checks
+                    id: 1
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified plugin family ID.
+          content: {}
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - plugins_cloud: []
+  /plugins/families/_byName:
+    post:
+      summary: List plugins in family (name)
+      description: Returns the list of plugins for the specified family name.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-plugins-family-details-name
+      tags:
+      - Plugins
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  description: The name of the plugin family you want to retrieve the list of plugins for.
+                  format: uuid
+      responses:
+        '200':
+          description: Returned if the list of plugins for the specified family name was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_ResponsePluginsList'
+              examples:
+                response:
+                  value:
+                    plugins:
+                    - id: 79798
+                      name: HP Network Node Manager i (NNMi) 8.x / 9.0x / 9.1x / 9.20 Unspecified XSS
+                    - id: 79799
+                      name: HP Network Node Manager i (NNMi) XSS (HPSBMU03035)
+                    - id: 79801
+                      name: HP Network Node Manager i Remote Code Execution (HPSBMU03075)
+                    - id: 59189
+                      name: HP SNMP Agents < 9.0.0 Multiple Vulnerabilities (HPSBMU02771 SSRT100558) (Red Hat)
+                    name: Red Hat Local Security Checks
+                    id: 43
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A description of the error.
+              examples:
+                response:
+                  value:
+                    error: 'Invalid ''name'' field: missing'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified plugin family name.
+          content: {}
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plugins_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - plugins_cloud: []
+  /was/v2/plugins:
+    get:
+      summary: List plugins
+      description: Returns a list of plugins used in Tenable Web App Scanning scans. <div class="perms-callout">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: was-v2-plugins-list
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/sort-plugins'
+      tags:
+      - Plugins
+      responses:
+        '200':
+          description: Returns a list of plugins.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - pagination
+                - items
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/PaginationResponse'
+                  items:
+                    type: array
+                    description: A list of plugins.
+                    items:
+                      $ref: '#/components/schemas/Plugin'
+              examples:
+                response:
+                  value:
+                    pagination:
+                      total: 1266
+                      offset: 0
+                      limit: 10
+                      sort:
+                      - name: plugin_id
+                        order: asc
+                    items:
+                    - plugin_id: 98000
+                      name: Scan Information
+                      family: General
+                      policy: []
+                    - plugin_id: 98003
+                      name: OS Detection
+                      family: General
+                      policy: []
+                    - plugin_id: 98007
+                      name: URI Blocked Due to Exclusion Rule
+                      family: General
+                      policy: []
+                    - plugin_id: 98009
+                      name: Web Application Sitemap
+                      family: General
+                      policy: []
+                    - plugin_id: 98019
+                      name: Network Timeout Encountered
+                      family: General
+                      policy: []
+                    - plugin_id: 98024
+                      name: HTTP Server Authentication Detected
+                      family: Authentication & Session
+                      policy: []
+                    - plugin_id: 98025
+                      name: HTTP Server Authentication Succeeded
+                      family: Authentication & Session
+                      policy: []
+                    - plugin_id: 98026
+                      name: HTTP Server Authentication Failed
+                      family: Authentication & Session
+                      policy: []
+                    - plugin_id: 98033
+                      name: Login Form Detected
+                      family: Authentication & Session
+                      policy: []
+                    - plugin_id: 98034
+                      name: Login Form Authentication Failed
+                      family: Authentication & Session
+                      policy: []
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /was/v2/plugins/{plugin_id}:
+    get:
+      tags:
+      - Plugins
+      summary: Get plugin details
+      operationId: was-v2-plugins-details
+      description: Returns details for the specified Tenable Web App Scanning plugin. <div class="perms-callout">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. See [Roles](doc:roles).</div>
+      parameters:
+      - in: path
+        name: plugin_id
+        required: true
+        schema:
+          type: integer
+        description: The ID of a Tenable Web App Scanning plugin.
+      responses:
+        '200':
+          description: Returned if the details for the specified plugin were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PluginWithMetadata'
+              examples:
+                response:
+                  value:
+                    plugin_id: 98074
+                    name: Backup file
+                    family: Data Exposure
+                    solution: Do not keep obsolete versions of files under the virtual web server root.
+                    description: "A common practice when administering web applications is to create a copy/backup\n  of a particular file or directory prior to making any modification to the file.\n  Another common practice is to add an extension or change the name of the original\n  file to signify that it is a backup (examples include `.bak`, `.orig`, `.backup`,\n  etc.).\n\n  During the initial recon stages of an attack, cyber-criminals will attempt to\n  locate backup files by adding common extensions onto files already discovered on\n  the webserver. By analysing the response headers from the server they are able to\n  determine if the backup file exists.\n  These backup files can then assist in the compromise of the web application.\n\n  By utilising the same method, scanner was able to discover a possible backup file."
+                    synopsis: Backup file
+                    published: '2017-03-31T00:00:00Z'
+                    patch_published: null
+                    plugin_modified: '2017-10-16T00:00:00Z'
+                    risk_factor: medium
+                    see_also:
+                    - http://www.webappsec.org/projects/threat/classes/information_leakage.shtml
+                    - https://www.owasp.org/index.php/Review_Old,_Backup_and_Unreferenced_Files_for_Sensitive_Information_(OTG-CONFIG-004)
+                    cvss3_base_score: 5.3
+                    wasc:
+                    - Predictable Resource Location
+                    cwe:
+                    - '530'
+                    owasp:
+                    - year: '2010'
+                      category: A6
+                    - year: '2013'
+                      category: A5
+                    - year: '2017'
+                      category: A6
+        '400':
+          description: Returned if your request specifies an invalid ID for a Tenable Web App Scanning plugin.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: INVALID_ID_FORMAT
+                      reason: The provided ID of 'uniqueID' must be UUID type
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if Tenable Web App Scanning cannot find the specified plugin.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    reasons:
+                    - code: NOT_FOUND
+                      reason: Resource with ID '12345' not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/PaginationResponseSortObject'
+    plugins_plugin_list_details:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the plugin.
+        name:
+          type: string
+          description: The name of the plugin.
+        attributes:
+          type: array
+          description: The plugin attributes. For more information, see [Tenable Plugin Attributes](/docs/tenable-plugin-attributes).
+          items:
+            $ref: '#/components/schemas/plugins_attributes_full'
+    plugins_attributes_short:
+      type: object
+      properties:
+        attribute_name:
+          type: string
+          description: The name of the attribute.
+        attribute_value:
+          type: string
+          description: The value of the attribute.
+    plugins_ResponsePluginsList:
+      type: object
+      properties:
+        plugins:
+          type: array
+          items:
+            properties:
+              id:
+                type: integer
+                description: The unique ID of the plugin.
+              name:
+                type: string
+                description: The name of the plugin.
+        name:
+          type: string
+          description: The name of the plugin family.
+        id:
+          type: integer
+          description: The unique ID of the plugin family.
+    plugins_plugins_list_response:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            plugin_details:
+              type: array
+              items:
+                $ref: '#/components/schemas/plugins_plugin_list_details'
+        size:
+          type: integer
+          description: The number of records in the returned result set.
+        params:
+          type: object
+          description: The URL query parameters for the returned data set. If the request does not specify the parameters, contains default values.
+          properties:
+            page:
+              type: integer
+              description: The result set page index. For example, if page size is 10, page 2 contains records 10-19. Default value is 1.
+            size:
+              type: integer
+              description: The result set page size. Default value is 1,000.
+            last_updated:
+              type: string
+              description: The 'last_updated' filter value.
+        total_count:
+          type: integer
+          description: The total number of available plugin records after Tenable Vulnerability Management applies the last_updated filter.
+    Plugin:
+      type: object
+      description: The plugin properties.
+      required:
+      - plugin_id
+      - name
+      - family
+      properties:
+        plugin_id:
+          description: The ID of the plugin.
+          type: integer
+          example: 98100
+        name:
+          description: The name of the plugin.
+          type: string
+        family:
+          description: The name of the plugin family.
+          type: string
+    PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    plugins_plugin:
+      type: object
+      properties:
+        attributes:
+          type: array
+          description: The plugin attributes.
+          items:
+            $ref: '#/components/schemas/plugins_attributes_short'
+        family_name:
+          type: string
+          description: The name of the plugin family.
+        name:
+          type: string
+          description: The name of the plugin.
+        id:
+          type: integer
+          description: The ID of the plugin.
+    plugins_attributes_full:
+      type: object
+      properties:
+        plugin_modification_date:
+          type: string
+          description: The date when Tenable last updated the plugin.
+        plugin_version:
+          type: string
+          description: The version of the plugin.
+        exploited_by_malware:
+          type: boolean
+          description: Indicates whether the vulnerability discovered by this plugin is known to be exploited by malware.
+        description:
+          type: string
+          description: The extended description of the plugin.
+        unsupported_by_vendor:
+          type: boolean
+          description: Indicates whether the software found by this plugin is unsupported by the software's vendor (for example, Windows 95 or Firefox 3).
+        cvss_temporal_score:
+          type: number
+          description: The raw CVSSv2 temporal metrics for the vulnerability.
+        patch_publication_date:
+          type: string
+          description: The date when the vendor published a patch for the vulnerability.
+        see_also:
+          type: array
+          description: Links to external websites that contain helpful information about the vulnerability.
+          items:
+            type: string
+        default_account:
+          type: string
+          description: Indicates whether the plugin checks for default accounts requiring the use of credentials other than the credentials provided in the scan policy. For more information, see [What are the plugins that test for default accounts?](https://community.tenable.com/s/article/What-are-the-plugins-that-test-for-default-accounts) in the Tenable Community Portal.
+        exploit_available:
+          type: boolean
+          description: Indicates whether a known public exploit exists for the vulnerability.
+        cve:
+          type: array
+          description: A list of Common Vulnerabilities and Exposures (CVE) IDs for the vulnerabilities associated with the plugin.
+          items:
+            type: string
+        exploit_framework_canvas:
+          type: boolean
+          description: Indicates whether an exploit exists in the Immunity CANVAS framework.
+        cvss_base_score:
+          type: string
+          description: The CVSSv2 base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
+        solution:
+          type: string
+          description: Remediation information for the vulnerability.
+        cvss_vector:
+          $ref: '#/components/schemas/plugins_cvss_vector'
+        exploit_framework_exploithub:
+          type: boolean
+          description: Indicates whether an exploit exists in the ExploitHub framework.
+        cpe:
+          type: array
+          description: A list of plugin target systems identified by Common Platform Enumeration (CPE).
+          items:
+            type: string
+        plugin_publication_date:
+          type: string
+          description: The date when Tenable originally published the plugin.
+        exploit_framework_core:
+          type: boolean
+          description: Indicates whether an exploit exists in the CORE Impact framework.
+        in_the_news:
+          type: boolean
+          description: Indicates whether this plugin has received media attention (for example, ShellShock, Meltdown).
+        has_patch:
+          type: boolean
+          description: Indicates whether the vendor has published a patch for the vulnerability.
+        xref:
+          type: array
+          description: References to third-party information about the vulnerability, exploit, or update associated with the plugin. Each reference includes a type, for example, 'FEDORA', and an ID, for example, '2003-047'.
+          items:
+            type: string
+        malware:
+          type: boolean
+          description: Indicates whether the plugin targets potentially malicious files or processes.
+        exploit_framework_d2_elliot:
+          type: boolean
+          description: Indicates an exploit exists in the D2 Elliot Web Exploitation framework.
+        xrefs:
+          type: array
+          description: References to third-party information about the vulnerability, exploit, or update associated with the plugin. Each reference includes a type and an ID. For example, 'FEDORA' and '2003-047'.
+          items:
+            type: string
+        risk_factor:
+          type: string
+          description: 'The risk factor of the vulnerability associated with the plugin. The risk factor is determined based on the calculation of the CVSS score, possible values are: <ul><li>`Low`—The vulnerability has a CVSS score between 0.1 and 3.9</li><li>`Medium`—The vulnerability has a CVSS score between 4.0 and 6.9</li><li>`High`—The vulnerability has a CVSS score between 7.0 and 9.9</li><li>`Critical`—The vulnerability has a CVSS score of 10.0</li></ul> **Note:** The CVSS score is dependent on the default CVSS severity metric setting of the user''s container. This setting can be set to either CVSSv2 or CVSSv3. For information about how to change this setting, see the Severity section on the [General Settings](https://docs.tenable.com/vulnerability-management/Content/Settings/General/General.htm) page in the Tenable Vulnerability Management User Guide.'
+        synopsis:
+          type: string
+          description: A brief summary of the vulnerability or vulnerabilities associated with the plugin.
+        cvss3_temporal_score:
+          type: number
+          description: The CVSSv3 temporal metrics for the vulnerability.
+        exploited_by_nessus:
+          type: boolean
+          description: Indicates whether Nessus exploited the vulnerability during the process of identification.
+        cvss3_base_score:
+          type: string
+          description: The CVSSv3 base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
+        exploit_framework_metasploit:
+          type: boolean
+          description: Indicates whether an exploit exists in the Metasploit framework.
+        plugin_type:
+          type: string
+          description: Plugin type, for example, local, remote, or combined. For more information about plugin type, see [Nessus Plugin Types and Categories](https://community.tenable.com/s/article/Nessus-Plugin-Types-and-Categories) in the Tenable Community Portal.
+        vpr:
+          type: object
+          description: Information about the Vulnerability Priority Rating (VPR) for the plugin.
+          properties:
+            score:
+              type: number
+              format: float
+              description: The Vulnerability Priority Rating (VPR) for the vulnerability. If a plugin is designed to detect multiple vulnerabilities, the VPR represents the highest value calculated for a vulnerability associated with the plugin. For more information, see <a href="https://docs.tenable.com/cloud/Content/Analysis/RiskMetrics.htm" target="_blank">Severity vs. VPR</a> in the <i>Tenable Vulnerability Management User Guide</i>.
+            drivers:
+              type: object
+              description: The key drivers Tenable uses to calculate a vulnerability's VPR. For more information, see <a href="/docs/vpr-drivers-tio">Vulnerability Priority Rating Drivers</a>.
+              properties: {}
+            updated:
+              type: string
+              description: The ISO timestamp when Tenable Vulnerability Management last imported the VPR for this vulnerability. Vulnerability Management imports updated VPR values every time you run a scan.
+    PluginWithMetadata:
+      type: object
+      required:
+      - plugin_id
+      - name
+      - family
+      - description
+      - synopsis
+      - risk_factor
+      properties:
+        plugin_id:
+          description: The ID of the plugin used to detect the vulnerability.
+          type: integer
+          example: 98100
+        name:
+          description: The name of the plugin.
+          type: string
+          example: Cross-Site Scripting (XSS)
+        family:
+          description: The name of the plugin family.
+          type: string
+          example: Component Vulnerability
+        solution:
+          description: Remediation information for the vulnerability targeted by the plugin.
+          type: string
+          example: Do not keep obsolete versions of files under the virtual web server root.
+        description:
+          description: An extended description of the vulnerability targeted by the plugin.
+          type: string
+        synopsis:
+          description: A short summary of the vulnerability targeted by the plugin.
+          type: string
+        published:
+          description: The publication date of the plugin.
+          type: string
+          example: '2017-03-31T00:00:00'
+        patch_published:
+          description: The date a patch was published to fix the vulnerability targeted by the plugin.
+          type: string
+          format: date-time
+        plugin_modified:
+          description: The date when Tenable last modified the plugin.
+          type: string
+          example: '2017-10-16T00:00:00'
+        risk_factor:
+          description: "The risk factor associated with the plugin. Possible values are:\n - low\n - medium\n - high\n - critical. See the `risk_factor` attribute in [Tenable Plugin Attributes](doc:tenable-plugin-attributes)."
+          type: string
+          enum:
+          - info
+          - low
+          - medium
+          - high
+          - critical
+          example: high
+        see_also:
+          description: A reference link discussing the vulnerability targeted by the plugin, typically a vendor security advisory or news article.
+          type: array
+          items:
+            type: string
+            format: uri
+          example: http://www.nessus.org/u?842bf415
+        cvss3_base_score:
+          description: The CVSSv3 base score for the vulnerability targeted by the plugin (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
+          type: number
+          minimum: 0
+          maximum: 10
+          example: 10
+        wasc:
+          description: The list of Web Application Security Consortium (WASC) category associated with the vulnerability targeted by the plugin.
+          type: array
+          items:
+            type: string
+        cwe:
+          description: The Common Weakness Enumeration (CWE) ID for the vulnerability targeted by the plugin.
+          type: array
+          items:
+            type: string
+        owasp:
+          description: The Open Web Application Security Project (OWASP) category for the vulnerability targeted by the plugin.
+          type: array
+          items:
+            type: object
+            required:
+            - category
+            - year
+            properties:
+              category:
+                type: string
+                enum:
+                - A1
+                - A2
+                - A3
+                - A4
+                - A5
+                - A6
+                - A7
+                - A8
+                - A9
+                - A10
+              year:
+                type: string
+                example: '2010'
+    ErrorResponse:
+      type: object
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
+      properties:
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
+    plugins_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    plugins_cvss_vector:
+      type: object
+      description: The raw CVSSv2 metrics for the vulnerability. For more information, see CVSSv2 documentation.
+      properties:
+        AccessComplexity:
+          type: string
+          description: The CVSSv2 Access Complexity (AC) metric for the vulnerability the plugin covers. Possible values include:<br />• H—High<br />• M—Medium<br />• L—Low
+        AccessVector:
+          type: string
+          description: 'The CVSSv2 Access Vector (AV) metric for the vulnerability the plugin covers. Possible values include: <br />• L—Local<br />• A—Adjacent Network<br />• N—Network'
+        Authentication:
+          type: string
+          description: 'The CVSSv2 Authentication (Au) metric for the vulnerability the plugin covers. Possible values include: <br />• N—None<br />• S—Single<br />• M—Multiple'
+        Availability-Impact:
+          type: string
+          description: 'The CVSSv2 availability impact metric for the vulnerability the plugin covers. Possible values include: <br />• N—None<br />• P—Partial<br />• C—Complete'
+        Confidentiality-Impact:
+          type: string
+          description: 'The CVSSv2 confidentiality impact metric for the vulnerability the plugin covers. Possible values include: <br />• N—None<br />• P—Partial<br />• C—Complete'
+        Integrity-Impact:
+          type: string
+          description: 'The CVSSv2 integrity impact metric for the vulnerability the plugin covers. Possible values include: <br />• N—None<br />• P—Partial<br />• C—Complete'
+  parameters:
+    sort-plugins:
+      description: 'The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `plugin_id:asc` would sort results by the `plugin_id` field in ascending order.
+
+
+        If you specify multiple fields, the fields must be separated by commas. For example, `family:asc;name:desc` would first sort results by the `family` field in ascending order and then by the `name` field in descending order.'
+      example: family:asc;name:desc
+      in: query
+      name: sort
+      required: false
+      schema:
+        type: string
+    offset:
+      description: The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`.
+      in: query
+      name: offset
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+    limit:
+      description: The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses.
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 200
+        default: 10
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

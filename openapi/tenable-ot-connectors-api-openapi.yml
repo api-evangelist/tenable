@@ -1,0 +1,690 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About OT Connectors API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: OT Connectors
+  x-displayName: OT Connectors
+paths:
+  /sensors:
+    post:
+      summary: Create OT connector
+      description: "Creates an OT connector. \n\nThe response includes a token when you create the OT connector. The token is the only credential that is used for authentication when the OT connector connects to Tenable Vulnerability Management.\n\n**Note:** You can generate the required linking key and retrieve the target site with the [Create linking key](ref:sensors-ot-linking-key-generate) endpoint."
+      operationId: sensors-ot-create
+      tags:
+      - OT Connectors
+      parameters:
+      - $ref: '#/components/parameters/OT_Connectors_x-linking-key-header'
+      - $ref: '#/components/parameters/OT_Connectors_x-target-site-header'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OT_Connectors_sensor-create-request-body'
+      responses:
+        '200':
+          description: Returned if the OT connector was created successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/OT_Connectors_Sensor-Object'
+                - type: object
+                  properties:
+                    token:
+                      type: string
+                      description: The credential used for authentication when the OT connector connects to Tenable Vulnerability Management.
+                      example: ed867115ea8356963c03c1a108c81b27539160b1dce06c8e5fad70868e49abab
+        '400':
+          description: Returned if the provided linking key does not match existing records or is expired.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Key does not exist or expired.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - OT_Connectors_cloud: []
+  /sensors/{type}:
+    get:
+      summary: List OT connectors
+      description: Returns a list of Tenable OT connectors. <div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: sensors-ot-list
+      tags:
+      - OT Connectors
+      parameters:
+      - $ref: '#/components/parameters/OT_Connectors_type-path-param'
+      - description: The attribute used to sort the list of OT connectors.
+        name: sortBy
+        in: query
+        schema:
+          type: string
+          enum:
+          - id
+          - name
+          - created
+          - modified
+          - lastAuth
+      - description: The criteria used to order the list of OT connectors. If this value is omitted, Tenable uses the default value `asc`.
+        name: orderBy
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - description: The maximum number of OT connectors to return. The valid range is [1-200].
+        name: limit
+        in: query
+        schema:
+          type: integer
+          default: 50
+          format: int32
+          minimum: 1
+          maximum: 200
+      - description: The ID of the last OT connector included in the current result set. This parameter is used for paging through the results and it must be used in conjunction with the `exclusiveStartSortKey` parameter.
+        name: exclusiveStartKey
+        in: query
+        schema:
+          type: string
+      - description: The value of the `sortBy` key for which to sort the returned list of OT connectors. It must be used in conjunction with the `exclusiveStartKey` parameter.
+        name: exclusiveStartSortKey
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returned if the list of OT connectors was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_sensor-list-response'
+        '400':
+          description: Returned when only one of `exclusiveStartKey` or `exclusiveStartSortKey` query parameters are provided. If one of these parameters is used, both parameters must be provided together.
+          content:
+            application/json:
+              example:
+                response:
+                  value:
+                    error: Both exclusiveStartKey and exclusiveStartSortKey are required.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to retrieve the list of OT connectors.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - OT_Connectors_cloud: []
+  /sensors/{type}/{id}:
+    get:
+      summary: Get OT connector details
+      description: Returns details for the specified OT connector. <div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: sensors-ot-details
+      tags:
+      - OT Connectors
+      parameters:
+      - $ref: '#/components/parameters/OT_Connectors_type-path-param'
+      - $ref: '#/components/parameters/OT_Connectors_id-path-param'
+      responses:
+        '200':
+          description: Returned if the details for the specified OT connector were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_Sensor-Object'
+        '400':
+          description: Returned if the OT connector id or type is missing or invalid.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Key does not exist or expired.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the OT connector.
+        '404':
+          description: Returned if the specified OT connector id doesn't exist.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Sensor does not exist.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - OT_Connectors_cloud: []
+    put:
+      summary: Update OT connector
+      description: Updates the specified OT connector. This endpoint can also be used to enable or disable an OT connector. <div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.EDIT` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: sensors-ot-update
+      tags:
+      - OT Connectors
+      parameters:
+      - $ref: '#/components/parameters/OT_Connectors_type-path-param'
+      - $ref: '#/components/parameters/OT_Connectors_id-path-param'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OT_Connectors_sensor-update-request-body'
+      responses:
+        '200':
+          description: Returned if the specified OT connector was updated successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if the OT connector id or type is missing or invalid.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Key does not exist or expired.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to update the OT connector.
+        '404':
+          description: Returned if the specified OT connector id doesn't exist.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Sensor does not exist.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - OT_Connectors_cloud: []
+    delete:
+      summary: Delete OT connector
+      description: Deletes an OT connector. <div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.DELETE` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: sensors-ot-delete
+      tags:
+      - OT Connectors
+      parameters:
+      - $ref: '#/components/parameters/OT_Connectors_type-path-param'
+      - $ref: '#/components/parameters/OT_Connectors_id-path-param'
+      responses:
+        '200':
+          description: Returned if the OT connector was deleted successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if the OT connector id or type is missing or invalid.
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    error: Key does not exist or expired.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to delete the OT connector.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - OT_Connectors_cloud: []
+  /sensors/{type}/linking-key:
+    post:
+      summary: Generate linking key
+      description: "Generates a single-use linking key that is valid for two hours. Additionally, the target site for your account is retrieved (ex. `us-2b`). \n\nThe linking key and target site are required when creating an OT connector with the [Create OT connector](ref:sensors-ot-create) endpoint.\n\nOnce linked, an OT connector can transmit assets and findings data from Tenable OT Security to Tenable Vulnerability Management. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+      operationId: sensors-ot-linking-key-generate
+      tags:
+      - OT Connectors
+      parameters:
+      - $ref: '#/components/parameters/OT_Connectors_type-path-param'
+      responses:
+        '200':
+          description: Returned if the linking key was generated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_sensor-linking-key-create-response'
+              examples:
+                response:
+                  value:
+                    x-linking-key: d17b1edc4b1c7737b7830df9c534afba76593247972f02144dc15ba1a7bd1fd0
+                    x-target-site: us-2b
+        '400':
+          description: Returned if the provided type is invalid or missing.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create a linking key.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OT_Connectors_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - OT_Connectors_cloud: []
+components:
+  schemas:
+    OT_Connectors_Sensor-Object:
+      type: object
+      properties:
+        containerUuid:
+          type: string
+          description: The unique ID of your Tenable Vulnerability Management instance.
+          example: 3584b24b-7f26-4684-b644-a2a92103d6c2
+        id:
+          type: string
+          description: The unique ID of the OT connector.
+          example: 0214f554-1ef2-4752-8363-12b73d3fe57a
+        name:
+          type: string
+          description: The OT connectors name.
+          example: My-Sensor
+        type:
+          type: string
+          description: The sensor type. This value is always `ot` for OT connectors.
+          example: ot
+        subType:
+          type: string
+          description: The OT connector's type. There are two types of OT connectors, Industrial Core Platform (ICP) and Enterprise Manager (EM).
+          example: icp
+        created:
+          type: integer
+          format: int64
+          description: The Unix timestamp of when the OT connector was created.
+          example: 1687532223
+        modified:
+          type: integer
+          format: int64
+          description: The Unix timestamp of when the OT connector was last modified.
+          example: 1687532223
+        lastAuth:
+          type: integer
+          format: int64
+          description: The Unix timestamp of when the OT connector was last authenticated.
+          example: 1687532223
+        enabled:
+          type: boolean
+          description: Indicates whether or not the OT connector is enabled.
+          example: true
+    OT_Connectors_sensor-linking-key-create-response:
+      type: object
+      properties:
+        x-linking-key:
+          type: string
+          description: The linking key for the OT connector. You can generate the required linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+          example: a24a1edc4b1c7737b7830df9c534afba76593247972f02144dc15ba1a7bd1fd0
+        x-target-site:
+          type: string
+          description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+          example: us-2b
+    OT_Connectors_sensor-list-response:
+      type: object
+      properties:
+        exclusiveStartKey:
+          type: string
+          description: The ID of the last OT connector included in the current result set. This parameter is used for paging through the results, and it must be used in conjunction with the `exclusiveStartSortKey` parameter.
+          example: c20d4c98-755c-44f7-98d5-624b6ed5f39e
+        exclusiveStartSortKey:
+          type: string
+          description: The value of the sortBy key for which to sort the returned list of OT connectors by. It must be used in conjunction with the `exclusiveStartKey` parameter.
+          example: default
+        SensorList:
+          type: array
+          items:
+            $ref: '#/components/schemas/OT_Connectors_Sensor-Object'
+          description: An array of OT connectors.
+          example:
+          - containerUuid: 686dc174-8abb-4ef6-8dc7-efe75979ce3d
+            id: d94a4a48-5d06-4d39-b79c-97df5d41ea43
+            name: default
+            type: ot
+            subType: icp
+            created: 1681402128
+            modified: 1681402128
+            lastAuth: 1681402128
+            enabled: true
+          - containerUuid: 686dc174-8abb-4ef6-8dc7-efe75979ce3d
+            id: 6b3ad2dd-73c2-4111-8080-892cb72b149b
+            name: default
+            type: ot
+            subType: icp
+            created: 1681330697
+            modified: 1681330697
+            lastAuth: 1681330697
+            enabled: true
+          - containerUuid: 686dc174-8abb-4ef6-8dc7-efe75979ce3d
+            id: f205d9b8-c210-4370-abb9-029f62611749
+            name: default
+            type: ot
+            subType: icp
+            created: 1681330748
+            modified: 1681330748
+            lastAuth: 1681330748
+            enabled: true
+          - containerUuid: 686dc174-8abb-4ef6-8dc7-efe75979ce3d
+            id: 9e34b1a3-d440-41aa-8a78-7be4b93424fb
+            name: default
+            type: ot
+            subType: icp
+            created: 1681330676
+            modified: 1681330676
+            lastAuth: 1681330676
+            enabled: true
+          - containerUuid: 686dc174-8abb-4ef6-8dc7-efe75979ce3d
+            id: c20d4c98-755c-44f7-98d5-624b6ed5f39e
+            name: default
+            type: ot
+            subType: icp
+            created: 1681330682
+            modified: 1681330682
+            lastAuth: 1681330682
+            enabled: true
+    OT_Connectors_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    OT_Connectors_sensor-create-request-body:
+      type: object
+      required:
+      - name
+      - subType
+      - enabled
+      properties:
+        name:
+          type: string
+          description: The name of the OT connector. The maximum character length is 64 chars.
+          maxLength: 64
+          example: My-Sensor
+        subType:
+          type: string
+          description: The type of OT connector. There are two types of OT connectors, Industrial Core Platform (ICP) and Enterprise Manager (EM).
+          enum:
+          - icp
+          - em
+        enabled:
+          type: boolean
+          description: Indicates whether or not the OT connector is enabled.
+    OT_Connectors_sensor-update-request-body:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the OT connector. The maximum character length is 64 chars.
+          maxLength: 64
+          example: My-Sensor
+        subType:
+          type: string
+          description: The type of OT connector. There are two types of OT connectors, Industrial Core Platform (ICP) and Enterprise Manager (EM).
+          enum:
+          - icp
+          - em
+        enabled:
+          type: boolean
+          description: Indicates whether or not the OT connector is enabled.
+  parameters:
+    OT_Connectors_id-path-param:
+      description: The OT connector's unique identifier.
+      required: true
+      name: id
+      in: path
+      schema:
+        type: string
+        format: uuid
+    OT_Connectors_x-linking-key-header:
+      description: The linking key for the OT connector. You can generate the required linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+      required: true
+      name: x-linking-key
+      in: header
+      schema:
+        type: string
+    OT_Connectors_x-target-site-header:
+      description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+      required: true
+      name: x-target-site
+      in: header
+      schema:
+        type: string
+        example: us-2b
+    OT_Connectors_type-path-param:
+      description: The type of connector or sensor. This value is always `ot` for OT connectors.
+      required: true
+      name: type
+      in: path
+      schema:
+        default: ot
+        type: string
+        enum:
+        - ot
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

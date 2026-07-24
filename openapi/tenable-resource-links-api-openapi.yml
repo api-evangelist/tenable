@@ -1,0 +1,352 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Resource Links API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Resource Links
+  description: "The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Resource Links endpoints in the Tenable MSSP Portal API enables customers to add resource links, bulk add resource links, update resource links, and list resource links. \n\nFor more information about the Tenable MSSP Portal, see the [Tenable MSSP Portal User Guide](https://docs.tenable.com/managed-security-service-provider/Content/Welcome.htm)."
+paths:
+  /mssp/resourcelink/addBulk:
+    post:
+      tags:
+      - Resource Links
+      summary: Bulk add resource links
+      description: Adds or updates resource links for multiple customer accounts. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-resource-links-bulk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - container_uuid_list
+              - resource_links
+              properties:
+                parent_container_uuid:
+                  description: The UUID of the parent container for the child containers you want to bulk add resource links for.
+                  type: string
+                  format: uuid
+                  example: d1dd4fb9-7648-4eb0-90a4-7cf5e742460c
+                container_uuid_list:
+                  description: An array of child containers that you want to bulk add resource links for.
+                  type: array
+                  items:
+                    description: A child container UUID.
+                    type: string
+                    example: a11d8e1d-653d-468d-8ee8-7ee7f5a1c597
+                  example:
+                  - a11d8e1d-653d-468d-8ee8-7ee7f5a1c597
+                  - e4afd841-bdbb-407f-ad45-ebcc35e4afbc
+                resource_links:
+                  description: An array of resource links to bulk add to the child containers.
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        description: The name of the resource.
+                        type: string
+                        example: Resource 4
+                      url:
+                        description: The URL of the resource.
+                        type: string
+                        example: https://example.com/resource1
+      responses:
+        '200':
+          description: Returned if the resource links for the specified customer accounts were bulk added successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: The status of the bulk add operation.
+              examples:
+                response:
+                  value:
+                    status: SUCCESS
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /mssp/resourcelink/account/{account_uuid}:
+    post:
+      tags:
+      - Resource Links
+      summary: Add resource links
+      description: Adds or updates resource links for the specified customer account. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-resource-links-add
+      parameters:
+      - name: account_uuid
+        in: path
+        description: The UUID of the customer account you want to add resource links for.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: An array of resource links to add to the specified account.
+              type: array
+              items:
+                description: An array of resource links to add to the specified account.
+                type: object
+                properties:
+                  name:
+                    description: The name of the resource.
+                    type: string
+                    example: Resource 1
+                  url:
+                    description: The URL of the resource.
+                    type: string
+                    example: http://resource1.com
+      responses:
+        '200':
+          description: Returned if the resource links for the specified customer account was added successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  container_uuid:
+                    type: string
+                    format: uuid
+                    description: The UUID of the container where the resource links were added.
+                  message:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: The status code associated with the operation results.
+                      message:
+                        type: string
+                        description: The status message associated with the operation results.
+              examples:
+                response:
+                  value:
+                    container_uuid: 4368d507-92e1-4069-addf-0e7795569762
+                    message:
+                      code: MSSP_1001
+                      message: Successfully modified resource links for given container UUID
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    get:
+      tags:
+      - Resource Links
+      summary: List resource links
+      description: Returns the resource links for the specified account. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-resource-links-list
+      parameters:
+      - name: account_uuid
+        in: path
+        description: The UUID of the customer account you want to retrieve resource links for.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: Returned if the resource links for the specified customer account was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  container_uuid:
+                    type: string
+                    format: uuid
+                    description: The UUID of the container associated with the resource links.
+                  resource_links:
+                    type: array
+                    description: An array of resource link objects.
+                    items:
+                      $ref: '#/components/schemas/Resource-Link-Object'
+              examples:
+                response:
+                  value:
+                    container_uuid: b11d8e1d-653d-468d-8ee8-7ee7f5a1c597
+                    resource_links:
+                    - name: Resource 1
+                      url: http://resource1.com
+                    - name: Resource 2
+                      url: http://resource2.com
+                    - name: Resource 3
+                      url: https://example.com/resource3
+                    - name: Resource 4
+                      url: https://example.com/resource4
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if the Tenable MSSP Platform could not find the specified customer account.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    Resource-Link-Object:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the resource link.
+        url:
+          type: string
+          description: The URL of the resource link.
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

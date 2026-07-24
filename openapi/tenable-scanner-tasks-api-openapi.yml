@@ -1,0 +1,561 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Scanner Tasks API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Scanner Tasks
+  x-displayName: Scanner Tasks
+paths:
+  /scanners/{scanner_uuid}/directives:
+    post:
+      summary: Send instructions to scanner
+      description: Create instructions for a single scanner to perform.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: io-scanners-directive
+      tags:
+      - Scanner Tasks
+      parameters:
+      - description: The UUID of the scanner.
+        required: true
+        name: scanner_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+                required:
+                - type
+                properties:
+                  type:
+                    type: string
+                    description: The type of instruction to perform. To restart the scanner service, choose `restart`. To modify settings, choose `settings`.
+                    enum:
+                    - restart
+                    - settings
+              - $ref: '#/components/schemas/Scanner_Tasks_scanner-directive'
+      responses:
+        '200':
+          description: Returned if the directive task was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Tasks_response-scanner-directive'
+              examples:
+                response:
+                  value:
+                    container_uuid: 4496ea88-1d4d-43e8-b373-973b0870fd7d
+                    uuid: 61cadb4c-a245-40d3-a77f-6a9001e8def4
+                    sensor_uuid: 51f6a2bf-c2ea-478d-bffd-0a81cfe4529a
+                    owner_uuid: 2e9cecda-3821-4032-a093-ddd0cbd8b9b9
+                    type: settings
+                    status: pending
+                    created: 1652937372838
+                    modified: 1652937372838
+                    results_blob_size: 0
+                    options:
+                      settings:
+                      - setting: backend_log_level
+                        value: debug
+                    ttl: 604800
+                    id: 61cadb4c-a245-40d3-a77f-6a9001e8def4
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have the required permissions to send a directive to the scanner.
+        '404':
+          description: Returned if the specified scanner was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Tasks_cloud: []
+  /scanners/bulk/directives:
+    post:
+      summary: Send instructions to multiple scanners
+      description: Create instructions for multiple scanners to perform. <div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: io-scanners-directive-bulk
+      tags:
+      - Scanner Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Scanner_Tasks_bulk-scanner-directive'
+      responses:
+        '200':
+          description: Returned if the bulk directive task was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Tasks_response-bulk-scanner-directive'
+              examples:
+                response:
+                  value:
+                  - container_uuid: 5496ea88-1d4d-43e8-b373-973b0870fd7d
+                    uuid: ca9a4400-b443-4f9f-92e5-bcc78eaf1480
+                    sensor_uuid: 52f6a2bf-c2ea-478d-bffd-0a81cfe4529a
+                    owner_uuid: 2b9cecda-3821-4032-a093-ddd0cbd8b9b9
+                    type: settings
+                    status: pending
+                    created: 1658774368372
+                    modified: 1658774368372
+                    results_blob_size: 0
+                    options:
+                      settings:
+                      - setting: backend_log_level
+                        value: normal
+                      - setting: plugin_load_performance_mode
+                        value: medium
+                    id: cd9a4400-b443-4f9f-92e5-bcc78eaf1480
+                    ttl: 604800
+                  - container_uuid: 1496ea88-1d4d-43e8-b373-973b0870fd7d
+                    uuid: c29a4400-b443-4f9f-92e5-bcc78eaf1480
+                    sensor_uuid: a3c5be7e-cd13-497d-8d09-b7404bb34f58
+                    owner_uuid: 2b9cecda-3821-4032-a093-ddd0cbd8b9b9
+                    type: settings
+                    status: pending
+                    created: 1658774368372
+                    modified: 1658774368372
+                    results_blob_size: 0
+                    options:
+                      settings:
+                      - setting: backend_log_level
+                        value: normal
+                      - setting: plugin_load_performance_mode
+                        value: medium
+                    id: cb9a4400-b443-4f9f-92e5-bcc78eaf1480
+                    ttl: 604800
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have the required permissions to send directives to the scanners.
+        '404':
+          description: Returned if the specified scanner or scanners were not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Tasks_cloud: []
+  /scanners/{scanner_id}/scans/{scan_uuid}/control:
+    post:
+      summary: Allow control of running scans
+      description: Allows control of scans that are currently running on a scanner.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: scanners-control-scans
+      tags:
+      - Scanner Tasks
+      parameters:
+      - description: The ID of the scanner.
+        required: true
+        name: scanner_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      - description: The UUID of the scan.
+        required: true
+        name: scan_uuid
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  description: An action to perform on a scan. Valid values are `stop`, `pause`, and `resume`.
+                  enum:
+                  - stop
+                  - pause
+                  - resume
+              required:
+              - action
+      responses:
+        '200':
+          description: Returned if the specified action was completed successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to perform the specified action.
+        '404':
+          description: Returned if the specified scan or scanner was not found.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Tasks_cloud: []
+  /scanners/{scanner_id}/link:
+    put:
+      summary: Toggle scanner link state
+      description: Enables or disables the link state of the scanner identified by `scanner_id`.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: scanners-toggle-link-state
+      tags:
+      - Scanner Tasks
+      parameters:
+      - description: The ID of the scanner.
+        required: true
+        name: scanner_id
+        in: path
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                link:
+                  type: integer
+                  description: Pass `1` enable the link. Pass `0` to disable.
+                  format: int32
+              required:
+              - link
+      responses:
+        '200':
+          description: Returned if the link state of the scanner was updated successfully.
+          content:
+            application/json:
+              schema: {}
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you attempt to edit a cloud scanner where you do not have edit permissions.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scanner_Tasks_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Scanner_Tasks_cloud: []
+components:
+  schemas:
+    Scanner_Tasks_response-directive-option:
+      type: object
+      description: The instructions to perform.
+      properties:
+        settings:
+          type: array
+          description: An array of objects where each object is one individual setting or instruction to perform. Each object contains a `setting` property to specify the setting and a `value` property to specify the value for setting. For example, `{"setting":"backend_log_level","value":"debug"}`.
+          items:
+            type: object
+            properties:
+              setting:
+                description: The setting that was sent in the directive to the scanner.
+                type: string
+              value:
+                description: The value of the setting.
+                type: string
+    Scanner_Tasks_response-scanner-directive:
+      type: object
+      properties:
+        container_uuid:
+          type: string
+          format: UUID
+          description: The UUID of the container where the task is operating.
+        uuid:
+          type: string
+          format: UUID
+          description: The UUID of the directive task.
+        sensor_uuid:
+          type: string
+          format: UUID
+          description: The UUID of the scanner (sensor).
+        owner_uuid:
+          type: string
+          format: UUID
+          description: The UUID of the owner.
+        type:
+          type: string
+          description: The type of instruction, either `restart` or `settings`.
+        status:
+          type: string
+          description: The status of the scan task. For a list of scan statuses and their descriptions, see [Scan Status](doc:scan-status-tio).
+          enum:
+          - pending
+          - running
+          - completed
+          - failed
+          - canceled
+        created:
+          type: integer
+          format: int64
+          description: The creation date of the directive in unix time milliseconds.
+        modified:
+          type: integer
+          format: int64
+          description: The date the directive was last modified in unix time milliseconds.
+        results_blob_size:
+          type: integer
+          description: The size of the log that the scanner returns when performing a log directive. This value is always `0` for non-log directives.
+        options:
+          $ref: '#/components/schemas/Scanner_Tasks_response-directive-option'
+        ttl:
+          type: integer
+          description: The time to live for the directive. The status is updated to `failed` if the directive is not executed within the TTL time frame.
+        id:
+          type: string
+          format: UUID
+          description: The UUID of the directive task.
+    Scanner_Tasks_response-bulk-scanner-directive:
+      type: array
+      items:
+        $ref: '#/components/schemas/Scanner_Tasks_response-scanner-directive'
+    Scanner_Tasks_bulk-scanner-directive:
+      type: object
+      properties:
+        all_scanners:
+          type: string
+          description: Indicates whether or not to send the directives to all scanners.
+          enum:
+          - 'true'
+          - 'false'
+        scanners:
+          type: array
+          description: An array of scanner UUIDs to send the directives to.
+          items:
+            type: string
+        directive:
+          type: object
+          description: Specifies the instructions you wish to send to the scanners. The `directive` object is different depending on whether you want to restart the scanners' service or change settings for the scanners.
+          allOf:
+          - type: object
+            required:
+            - type
+            properties:
+              type:
+                type: string
+                description: The type of instruction to perform. To restart the scanner service, choose `restart`. To modify settings, choose `settings`.
+                enum:
+                - restart
+                - settings
+          - $ref: '#/components/schemas/Scanner_Tasks_scanner-directive'
+    Scanner_Tasks_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Scanner_Tasks_scanner-directive:
+      type: object
+      properties:
+        options:
+          type: object
+          description: Specifies the instructions you wish to send to the scanner. The `options` object is different depending on whether you want to restart the scanner service or change settings for the scanner.
+          oneOf:
+          - title: Restart Scanner Service (OPTION 1)
+            type: object
+            description: The options for the restart scanner service operation.
+            properties:
+              hard:
+                type: boolean
+                description: Indicates whether or not to perform a hard restart of the scanner service. A hard restart will inform the scanner service to restart immediately regardless of what it is doing.
+              idle:
+                type: boolean
+                description: Indicates whether or not to restart the scanner service when the scanning engine is idle.
+          - title: Change Settings (OPTION 2)
+            type: object
+            description: The settings to change.
+            properties:
+              settings:
+                type: array
+                description: An array of objects where each object is one individual setting or instruction to perform. Each object contains a `setting` property to specify the setting and a `value` property to specify the value for setting. For example, `{"setting":"backend_log_level","value":"debug"}`.
+                items:
+                  type: object
+                  properties:
+                    setting:
+                      description: The setting to send to the scanner. Supported settings are `backend_log_level`, `auto_update`, and `auto_update_delay`. For information about these settings and a list of possible values to use with the settings, see [Advanced Settings](https://docs.tenable.com/nessus/Content/SettingsAdvanced.htm) in the Nessus User Guide.
+                      type: string
+                      enum:
+                      - backend_log_level
+                      - auto_update
+                      - auto_update_delay
+                    value:
+                      oneOf:
+                      - title: Single String Value
+                        type: string
+                      - title: Single Integer Value
+                        type: integer
+                      description: The value to use for the specified setting. Choose either a single string value or a single integer value to use for the value.
+                      example:
+                      - 'no'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

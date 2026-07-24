@@ -1,0 +1,780 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Email notifier API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Email notifier
+  description: An email notification about new deviances
+paths:
+  /api/email-notifiers:
+    get:
+      summary: Retrieve all email-notifier instances.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the get /email-notifiers response
+                type: array
+                items:
+                  description: email-notifier
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - address
+                  - criticityThreshold
+                  - directories
+                  - checkers
+                  - attackTypes
+                  - profiles
+                  - shouldNotifyOnInitialFullSecurityCheck
+                  - description
+                  - inputType
+                  properties:
+                    id:
+                      type: integer
+                    address:
+                      type: string
+                    criticityThreshold:
+                      type: integer
+                    directories:
+                      minItems: 1
+                      type: array
+                      items:
+                        type: integer
+                    description:
+                      type: string
+                      nullable: true
+                    checkers:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: integer
+                      nullable: true
+                    attackTypes:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: integer
+                      nullable: true
+                    profiles:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: integer
+                      nullable: true
+                    shouldNotifyOnInitialFullSecurityCheck:
+                      type: boolean
+                    inputType:
+                      enum:
+                      - deviances
+                      - attacks
+                      - healthChecks
+                    healthCheckNames:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: string
+                      nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Email notifier
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+    post:
+      summary: Create email-notifier instance.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the post /email-notifiers response
+                type: array
+                items:
+                  description: email-notifier
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - address
+                  - criticityThreshold
+                  - directories
+                  - checkers
+                  - attackTypes
+                  - profiles
+                  - shouldNotifyOnInitialFullSecurityCheck
+                  - description
+                  - inputType
+                  properties:
+                    id:
+                      type: integer
+                    address:
+                      type: string
+                    criticityThreshold:
+                      type: integer
+                    directories:
+                      minItems: 1
+                      type: array
+                      items:
+                        type: integer
+                    description:
+                      type: string
+                      nullable: true
+                    checkers:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: integer
+                      nullable: true
+                    attackTypes:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: integer
+                      nullable: true
+                    profiles:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: integer
+                      nullable: true
+                    shouldNotifyOnInitialFullSecurityCheck:
+                      type: boolean
+                    inputType:
+                      enum:
+                      - deviances
+                      - attacks
+                      - healthChecks
+                    healthCheckNames:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: string
+                      nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Email notifier
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates the post /email-notifiers response
+              type: array
+              minItems: 1
+              items:
+                allOf:
+                - type: object
+                  required:
+                  - address
+                  - criticityThreshold
+                  - directories
+                  - shouldNotifyOnInitialFullSecurityCheck
+                  - inputType
+                  properties:
+                    address:
+                      type: string
+                    criticityThreshold:
+                      type: integer
+                    directories:
+                      minItems: 1
+                      type: array
+                      items:
+                        type: integer
+                    description:
+                      type: string
+                    shouldNotifyOnInitialFullSecurityCheck:
+                      type: boolean
+                    inputType:
+                      type: string
+                      enum:
+                      - deviances
+                      - attacks
+                      - healthChecks
+                - description: List the properties that depend on the input type
+                  type: object
+                  oneOf:
+                  - allOf:
+                    - properties:
+                        inputType:
+                          enum:
+                          - deviances
+                    - required:
+                      - checkers
+                      - profiles
+                      properties:
+                        checkers:
+                          type: array
+                          minItems: 1
+                          items:
+                            type: integer
+                        profiles:
+                          type: array
+                          minItems: 1
+                          items:
+                            type: integer
+                  - allOf:
+                    - not:
+                        properties:
+                          inputType:
+                            enum:
+                            - deviances
+                    - oneOf:
+                      - allOf:
+                        - properties:
+                            inputType:
+                              enum:
+                              - attacks
+                        - required:
+                          - attackTypes
+                          - profiles
+                          properties:
+                            attackTypes:
+                              type: array
+                              minItems: 1
+                              items:
+                                type: integer
+                            profiles:
+                              type: array
+                              minItems: 1
+                              items:
+                                type: integer
+                      - allOf:
+                        - not:
+                            properties:
+                              inputType:
+                                enum:
+                                - attacks
+                        - {}
+  /api/email-notifiers/{id}:
+    get:
+      summary: Get email-notifier instance by id.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: email-notifier
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - address
+                - criticityThreshold
+                - directories
+                - checkers
+                - attackTypes
+                - profiles
+                - shouldNotifyOnInitialFullSecurityCheck
+                - description
+                - inputType
+                properties:
+                  id:
+                    type: integer
+                  address:
+                    type: string
+                  criticityThreshold:
+                    type: integer
+                  directories:
+                    minItems: 1
+                    type: array
+                    items:
+                      type: integer
+                  description:
+                    type: string
+                    nullable: true
+                  checkers:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: integer
+                    nullable: true
+                  attackTypes:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: integer
+                    nullable: true
+                  profiles:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: integer
+                    nullable: true
+                  shouldNotifyOnInitialFullSecurityCheck:
+                    type: boolean
+                  inputType:
+                    enum:
+                    - deviances
+                    - attacks
+                    - healthChecks
+                  healthCheckNames:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: string
+                    nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Email notifier
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+    patch:
+      summary: Update email-notifier instance.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: email-notifier
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - address
+                - criticityThreshold
+                - directories
+                - checkers
+                - attackTypes
+                - profiles
+                - shouldNotifyOnInitialFullSecurityCheck
+                - description
+                - inputType
+                properties:
+                  id:
+                    type: integer
+                  address:
+                    type: string
+                  criticityThreshold:
+                    type: integer
+                  directories:
+                    minItems: 1
+                    type: array
+                    items:
+                      type: integer
+                  description:
+                    type: string
+                    nullable: true
+                  checkers:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: integer
+                    nullable: true
+                  attackTypes:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: integer
+                    nullable: true
+                  profiles:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: integer
+                    nullable: true
+                  shouldNotifyOnInitialFullSecurityCheck:
+                    type: boolean
+                  inputType:
+                    enum:
+                    - deviances
+                    - attacks
+                    - healthChecks
+                  healthCheckNames:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: string
+                    nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Email notifier
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates the post /email-notifiers response
+              type: object
+              properties:
+                address:
+                  type: string
+                criticityThreshold:
+                  type: integer
+                directories:
+                  minItems: 1
+                  type: array
+                  items:
+                    type: integer
+                description:
+                  type: string
+                checkers:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: integer
+                  nullable: true
+                attackTypes:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: integer
+                  nullable: true
+                profiles:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: integer
+                  nullable: true
+                inputType:
+                  enum:
+                  - deviances
+                  - attacks
+                  - healthChecks
+    delete:
+      summary: Delete email-notifier instance.
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '204':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: email-notifier
+                additionalProperties: false
+                nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Email notifier
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/email-notifiers/test-message/{id}:
+    get:
+      summary: Send a test email notification by id
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the post /email-notifiers/ response
+                nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Email notifier
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      - name: id
+        in: path
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+          x-patternError: should be a numerical string
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+  /api/email-notifiers/test-message:
+    post:
+      summary: Send a test email notification
+      description: 'Required license type: ioa, ioaPreview, ioe'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: Validates the post /email-notifier/ response
+                nullable: true
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      tags:
+      - Email notifier
+      x-tenablead-required-product-license-type:
+      - ioa
+      - ioaPreview
+      - ioe
+      parameters:
+      - name: x-api-key
+        description: The user's API key
+        in: header
+        schema:
+          type: string
+          default: put-your-api-key-here
+        required: true
+        deprecated: false
+      security:
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Validates the post /email-notifiers/test-message payload
+              allOf:
+              - type: object
+                required:
+                - address
+                - criticityThreshold
+                - directories
+                - inputType
+                properties:
+                  address:
+                    type: string
+                  criticityThreshold:
+                    type: integer
+                  directories:
+                    type: array
+                    items:
+                      type: integer
+                  description:
+                    type: string
+                  inputType:
+                    type: string
+                    enum:
+                    - deviances
+                    - attacks
+                    - healthChecks
+              - description: List the properties that depend on the input type
+                type: object
+                oneOf:
+                - allOf:
+                  - properties:
+                      inputType:
+                        enum:
+                        - deviances
+                  - required:
+                    - checkers
+                    - profiles
+                    properties:
+                      checkers:
+                        type: array
+                        minItems: 1
+                        items:
+                          type: integer
+                      profiles:
+                        type: array
+                        minItems: 1
+                        items:
+                          type: integer
+                - allOf:
+                  - not:
+                      properties:
+                        inputType:
+                          enum:
+                          - deviances
+                  - oneOf:
+                    - allOf:
+                      - properties:
+                          inputType:
+                            enum:
+                            - attacks
+                      - required:
+                        - attackTypes
+                        - profiles
+                        properties:
+                          attackTypes:
+                            type: array
+                            minItems: 1
+                            items:
+                              type: integer
+                          profiles:
+                            type: array
+                            minItems: 1
+                            items:
+                              type: integer
+                    - allOf:
+                      - not:
+                          properties:
+                            inputType:
+                              enum:
+                              - attacks
+                      - {}
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

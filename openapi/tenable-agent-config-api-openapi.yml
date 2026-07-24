@@ -1,0 +1,266 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Agent Config API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Agent Config
+  x-displayName: Agent Config
+paths:
+  /scanners/null/agents/config:
+    get:
+      summary: Get agent configuration
+      description: Returns the global configuration settings for agents. These settings control auto-unlinking behavior, software update enablement, and the number of agents allowed to update simultaneously.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: agent-config-details
+      tags:
+      - Agent Config
+      responses:
+        '200':
+          description: Returned if the global agent configuration was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent_Config_response-global-agent-settings'
+              examples:
+                response:
+                  value:
+                    auto_unlink:
+                      enabled: 'false'
+                      expiration: 30
+                    concurrent_update:
+                      enabled: 'true'
+                      max_concurrent_update: 500
+                    software_update: 'true'
+                    hybrid_scanning_enabled: false
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent_Config_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to view the global agent configuration.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent_Config_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Agent_Config_cloud: []
+    put:
+      summary: Update agent configuration
+      description: Updates the global agent configuration. <div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      operationId: agent-config-edit
+      tags:
+      - Agent Config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                auto_unlink:
+                  type: object
+                  description: Specifies settings for automatic unlinking of agents.
+                  properties:
+                    enabled:
+                      type: boolean
+                      description: Enables or disables automatic unlinking of agents.
+                    expiration:
+                      type: integer
+                      description: Specifies the number of days of inactivity after which an agent is considered expired. If the agent does not communicate within this period and `auto_unlink.enabled` is set to `true`, the agent is automatically unlinked. Valid values range from 1 to 365.
+                      format: int32
+                      minimum: 1
+                      maximum: 365
+                concurrent_update:
+                  type: object
+                  description: Specifies settings for controlling concurrent agent updates.
+                  properties:
+                    enabled:
+                      type: boolean
+                      description: Enables or disables limiting the number of agents that can update simultaneously.
+                    max_concurrent_update:
+                      type: integer
+                      description: Specifies the maximum number of agents that can update plugins at the same time. Valid values range from `0` to `2500`. A value of `0` prevents agents from updating plugins.
+                      format: int32
+                      minimum: 0
+                      maximum: 2500
+                software_update:
+                  type: boolean
+                  description: Enables or disables software updates for agents, subject to any configured agent exclusions.
+                hybrid_scanning_enabled:
+                  type: boolean
+                  description: Enables or disables hybrid scanning for agents.
+      responses:
+        '200':
+          description: Returned if the global agent configuration was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent_Config_response-global-agent-settings'
+              examples:
+                response:
+                  value:
+                    auto_unlink:
+                      enabled: 'false'
+                      expiration: 30
+                    concurrent_update:
+                      enabled: 'true'
+                      max_concurrent_update: 500
+                    software_update: 'true'
+                    hybrid_scanning_enabled: false
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent_Config_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to update the global agent configuration.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent_Config_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Agent_Config_cloud: []
+components:
+  schemas:
+    Agent_Config_response-global-agent-settings:
+      type: object
+      properties:
+        auto_unlink:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              description: Indicates whether automatic unlinking of agents is enabled.
+            expiration:
+              type: integer
+              description: The number of days of inactivity after which an agent is automatically unlinked.
+              format: int32
+              minimum: 1
+              maximum: 365
+        concurrent_update:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              description: Indicates whether concurrent agent updates are enabled.
+            max_concurrent_update:
+              type: integer
+              description: The maximum number of agents that can be updated simultaneously. A value of `0` prevents agent updates. The maximum value is `2500`.
+              format: int32
+              minimum: 0
+              maximum: 2500
+        software_update:
+          type: boolean
+          description: Indicates whether software updates are enabled for agents, subject to any configured agent exclusions.
+        hybrid_scanning_enabled:
+          type: boolean
+          description: Indicates whether hybrid scanning is enabled for agents.
+    Agent_Config_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

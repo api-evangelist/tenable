@@ -1,0 +1,1626 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Exposure View API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Exposure View
+  description: The Tenable Exposure View API enables users to search Tenable Exposure view for their organization's cards or retrieve the details for a specified card. For more information about Exposure View, see [Exposure View](https://docs.tenable.com/exposure-management/Content/exposure-management/exposure-view/exposure-view.htm) in the _Tenable Exposure Management User Guide_.
+  x-displayName: Exposure View
+paths:
+  /api/v1/t1/exposure-view/cards:
+    get:
+      summary: Search cards
+      description: "Returns a list of exposure view cards based on your search criteria. \n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class=\"perms-callout\">Requires the Basic [16] user role or the `TONE_UI.TONE_EXPOSURE_CARD.READ`, `LUMIN_EXPOSURE_VIEW.EXPOSURE_CARD.READ`, and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>"
+      operationId: exposure-view-cards-search
+      tags:
+      - Exposure View
+      parameters:
+      - name: is_global_card
+        description: "Indicates whether or not to return Tenable-provided global cards or user-created custom cards. \n\nIf `true`, only Tenable-provided global cards are returned. If `false`, only user-created custom cards are returned. If this parameter is omitted, Tenable Exposure Management returns all cards."
+        explode: true
+        in: query
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - name: text_query
+        description: Filters the results by card name.
+        explode: true
+        in: query
+        required: false
+        schema:
+          type: string
+        style: form
+      - name: sorting_order
+        description: The order to sort the results by, either ascending (`asc`) or descending (`desc`).
+        explode: true
+        in: query
+        required: false
+        schema:
+          default: asc
+          enum:
+          - asc
+          - desc
+          type: string
+        style: form
+      - name: limit
+        description: The number of card records to retrieve. The maximum value is `25`. If this parameter is omitted, Tenable Exposure Management uses the default value of `25`.
+        explode: true
+        in: query
+        required: false
+        schema:
+          default: 25
+          maximum: 25
+          minimum: 1
+          type: integer
+        style: form
+      - description: The starting record to retrieve. If this parameter is omitted, Tenable Exposure Management uses the default value of `0`.
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          type: integer
+        style: form
+      responses:
+        '200':
+          description: Returned if the list of exposure view cards was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exposure_View_Response-Search-Cards'
+              examples:
+                response:
+                  value:
+                    data:
+                    - id: '12345'
+                      name: Example Card
+                      card_type: GLOBAL
+                      is_global_card: true
+                      ces_score:
+                        score: 85
+                        grade: A
+                      sla_percentage: 95
+                      ces_trend:
+                      - date: '2023-10-01T00:00:00Z'
+                        ces_score: 80
+                      tag_count: 5
+                      exposure_class:
+                      - ALL
+                      - IDENTITY
+                      created_at: '2023-10-01T12:00:00Z'
+                      updated_at: '2023-10-02T12:00:00Z'
+                      last_data_update_date: '2023-10-02T12:00:00Z'
+                      sources:
+                      - AWS
+                      - AZURE
+                    - id: 2ea46426-7ca3-4fe6-85c3-c16eb2ccd94b
+                      name: supercustom
+                      card_type: CUSTOM
+                      is_global_card: false
+                      tag_count: 0
+                      created_at: '2025-05-02T20:25:05.247Z'
+                      updated_at: '2025-06-10T15:35:17.499Z'
+                      ces_score:
+                        score: 0
+                        grade: A
+                      sla_percentage: 16.3728
+                      ces_trend:
+                      - date: '2025-05-28T00:00:00.000Z'
+                        ces_score: 154
+                      - date: '2025-05-29T00:00:00.000Z'
+                        ces_score: 154
+                      - date: '2025-05-30T00:00:00.000Z'
+                        ces_score: 154
+                      - date: '2025-05-31T00:00:00.000Z'
+                        ces_score: 154
+                      - date: '2025-06-01T00:00:00.000Z'
+                        ces_score: 154
+                      - date: '2025-06-02T00:00:00.000Z'
+                        ces_score: 481
+                      - date: '2025-06-03T00:00:00.000Z'
+                        ces_score: 481
+                      - date: '2025-06-04T00:00:00.000Z'
+                        ces_score: 481
+                      - date: '2025-06-05T00:00:00.000Z'
+                        ces_score: 481
+                      - date: '2025-06-06T00:00:00.000Z'
+                        ces_score: 481
+                      - date: '2025-06-07T00:00:00.000Z'
+                        ces_score: 481
+                      - date: '2025-06-08T00:00:00.000Z'
+                        ces_score: 481
+                      - date: '2025-06-09T00:00:00.000Z'
+                        ces_score: 481
+                      - date: '2025-06-10T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-11T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-12T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-13T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-14T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-15T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-16T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-17T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-18T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-19T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-20T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-21T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-22T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-23T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-24T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-25T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-26T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-27T00:00:00.000Z'
+                        ces_score: 0
+                      - date: '2025-06-28T00:00:00.000Z'
+                        ces_score: 0
+                      exposure_class:
+                      - WAS
+                      - VM
+                      last_data_update_date: '2025-06-28T20:32:23.493Z'
+                    pagination:
+                      offset: 0
+                      limit: 10
+                      total_record_count: 2
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exposure_View_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    error: Bad Request
+                    message: The requested limit size exceeds the maximum limit of 25
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exposure_View_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to search exposure view cards.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exposure_View_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Exposure_View_cloud: []
+  /api/v1/t1/exposure-view/cards/{card_id}:
+    get:
+      summary: Get card details
+      description: "Retrieves details for the specified exposure view card. By default, the response includes SLA efficiency and trend data for the past 30 days. You can modify the time frame using optional parameters. \n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class=\"perms-callout\">Requires the Basic [16] user role or the `TONE_UI.TONE_EXPOSURE_CARD.READ`, `LUMIN_EXPOSURE_VIEW.EXPOSURE_CARD.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>"
+      operationId: exposure-view-card-details
+      tags:
+      - Exposure View
+      parameters:
+      - name: card_id
+        description: The unique ID of the card to retrieve details for.
+        explode: false
+        in: path
+        required: true
+        schema:
+          type: string
+        style: simple
+      - name: trend_start_date
+        description: "The start date for trend data. Use this parameter in combination with the `trend_end_date` parameter to define the time frame for the trend data. \n\nThe date must be specified as a UTC timestamp in ISO 8601 format (e.g., `2025-06-28T00:00:00.000Z`)."
+        explode: true
+        in: query
+        required: false
+        schema:
+          description: Start date for trend data in ISO 8601 format, UTC timezone
+          format: date-time
+          type: string
+        style: form
+      - name: trend_end_date
+        description: "The end date for trend data. Use this parameter in combination with the `trend_start_date` parameter to define the time frame for the trend data. \n\nThe date must be specified as a UTC timestamp in ISO 8601 format (e.g., `2025-06-28T00:00:00.000Z`)."
+        explode: true
+        in: query
+        required: false
+        schema:
+          description: End date for trend data in ISO 8601 format, UTC timezone
+          format: date-time
+          type: string
+        style: form
+      - name: sla_efficiency_start_date
+        description: "The start date for SLA efficiency data. Use this parameter in combination with the `sla_efficiency_end_date` parameter to define the time frame for the SLA efficiency. \n\nThe date must be specified as a UTC timestamp in ISO 8601 format (e.g., `2025-06-28T00:00:00.000Z`)."
+        explode: true
+        in: query
+        required: false
+        schema:
+          description: Start date for SLA efficiency data in ISO 8601 format, UTC timezone
+          format: date-time
+          type: string
+        style: form
+      - name: sla_efficiency_end_date
+        description: "The end date for SLA efficiency data. Use this parameter in combination with the `sla_efficiency_start_date` parameter to define the time frame for the SLA efficiency. \n\nThe date must be specified as a UTC timestamp in ISO 8601 format (e.g., `2025-06-28T00:00:00.000Z`)."
+        explode: true
+        in: query
+        required: false
+        schema:
+          description: End date for SLA efficiency data in ISO 8601 format, UTC timezone
+          format: date-time
+          type: string
+        style: form
+      - name: sla_breakdown_filter
+        description: Filter SLA breakdown data by `REMEDIATED`, `NON_REMEDIATED`, or `ANY`.
+        explode: true
+        in: query
+        required: false
+        schema:
+          default: ANY
+          enum:
+          - ANY
+          - REMEDIATED
+          - NON_REMEDIATED
+          type: string
+        style: form
+      - name: include_trend_events
+        description: Indicates whether or not to include trend events.
+        explode: true
+        in: query
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      responses:
+        '200':
+          description: Returned if the data for the specified exposure view card was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exposure_View_Response-Card-Details'
+              examples:
+                response:
+                  value:
+                    id: 2ea46426-7ca3-4fe6-85c3-c16eb2ccd94b
+                    name: supercustom
+                    card_type: CUSTOM
+                    is_global_card: false
+                    ces_scores:
+                      per_exposure: []
+                      per_tag: []
+                      total:
+                        score: 0
+                        grade: A
+                    ces_trend:
+                    - date: '2025-06-21T00:00:00.000Z'
+                      ces_score: 0
+                    - date: '2025-06-22T00:00:00.000Z'
+                      ces_score: 0
+                    - date: '2025-06-23T00:00:00.000Z'
+                      ces_score: 0
+                    - date: '2025-06-24T00:00:00.000Z'
+                      ces_score: 0
+                    - date: '2025-06-25T00:00:00.000Z'
+                      ces_score: 0
+                    - date: '2025-06-26T00:00:00.000Z'
+                      ces_score: 0
+                    - date: '2025-06-27T00:00:00.000Z'
+                      ces_score: 0
+                    - date: '2025-06-28T00:00:00.000Z'
+                      ces_score: 0
+                    created_at: '2025-05-02T20:25:05.247Z'
+                    updated_at: '2025-06-10T15:35:17.499Z'
+                    tag_count: 3
+                    exposures:
+                    - WAS
+                    - VM
+                    sources: []
+                    last_data_update_date: '2025-06-28T22:32:11.640Z'
+                    exposure_classes_details:
+                      VM:
+                        score_trend_metric:
+                          ces_trend:
+                          - date: '2025-05-29T00:00:00.000Z'
+                            ces_score:
+                              score: 124
+                              grade: A
+                          - date: '2025-05-30T00:00:00.000Z'
+                            ces_score:
+                              score: 124
+                              grade: A
+                          - date: '2025-05-31T00:00:00.000Z'
+                            ces_score:
+                              score: 124
+                              grade: A
+                          - date: '2025-06-01T00:00:00.000Z'
+                            ces_score:
+                              score: 124
+                              grade: A
+                          - date: '2025-06-02T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-03T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-04T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-05T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-06T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-07T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-08T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-09T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-10T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-11T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-12T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-13T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-14T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-15T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-16T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-17T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-18T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-19T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-20T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-21T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-22T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-23T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-24T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-25T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-26T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-27T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-28T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          target_score: 1000
+                          events: []
+                        sla_efficiency:
+                        - sla_severity_level: LOW
+                          sla_inside_count: 0
+                          sla_total_count: 65
+                          sla_efficiency: 0
+                          sla_efficiency_target: 0
+                        - sla_severity_level: MEDIUM
+                          sla_inside_count: 0
+                          sla_total_count: 234
+                          sla_efficiency: 0
+                          sla_efficiency_target: 54
+                        - sla_severity_level: HIGH
+                          sla_inside_count: 0
+                          sla_total_count: 46
+                          sla_efficiency: 0
+                          sla_efficiency_target: 0
+                        - sla_severity_level: CRITICAL
+                          sla_inside_count: 0
+                          sla_total_count: 52
+                          sla_efficiency: 0
+                          sla_efficiency_target: 73
+                        - sla_severity_level: OVERALL
+                          sla_inside_count: 0
+                          sla_total_count: 397
+                          sla_efficiency: 0
+                          sla_efficiency_target: 0
+                        sla_breakdown:
+                          risk_distribution:
+                            risks_inside_sla:
+                              number_of_risks: 0
+                              percentage_of_total: 0
+                            risks_outside_sla:
+                              number_of_risks: 0
+                              percentage_of_total: 0
+                          risk_distribution_in_days:
+                            inside_sla: 397
+                            outside_sla: 0
+                          exposure_category_breakdown:
+                          - exposure_class: VM
+                            contribution_percentage: 100
+                          top_affecting_tags:
+                          - id: 40d64a4e-715c-4adc-9731-b957c21b7dae
+                            name: test
+                          - id: 6742deeb-f72b-4cc9-b944-64af6ed02c95
+                            name: gt1
+                          - id: 5ce1f0bd-4133-4fbc-9f1c-69b1ef6d48dc
+                            name: gt3
+                      ALL:
+                        score_trend_metric:
+                          ces_trend:
+                          - date: '2025-05-29T00:00:00.000Z'
+                            ces_score:
+                              score: 154
+                              grade: A
+                          - date: '2025-05-30T00:00:00.000Z'
+                            ces_score:
+                              score: 154
+                              grade: A
+                          - date: '2025-05-31T00:00:00.000Z'
+                            ces_score:
+                              score: 154
+                              grade: A
+                          - date: '2025-06-01T00:00:00.000Z'
+                            ces_score:
+                              score: 154
+                              grade: A
+                          - date: '2025-06-02T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-03T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-04T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-05T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-06T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-07T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-08T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-09T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-10T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-11T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-12T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-13T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-14T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-15T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-16T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-17T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-18T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-19T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-20T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-21T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-22T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-23T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-24T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-25T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-26T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-27T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-28T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          target_score: 202
+                          events: []
+                        sla_efficiency:
+                        - sla_severity_level: LOW
+                          sla_inside_count: 65
+                          sla_total_count: 65
+                          sla_efficiency: 100
+                          sla_efficiency_target: 0
+                        - sla_severity_level: MEDIUM
+                          sla_inside_count: 0
+                          sla_total_count: 234
+                          sla_efficiency: 0
+                          sla_efficiency_target: 54
+                        - sla_severity_level: HIGH
+                          sla_inside_count: 0
+                          sla_total_count: 46
+                          sla_efficiency: 0
+                          sla_efficiency_target: 0
+                        - sla_severity_level: CRITICAL
+                          sla_inside_count: 0
+                          sla_total_count: 52
+                          sla_efficiency: 0
+                          sla_efficiency_target: 73
+                        - sla_severity_level: OVERALL
+                          sla_inside_count: 65
+                          sla_total_count: 397
+                          sla_efficiency: 16.3728
+                          sla_efficiency_target: 0
+                        sla_breakdown:
+                          risk_distribution:
+                            risks_inside_sla:
+                              number_of_risks: 65
+                              percentage_of_total: 16.3727959697733
+                            risks_outside_sla:
+                              number_of_risks: 65
+                              percentage_of_total: 16.3727959697733
+                          risk_distribution_in_days:
+                            inside_sla: 332
+                            outside_sla: 65
+                          exposure_category_breakdown:
+                          - exposure_class: VM
+                            contribution_percentage: 100
+                          top_affecting_tags:
+                          - id: 40d64a4e-715c-4adc-9731-b957c21b7dae
+                            name: test
+                          - id: 6742deeb-f72b-4cc9-b944-64af6ed02c95
+                            name: gt1
+                          - id: 5ce1f0bd-4133-4fbc-9f1c-69b1ef6d48dc
+                            name: gt3
+                      WAS:
+                        score_trend_metric:
+                          ces_trend:
+                          - date: '2025-05-29T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-05-30T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-05-31T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-01T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-02T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-03T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-04T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-05T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-06T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-07T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-08T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-09T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-10T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-11T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-12T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-13T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-14T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-15T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-16T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-17T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-18T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-19T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-20T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-21T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-22T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-23T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-24T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-25T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-26T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-27T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          - date: '2025-06-28T00:00:00.000Z'
+                            ces_score:
+                              score: 0
+                              grade: A
+                          target_score: 1000
+                          events: []
+                      CLOUD:
+                        score_trend_metric:
+                          ces_trend:
+                          - date: '2025-05-29T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-05-30T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-05-31T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-01T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-02T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-03T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-04T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-05T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-06T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-07T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-08T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-09T00:00:00.000Z'
+                            ces_score:
+                              score: 481
+                              grade: C
+                          - date: '2025-06-10T00:00:00.000Z'
+                          - date: '2025-06-11T00:00:00.000Z'
+                          - date: '2025-06-12T00:00:00.000Z'
+                          - date: '2025-06-13T00:00:00.000Z'
+                          - date: '2025-06-14T00:00:00.000Z'
+                          - date: '2025-06-15T00:00:00.000Z'
+                          - date: '2025-06-16T00:00:00.000Z'
+                          - date: '2025-06-17T00:00:00.000Z'
+                          - date: '2025-06-18T00:00:00.000Z'
+                          - date: '2025-06-19T00:00:00.000Z'
+                          - date: '2025-06-20T00:00:00.000Z'
+                          - date: '2025-06-21T00:00:00.000Z'
+                          - date: '2025-06-22T00:00:00.000Z'
+                          - date: '2025-06-23T00:00:00.000Z'
+                          - date: '2025-06-24T00:00:00.000Z'
+                          - date: '2025-06-25T00:00:00.000Z'
+                          - date: '2025-06-26T00:00:00.000Z'
+                          - date: '2025-06-27T00:00:00.000Z'
+                          - date: '2025-06-28T00:00:00.000Z'
+                          target_score: 188
+                          events: []
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exposure_View_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to retrieve the specified exposure view card.
+        '404':
+          description: Returned if the specified exposure view card was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exposure_View_ErrorResponse-404'
+              examples:
+                response:
+                  value:
+                    status: 404
+                    message: Not Found
+                    errors:
+                    - code: UNEXPECTED_ERROR
+                      message: Card Not found for 2ea46426-7ca3-4fe6-85c3-0c16eb2ccd94c
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exposure_View_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Exposure_View_cloud: []
+components:
+  schemas:
+    Exposure_View_Response-Search-Cards-Object:
+      type: object
+      properties:
+        id:
+          description: The unique ID of the exposure view card.
+          type: string
+        name:
+          description: The name of the exposure view card.
+          type: string
+        card_type:
+          $ref: '#/components/schemas/Exposure_View_CardType'
+        is_global_card:
+          description: Indicates whether or not the exposure view card is a Tenable-provided global card (`true`) or a user-created custom card (`false`).
+          type: boolean
+        tag_count:
+          description: The number of tags associated with the exposure view card.
+          type: integer
+        created_at:
+          description: A timestamp in ISO 8601 format indicating the date and time when the exposure view card was created.
+          type: string
+          format: date-time
+        updated_at:
+          description: A timestamp in ISO 8601 format indicating the date and time when the exposure view card was last updated.
+          type: string
+          format: date-time
+        ces_score:
+          $ref: '#/components/schemas/Exposure_View_CESScore'
+        sla_percentage:
+          description: The overall Service Level Agreement (SLA) percentage. SLA represents the acceptable time frame between when a finding is discovered and when it fixed or remediated. For information about how an SLA percentage is calculated, see the Remediation SLA section on the [Exposure View](https://docs.tenable.com/exposure-management/Content/exposure-management/exposure-view/exposure-view.htm) page in the _Tenable Exposure Management User Guide_.
+          format: double
+          type: number
+        ces_trend:
+          description: An array of Cyber Exposure Score (CES) values along with their timestamps.
+          type: array
+          items:
+            $ref: '#/components/schemas/Exposure_View_CESTrendDataPoint'
+        exposure_class:
+          $ref: '#/components/schemas/Exposure_View_ExposureClassArray'
+        last_data_update_date:
+          description: A timestamp in ISO 8601 format indicating the date and time when the data for the exposure view card was last updated.
+          type: string
+          format: date-time
+        sources:
+          $ref: '#/components/schemas/Exposure_View_AssetSource'
+    Exposure_View_Response-Card-Details:
+      type: object
+      properties:
+        id:
+          description: The unique ID of the exposure view card.
+          type: string
+        name:
+          description: The name of the exposure view card.
+          type: string
+        card_type:
+          $ref: '#/components/schemas/Exposure_View_CardType'
+        is_global_card:
+          description: Indicates whether or not the exposure view card is a Tenable-provided global card (`true`) or a user-created custom card (`false`).
+          type: boolean
+        ces_scores:
+          $ref: '#/components/schemas/Exposure_View_CESScores'
+        ces_trend:
+          description: An array of Cyber Exposure Score (CES) values along with their timestamps.
+          type: array
+          items:
+            $ref: '#/components/schemas/Exposure_View_CESTrendDataPoint'
+        created_at:
+          description: A timestamp in ISO 8601 format indicating the date and time when the exposure view card was created.
+          type: string
+          format: date-time
+        updated_at:
+          description: A timestamp in ISO 8601 format indicating the date and time when the exposure view card was last updated.
+          type: string
+          format: date-time
+        tag_count:
+          description: The number of tags associated with the exposure view card.
+          type: integer
+        exposures:
+          $ref: '#/components/schemas/Exposure_View_ExposureClassArray'
+        sources:
+          $ref: '#/components/schemas/Exposure_View_AssetSource'
+        last_data_update_date:
+          description: A timestamp in ISO 8601 format indicating the date and time when the data for the exposure view card was last updated.
+          type: string
+          format: date-time
+        exposure_classes_details:
+          description: Metrics, breakdowns, and efficiency data for each exposure class. Exposure classes include `VM`, `WAS`, `CLOUD`, `OT`, `IDENTITY`, and `ALL`. For each exposure class, score benchmarks, asset risk breakdowns, score trend metrics, SLA efficiency, and SLA breakdowns are included.
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              score_benchmark:
+                $ref: '#/components/schemas/Exposure_View_Score-Benchmark'
+              asset_risk_breakdown:
+                $ref: '#/components/schemas/Exposure_View_Asset-Risk-Breakdown'
+              score_trend_metric:
+                $ref: '#/components/schemas/Exposure_View_Score-Trend-Metric'
+              sla_efficiency:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Exposure_View_SeveritySummaryStat'
+              sla_breakdown:
+                $ref: '#/components/schemas/Exposure_View_SLA-Breakdown'
+    Exposure_View_PaginationResponseData:
+      properties:
+        offset:
+          description: The requested starting record of the result set to retrieve. Offsets are used to paginate through the result set. If this parameter is omitted, Tenable Exposure Management uses the default value of `0`.
+          type: integer
+        limit:
+          description: The requested number of records to retrieve from the result set. The maximum value is `25`. If this parameter is omitted, Tenable Exposure Management uses the default value of `25`.
+          type: integer
+        total_record_count:
+          description: The total number of exposure view card records included in the result set of the search.
+          type: integer
+    Exposure_View_Response-Search-Cards:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exposure_View_Response-Search-Cards-Object'
+        pagination:
+          $ref: '#/components/schemas/Exposure_View_PaginationResponseData'
+    Exposure_View_BusinessContextCategoryDistribution:
+      type: object
+      properties:
+        data_category:
+          $ref: '#/components/schemas/Exposure_View_DataCategory'
+        contribution_percentage:
+          format: double
+          type: number
+    Exposure_View_SLA-Breakdown:
+      type: object
+      properties:
+        risk_distribution:
+          $ref: '#/components/schemas/Exposure_View_SLAOverallRiskBreakdown'
+        risk_distribution_in_days:
+          type: object
+          properties:
+            inside_sla:
+              type: integer
+            outside_sla:
+              type: integer
+        exposure_category_breakdown:
+          items:
+            $ref: '#/components/schemas/Exposure_View_BusinessContextExposureClassDistribution'
+          type: array
+        top_affecting_tags:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+    Exposure_View_CESGrade:
+      type: string
+      description: The Cyber Exposure Score (CES) grade as it compares to your industry and total population. For more information about CES grades, see [Exposure View](https://docs.tenable.com/exposure-management/Content/exposure-management/exposure-view/exposure-view.htm) in the _Tenable Exposure Management User Guide_.
+      enum:
+      - A
+      - B
+      - C
+      - D
+      - F
+      - None
+    Exposure_View_RiskBreakdownCategory:
+      type: object
+      properties:
+        number_of_risks:
+          type: integer
+        percentage_of_total:
+          format: double
+          type: number
+        business_context:
+          $ref: '#/components/schemas/Exposure_View_BusinessContextDrivers'
+    Exposure_View_CESScore:
+      description: The numerical Cyber Exposure Score (CES) and its grade.
+      type: object
+      properties:
+        score:
+          type: integer
+          description: An integer between 0 and 1000 indicating the Cyber Exposure Score (CES). For more information about CES and how it's calculated, see the Cyber Exposure Score (CES) section on the [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) page in the _Tenable Vulnerability Management User Guide_.
+        grade:
+          $ref: '#/components/schemas/Exposure_View_CESGrade'
+    Exposure_View_SeveritySummaryStat:
+      type: object
+      properties:
+        sla_severity_level:
+          $ref: '#/components/schemas/Exposure_View_SLASeverityLevel'
+        sla_inside_count:
+          format: int32
+          type: integer
+        sla_total_count:
+          format: int32
+          type: integer
+        sla_efficiency:
+          format: double
+          type: number
+        sla_efficiency_target:
+          format: double
+          type: number
+    Exposure_View_ExposureClass:
+      description: The exposure class is determined by the sensor that assessed the asset or detected the finding. For more information about exposure classes, see [Scoring (Beta)](https://docs.tenable.com/tenableone/scoring-explained/Content/ScoringExplained/new-scoring.htm).
+      type: string
+      enum:
+      - ALL
+      - IDENTITY
+      - WAS
+      - VM
+      - CLOUD
+      - OT
+    Exposure_View_Score-Benchmark:
+      description: Data indicating how your Cyber Exposure Score (CES) compares to your industry and total population.
+      type: object
+      properties:
+        industry_benchmark:
+          description: Data indicating how your Cyber Exposure Score (CES) compares to your industry.
+          type: object
+          properties:
+            industry_id:
+              description: The numerical ID of the industry.
+              format: int32
+              type: integer
+            ces_score:
+              $ref: '#/components/schemas/Exposure_View_CESScore'
+        population_benchmark:
+          $ref: '#/components/schemas/Exposure_View_CESScore'
+    Exposure_View_BusinessContextDrivers:
+      type: object
+      properties:
+        top_affecting_tags:
+          items:
+            $ref: '#/components/schemas/Exposure_View_Tag'
+          type: array
+        category_distribution:
+          items:
+            $ref: '#/components/schemas/Exposure_View_BusinessContextCategoryDistribution'
+          type: array
+        exposure_class_distribution:
+          items:
+            $ref: '#/components/schemas/Exposure_View_BusinessContextExposureClassDistribution'
+          type: array
+    Exposure_View_DataCategory:
+      enum:
+      - GLOBAL
+      - WEB_APPLICATIONS
+      - COMPUTING_RESOURCES
+      - IDENTITIES
+      - CLOUD_RESOURCES
+      - OPERATIONAL_TECH
+      type: string
+    Exposure_View_CardType:
+      type: string
+      description: The type of exposure view card. Global cards are Tenable-provided cards. Custom cards are user-created cards.
+      enum:
+      - GLOBAL
+      - CATEGORY
+      - EXPOSURE
+      - CUSTOM
+    Exposure_View_AssetQueryV2:
+      description: For dynamic tags, the filters applied to define the tag rule.
+      type: object
+      properties:
+        filters_expression:
+          description: Indicates the tag filters and whether a logical `and` or `or` is applied.
+          type: object
+          properties:
+            logical_operator:
+              description: The logical operators applied to the tag filters, either `and` or `or`.
+              type: string
+              enum:
+              - and
+              - or
+            operands:
+              description: The tag filters applied to define the tag rule.
+              type: array
+              items:
+                description: The property to filter on for the tag rule, the comparison operator used for the filter, and the value used for the comparison.
+                type: object
+                properties:
+                  property:
+                    description: The property that was filtered on.
+                    type: string
+                  operator:
+                    description: The comparison operator to applied to the filter.
+                    type: string
+                    enum:
+                    - eq
+                    - neq
+                    - lte
+                    - gte
+                    - lt
+                    - gt
+                    - wc
+                    - nwc
+                    - between
+                    - '>'
+                    - '>='
+                    - '='
+                    - '!='
+                    - exists
+                    - nexists
+                  value:
+                    description: The values used for comparison in the filtering operation.
+                    type: array
+                    items:
+                      type: string
+        text_query:
+          description: Text search on asset names
+          type: string
+        mode:
+          type: string
+          enum:
+          - advanced
+          - simple
+    Exposure_View_ExposureClassArray:
+      description: The exposure class is determined by the sensor that assessed the asset or detected the finding. For more information about exposure classes, see [Scoring (Beta)](https://docs.tenable.com/tenableone/scoring-explained/Content/ScoringExplained/new-scoring.htm).
+      items:
+        type: string
+      enum:
+      - ALL
+      - IDENTITY
+      - WAS
+      - VM
+      - CLOUD
+      - OT
+    Exposure_View_CESTrendDataPoint:
+      type: object
+      properties:
+        date:
+          description: A timestamp in ISO 8601 format indicating the date of the Cyber Exposure Score (CES).
+          format: date-time
+          type: string
+        ces_score:
+          description: An integer between 0 and 1000 indicating the Cyber Exposure Score (CES). For more information about CES and how it's calculated, see the Cyber Exposure Score (CES) section on the [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) page in the _Tenable Vulnerability Management User Guide_.
+          type: integer
+    Exposure_View_ErrorResponse-404:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: The HTTP status code of the error.
+        message:
+          type: string
+          description: The standard HTTP error name.
+        error:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                description: The error code. For example, `UNEXPECTED_ERROR`.
+                type: string
+              message:
+                description: A brief message about the cause of the specific error.
+                type: string
+    Exposure_View_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Exposure_View_Asset-Risk-Breakdown:
+      description: The percentage of assets in each risk severity level.
+      type: object
+      properties:
+        critical:
+          description: The percentage of your assets associated with vulnerabilities of critical severity.
+          format: double
+          type: number
+        high:
+          description: The percentage of your assets associated with vulnerabilities of high severity.
+          format: double
+          type: number
+        medium_low:
+          description: The percentage of your assets associated with vulnerabilities of medium or low severity.
+          format: double
+          type: number
+    Exposure_View_AssetSource:
+      description: The sources that supply data for the card.
+      type: array
+      items:
+        type: string
+      enum:
+      - ACUNETIX_360
+      - ACUNETIX_PREMIUM
+      - AQUA_CSPM
+      - AQUA_CWPP
+      - ARMIS
+      - ASM
+      - AWS
+      - AWS_CONFIG
+      - AWS_EC2
+      - AWS_INSPECTOR_CLASSIC
+      - AWS_INSPECTOR_V2
+      - AWS_SECURITY_HUB
+      - AXONIUS
+      - AZURE
+      - AZURE_FA
+      - BIT_SIGHT
+      - BURPSUITE
+      - CARBON_BLACK
+      - CLONE_SYSTEMS
+      - CLOUD
+      - CONSEC
+      - CORE_CLOUDRESOURCE
+      - CORTEX_XDR
+      - CROWDSTRIKE
+      - CROWDSTRIKE_ENTERPRISE
+      - CYCOGNITO
+      - DETECTIFY
+      - FORTIFY_DAST
+      - GCP
+      - HACKER_ONE
+      - INTUNE
+      - JAMF
+      - MICROSOFT_AZURE
+      - MICROSOFT_DEFENDER
+      - MICROSOFT_DEFENDER_CLOUD
+      - MICROSOFT_TVM
+      - NESSUS_AGENT
+      - NESSUS_SCAN
+      - NETSPARKER
+      - NODE_ZERO
+      - ORCA
+      - OUTPOST24
+      - PRISMACLOUD
+      - PRISMACLOUD_CSPM
+      - PURPLEMET
+      - PVS
+      - QUALYS
+      - QUALYS_WAS
+      - RAPID7_INSIGHT_APP_SEC
+      - RAPID7_INSIGHTVM
+      - RAPID7_INSIGHTVM_CLOUD
+      - RAPID_7
+      - RED_HAT_INSIGHTS
+      - RISK_RECON
+      - SECURITY_CENTER
+      - SECURITY_SCORE_CARD
+      - SENTINEL_ONE
+      - SERVICE_NOW
+      - SSM
+      - T.CS
+      - T.IO
+      - T.OT
+      - TANIUM
+      - TIE AD
+      - TIE MEID
+      - TIE
+      - UNCLASSIFIED
+      - VERACODE_DAST
+      - WAS
+      - WHITEHAT
+      - WIZ_CONFIGURATION
+      - WIZ_ISSUES
+      - WIZ_VULNERABILITY_MANAGEMENT
+    Exposure_View_SLASeverityLevel:
+      enum:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      - OVERALL
+      type: string
+    Exposure_View_Tag:
+      description: Information about the tag associated with the exposure view card.
+      type: object
+      properties:
+        id:
+          description: The unique ID of the tag.
+          type: string
+        name:
+          description: The name of the tag.
+          type: string
+        origin:
+          description: The origin product of the tag.
+          type: string
+          enum:
+          - TENABLE_IO
+          - TENABLE_AD
+          - TENABLE_AI
+          - TENABLE_WAS
+          - TENABLE_CS
+          - TENABLE_APA
+        category_id:
+          description: The unique ID of the tag category to which the tag value belongs.
+          type: string
+        category_name:
+          description: The name of the tag category to which the tag value belongs.
+          type: string
+        dynamic:
+          description: Indicates whether or not the tag is dynamic. Dynamic tags are tags that are automatically applied to assets based on defined tag rules.
+          type: boolean
+        asset_count:
+          description: The number of assets associated with the tag.
+          type: integer
+        asset_query:
+          $ref: '#/components/schemas/Exposure_View_AssetQueryV2'
+        avg_ces_score:
+          description: The average Cyber Exposure Score (CES) for assets associated with the tag. CES is an integer between 0 and 1000. For more information about CES and how it's calculated, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the _Tenable Vulnerability Management User Guide_.
+          type: integer
+    Exposure_View_BusinessContextExposureClassDistribution:
+      type: object
+      properties:
+        exposure_class:
+          $ref: '#/components/schemas/Exposure_View_ExposureClass'
+        contribution_percentage:
+          format: double
+          type: number
+    Exposure_View_Score-Trend-Metric:
+      description: An object containing Cyber Exposure Score (CES) trends over time, target scores, and events.
+      type: object
+      properties:
+        ces_trend:
+          description: An array of Cyber Exposure Score (CES) values, grades, and timestamps to indicate how your score has trended over time.
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                description: A timestamp in ISO 8601 format indicating the date of the Cyber Exposure Score (CES).
+                format: date-time
+                type: string
+              ces_score:
+                $ref: '#/components/schemas/Exposure_View_CESScore'
+        target_score:
+          description: Your baseline target.
+          type: integer
+        events:
+          description: An object containing data about specific events that have contributed to your CES score.
+          type: array
+          items:
+            type: object
+            properties:
+              timestamp:
+                description: A timestamp in ISO 8601 indicate the date and time of the event.
+                format: date-time
+                type: string
+              description:
+                description: A description of the event.
+                type: string
+              event_detail:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    affected_points:
+                      description: The number of points the event affected your CES.
+                      type: integer
+                    risk_categories:
+                      description: The risk category associated with the event.
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Exposure_View_DataCategory'
+                    exposure_classes:
+                      $ref: '#/components/schemas/Exposure_View_ExposureClassArray'
+                    description:
+                      type: object
+                      properties:
+                        rank:
+                          description: The numeric value of the rank.
+                          type: integer
+                        change_title:
+                          description: The title of the change.
+                          type: string
+                        change_label:
+                          description: The label for the change.
+                          type: string
+                        value_before:
+                          description: The value before the change.
+                          type: string
+                        value_after:
+                          description: The value before the change.
+                          type: string
+              executive_summary:
+                description: A summary of the event.
+                type: string
+    Exposure_View_CESScores:
+      description: An object containing Cyber Exposure Scores (CES) per exposure, per tag, and total.
+      type: object
+      properties:
+        per_exposure:
+          description: An array of Cyber Exposure Scores (CES) per exposure. Both the exposure class and its associated score are indicated.
+          type: array
+          items:
+            type: object
+            properties:
+              exposure_class:
+                $ref: '#/components/schemas/Exposure_View_ExposureClass'
+              ces_score:
+                $ref: '#/components/schemas/Exposure_View_CESScore'
+        per_tag:
+          description: An array of Cyber Exposure Scores (CES) per tag. Both the tag and it's associated score are indicated.
+          type: array
+          items:
+            type: object
+            properties:
+              tag:
+                $ref: '#/components/schemas/Exposure_View_Tag'
+              ces_score:
+                $ref: '#/components/schemas/Exposure_View_CESScore'
+        total:
+          $ref: '#/components/schemas/Exposure_View_CESScore'
+    Exposure_View_SLAOverallRiskBreakdown:
+      type: object
+      properties:
+        risks_inside_sla:
+          $ref: '#/components/schemas/Exposure_View_RiskBreakdownCategory'
+        risks_outside_sla:
+          $ref: '#/components/schemas/Exposure_View_RiskBreakdownCategory'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

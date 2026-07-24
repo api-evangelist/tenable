@@ -1,0 +1,416 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Reports API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Reports
+  x-displayName: Reports
+paths:
+  /reports/export:
+    post:
+      summary: Create report
+      description: 'Creates a report in PDF format based on the specified template and filters.
+
+
+        **Note:** Tenable Vulnerability Management limits the number of findings that can be included in a single report to 10,000. If you have more than 10,000 findings, Tenable recommends that you narrow the findings included in the report with a filter or generate multiple reports. Additionally, you can not run more than 50 concurrent reports at a time. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_REPORT.VM_REPORT.GENERATE` custom role privilege. See [Roles](doc:roles).</div>'
+      operationId: vm-reports-create
+      tags:
+      - Reports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - template_name
+              properties:
+                name:
+                  type: string
+                  description: 'A name for the report.
+
+
+                    If this parameter is omitted, Tenable Vulnerability Management uses the default name `Vulnerabilities_Export_Report` with a timestamp in ISO 8601 format appended to the end to create a unique name. For example, `Vulnerabilities_Export_Report_2023-11-30T00:23:13.199227748Z`.'
+                template_name:
+                  type: string
+                  description: "The type of template to use for the report. The following templates are available:\n - `host_vulns_summary`—An executive summary report that provides operations teams a snapshot of risk based on vulnerable assets.\n - `host_vulns_by_plugins`—A report that provides a summary of the plugins that detected vulnerabilities on affected assets. Plugins are sorted by severity and the assets are sorted by the Asset Criticality Rating (ACR).\n - `host_vulns_by_assets`—A summary of the most vulnerable assets."
+                  enum:
+                  - ''
+                  - host_vulns_summary
+                  - host_vulns_by_plugins
+                  - host_vulns_by_assets
+                filters:
+                  type: array
+                  description: "A set of filters to apply to the report. Filters can be used to narrow the vulnerabilities or assets included in the report.\n\n You can use the [GET /filters/reports/export](ref:vm-filters-reports-list) endpoint to retrieve the list of valid filters, their supported comparison operators, data types, and allowed values. For more information, see [Report Export Filters](doc:vm-report-export-filters)."
+                  items:
+                    $ref: '#/components/schemas/Reports_filter-objects'
+      responses:
+        '200':
+          description: Returned if the report export request was queued successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                    description: The UUID of the report export job.
+              examples:
+                response:
+                  value:
+                    uuid: a1bac96d-918f-4b58-a041-41af92d9c8d7
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A brief description describing the error.
+              examples:
+                response:
+                  value:
+                    error: property seveerity is not allowed. Allowed properties = [plugin_id, asset_id, asset_name, cidr_range, severity, state, source, severity_modification_type, last_found, first_found, last_fixed, indexed_at, vpr_score, asset_tags]
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to create reports.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Reports_cloud: []
+  /reports/export/{report_uuid}/status:
+    get:
+      summary: Get report status
+      description: Returns the status of the specified report export request. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_REPORT.VM_REPORT.READ` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: vm-reports-status
+      tags:
+      - Reports
+      parameters:
+      - description: The UUID of the report to check the status for.
+        required: true
+        name: report_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the status of the report export request was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "The status of the report export request. Possible status values include:\n - `QUEUED`—Tenable Vulnerability Management has queued the report export request.\n - `COMPLETED`—Tenable Vulnerability Management has successfully generated the report and the report is available for download.\n - `FAILED`—Tenable Vulnerability Management failed to generate the report.\n - `COMPLETED_WITH_ERROR`—Tenable Vulnerability Management has generated the report but an error has occurred. This error can occur if any of the elements contained in the report fails to be generated. However, a report is still available with the completed successful elements.\n - `IN-PROGRESS`—Tenable Vulnerability Management is currently generating the report."
+              examples:
+                response:
+                  value:
+                    status: COMPLETED
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A brief description describing the error.
+              examples:
+                response:
+                  value:
+                    error: 'Invalid UUID string: a2c18f-4b58-a041-41af92dc8d7'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to retrieve the report export status.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified report UUID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A brief description describing the error.
+              examples:
+                response:
+                  value:
+                    error: ReportResult a1bac96d-918f-4b58-a041-41af92d9c8d7 not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Reports_cloud: []
+  /reports/export/{report_uuid}/download:
+    get:
+      summary: Download report
+      description: Downloads the specified PDF report. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_REPORT.VM_REPORT.DOWNLOAD` custom role privilege. See [Roles](doc:roles).</div>
+      operationId: vm-reports-download
+      tags:
+      - Reports
+      parameters:
+      - description: The UUID of the report to download.
+        required: true
+        name: report_uuid
+        in: path
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returned if the PDF report was retrieved successfully.
+          content:
+            application/pdf:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A brief description describing the error.
+              examples:
+                response:
+                  value:
+                    error: 'Invalid UUID string: a2c18f-4b58-a041-41af92dc8d7'
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '403':
+          description: Returned if you do not have permission to download reports.
+        '404':
+          description: Returned if Tenable Vulnerability Management could not find the specified report UUID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A brief description describing the error.
+              examples:
+                response:
+                  value:
+                    error: ReportResult b3bac96d-918f-4b58-a041-41af92d9c8d7 not found
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reports_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Reports_cloud: []
+components:
+  schemas:
+    Reports_filter-objects:
+      type: object
+      required:
+      - property
+      - operator
+      - value
+      properties:
+        property:
+          type: string
+          description: "The property to filter the results by.\n\n You can use the [GET /filters/reports/export](ref:vm-filters-reports-list) endpoint to retrieve a list of valid properties that can be used for filtering. For more information, see [Report Export Filters](doc:vm-report-export-filters)."
+        operator:
+          type: string
+          description: "The comparison operator to apply to the filter. For example, `eq`, `neq`, `gt`, etc.\n\n You can use the [GET /filters/reports/export](ref:vm-filters-reports-list) endpoint to retrieve a list of supported comparison operators for your chosen filter. For more information, see [Report Export Filters](doc:vm-report-export-filters)."
+        value:
+          description: "The value to compare the given property to using the specified operator. Some properties can only be compared to a specific set of values.\n\n You can use the [GET /filters/reports/export](ref:vm-filters-reports-list) endpoint to retrieve the data type and supported values for your chosen filter. For more information, see [Filter Values](doc:vm-report-export-filters#filter-values) in the [Report Export Filters](doc:vm-report-export-filters) document."
+          oneOf:
+          - title: Multiple String Values
+            description: "Multiple string values can only be used in combination with the `asset_id`, `asset_name`, `cidr_range`, `severity`, `state`, `source`, and `severity_modification_type` property filters.\n\n You can use the [GET /filters/reports/export](ref:vm-filters-reports-list) endpoint to retrieve the data type and supported values for your chosen filter. For more information, see [Filter Values](doc:vm-report-export-filters#filter-values) in the [Report Export Filters](doc:vm-report-export-filters) document."
+            type: array
+            items:
+              type: string
+          - title: Single Integer Value
+            description: "Single integer values can only be used in combination with the `last_found`, `first_found`, `last_fixed`, and `indexed_at` property filters.\n\n You can use the [GET /filters/reports/export](ref:vm-filters-reports-list) endpoint to retrieve the data type and supported values for your chosen filter. For more information, see [Filter Values](doc:vm-report-export-filters#filter-values) in the [Report Export Filters](doc:vm-report-export-filters) document."
+            type: integer
+          - title: Multiple Integer Values
+            description: "Multiple integer values can only be used in combination with the `plugin_id` property filter.\n\n You can use the [GET /filters/reports/export](ref:vm-filters-reports-list) endpoint to retrieve the data type and supported values for your chosen filter. For more information, see [Filter Values](doc:vm-report-export-filters#filter-values) in the [Report Export Filters](doc:vm-report-export-filters) document."
+            type: array
+            items:
+              type: integer
+          - title: Single Float Value
+            description: "Single float values can only be used in combination with the `vpr_score` property filter when using the `gt`, `gte`, `lt`, or `lte` comparison operators.\n\n You can use the [GET /filters/reports/export](ref:vm-filters-reports-list) endpoint to retrieve the data type and supported values for your chosen filter. For more information, see [Filter Values](doc:vm-report-export-filters#filter-values) in the [Report Export Filters](doc:vm-report-export-filters) document."
+            type: number
+            format: float
+          - title: Multiple Float Values
+            description: "Multiple float values can only be used in combination with the `vpr_score` property filter when using the `eq` or `neq` comparison operators.\n\n You can use the [GET /filters/reports/export](ref:vm-filters-reports-list) endpoint to retrieve the data type and supported values for your chosen filter. For more information, see [Filter Values](doc:vm-report-export-filters#filter-values) in the [Report Export Filters](doc:vm-report-export-filters) document."
+            type: array
+            items:
+              type: number
+              format: float
+          - title: Asset Tags
+            description: "Asset tag values can only be used in combination with the `asset_tags` property filter.\n\n You can use the [GET /filters/reports/export](ref:vm-filters-reports-list) endpoint to retrieve the data type and supported values for your chosen filter. For more information, see [Filter Values](doc:vm-report-export-filters#filter-values) in the [Report Export Filters](doc:vm-report-export-filters) document."
+            type: array
+            items:
+              $ref: '#/components/schemas/Reports_asset-tags'
+    Reports_asset-tags:
+      type: object
+      required:
+      - key
+      - value
+      properties:
+        key:
+          description: The tag category.
+          type: string
+          example: OfficeLocation
+        value:
+          description: The tag value.
+          type: array
+          items:
+            type: string
+            example: Dallas
+    Reports_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

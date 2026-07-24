@@ -1,0 +1,523 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Domains API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Domains
+  description: "The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Domains endpoints in the Tenable MSSP Portal API enables customers to add domains, list domains, get domain details, update domains, and send activation codes to add domains. \n\nFor more information about the Tenable MSSP Portal, see the [Tenable MSSP Portal User Guide](https://docs.tenable.com/managed-security-service-provider/Content/Welcome.htm)."
+paths:
+  /mssp/domains:
+    post:
+      tags:
+      - Domains
+      summary: Add domain
+      description: Adds a new domain to the specified container. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-domains-add
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request-Domains-Add'
+      responses:
+        '200':
+          description: Returned if the domain was added to the specified container successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  container_uuid:
+                    type: string
+                    format: uuid
+                    description: The UUID of the container where the domains were added.
+                  domains:
+                    type: array
+                    description: An array of domains that exist for the container.
+                    items:
+                      type: string
+                  message:
+                    type: string
+                    description: A short message about the operation.
+              examples:
+                response:
+                  value:
+                    container_uuid: 3ee227ef-59bb-453e-a6b9-3afe81ac888d
+                    domains:
+                    - example.com
+                    - example.org
+                    message: Success
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    get:
+      tags:
+      - Domains
+      summary: List domains
+      description: Returns a list of all child containers and their domains. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-domains-list
+      responses:
+        '200':
+          description: Returned if the list of child containers and their domains was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response-Domains-List'
+              examples:
+                response:
+                  value:
+                    domain_list:
+                    - container_uuid: 9df7caa0-323a-463b-bc8c-a44116c649c0
+                      domains:
+                      - example.com
+                      - example.org
+                      message: Success
+                    - container_uuid: db775a54-cbb8-4064-8bea-42118017c453
+                      domains:
+                      - example2.com
+                      - example2.org
+                      message: Success
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /mssp/domains/account/{account_uuid}:
+    get:
+      tags:
+      - Domains
+      summary: Get domain details
+      description: Returns a list of domains and their details for the specified account UUID. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-domains-details-list
+      parameters:
+      - name: account_uuid
+        in: path
+        description: The UUID of the customer account you want to retrieve domains for.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: Returned if the list of domains and their details for the specified account UUID were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    container_uuid:
+                      type: string
+                      format: uuid
+                      description: The UUID of the specified account.
+                - $ref: '#/components/schemas/Response-Domains-Details-List'
+              examples:
+                response:
+                  value:
+                    container_uuid: 2baf5b11-0fd8-4bf6-ae1d-c426e9abb091
+                    domains:
+                    - domain_name: example.com
+                      status: ACTIVE
+                      type: PRIMARY
+                      date_added: 1663924506
+                    - domain_name: widget.com
+                      status: ACTIVE
+                      type: PRIMARY
+                      date_added: 1663924506
+                    - host_name: www
+                      domain_name: example2.com
+                      status: ACTIVATION_PENDING
+                      type: SECONDARY
+                      date_added: 1675037424
+                      user_name: owner@example.com
+                    - host_name: test
+                      domain_name: example3.com
+                      status: ACTIVATION_PENDING
+                      type: SECONDARY
+                      date_added: 1675038101
+                      user_name: owner@example.com
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if the Tenable MSSP Platform could not find the specified customer account.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+    put:
+      tags:
+      - Domains
+      summary: Update domain
+      description: Updates a domain associated with the specified account UUID. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-domains-update
+      parameters:
+      - name: account_uuid
+        in: path
+        description: The UUID of the customer account you want to update a domain for.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain_name:
+                  description: The domain name you want to update.
+                  type: string
+                  example: example.com
+                status:
+                  description: The status you want to set for the domain.
+                  type: string
+                  enum:
+                  - ACTIVE
+                  - DISABLED
+                type:
+                  description: The type you want to set for the domain.
+                  type: string
+                  enum:
+                  - PRIMARY
+                  - SECONDARY
+      responses:
+        '200':
+          description: Returned if the domain for the specified account UUID was updated successfully.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '404':
+          description: Returned if the Tenable MSSP Platform could not find the specified domain for the specified account UUID.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+  /mssp/domains/verifyDomain:
+    post:
+      tags:
+      - Domains
+      summary: Send activation code
+      description: Sends a verification code to add a domain to a container. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: io-mssp-domains-verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request-Domains-Verify'
+      responses:
+        '200':
+          description: Returned if the activation code was sent successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A message indicating whether or not the Tenable MSSP Portal successfully sent the verification code.
+              examples:
+                response:
+                  value:
+                    message: Activation Code has been sent to the user@example.com
+        '400':
+          description: Returned if your request specified invalid parameters or if your request was improperly formatted.
+        '401':
+          description: Returned if the API keys specified in your request are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 401
+                    error: Unauthorized
+                    message: Invalid credentials.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+components:
+  schemas:
+    Response-Domains-List-Object:
+      type: object
+      properties:
+        container_uuid:
+          type: string
+          format: uuid
+          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
+          description: The UUID of the child container in the Tenable MSSP Portal.
+        domains:
+          type: array
+          description: An array of domains associated with the container.
+          items:
+            type: string
+        message:
+          type: string
+          description: A short status message about the operation.
+    Request-Domains-Add:
+      type: object
+      required:
+      - container_uuid
+      - domain_name
+      - activation_code
+      properties:
+        container_uuid:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          description: The UUID of the container to add the new domain to.
+        domain_name:
+          type: string
+          description: The domain you want to add to the container.
+        activation_code:
+          type: string
+          description: The required activation code to add the domain to the specified container.
+    Response-Domains-List:
+      type: object
+      properties:
+        domains_list:
+          description: An array of customer account objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/Response-Domains-List-Object'
+    Request-Domains-Verify:
+      type: object
+      required:
+      - container_uuid
+      - domain_name
+      - host_name
+      properties:
+        container_uuid:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          description: The UUID of the container to add the new domain to.
+        domain_name:
+          type: string
+          description: The domain you want to add to the container.
+        host_name:
+          type: string
+          description: The host name associated with the domain name. Typically this is the first part of the email address of the user you want to send the verification to. For example, for user@example.com, `user` would be the host name.
+        is_resend:
+          type: boolean
+          description: Indicates whether or not to resend the verification code.
+    Response-Domains-Details-List-Object:
+      type: object
+      properties:
+        domain_name:
+          type: string
+          example: example.com
+          description: The name of the domain.
+        status:
+          type: string
+          description: The status of the domain. For example, `ACTIVE`, ACTIVATION_PENDING`, or `DISABLED`.
+        type:
+          type: string
+          description: The type of domain. For example, `PRIMARY` or `SECONDARY`.
+        date_added:
+          type: integer
+          description: The Unix timestamp when the domain was added.
+          format: int64
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Response-Domains-Details-List:
+      type: object
+      properties:
+        domains:
+          description: An array of domain objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/Response-Domains-Details-List-Object'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin

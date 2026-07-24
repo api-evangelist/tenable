@@ -1,0 +1,205 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Downloads About Access Control (API) API
+  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
+
+
+    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
+
+
+    `https://www.tenable.com/downloads/api/v2/pages`.
+
+
+    ### Authentication
+
+
+    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
+
+    ```
+
+    Authorization: Bearer AbCdEf123456
+
+    ```
+
+
+    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
+
+
+    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+servers:
+- url: https://www.tenable.com/downloads/api/v2
+security:
+- Bearer: []
+tags:
+- name: Access Control (API)
+  x-displayName: Access Control (API)
+paths:
+  /access-control/v1/api-security-settings:
+    get:
+      summary: List allowed IP addresses
+      description: Returns a list of IPv4 and IPv6 addresses that are allowed to access the Tenable Vulnerability Management API. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      operationId: vm-api-security-settings-list
+      tags:
+      - Access Control (API)
+      responses:
+        '200':
+          description: Returned if the list of allowed IP addresses was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_API_response-allowed_ip_addresses'
+              examples:
+                response:
+                  value:
+                    allowed_ipv4_addresses: 198.151.100.1-198.151.100.5, 203.0.113.0/24, 192.0.2.0
+                    allowed_ipv6_addresses: 2001:db8:2e92:75f2:d40a:e290:10b3:c0f
+        '401':
+          description: Returned if your API credentials are invalid or if your origin IP address is not allowed.
+        '403':
+          description: Returned if you do not have permission to view the list of allowed IP addresses.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_API_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_API_cloud: []
+    put:
+      summary: Update allowed IP addresses
+      description: 'Adds IP addresses or updates the existing list of IP addresses allowed to access the Tenable Vulnerability Management API.
+
+
+        **Caution:** Unless your network assignments are restricted to only IPv4 addresses or only IPv6 addresses, you must specify allowed ranges for both IPv4 and IPv6 in order to avoid blocking some API traffic. It is not always predictable whether a client will connect via IPv4 or IPv6. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+      operationId: vm-api-security-settings-update
+      tags:
+      - Access Control (API)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Access_Control_API_request-allowed_ip_addresses'
+      responses:
+        '204':
+          description: Returned if Tenable Vulnerability Management added or updated the allowed IP addresses.
+          content:
+            application/json:
+              examples:
+                response:
+                  value: {}
+        '400':
+          description: Returned if your request specified invalid parameters, if your request was improperly formatted, or if the current client IP address is not included.
+        '401':
+          description: Returned if your API credentials are invalid or if your origin IP address is not allowed.
+        '403':
+          description: Returned if you do not have permission to add or update the list of allowed IP addresses.
+        '429':
+          description: Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).
+          content:
+            text/html:
+              examples:
+                response:
+                  value: "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>"
+        '500':
+          description: Returned if an internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access_Control_API_ErrorResponse'
+              examples:
+                response:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+                    message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - Access_Control_API_cloud: []
+components:
+  schemas:
+    Access_Control_API_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: string
+          description: The HTTP status code.
+        error:
+          type: integer
+          description: The HTTP status text.
+        message:
+          type: string
+          description: A brief message describing the error Tenable Cloud Security encountered.
+    Access_Control_API_response-allowed_ip_addresses:
+      type: object
+      properties:
+        allowed_ipv4_addresses:
+          type: string
+          description: 'A comma-separated list of IPv4 addresses to allow. The list can include discrete IPv4 addresses, IPv4 address ranges, and IPv4 subnets. For example, `"192.0.2.0, 198.51.100.4-198.51.100.10, 203.0.113.0/24"`.
+
+
+            If an empty string is provided then the API can be accessed from all IPv4 addresses.'
+        allowed_ipv6_addresses:
+          type: string
+          description: 'A comma-separated list of IPv6 addresses to allow. The list can include discrete IPv6 addresses, IPv6 address ranges, and IPv6 subnets. For example, `"2001:db8:2e92:75f2:d40a:e290:10b3:c0f, 2001:db8:1e1f:46a1:e3cb:2110:22c6:0000-2001:db8:1e1f:46a1:e3cb:2110:22c6:ffff, 2001:0DB8::/32"`.
+
+
+            If an empty string is provided then the API can be accessed from all IPv6 addresses.'
+    Access_Control_API_request-allowed_ip_addresses:
+      type: object
+      properties:
+        allowed_ipv4_addresses:
+          type: string
+          description: 'A comma-separated list of IPv4 addresses to allow. The list can include discrete IPv4 addresses, IPv4 address ranges, and IPv4 subnets. For example, `"192.0.2.0, 198.51.100.4-198.51.100.10, 203.0.113.0/24"`.
+
+
+            If an empty string is provided then the API can be accessed from all IPv4 addresses.
+
+
+            **Caution:** Ensure that you have reviewed the list of allowed IPv4 addresses before submission since inappropriate IPv4 address restrictions can result in users being locked out from API access. If this occurs, an administrator can log in to the Vulnerability Management user interface and update the list of allowed IPv4 addresses in the access control settings. For more information, see [API Access Security](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/api-access-security.htm) in the Tenable Vulnerability Management User Guide.'
+        allowed_ipv6_addresses:
+          type: string
+          description: 'A comma-separated list of IPv6 addresses to allow. The list can include discrete IPv6 addresses, IPv6 address ranges, and IPv6 subnets. For example, `"2001:db8:2e92:75f2:d40a:e290:10b3:c0f, 2001:db8:1e1f:46a1:e3cb:2110:22c6:0000-2001:db8:1e1f:46a1:e3cb:2110:22c6:ffff, 2001:0DB8::/32"`.
+
+
+            If an empty string is provided then the API can be accessed from all IPv6 addresses.
+
+
+            **Caution:** Ensure that you have reviewed the list of allowed IPv6 addresses before submission since inappropriate IPv6 address restrictions can result in users being locked out from API access. If this occurs, an administrator can log in to the Vulnerability Management user interface and update the list of allowed IPv6 addresses in the access control settings. For more information, see [API Access Security](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/api-access-security.htm) in the Tenable Vulnerability Management User Guide.'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Example: Bearer {{token}}'
+x-readme:
+  proxy-enabled: false
+  explorer-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - python
+  - curl
+  - node
+  - powershell
+  - ruby
+  - javascript
+  - objectivec
+  - java
+  - php
+  - csharp
+  - go
+  - swift
+  - kotlin
