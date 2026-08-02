@@ -1,0 +1,72 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/tenable-vulnerability-management-openapi.json (paths + resource ids)
+entities:
+  - name: scan
+    id: scan_id
+    endpoints: ['/scans', '/scans/{scan_id}']
+  - name: scan_history
+    id: history_uuid
+    endpoints: ['/scans/{scan_id}/history']
+  - name: asset
+    id: asset_uuid
+    endpoints: ['/assets', '/assets/{asset_uuid}', '/workbenches/assets']
+  - name: vulnerability
+    id: plugin_id
+    endpoints: ['/workbenches/vulnerabilities', '/workbenches/vulnerabilities/{plugin_id}/info']
+  - name: export_job
+    id: export_uuid
+    endpoints: ['/vulns/export', '/assets/v2/export', '/compliance/export', '/scans/{scan_id}/export']
+  - name: policy
+    id: policy_id
+    endpoints: ['/policies', '/policies/{policy_id}']
+  - name: agent
+    id: agent_id
+    endpoints: ['/scanners/{scanner_id}/agents']
+  - name: tag
+    id: tag_value_uuid
+    endpoints: ['/tags/values']
+  - name: user
+    id: user_id
+    endpoints: ['/users']
+  - name: scanner
+    id: scanner_id
+    endpoints: ['/scanners']
+relationships:
+  - from: scan
+    to: scan_history
+    kind: has_many
+    via: scan_id
+  - from: scan
+    to: policy
+    kind: belongs_to
+    via: policy_id
+  - from: scan
+    to: export_job
+    kind: has_many
+    via: scan_id
+  - from: asset
+    to: vulnerability
+    kind: has_many
+    via: asset_uuid
+  - from: asset
+    to: tag
+    kind: has_many
+    via: asset_uuid
+  - from: export_job
+    to: asset
+    kind: has_many
+    via: export_uuid
+  - from: export_job
+    to: vulnerability
+    kind: has_many
+    via: export_uuid
+  - from: agent
+    to: scanner
+    kind: belongs_to
+    via: scanner_id
+notes: >-
+  Derived from Vulnerability Management API paths and id path-parameters. Ids are
+  UUIDs (asset_uuid, export_uuid, history_uuid) or integers (scan_id, policy_id,
+  plugin_id, user_id). Bulk retrieval flows through export_job (create -> poll
+  status -> download chunks).

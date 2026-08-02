@@ -1,0 +1,53 @@
+generated: '2026-07-21'
+method: searched
+source: https://developer.tenable.com/docs/api-basics + openapi/
+authentication:
+  style: api-key
+  header: X-ApiKeys
+  format: accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+  variants:
+    - product: Identity Exposure
+      header: x-api-key
+    - product: Downloads
+      header: Authorization
+      scheme: Bearer
+  docs: https://developer.tenable.com/docs/authorization
+  cross_ref: authentication/tenable-authentication.yml
+idempotency:
+  supported: false
+  detail: >-
+    Tenable does not document an idempotency-key header; no Idempotency-Key
+    parameter appears in the OpenAPI. Long-running work (scans, exports) uses an
+    async job model (request -> poll status -> download chunks) rather than
+    idempotency keys.
+pagination:
+  style: limit-offset
+  params: [limit, offset]
+  detail: >-
+    List endpoints accept limit and offset query parameters; some product
+    surfaces also accept page/size. Bulk data uses the export job pattern
+    (create export -> poll status -> download chunks) instead of paging.
+rate_limiting:
+  detail: >-
+    Per-user (per API key) requests-per-minute limiting; exceeding returns
+    429 Too Many Requests with a Retry-After header. A separate concurrency
+    limit also applies. Use the export endpoints for bulk retrieval.
+  status: 429
+  retry_header: Retry-After
+  docs: https://developer.tenable.com/docs/rate-limiting
+  cross_ref: rate-limits/
+versioning:
+  style: uri-path
+  detail: mix of unversioned, /api/v2, /api/v3 path prefixes
+  cross_ref: lifecycle/tenable-lifecycle.yml
+error_envelope:
+  format: json
+  detail: >-
+    Standard JSON error object (error/message fields; varies by product). Not
+    RFC 9457 problem+json.
+  cross_ref: errors/tenable-problem-types.yml
+async_jobs:
+  detail: >-
+    Exports (vulnerabilities, assets, compliance, scans) follow a create ->
+    poll status -> download chunks pattern with an export_uuid; recommended over
+    workbench/list endpoints for large datasets.

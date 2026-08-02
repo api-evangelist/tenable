@@ -1,0 +1,59 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/ (4xx/5xx responses across 8 Tenable specs)
+format: json  # standard JSON error envelope; not RFC 9457 problem+json
+envelope: 'error responses return an object with an error/message field (varies by product)'
+note: 'Tenable does not use application/problem+json (RFC 9457); statuses below derived from OpenAPI responses.'
+problems:
+  - status: 400
+    title: Bad Request
+    occurrences: 202
+    remediation: "Check request body/params against the schema."
+  - status: 401
+    title: Unauthorized
+    occurrences: 547
+    remediation: "Provide a valid X-ApiKeys header (accessKey;secretKey)."
+  - status: 403
+    title: Forbidden
+    occurrences: 278
+    remediation: "The API key lacks permission for this resource; check user role/permissions."
+  - status: 404
+    title: Not Found
+    occurrences: 201
+    remediation: "Verify the resource id/UUID exists."
+  - status: 405
+    title: Method Not Allowed
+    occurrences: 1
+    remediation: ""
+  - status: 409
+    title: Conflict
+    occurrences: 30
+    remediation: "Resource conflict; the object may already exist or be in an incompatible state."
+  - status: 415
+    title: Unsupported Media Type
+    occurrences: 7
+    remediation: "Set Content-Type to application/json."
+  - status: 422
+    title: Unprocessable Entity
+    occurrences: 1
+    remediation: "Request understood but validation failed; correct the field values."
+  - status: 429
+    title: Too Many Requests
+    occurrences: 419
+    remediation: "Rate limit exceeded; back off and honor the Retry-After header."
+  - status: 500
+    title: Internal Server Error
+    occurrences: 553
+    remediation: "Server error; retry with backoff, contact support if persistent."
+  - status: 501
+    title: Not Implemented
+    occurrences: 1
+    remediation: "Endpoint not implemented for this account/product tier."
+  - status: 503
+    title: Service Unavailable
+    occurrences: 28
+    remediation: "Service temporarily unavailable; retry with backoff."
+  - status: 504
+    title: Gateway Timeout
+    occurrences: 3
+    remediation: "Upstream timeout; retry with backoff."
