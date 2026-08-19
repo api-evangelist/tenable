@@ -1,0 +1,425 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Tags API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Tags",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Search tags",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v1/t1/tags/search",
+            "params": [
+              {
+                "name": "extra_properties",
+                "value": "",
+                "type": "query",
+                "description": "Specifies extra tag properties to include in the search results. You can provide multiple properties as a comma-separated list. \n\nUse the [List tag properties](ref:inventory-tag-properties-list) endpoint to retrieve a list of valid properties for this parameter. For example, you might include `tag_data_source`, `last_updated`, and `tag_created_by_id` as extra properties."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If omitted, the default value is `0`."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If omitted, the default value is `1000`. The maximum value is `1000`."
+              },
+              {
+                "name": "sort",
+                "value": "tag_name:asc",
+                "type": "query",
+                "description": "The property and direction to sort the results by, in the format `property:direction`. For example: `tag_name:asc` or `last_updated:desc`"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a list of tags in your organization that match the specified search criteria.\n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class=\"perms-callout\">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List tag properties",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v1/t1/tags/properties"
+          },
+          "docs": "Returns a list of tag properties that can be used for filters on endpoints that support them. For example, the properties that are returned by this endpoint can be used as filters for the [Search tags](ref:inventory-tag-search) endpoint.\n\n  In addition to the tag properties, the results list includes the logical operators you can use with the tag properties along with the supported values.\n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subjec"
+        },
+        {
+          "info": {
+            "name": "List tag categories",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/categories",
+            "params": [
+              {
+                "name": "f",
+                "value": "",
+                "type": "query",
+                "description": "A filter condition in the `field:operator:value` format, for example, `f=name:match:location`. Filter conditions can include:  \n* name:eq:&lt;name>  \n* name:match:<partial\\_name>  \n* description:eq:&lt;description>  \n* description:match:<partial\\_description>  \n* updated\\_at:date-eq:<timestamp\\_as\\_int>  \n* updated\\_at:date-gt:<timestamp\\_as\\_int>  \n* updated\\_at:date-lt:<timestamp\\_as\\_int>  \n* created\\_at:date-eq:<timestamp\\_as\\_int>  \n* created\\_at:date-gt:<timestamp\\_as\\_int>  \n* created\\_at:date-lt:<timestamp\\_as\\_int>  \n* updated\\_by:eq:<user\\_uuid>"
+              },
+              {
+                "name": "ft",
+                "value": "",
+                "type": "query",
+                "description": "If multiple `f` parameters are present, specifies whether Tenable Vulnerability Management applies `AND` or `OR` to conditions. Supported values are `and` and `or`. If you omit this parameter when using multiple `f` parameters, Tenable Vulnerability Management applies `AND` by default."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `5000`."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`."
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `name:desc,updated_at:asc` would first sort results by the `name` field in descending order and then by the `updated_at` field in ascending order."
+              }
+            ]
+          },
+          "docs": "Returns a list of tag categories.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Create tag category",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/categories",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new tag category.<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get category details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/categories/:tag_category_uuid",
+            "params": [
+              {
+                "name": "tag_category_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the tag category to return details for. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio)."
+              }
+            ]
+          },
+          "docs": "Returns the details for the specified category.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Update tag category",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/categories/:tag_category_uuid",
+            "params": [
+              {
+                "name": "tag_category_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the tag category to update. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified tag category. To update a category you must be an admin or have edit permissions on all tags within the category.<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Delete tag category",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/categories/:tag_category_uuid",
+            "params": [
+              {
+                "name": "tag_category_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the tag category to delete. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio)."
+              }
+            ]
+          },
+          "docs": "Deletes the specified category and any associated tag values. Deleting an asset tag category automatically deletes all tag values associated with that category and removes the tags from any assets where the tags were assigned. To delete a category you must be an admin or have edit permissions on all tags within the category.<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List tag values",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/values",
+            "params": [
+              {
+                "name": "f",
+                "value": "",
+                "type": "query",
+                "description": "A filter condition in the `field:operator:value` format, for example, `f=value:match:rhel`. Filters should match `field:op:value` format. Filter conditions can include:  \n* value:eq:&lt;value>  \n* value:match:&lt;value>  \n* category\\_name:match:<partial\\_value>  \n* category\\_name:eq:<category\\_name>  \n* category\\_name:match:<partial\\_category\\_name>  \n* description:eq:&lt;description>  \n* description:match:<partial\\_description>  \n* updated\\_at:date-eq:<timestamp\\_as\\_int>  \n* updated\\_at:date-gt:<timestamp\\_as\\_int>  \n* updated\\_at:date-lt:<timestamp\\_as\\_int>  \n* updated\\_by:eq:<user\\_uuid>"
+              },
+              {
+                "name": "ft",
+                "value": "",
+                "type": "query",
+                "description": "If multiple `f` parameters are present, specifies whether Tenable Vulnerability Management applies `AND` or `OR` to conditions. Supported values are `and` and `or`. If you omit this parameter when using multiple `f` parameters, Tenable Vulnerability Management applies `AND` by default."
+              },
+              {
+                "name": "wf",
+                "value": "",
+                "type": "query",
+                "description": "A comma-separated list of fields to include in the wildcard search. Provides the same functionality as a `match` condition in the `f` in parameter. For example, `f=value:match:Chi` returns the same results as `wf=value&w=Chi`. Wildcard fields include:  \n* category\\_name  \n* value  \n* description  \nUse the `w` parameter to specify the search value."
+              },
+              {
+                "name": "w",
+                "value": "",
+                "type": "query",
+                "description": "A single search value for the wildcard fields specified in the `wf` parameter."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `5000`."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`."
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `value:desc` would sort results by the `value` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `value:desc,updated_at:asc` would first sort results by the `value` field in descending order and then by the `updated_at` field in ascending order."
+              }
+            ]
+          },
+          "docs": "Returns a list of tag values.\n\n**Note:** The list can also include the tag categories that do not have any associated values.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Create tag value",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/values",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a tag value. The tag category can be specified by UUID or name. If Tenable Vulnerability Management cannot find a category you specify by name, the system creates a new category with the specified name. To automatically apply the tag to assets, specify the rules using the `filters` property.<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get tag value details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/values/:tag_value_uuid",
+            "params": [
+              {
+                "name": "tag_value_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the tag value. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio)."
+              }
+            ]
+          },
+          "docs": "Returns the details for specified tag value.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Update tag value",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/values/:tag_value_uuid",
+            "params": [
+              {
+                "name": "tag_value_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the value you want to update. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified tag value.<div class=\"perms-callout\">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Delete tag value",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/values/:tag_value_uuid",
+            "params": [
+              {
+                "name": "tag_value_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the tag value you want to delete.\n\n**Note:** A tag UUID is technically assigned to the tag value only (the second half of the category:value pair), but the API commands use this value to represent the whole `category:value` pair. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio)."
+              }
+            ]
+          },
+          "docs": "Deletes the specified tag value. If you delete an asset tag, Tenable Vulnerability Management also removes that tag from any assets where the tag was assigned.\n\n**Note:** If you delete all asset tags associated with a category, Tenable Vulnerability Management retains the category. You must [delete](ref:tags-delete-tag-category) the category separately. Additionally, to delete a tag value, you must be an admin or have edit permissions on the tag value. <div class=\"perms-callout\">Requires the Sca"
+        },
+        {
+          "info": {
+            "name": "Bulk delete tag values",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/values/delete-requests",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deletes tag values in bulk. If you delete an asset tag, Tenable Vulnerability Management also removes that tag from any assets where the tag was assigned. If you delete all asset tags associated with a category, Tenable Vulnerability Management retains the category. You must [delete](ref:tags-delete-tag-category) the category separately.<div class=\"perms-callout\">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Add or remove asset tags",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/assets/assignments",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Adds or removes tags from the specified assets, and returns the UUID of the asynchronous asset update job. <div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List tags for an asset",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/assets/:asset_uuid/assignments",
+            "params": [
+              {
+                "name": "asset_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the asset."
+              }
+            ]
+          },
+          "docs": "Returns a list of assigned tags for the specified asset UUID. If no tags are assigned to the asset, Tenable Vulnerability Management returns an empty list. <div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List tag exclusions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/values/:tag_value_uuid/exclusions",
+            "params": [
+              {
+                "name": "tag_value_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifiers (UUID) of the tag value you want to list asset exclusions for. For more information on determining this value, see [Determine Tag Identifiers](doc:determine-tag-identifiers-tio)."
+              },
+              {
+                "name": "target_type",
+                "value": "",
+                "type": "query",
+                "description": "The type of target to list tag exclusions for. This value is always `assets`."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `100`."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`."
+              }
+            ]
+          },
+          "docs": "Returns a list of assets that have been excluded from the specified dynamic tag. If no tags are assigned to the asset, Tenable Vulnerability Management returns an empty list. <div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List asset tag filters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/tags/assets/filters"
+          },
+          "docs": "Returns a list of filters that you can use to create the rules for applying dynamic tags. Includes the field or tag names to match, the operators that you can use with the filter, and the rules for matching the values ('control' field), for example, a list of valid values.\n\nFor definitions of asset attribute filters you might use in tag rules, see [Asset Attribute Definitions](doc:common-asset-attributes#asset-attribute-definitions). <div class=\"perms-callout\">Requires the Basic [16] user role. "
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

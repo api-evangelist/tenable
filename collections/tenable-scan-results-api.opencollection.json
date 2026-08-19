@@ -1,0 +1,143 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Scan Results API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Scan Results",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get host details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_uuid/hosts/:host_id",
+            "params": [
+              {
+                "name": "scan_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The identifier for the scan. This identifier can be the either the `schedule_uuid` or the numeric `id` attribute for the scan. We recommend that you use `schedule_uuid`."
+              },
+              {
+                "name": "host_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the host to retrieve."
+              },
+              {
+                "name": "history_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier of the historical data that you want Tenable Vulnerability Management to return. This identifier corresponds to the `history.id` attribute of the response message from the [GET /scans/{scan_id}/history](ref:scans-history) endpoint. "
+              },
+              {
+                "name": "history_uuid",
+                "value": "",
+                "type": "query",
+                "description": "The UUID of the historical data that you want Tenable Vulnerability Management to return. This identifier corresponds to the `history.scan_uuid` attribute of the response message from the [GET /scans/{scan_id}/history](ref:scans-history) endpoint."
+              }
+            ]
+          },
+          "docs": "Returns details for the specified host. \n\n**Note:** This endpoint can only return scan results that are younger than 35 days. For scan results that are older than 35 days, use the [POST /scans/{scan_id}/export](ref:scans-export-request) endpoint instead.<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Get plugin output",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_uuid/hosts/:host_id/plugins/:plugin_id",
+            "params": [
+              {
+                "name": "scan_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The identifier for the scan. This identifier can be the either the `schedule_uuid` or the numeric `id` attribute for the scan. We recommend that you use `schedule_uuid`."
+              },
+              {
+                "name": "host_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the host to retrieve."
+              },
+              {
+                "name": "plugin_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the plugin to retrieve."
+              },
+              {
+                "name": "history_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier of the historical data that you want Tenable Vulnerability Management to return. This identifier corresponds to the `history.id` attribute of the response message from the [GET /scans/{scan_id}/history](ref:scans-history) endpoint. "
+              },
+              {
+                "name": "history_uuid",
+                "value": "",
+                "type": "query",
+                "description": "The UUID of the historical data that you want Tenable Vulnerability Management to return. This identifier corresponds to the `history.scan_uuid` attribute of the response message from the [GET /scans/{scan_id}/history](ref:scans-history) endpoint."
+              }
+            ]
+          },
+          "docs": "Returns the output for a specified plugin.\n\n**Caution:** This endpoint is deprecated. Tenable recommends that you use the [Export scan](ref:scans-export-request) endpoint instead. Please update any existing integrations that your organization has since this endpoint will be removed.\n\n**Note:** This endpoint can only return scan results that are younger than 35 days. For scan results that are older than 35 days, use the [POST /scans/{scan_id}/export](ref:scans-export-request) endpoint instead. Ou"
+        },
+        {
+          "info": {
+            "name": "Get scan attachment file",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/attachments/:attachment_id",
+            "headers": [
+              {
+                "name": "accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan containing the attachment. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              },
+              {
+                "name": "attachment_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the scan attachment."
+              },
+              {
+                "name": "key",
+                "value": "",
+                "type": "query",
+                "description": "The attachment access token if applicable."
+              }
+            ]
+          },
+          "docs": "Gets the requested scan attachment file.\n\n**Note:** Scan attachments are not available if the scan results are older than 60 days. To retrieve scan data in `.nessus` and `.csv` format, use the [POST /scans/{scan_id}/export](ref:scans-attachments) endpoint.<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

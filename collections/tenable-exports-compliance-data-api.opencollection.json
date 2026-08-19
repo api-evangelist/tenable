@@ -1,0 +1,115 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Exports (Compliance Data) API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Exports (Compliance Data)",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Export compliance data",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/compliance/export",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Exports compliance data that matches the request criteria. The compliance export API does not return results for individual scans. Instead, the exported data is an aggregation / summary of all compliance scan data. As new compliance scans are run, the summary is updated with the latest audit results.\n\n**Note:** If you do not submit a request body with the POST request, Tenable Vulnerability Management returns a `415 Unsupported Media Type` error. If you do not want to use any body parameters, yo"
+        },
+        {
+          "info": {
+            "name": "Get compliance export status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/compliance/export/:export_uuid/status",
+            "params": [
+              {
+                "name": "export_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID for the compliance export request."
+              }
+            ]
+          },
+          "docs": "Returns the status of the specified compliance export. Tenable Vulnerability Management processes the chunks in parallel so the chunks may not complete in order. <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List compliance export jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/compliance/export/status"
+          },
+          "docs": "Returns a list of the last 1,000 compliance export requests along with their statuses and related metadata. <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Download compliance chunk",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/compliance/export/:export_uuid/chunks/:chunk_id",
+            "params": [
+              {
+                "name": "export_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the compliance export request."
+              },
+              {
+                "name": "chunk_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the compliance chunk you want to export."
+              }
+            ]
+          },
+          "docs": "Downloads a specific compliance data chunk by ID. Chunks are processed in parallel and remain available for download for up to 3 days after creation. A `404` response is returned for expired chunks. <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Cancel compliance export",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/compliance/export/:export_uuid/cancel",
+            "params": [
+              {
+                "name": "export_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the export request you want to cancel."
+              }
+            ]
+          },
+          "docs": "Cancels the specified compliance export job. If you cancel an export job, Tenable Vulnerability Management finishes any chunk that is currently processing, terminates the processing of any unprocessed chunks, and updates the job status to `CANCELLED`. If a canceled job includes completed chunks, you can still download those chunks after cancellation. <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

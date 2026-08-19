@@ -1,0 +1,465 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Scans API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Scans",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List PCI scans",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/pci-asv/scans/list",
+            "params": [
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `name:desc,started_at:asc` would first sort results by the `name` field in descending order and then by the `started_at` field in ascending order."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable PCI ASV uses the default value of `0`."
+              }
+            ]
+          },
+          "docs": "Returns a list of PCI scans in PCI ASV.\n\n**Note:** You need to request access to this endpoint through Tenable support even if you have a valid PCI ASV license.. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List scans",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans",
+            "params": [
+              {
+                "name": "folder_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier of the folder to filter by. When provided, only scans within this folder are returned."
+              },
+              {
+                "name": "last_modification_date",
+                "value": "",
+                "type": "query",
+                "description": "Filters results to scans that are either currently active or were executed on or after the specified Unix timestamp (in seconds). \n\n**Note:** Despite the parameter name, this refers to the scan execution time, not the date the scan configuration was last modified."
+              },
+              {
+                "name": "started_from",
+                "value": "",
+                "type": "query",
+                "description": "Filters results to scans started on or after the specified Unix timestamp (in seconds)."
+              },
+              {
+                "name": "started_to",
+                "value": "",
+                "type": "query",
+                "description": "Filters results to scans started on or before the specified Unix timestamp (in seconds)."
+              }
+            ]
+          },
+          "docs": "Returns a list of scans where you have at least CAN VIEW [16] scan permissions. \n\n**Note:** Keep in mind potential [rate limits](doc:rate-limiting) when using this endpoint. To check the status of your scans, use the [Get latest scan status](ref:scans-get-latest-status) endpoint. Tenable recommends the [Get latest scan status](ref:scans-get-latest-status) endpoint especially if you are programmatically checking the status of large numbers of scans.<div class=\"perms-callout\">Requires the Basic [1"
+        },
+        {
+          "info": {
+            "name": "Create scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scans",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a scan configuration. For more information and request body examples, see [Create a Scan](doc:create-scan-tio). \n\n**Note:** Tenable Vulnerability Management limits the active number of scans to 10,000 scans. Tenable recommends you re-use scheduled scans instead of creating new scans. Alternatively, you can delete unused scans. An HTTP 403 error is returned if you attempt to create a scan after you have already reached the scan limit of 10,000.  <div class=\"perms-callout\">Requires the Sca"
+        },
+        {
+          "info": {
+            "name": "Get scan details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan. You can use either the `schedule_uuid` (string) or the `id` (integer) retrieved from the [List Scans](ref:scans-list) endpoint.\n\n**Note:** Tenable recommends using the `schedule_uuid` for consistency across scan instances."
+              },
+              {
+                "name": "history_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier of the specific scan historical instance you want to retrieve. This value enables you to access data from a previous execution of the scan and corresponds to the `id` attribute from the [Get scan history](ref:scans-history) endpoint."
+              }
+            ]
+          },
+          "docs": "Returns scan results for a specific scan. If you submit a request without query parameters, Tenable Vulnerability Management returns results from the latest run of the specified scan. If you submit a request using the query parameters to specify a historical run of the scan, Tenable Vulnerability Management returns the scan results for the specified run. \n\n**Note:** Keep in mind potential [rate limits](doc:rate-limiting) and [concurrency limits](doc:concurrency-limiting) when using this endpoint"
+        },
+        {
+          "info": {
+            "name": "Update scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan you want to update. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [List scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the scan configuration. For example, you can enable or disable a scan, change the scan name, description, folder, scanner, targets, and schedule parameters. For more information and request body examples, see [Update a Scan](doc:update-scan-tio). \n\nFor information on updating remediation scans and request body examples, see [Manage Remediation Scans](doc:io-manage-remediation-scans). <div class=\"perms-callout\">Requires the Scan Operator [24] user role and the Can Edit [64] scan permissio"
+        },
+        {
+          "info": {
+            "name": "Delete scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan you want to delete. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [List scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              }
+            ]
+          },
+          "docs": "Deletes a scan.\n\nYou cannot delete scans with a `running`, `paused`, or `stopping` status. For more information, see [Scan Status](doc:scan-status-tio). <div class=\"perms-callout\">Requires the Scan Manager [40] user role and the Can Edit [64] scan permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN.DELETE` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Launch scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/configs/:config_id/scans",
+            "params": [
+              {
+                "name": "config_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan configuration to use to launch a scan."
+              }
+            ]
+          },
+          "docs": "Launches a scan using the specified configuration.<div class=\"perms-callout\">Requires the Scan Operator [24] user role or the `WAS.SCAN_WAS.MANAGE` custom role privilege. Also requires the `WAS.SCAN_WAS_SYSTEM_TEMPLATE.USE` custom role privilege if using a Tenable-provided scan template. Additionally, requires the Can Execute [32] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Import scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v3/was/import",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "Filedata",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Imports a scan that was previously exported in JSON format.\n\n**Note:** Attachments and scan files in DB format can't be imported. <div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.SCAN_WAS.IMPORT` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Search scans",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/configs/:config_id/scans/search",
+            "params": [
+              {
+                "name": "config_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the config that was used for the scan."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`."
+              },
+              {
+                "name": "sort",
+                "value": "last_seen:desc,ipv4:asc",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `name:desc,created_at:asc` would first sort results by the `name` field in descending order and then by the `created_at` field in ascending order."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a list of scans. <div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Get scan details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/scans/:scan_id",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan for which you want to view details."
+              }
+            ]
+          },
+          "docs": "Returns scan details.<div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Update scan status",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/scans/:scan_id",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan for which you want to update status."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the `requested_action` attribute for a scan. The requested action must be valid for the scan's current status. For example, you can pause or stop a scan if it has a status of `running` or resume a scan if it has a status of `paused`. Otherwise, Tenable Web App Scanning returns a 409 response code. This request creates an asynchronous update job.<div class=\"perms-callout\">Requires the Scan Operator [24] user role or the `WAS.SCAN_WAS.MANAGE` custom role privilege. Additionally, requires th"
+        },
+        {
+          "info": {
+            "name": "Delete scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/scans/:scan_id",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan for which you want to delete."
+              }
+            ]
+          },
+          "docs": "Removes the specified scan and all vulnerabilities it detected. This request creates an asynchronous deletion job.<div class=\"perms-callout\">Requires the Scan Operator [24] user role or the `WAS.SCAN_WAS.MANAGE` custom role privilege. Additionally, requires the Can Edit [64] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Get scan notes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/scans/:scan_id/notes",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan for which you want to view notes."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`."
+              },
+              {
+                "name": "sort",
+                "value": "last_seen:desc,ipv4:asc",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `name:desc,created_at:asc` would first sort results by the `name` field in descending order and then by the `created_at` field in ascending order."
+              }
+            ]
+          },
+          "docs": "Returns a list of notes for the specified scan. <div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Search vulnerabilities for scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/scans/:scan_id/vulnerabilities/search",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan for which you want to view vulnerabilities."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`."
+              },
+              {
+                "name": "sort",
+                "value": "last_seen:desc,ipv4:asc",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `name:desc,created_at:asc` would first sort results by the `name` field in descending order and then by the `created_at` field in ascending order."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a list of vulnerabilities for the specified scan. <div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Download exported scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/scans/:scan_id/report",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan for which you want to view a report."
+              }
+            ]
+          },
+          "docs": "Downloads a scan report for the specified scan.\n\n**Note:** A 404 Not Found is returned if the requested report is not yet ready for download. <div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Export scan results",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/scans/:scan_id/report",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan for which you want to generate a report."
+              }
+            ]
+          },
+          "docs": "Generates a scan report for the specified scan. <div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. Additionally, requires Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Download debug ZIP file",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v3/export/:scan_id",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan for which you want to retrieve debug information."
+              }
+            ]
+          },
+          "docs": "Returns a ZIP file containing debug information for the specified WAS scan. The ZIP file includes browser console logs, HTTP requests and responses, and Selenium information if applicable. <div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. Additionally, requires, the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

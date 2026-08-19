@@ -1,0 +1,114 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Attack Path API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Attack Path",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Search attack paths",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v1/t1/apa/top-attack-paths/search",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of attack path records to retrieve. If omitted, the default value is `1000`. The minimum value is `100` and the maximum value is `10000`."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to skip for offset-based pagination. If omitted, the default value is `0`."
+              },
+              {
+                "name": "sort",
+                "value": "priority:desc",
+                "type": "query",
+                "description": "The property and direction to sort the results by, in the format `property:direction`. For example: `name:asc`, `priority:desc`, or `path_status:asc`. \n\nSupported properties for sorting include `name`, `priority`, and `path_status`."
+              },
+              {
+                "name": "run_ai_summarization",
+                "value": "",
+                "type": "query",
+                "description": "Indicates whether or not to run the AI summarization for missing paths. \n\nGenerative AI enables users to better understand attack paths and their associated risk, and it provides additional insight into the assets affected by the attack paths. \n\nNote that enabling the AI summarization results in slower response times."
+              },
+              {
+                "name": "exclude_resolved",
+                "value": "",
+                "type": "query",
+                "description": "Excludes resolved attack paths from the results. When `true` (default), the system filters out paths with the following `path_status` values:\n\n* `done` — Remediation is complete.\n* `chain_prevented` — The attack chain is partially broken.\n* `accepted` — The risk is accepted.\n\nSet to `false` to include all attack paths regardless of status."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a list of the top attack paths leading to critical assets. The response includes details about each attack path, such as associated techniques, nodes, and metadata. This endpoint enables you to use advanced search capabilities, including filtering, sorting, and pagination.\n\n**Note:** Attack paths inherit their status from underlying techniques. To prioritize active threats, the system excludes the following statuses by default:\n- `chain_prevented` — The attack chain is partially fixed.\n-"
+        },
+        {
+          "info": {
+            "name": "Search attack techniques",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v1/t1/apa/top-attack-techniques/search",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of attack technique records to retrieve. If omitted, the default value is `1000`. The minimum value is `100` and the maximum value is `10000`."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to skip for offset-based pagination. If omitted, the default value is `0`."
+              },
+              {
+                "name": "sort",
+                "value": "priority:desc",
+                "type": "query",
+                "description": "The property and direction to sort the results by, in the format `property:direction`. For example: `name:asc` or `priority:desc`. \n\nSupported properties for sorting include `last_updated_at`, `priority`, `mitre_id`, `name`, `technique_name`, `status`, `state`, and `vector_ount`."
+              },
+              {
+                "name": "exclude_resolved",
+                "value": "",
+                "type": "query",
+                "description": "Excludes resolved attack techniques from the results. When `true` (default), the system filters out techniques with the following values:\n\n* Status — `done`, `accepted` \n* State — `archive` \n\nSet to `false` to include all techniques regardless of status or state."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a paginated list of the top attack techniques identified within your organization that match the specified search criteria. This endpoint supports advanced filtering, sorting, and metadata enrichment, including MITRE ATT&CK framework mappings and recommended mitigations.\n\n**Note:** To prioritize actionable data, this endpoint applies default filters to results:\n- **Excluded Statuses** — `done`, `accepted`\n- **Excluded States** — `archive`\n\nTo retrieve all techniques, including archived o"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

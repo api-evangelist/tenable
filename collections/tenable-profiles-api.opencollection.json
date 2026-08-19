@@ -1,0 +1,187 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Profiles API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Profiles",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List profiles",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/sensors/profiles/:sensor_type",
+            "params": [
+              {
+                "name": "sensor_type",
+                "value": "",
+                "type": "path",
+                "description": "The type of sensor. Use `agent` for agent profiles or `scanners` for scanner profiles."
+              }
+            ]
+          },
+          "docs": "Returns a list of profiles. The type of profiles returned depends on the `sensor_type` path parameter, which can be set to either `agent` or `scanners`. <div class=\"perms-callout\">Requires the Scan Operator [24] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_AGENT.READ` for agent profiles or `VM.VM_SENSOR.VM_SCANNER.READ` for scanner profiles. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Create profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/sensors/profiles/:sensor_type",
+            "params": [
+              {
+                "name": "sensor_type",
+                "value": "",
+                "type": "path",
+                "description": "The type of sensor. Use `agent` for agent profiles or `scanners` for scanner profiles."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new profile. The type of profile created depends on the `sensor_type` path parameter, which can be set to either `agent` or `scanners`. \n\n**Note:** You can assign or remove an agent from an agent profile using the [Assign or remove agent profile](ref:agent-bulk-operations-profile) endpoint. For scanners, use the [Assign to scanner profile](ref:scanner-profile-assign-bulk) and [Remove from scanner profile](ref:scanner-profile-remove-bulk) endpoints.<div class=\"perms-callout\">Requires th"
+        },
+        {
+          "info": {
+            "name": "Get profile details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/sensors/profiles/:sensor_type/:profile_uuid",
+            "params": [
+              {
+                "name": "sensor_type",
+                "value": "",
+                "type": "path",
+                "description": "The type of sensor. Use `agent` for agent profiles or `scanners` for scanner profiles."
+              },
+              {
+                "name": "profile_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the profile."
+              }
+            ]
+          },
+          "docs": "Retrieves details for the specified profile. The type of profile returned depends on the `sensor_type` path parameter, which can be set to either `agent` or `scanners`. <div class=\"perms-callout\">Requires the Scan Operator [24] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_AGENT.READ` for agent profiles or `VM.VM_SENSOR.VM_SCANNER.READ` for scanner profiles. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Update profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/sensors/profiles/:sensor_type/:profile_uuid",
+            "params": [
+              {
+                "name": "sensor_type",
+                "value": "",
+                "type": "path",
+                "description": "The type of sensor. Use `agent` for agent profiles or `scanners` for scanner profiles."
+              },
+              {
+                "name": "profile_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the profile."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified profile. The type of profile to update depends on the `sensor_type` path parameter, which can be set to either `agent` or `scanners`. <div class=\"perms-callout\">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_AGENT.EDIT` for agent profiles or `VM.VM_SENSOR.VM_SCANNER.EDIT` for scanner profiles. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Delete profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/sensors/profiles/:sensor_type/:profile_uuid",
+            "params": [
+              {
+                "name": "sensor_type",
+                "value": "",
+                "type": "path",
+                "description": "The type of sensor. Use `agent` for agent profiles or `scanners` for scanner profiles."
+              },
+              {
+                "name": "profile_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the profile."
+              }
+            ]
+          },
+          "docs": "Deletes the specified profile. The type of profile to delete depends on the `sensor_type` path parameter, which can be set to either `agent` or `scanners`.\n\nYou can monitor the status of deletion request via the [Get agent task status](ref:bulk-task-agent-status) or [Get scanner task status](ref:scanner-task-status) endpoint. \n\n**Note:** If the agent or scanner profile has any assigned agents or scanners, they will be reassigned to the default agent or scanner profile.<div class=\"perms-callout\">"
+        },
+        {
+          "info": {
+            "name": "Clone profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/sensors/profiles/:sensor_type/:profile_uuid/clone",
+            "params": [
+              {
+                "name": "sensor_type",
+                "value": "",
+                "type": "path",
+                "description": "The type of sensor. Use `agent` for agent profiles or `scanners` for scanner profiles."
+              },
+              {
+                "name": "profile_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the profile."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a copy of an existing profile. The type of profile to clone depends on the `sensor_type` path parameter, which can be set to either `agent` or `scanners`. <div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List available plugin sets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/sensors/profiles/feed_versions"
+          },
+          "docs": "Returns a list of the latest plugin sets made available to scanner and agent profiles from the Tenable plugin feed within the last 30 days."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

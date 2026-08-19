@@ -1,0 +1,79 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Reports API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Reports",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create report",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/reports/export",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a report in PDF format based on the specified template and filters.\n\n**Note:** Tenable Vulnerability Management limits the number of findings that can be included in a single report to 10,000. If you have more than 10,000 findings, Tenable recommends that you narrow the findings included in the report with a filter or generate multiple reports. Additionally, you can not run more than 50 concurrent reports at a time. <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM."
+        },
+        {
+          "info": {
+            "name": "Get report status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/reports/export/:report_uuid/status",
+            "params": [
+              {
+                "name": "report_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the report to check the status for."
+              }
+            ]
+          },
+          "docs": "Returns the status of the specified report export request. <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_REPORT.VM_REPORT.READ` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Download report",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/reports/export/:report_uuid/download",
+            "params": [
+              {
+                "name": "report_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the report to download."
+              }
+            ]
+          },
+          "docs": "Downloads the specified PDF report. <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_REPORT.VM_REPORT.DOWNLOAD` custom role privilege. See [Roles](doc:roles).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

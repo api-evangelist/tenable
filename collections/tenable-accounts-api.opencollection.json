@@ -1,0 +1,152 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Accounts API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Accounts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create evaluation account v1",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/mssp/accounts/eval",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates an evaluation account. \n\n**Caution:** This endpoint is deprecated. Tenable recommends that customers use the [Create evaluation account v2](ref:mssp-accounts-eval-v2) endpoint instead. Please update any existing integrations that your organization has. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Create evaluation account v2",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/mssp/accounts/v2/eval",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates an evaluation account. <div class=\"perms-callout\">Requires ADMINISTRATOR [64] user permissions. See [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Create quote",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/mssp/accounts/quote",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a quote for a customer. <div class=\"perms-callout\">Requires ADMINISTRATOR [64] user permissions. See [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "List child accounts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/mssp/accounts",
+            "params": [
+              {
+                "name": "group",
+                "value": "",
+                "type": "query",
+                "description": "The UUID of an account group. This parameter can be used to retrieve only child accounts in the specified account group."
+              },
+              {
+                "name": "f",
+                "value": "",
+                "type": "query",
+                "description": "A filter condition in the format `field:operator:value`. For example, `f=container_name:match:tenable`. \n\n**Note:** To retrieve a list of filters to use with this endpoint, see the  [GET /filters/mssp/accounts](ref:io-mssp-filters-account-list) endpoint. \n\nSee the list below for additional examples of possible filter combinations:  \n* uuid:neq:afe4fa83-8430-4f7b-a4dd-c25bcfd21317  \n* licensed_assets:gte:222  \n* license_utilization:lt:100  \n* license_expiration_date:gt:90  \n* licensed_apps:eq:was,lumin  \n* region:eq:US"
+              },
+              {
+                "name": "ft",
+                "value": "",
+                "type": "query",
+                "description": "If multiple `f` parameters are present, specifies whether Tenable MSSP applies `AND` or `OR` to conditions. Supported values are `and` and `or`. If you omit this parameter when using multiple `f` parameters, Tenable applies `AND` by default."
+              },
+              {
+                "name": "w",
+                "value": "",
+                "type": "query",
+                "description": "Wildcard filter text. Wildcard search is a mechanism where multiple fields of a record are filtered against one specific filter string. If any one of the wildcard\\_fields' values matches against the filter string, then the record matches the wildcard filter. For a record to be returned, it must pass the wildcard filter (if there is one) AND the set of standard filters. For example, if `w=wild&f=field1:match:one&f=field2:match:two&ft=or`, the record would match if the value of any supported wildcard\\_fields contained `wild`, AND either field1's value contained `one` or field2's value contained `two`."
+              },
+              {
+                "name": "wf",
+                "value": "",
+                "type": "query",
+                "description": "A comma-delimited subset of wildcard\\_fields to search when applying the wildcard filter. For example, `field1,field2`. If `w` is provided, but `wf` is not, then all wildcard\\_fields' values are searched against the wildcard filter text. \n\n**Note:** To retrieve a list of fields that can be used as wild cards, see the [GET /filters/mssp/accounts](ref:io-mssp-filters-account-list) endpoint."
+              }
+            ]
+          },
+          "docs": "Returns a list of child accounts in the Tenable MSSP Portal.\n\n A child account contains information about a customer instance of a Tenable product, including product license information and user-defined notes that can include valuable internal tracking or customer contact information. <div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get child account details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/mssp/accounts/:account_uuid",
+            "params": [
+              {
+                "name": "account_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the child account you want to retrieve details for."
+              }
+            ]
+          },
+          "docs": "Returns details for the specified child account. <div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List domains",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/mssp/accounts/:account_uuid/domains",
+            "params": [
+              {
+                "name": "account_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the child account you want to retrieve domains for."
+              }
+            ]
+          },
+          "docs": "Returns a list of domains for the specified child account. <div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

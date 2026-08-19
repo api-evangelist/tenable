@@ -1,0 +1,115 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Exports API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Exports",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Export findings",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v1/export/vulns",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Exports Tenable Web App Scanning findings that match the request criteria. \n\nUsers need at least BASIC [16] user permissions and the Can View access control permission for the asset objects they want to export. You can set the Can View permission for the All Assets object for all assets. ADMINISTRATOR [64] users can export without the explicit Can View access control permissions. \n\n**Caution**: The `vpr_v2_score` filter parameter is scheduled for deprecation on July 1, 2026 as part of the transi"
+        },
+        {
+          "info": {
+            "name": "Get findings export status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v1/export/vulns/:export_uuid/status",
+            "params": [
+              {
+                "name": "export_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID for the WAS findings export request to retrieve the status for."
+              }
+            ]
+          },
+          "docs": "Returns the status of a Tenable Web App findings export request. Tenable Web App Scanning processes the chunks in parallel so the chunks may not complete in order, and the chunk IDs may not be arranged sequentially in the completed output.\n\n **Note:** Output for an individual plugin is limited to 1,024 KB (1 MB). <div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List findings export jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v1/export/vulns/status"
+          },
+          "docs": "Retrieves a list of WAS findings export jobs. This list includes the 1,000 most recent export jobs regardless of status. However, this list includes completed jobs only if the job completed in the previous three days. <div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Download findings export chunk",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v1/export/vulns/:export_uuid/chunks/:chunk_id",
+            "params": [
+              {
+                "name": "export_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the WAS findings export job."
+              },
+              {
+                "name": "chunk_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the chunk you want to export."
+              }
+            ]
+          },
+          "docs": "Downloads exported WAS findings as a JSON file. The response content type is `application/octet-stream`.\n\nChunks are available for download for up to 24 hours after they have been created. Tenable Web App Scanning returns a 404 message for expired chunks. Export chunks do not include an attribute if that attribute is empty in the vulnerability record.\n\nA successful response message contains attributes that correspond to CVSS metrics; these metrics are described fully in the following documents:<"
+        },
+        {
+          "info": {
+            "name": "Cancel findings export",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v1/export/vulns/:export_uuid/cancel",
+            "params": [
+              {
+                "name": "export_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID for the WAS findings export request to cancel."
+              }
+            ]
+          },
+          "docs": "Cancels the specified WAS finding export job. If you cancel an export job, Tenable Web App Scanning finishes any chunk that is currently processing, terminates the processing of any unprocessed chunks, and updates the job status to `CANCELLED`. If a canceled job includes completed chunks, you can download those chunks for three days after cancellation. <div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

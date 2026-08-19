@@ -1,0 +1,99 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Scan Status API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Scan Status",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get latest scan status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/latest-status",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan.  This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              }
+            ]
+          },
+          "docs": "Returns the latest status for a scan. For a list of possible status values, see [Scan Status](doc:scan-status-tio).<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Update scan status",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/status",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Changes the status of a scan. For a list of possible status values, see [Scan Status](doc:scan-status-tio).<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Get scan progress",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/progress",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the scan you want to retrieve the progress for.\n\nFor the identifier, you can use either the `scans.schedule_uuid` or the `scans.id` attribute from the [GET /scans](ref:scans-list) endpoint. However, Tenable recommends that you use `scans.schedule_uuid`."
+              },
+              {
+                "name": "history_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier of the historical run of the scan that you want to retrieve the progress for.\n\nThis identifier corresponds to the `history.id` attribute from the [GET /scans/{scan_id}/history](ref:scans-history) endpoint. You can use either this parameter or the `history_uuid` query parameter to specify a historical run of the scan."
+              },
+              {
+                "name": "history_uuid",
+                "value": "",
+                "type": "query",
+                "description": "The UUID of the historical run of the scan that you want to retrieve the progress for.\n\nThis identifier corresponds to the `history.scan_uuid` attribute from the [GET /scans/{scan_id}/history](ref:scans-history) endpoint. You can use either this parameter or the `history_id` query parameter to specify a historical run of the scan."
+              }
+            ]
+          },
+          "docs": "Returns the progress for the specified scan.\n\n**Note:** If you submit a request without query parameters, Tenable Vulnerability Management returns the progress from the latest run of the specified scan. If you submit a request using the `history_id` or `history_uuid` query parameters to specify a historical run of the scan, Tenable Vulnerability Management returns the progress for the specified historical run.<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can View [16] "
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

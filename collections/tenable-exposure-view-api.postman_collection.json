@@ -1,0 +1,1165 @@
+{
+  "item": [
+    {
+      "id": "60fe4402-c51a-4a1f-8d4b-3cdde9b7099e",
+      "name": "Exposure View",
+      "description": {
+        "content": "The Tenable Exposure View API enables users to search Tenable Exposure view for their organization's cards or retrieve the details for a specified card. For more information about Exposure View, see [Exposure View](https://docs.tenable.com/exposure-management/Content/exposure-management/exposure-view/exposure-view.htm) in the _Tenable Exposure Management User Guide_.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "0596fdfb-3c9d-4f99-a380-a956cfafa09c",
+          "name": "Search cards",
+          "request": {
+            "name": "Search cards",
+            "description": {
+              "content": "Returns a list of exposure view cards based on your search criteria. \n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class=\"perms-callout\">Requires the Basic [16] user role or the `TONE_UI.TONE_EXPOSURE_CARD.READ`, `LUMIN_EXPOSURE_VIEW.EXPOSURE_CARD.READ`, and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "t1",
+                "exposure-view",
+                "cards"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "is_global_card",
+                  "value": "<boolean>",
+                  "description": "Indicates whether or not to return Tenable-provided global cards or user-created custom cards. \n\nIf `true`, only Tenable-provided global cards are returned. If `false`, only user-created custom cards are returned. If this parameter is omitted, Tenable Exposure Management returns all cards."
+                },
+                {
+                  "disabled": false,
+                  "key": "text_query",
+                  "value": "<string>",
+                  "description": "Filters the results by card name."
+                },
+                {
+                  "disabled": false,
+                  "key": "sorting_order",
+                  "value": "asc",
+                  "description": "The order to sort the results by, either ascending (`asc`) or descending (`desc`)."
+                },
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "25",
+                  "description": "The number of card records to retrieve. The maximum value is `25`. If this parameter is omitted, Tenable Exposure Management uses the default value of `25`."
+                },
+                {
+                  "disabled": false,
+                  "key": "offset",
+                  "value": "0",
+                  "description": "The starting record to retrieve. If this parameter is omitted, Tenable Exposure Management uses the default value of `0`."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [
+            {
+              "id": "13dcfe9d-04be-4c4d-b25f-89cc43ea97fc",
+              "name": "Returned if the list of exposure view cards was retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "exposure-view",
+                    "cards"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "is_global_card",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "text_query",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sorting_order",
+                      "value": "asc"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "25"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"12345\",\n      \"name\": \"Example Card\",\n      \"card_type\": \"GLOBAL\",\n      \"is_global_card\": true,\n      \"ces_score\": {\n        \"score\": 85,\n        \"grade\": \"A\"\n      },\n      \"sla_percentage\": 95,\n      \"ces_trend\": [\n        {\n          \"date\": \"2023-10-01T00:00:00Z\",\n          \"ces_score\": 80\n        }\n      ],\n      \"tag_count\": 5,\n      \"exposure_class\": [\n        \"ALL\",\n        \"IDENTITY\"\n      ],\n      \"created_at\": \"2023-10-01T12:00:00Z\",\n      \"updated_at\": \"2023-10-02T12:00:00Z\",\n      \"last_data_update_date\": \"2023-10-02T12:00:00Z\",\n      \"sources\": [\n        \"AWS\",\n        \"AZURE\"\n      ]\n    },\n    {\n      \"id\": \"2ea46426-7ca3-4fe6-85c3-c16eb2ccd94b\",\n      \"name\": \"supercustom\",\n      \"card_type\": \"CUSTOM\",\n      \"is_global_card\": false,\n      \"tag_count\": 0,\n      \"created_at\": \"2025-05-02T20:25:05.247Z\",\n      \"updated_at\": \"2025-06-10T15:35:17.499Z\",\n      \"ces_score\": {\n        \"score\": 0,\n        \"grade\": \"A\"\n      },\n      \"sla_percentage\": 16.3728,\n      \"ces_trend\": [\n        {\n          \"date\": \"2025-05-28T00:00:00.000Z\",\n          \"ces_score\": 154\n        },\n        {\n          \"date\": \"2025-05-29T00:00:00.000Z\",\n          \"ces_score\": 154\n        },\n        {\n          \"date\": \"2025-05-30T00:00:00.000Z\",\n          \"ces_score\": 154\n        },\n        {\n          \"date\": \"2025-05-31T00:00:00.000Z\",\n          \"ces_score\": 154\n        },\n        {\n          \"date\": \"2025-06-01T00:00:00.000Z\",\n          \"ces_score\": 154\n        },\n        {\n          \"date\": \"2025-06-02T00:00:00.000Z\",\n          \"ces_score\": 481\n        },\n        {\n          \"date\": \"2025-06-03T00:00:00.000Z\",\n          \"ces_score\": 481\n        },\n        {\n          \"date\": \"2025-06-04T00:00:00.000Z\",\n          \"ces_score\": 481\n        },\n        {\n          \"date\": \"2025-06-05T00:00:00.000Z\",\n          \"ces_score\": 481\n        },\n        {\n          \"date\": \"2025-06-06T00:00:00.000Z\",\n          \"ces_score\": 481\n        },\n        {\n          \"date\": \"2025-06-07T00:00:00.000Z\",\n          \"ces_score\": 481\n        },\n        {\n          \"date\": \"2025-06-08T00:00:00.000Z\",\n          \"ces_score\": 481\n        },\n        {\n          \"date\": \"2025-06-09T00:00:00.000Z\",\n          \"ces_score\": 481\n        },\n        {\n          \"date\": \"2025-06-10T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-11T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-12T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-13T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-14T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-15T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-16T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-17T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-18T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-19T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-20T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-21T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-22T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-23T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-24T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-25T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-26T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-27T00:00:00.000Z\",\n          \"ces_score\": 0\n        },\n        {\n          \"date\": \"2025-06-28T00:00:00.000Z\",\n          \"ces_score\": 0\n        }\n      ],\n      \"exposure_class\": [\n        \"WAS\",\n        \"VM\"\n      ],\n      \"last_data_update_date\": \"2025-06-28T20:32:23.493Z\"\n    }\n  ],\n  \"pagination\": {\n    \"offset\": 0,\n    \"limit\": 10,\n    \"total_record_count\": 2\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "8fb376ff-5be3-41ef-adc3-67d684d1f742",
+              "name": "Returned if your request specified invalid parameters or if your request was improperly formatted.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "exposure-view",
+                    "cards"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "is_global_card",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "text_query",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sorting_order",
+                      "value": "asc"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "25"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"Bad Request\",\n  \"message\": \"The requested limit size exceeds the maximum limit of 25\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "92868908-ea50-4b0d-ad5c-0c6475ba3693",
+              "name": "Returned if the API keys specified in your request are invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "exposure-view",
+                    "cards"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "is_global_card",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "text_query",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sorting_order",
+                      "value": "asc"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "25"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"Unauthorized\",\n  \"message\": \"Invalid credentials.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a081c95d-9d40-4c43-9e5a-f2e6096652c9",
+              "name": "Returned if you do not have permission to search exposure view cards.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "exposure-view",
+                    "cards"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "is_global_card",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "text_query",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sorting_order",
+                      "value": "asc"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "25"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "d98fa670-e952-469f-af36-bb6a66ee7e15",
+              "name": "Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "exposure-view",
+                    "cards"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "is_global_card",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "text_query",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sorting_order",
+                      "value": "asc"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "25"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/html"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/html"
+                }
+              ],
+              "body": "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "ad7a5b21-e9e1-49dd-860c-2a87ef90ae1e",
+              "name": "Returned if an internal error occurred.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "exposure-view",
+                    "cards"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "is_global_card",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "text_query",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sorting_order",
+                      "value": "asc"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "25"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred. Please wait a moment and try your request again.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "d3d4d07a-4a98-477d-b549-309ef89d0f33",
+          "name": "Get card details",
+          "request": {
+            "name": "Get card details",
+            "description": {
+              "content": "Retrieves details for the specified exposure view card. By default, the response includes SLA efficiency and trend data for the past 30 days. You can modify the time frame using optional parameters. \n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class=\"perms-callout\">Requires the Basic [16] user role or the `TONE_UI.TONE_EXPOSURE_CARD.READ`, `LUMIN_EXPOSURE_VIEW.EXPOSURE_CARD.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "t1",
+                "exposure-view",
+                "cards",
+                ":card_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "trend_start_date",
+                  "value": "<dateTime>",
+                  "description": "The start date for trend data. Use this parameter in combination with the `trend_end_date` parameter to define the time frame for the trend data. \n\nThe date must be specified as a UTC timestamp in ISO 8601 format (e.g., `2025-06-28T00:00:00.000Z`)."
+                },
+                {
+                  "disabled": false,
+                  "key": "trend_end_date",
+                  "value": "<dateTime>",
+                  "description": "The end date for trend data. Use this parameter in combination with the `trend_start_date` parameter to define the time frame for the trend data. \n\nThe date must be specified as a UTC timestamp in ISO 8601 format (e.g., `2025-06-28T00:00:00.000Z`)."
+                },
+                {
+                  "disabled": false,
+                  "key": "sla_efficiency_start_date",
+                  "value": "<dateTime>",
+                  "description": "The start date for SLA efficiency data. Use this parameter in combination with the `sla_efficiency_end_date` parameter to define the time frame for the SLA efficiency. \n\nThe date must be specified as a UTC timestamp in ISO 8601 format (e.g., `2025-06-28T00:00:00.000Z`)."
+                },
+                {
+                  "disabled": false,
+                  "key": "sla_efficiency_end_date",
+                  "value": "<dateTime>",
+                  "description": "The end date for SLA efficiency data. Use this parameter in combination with the `sla_efficiency_start_date` parameter to define the time frame for the SLA efficiency. \n\nThe date must be specified as a UTC timestamp in ISO 8601 format (e.g., `2025-06-28T00:00:00.000Z`)."
+                },
+                {
+                  "disabled": false,
+                  "key": "sla_breakdown_filter",
+                  "value": "ANY",
+                  "description": "Filter SLA breakdown data by `REMEDIATED`, `NON_REMEDIATED`, or `ANY`."
+                },
+                {
+                  "disabled": false,
+                  "key": "include_trend_events",
+                  "value": "false",
+                  "description": "Indicates whether or not to include trend events."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "card_id",
+                  "description": "(Required) The unique ID of the card to retrieve details for."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [
+            {
+              "id": "8f42472a-1ffe-4c93-8c4b-f4ae76135fe4",
+              "name": "Returned if the data for the specified exposure view card was retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "exposure-view",
+                    "cards",
+                    ":card_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "trend_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "trend_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_breakdown_filter",
+                      "value": "ANY"
+                    },
+                    {
+                      "key": "include_trend_events",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "card_id",
+                      "description": "(Required) The unique ID of the card to retrieve details for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"2ea46426-7ca3-4fe6-85c3-c16eb2ccd94b\",\n  \"name\": \"supercustom\",\n  \"card_type\": \"CUSTOM\",\n  \"is_global_card\": false,\n  \"ces_scores\": {\n    \"per_exposure\": [],\n    \"per_tag\": [],\n    \"total\": {\n      \"score\": 0,\n      \"grade\": \"A\"\n    }\n  },\n  \"ces_trend\": [\n    {\n      \"date\": \"2025-06-21T00:00:00.000Z\",\n      \"ces_score\": 0\n    },\n    {\n      \"date\": \"2025-06-22T00:00:00.000Z\",\n      \"ces_score\": 0\n    },\n    {\n      \"date\": \"2025-06-23T00:00:00.000Z\",\n      \"ces_score\": 0\n    },\n    {\n      \"date\": \"2025-06-24T00:00:00.000Z\",\n      \"ces_score\": 0\n    },\n    {\n      \"date\": \"2025-06-25T00:00:00.000Z\",\n      \"ces_score\": 0\n    },\n    {\n      \"date\": \"2025-06-26T00:00:00.000Z\",\n      \"ces_score\": 0\n    },\n    {\n      \"date\": \"2025-06-27T00:00:00.000Z\",\n      \"ces_score\": 0\n    },\n    {\n      \"date\": \"2025-06-28T00:00:00.000Z\",\n      \"ces_score\": 0\n    }\n  ],\n  \"created_at\": \"2025-05-02T20:25:05.247Z\",\n  \"updated_at\": \"2025-06-10T15:35:17.499Z\",\n  \"tag_count\": 3,\n  \"exposures\": [\n    \"WAS\",\n    \"VM\"\n  ],\n  \"sources\": [],\n  \"last_data_update_date\": \"2025-06-28T22:32:11.640Z\",\n  \"exposure_classes_details\": {\n    \"VM\": {\n      \"score_trend_metric\": {\n        \"ces_trend\": [\n          {\n            \"date\": \"2025-05-29T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 124,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-05-30T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 124,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-05-31T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 124,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-01T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 124,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-02T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-03T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-04T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-05T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-06T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-07T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-08T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-09T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-10T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-11T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-12T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-13T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-14T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-15T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-16T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-17T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-18T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-19T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-20T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-21T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-22T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-23T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-24T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-25T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-26T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-27T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-28T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          }\n        ],\n        \"target_score\": 1000,\n        \"events\": []\n      },\n      \"sla_efficiency\": [\n        {\n          \"sla_severity_level\": \"LOW\",\n          \"sla_inside_count\": 0,\n          \"sla_total_count\": 65,\n          \"sla_efficiency\": 0,\n          \"sla_efficiency_target\": 0\n        },\n        {\n          \"sla_severity_level\": \"MEDIUM\",\n          \"sla_inside_count\": 0,\n          \"sla_total_count\": 234,\n          \"sla_efficiency\": 0,\n          \"sla_efficiency_target\": 54\n        },\n        {\n          \"sla_severity_level\": \"HIGH\",\n          \"sla_inside_count\": 0,\n          \"sla_total_count\": 46,\n          \"sla_efficiency\": 0,\n          \"sla_efficiency_target\": 0\n        },\n        {\n          \"sla_severity_level\": \"CRITICAL\",\n          \"sla_inside_count\": 0,\n          \"sla_total_count\": 52,\n          \"sla_efficiency\": 0,\n          \"sla_efficiency_target\": 73\n        },\n        {\n          \"sla_severity_level\": \"OVERALL\",\n          \"sla_inside_count\": 0,\n          \"sla_total_count\": 397,\n          \"sla_efficiency\": 0,\n          \"sla_efficiency_target\": 0\n        }\n      ],\n      \"sla_breakdown\": {\n        \"risk_distribution\": {\n          \"risks_inside_sla\": {\n            \"number_of_risks\": 0,\n            \"percentage_of_total\": 0\n          },\n          \"risks_outside_sla\": {\n            \"number_of_risks\": 0,\n            \"percentage_of_total\": 0\n          }\n        },\n        \"risk_distribution_in_days\": {\n          \"inside_sla\": 397,\n          \"outside_sla\": 0\n        },\n        \"exposure_category_breakdown\": [\n          {\n            \"exposure_class\": \"VM\",\n            \"contribution_percentage\": 100\n          }\n        ],\n        \"top_affecting_tags\": [\n          {\n            \"id\": \"40d64a4e-715c-4adc-9731-b957c21b7dae\",\n            \"name\": \"test\"\n          },\n          {\n            \"id\": \"6742deeb-f72b-4cc9-b944-64af6ed02c95\",\n            \"name\": \"gt1\"\n          },\n          {\n            \"id\": \"5ce1f0bd-4133-4fbc-9f1c-69b1ef6d48dc\",\n            \"name\": \"gt3\"\n          }\n        ]\n      }\n    },\n    \"ALL\": {\n      \"score_trend_metric\": {\n        \"ces_trend\": [\n          {\n            \"date\": \"2025-05-29T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 154,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-05-30T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 154,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-05-31T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 154,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-01T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 154,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-02T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-03T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-04T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-05T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-06T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-07T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-08T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-09T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-10T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-11T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-12T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-13T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-14T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-15T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-16T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-17T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-18T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-19T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-20T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-21T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-22T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-23T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-24T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-25T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-26T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-27T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-28T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          }\n        ],\n        \"target_score\": 202,\n        \"events\": []\n      },\n      \"sla_efficiency\": [\n        {\n          \"sla_severity_level\": \"LOW\",\n          \"sla_inside_count\": 65,\n          \"sla_total_count\": 65,\n          \"sla_efficiency\": 100,\n          \"sla_efficiency_target\": 0\n        },\n        {\n          \"sla_severity_level\": \"MEDIUM\",\n          \"sla_inside_count\": 0,\n          \"sla_total_count\": 234,\n          \"sla_efficiency\": 0,\n          \"sla_efficiency_target\": 54\n        },\n        {\n          \"sla_severity_level\": \"HIGH\",\n          \"sla_inside_count\": 0,\n          \"sla_total_count\": 46,\n          \"sla_efficiency\": 0,\n          \"sla_efficiency_target\": 0\n        },\n        {\n          \"sla_severity_level\": \"CRITICAL\",\n          \"sla_inside_count\": 0,\n          \"sla_total_count\": 52,\n          \"sla_efficiency\": 0,\n          \"sla_efficiency_target\": 73\n        },\n        {\n          \"sla_severity_level\": \"OVERALL\",\n          \"sla_inside_count\": 65,\n          \"sla_total_count\": 397,\n          \"sla_efficiency\": 16.3728,\n          \"sla_efficiency_target\": 0\n        }\n      ],\n      \"sla_breakdown\": {\n        \"risk_distribution\": {\n          \"risks_inside_sla\": {\n            \"number_of_risks\": 65,\n            \"percentage_of_total\": 16.3727959697733\n          },\n          \"risks_outside_sla\": {\n            \"number_of_risks\": 65,\n            \"percentage_of_total\": 16.3727959697733\n          }\n        },\n        \"risk_distribution_in_days\": {\n          \"inside_sla\": 332,\n          \"outside_sla\": 65\n        },\n        \"exposure_category_breakdown\": [\n          {\n            \"exposure_class\": \"VM\",\n            \"contribution_percentage\": 100\n          }\n        ],\n        \"top_affecting_tags\": [\n          {\n            \"id\": \"40d64a4e-715c-4adc-9731-b957c21b7dae\",\n            \"name\": \"test\"\n          },\n          {\n            \"id\": \"6742deeb-f72b-4cc9-b944-64af6ed02c95\",\n            \"name\": \"gt1\"\n          },\n          {\n            \"id\": \"5ce1f0bd-4133-4fbc-9f1c-69b1ef6d48dc\",\n            \"name\": \"gt3\"\n          }\n        ]\n      }\n    },\n    \"WAS\": {\n      \"score_trend_metric\": {\n        \"ces_trend\": [\n          {\n            \"date\": \"2025-05-29T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-05-30T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-05-31T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-01T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-02T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-03T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-04T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-05T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-06T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-07T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-08T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-09T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-10T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-11T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-12T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-13T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-14T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-15T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-16T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-17T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-18T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-19T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-20T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-21T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-22T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-23T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-24T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-25T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-26T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-27T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          },\n          {\n            \"date\": \"2025-06-28T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 0,\n              \"grade\": \"A\"\n            }\n          }\n        ],\n        \"target_score\": 1000,\n        \"events\": []\n      }\n    },\n    \"CLOUD\": {\n      \"score_trend_metric\": {\n        \"ces_trend\": [\n          {\n            \"date\": \"2025-05-29T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-05-30T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-05-31T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-01T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-02T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-03T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-04T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-05T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-06T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-07T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-08T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-09T00:00:00.000Z\",\n            \"ces_score\": {\n              \"score\": 481,\n              \"grade\": \"C\"\n            }\n          },\n          {\n            \"date\": \"2025-06-10T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-11T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-12T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-13T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-14T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-15T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-16T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-17T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-18T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-19T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-20T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-21T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-22T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-23T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-24T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-25T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-26T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-27T00:00:00.000Z\"\n          },\n          {\n            \"date\": \"2025-06-28T00:00:00.000Z\"\n          }\n        ],\n        \"target_score\": 188,\n        \"events\": []\n      }\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5e4976ed-716b-4a19-91a5-dcbf0bc4e187",
+              "name": "Returned if your request specified invalid parameters or if your request was improperly formatted.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "exposure-view",
+                    "cards",
+                    ":card_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "trend_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "trend_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_breakdown_filter",
+                      "value": "ANY"
+                    },
+                    {
+                      "key": "include_trend_events",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "card_id",
+                      "description": "(Required) The unique ID of the card to retrieve details for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "7535aac4-6f0c-4338-850d-f1786cc0927b",
+              "name": "Returned if the API keys specified in your request are invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "exposure-view",
+                    "cards",
+                    ":card_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "trend_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "trend_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_breakdown_filter",
+                      "value": "ANY"
+                    },
+                    {
+                      "key": "include_trend_events",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "card_id",
+                      "description": "(Required) The unique ID of the card to retrieve details for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"Unauthorized\",\n  \"message\": \"Invalid credentials.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "19be7758-8053-42ef-ab29-fcb104ddf16f",
+              "name": "Returned if you do not have permission to retrieve the specified exposure view card.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "exposure-view",
+                    "cards",
+                    ":card_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "trend_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "trend_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_breakdown_filter",
+                      "value": "ANY"
+                    },
+                    {
+                      "key": "include_trend_events",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "card_id",
+                      "description": "(Required) The unique ID of the card to retrieve details for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "583d7405-c447-467c-bc1d-a13811985861",
+              "name": "Returned if the specified exposure view card was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "exposure-view",
+                    "cards",
+                    ":card_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "trend_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "trend_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_breakdown_filter",
+                      "value": "ANY"
+                    },
+                    {
+                      "key": "include_trend_events",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "card_id",
+                      "description": "(Required) The unique ID of the card to retrieve details for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 404,\n  \"message\": \"Not Found\",\n  \"errors\": [\n    {\n      \"code\": \"UNEXPECTED_ERROR\",\n      \"message\": \"Card Not found for 2ea46426-7ca3-4fe6-85c3-0c16eb2ccd94c\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e9b05864-64a6-48d2-bf6e-278d0b1ce7d6",
+              "name": "Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "exposure-view",
+                    "cards",
+                    ":card_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "trend_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "trend_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_breakdown_filter",
+                      "value": "ANY"
+                    },
+                    {
+                      "key": "include_trend_events",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "card_id",
+                      "description": "(Required) The unique ID of the card to retrieve details for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/html"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/html"
+                }
+              ],
+              "body": "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "4afccfd3-136f-4a7b-b213-46b73f26f4ce",
+              "name": "Returned if an internal error occurred.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "exposure-view",
+                    "cards",
+                    ":card_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "trend_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "trend_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_start_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_efficiency_end_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sla_breakdown_filter",
+                      "value": "ANY"
+                    },
+                    {
+                      "key": "include_trend_events",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "card_id",
+                      "description": "(Required) The unique ID of the card to retrieve details for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred. Please wait a moment and try your request again.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://www.tenable.com/downloads/api/v2",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "Authorization"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "6ecb195e-4648-48c0-bba1-b09a867966eb",
+    "name": "Downloads About Exposure View API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.\n\n**Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:\n\n`https://www.tenable.com/downloads/api/v2/pages`.\n\n### Authentication\n\nLike the Downloads website, certain files require authentication to download. When files have a `\"requires_auth\": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:\n```\nAuthorization: Bearer AbCdEf123456\n```\n\nTo access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.\n\nExamples of product downloads that **do not** require authentication include Nessus and Nessus Agents.",
+      "type": "text/plain"
+    }
+  }
+}

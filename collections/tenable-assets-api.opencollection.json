@@ -1,0 +1,146 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Assets API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Assets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List assets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/assets"
+          },
+          "docs": "Lists up to 5,000 assets.\n\n**Note:** You can use the [POST /assets/v2/export](ref:export-assets-v2) endpoint to export data for all assets. For more information about exporting assets, see [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get asset details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/assets/:asset_uuid",
+            "params": [
+              {
+                "name": "asset_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the asset."
+              }
+            ]
+          },
+          "docs": "Returns details of the specified asset.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Update ACR",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v2/assets/bulk-jobs/acr",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Overwrites the Tenable-provided Asset Criticality Rating (ACR) for the specified assets. Tenable assigns an ACR to each asset on your network to represent the asset's relative risk as an integer from 1 to 10. For more information about ACR, see [Lumin metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.\n\nYou must have a Lumin license to update the ACR for assets in your organization.<div class=\"perms-call"
+        },
+        {
+          "info": {
+            "name": "Move assets",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v2/assets/bulk-jobs/move-to-network",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Moves assets from the specified network to another network. You can use this endpoint to move assets from the default network to a user-defined network, from a user-defined network to the default network, and from one user-defined network to another user-defined network. This request creates an asynchronous job in Tenable Vulnerability Management.\n\nFor information about the assets move workflow and payload examples, see [Bulk Asset Operations](doc:bulk-asset-operations).<div class=\"perms-callout"
+        },
+        {
+          "info": {
+            "name": "Bulk delete assets",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v2/assets/bulk-jobs/delete",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deletes the specified assets. This request creates an asynchronous delete job in Tenable Vulnerability Management.\n\nFor information about the assets bulk delete workflow and payload examples, see [Bulk Asset Operations](doc:bulk-asset-operations).<div class=\"perms-callout\">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Import assets",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/import/assets",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Imports asset data in JSON format.\n\nThe request size cannot exceed 5 MB. For example, if the average asset record you want to import is about 2 KB, you can import approximately 2,500 assets in a single request.\n\n**Note:** This endpoint does not support the network_id attribute in asset objects for import. Tenable Vulnerability Management automatically assigns imported assets to the default network object. For more information about network objects, see [Manage Networks](doc:manage-networks-tio)."
+        },
+        {
+          "info": {
+            "name": "List asset import jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/import/asset-jobs"
+          },
+          "docs": "Lists asset import jobs.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get import job status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/import/asset-jobs/:asset_import_job_uuid",
+            "params": [
+              {
+                "name": "asset_import_job_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the asset import job."
+              }
+            ]
+          },
+          "docs": "Gets information about the specified import job.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

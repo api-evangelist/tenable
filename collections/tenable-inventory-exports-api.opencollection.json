@@ -1,0 +1,226 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Inventory Exports API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Inventory Exports",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Export assets",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v1/t1/inventory/export/assets",
+            "params": [
+              {
+                "name": "properties",
+                "value": "",
+                "type": "query",
+                "description": "Specifies which asset properties to include in the export. Provide multiple properties as a comma-separated list. \n\nBy default, if no properties are provided, the export includes the following properties: `asset_name`, `asset_id`, `asset_class`, `aes`, and `asset_criticality_rating_(acr)`\n\nUse the [List assets properties](ref:inventory-asset-properties-list) endpoint to retrieve a list of valid properties for this parameter. For example, you might include `created_at`, `sources`, and `fqdns`."
+              },
+              {
+                "name": "use_readable_name",
+                "value": "",
+                "type": "query",
+                "description": "When set to `true`, returns the human-readable names of properties instead of internal key names."
+              },
+              {
+                "name": "max_chunk_file_size",
+                "value": "",
+                "type": "query",
+                "description": "Maximum size, in bytes, for each export chunk when exporting large datasets.\n\nIf omitted, the default is `20971520` bytes (20 MB). The maximum value is `104857600` (100 MB) and the minimum value is `5242880` (5 MB)."
+              },
+              {
+                "name": "sort",
+                "value": "acr:desc",
+                "type": "query",
+                "description": "The property and direction to sort the results by, in the format `property:direction`. For example: `asset_name:asc` or `acr:desc`"
+              },
+              {
+                "name": "file_format",
+                "value": "CSV",
+                "type": "query",
+                "description": "Specifies the file format for the export.\n\nDefaults to `JSON` if not provided. Valid values are `CSV` and `JSON`."
+              },
+              {
+                "name": "compress",
+                "value": "true",
+                "type": "query",
+                "description": "When set to `true`, the exported file is compressed using GZIP. \n\nThe compressed file retains its original format (CSV or JSON) but is smaller in size, which helps reduce download time and storage requirements. You must decompress the file with a standard GZIP tool before processing. This option is particularly useful for large exports or limited-bandwidth environments."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Exports assets in your organization that match the specified search criteria.\n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class=\"perms-callout\">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Export findings",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v1/t1/inventory/export/findings",
+            "params": [
+              {
+                "name": "properties",
+                "value": "",
+                "type": "query",
+                "description": "Specifies which findings properties to include in the export. Provide multiple properties as a comma-separated list. \n\nBy default, if no properties are provided, the export includes the following properties: `asset_id`, `finding_id`, `finding_name`, `severity`, and `state`\n\nUse the [List findings properties](ref:inventory-finding-properties-list) endpoint to retrieve a list of valid properties for this parameter. For example, you might include `asset_name`, `solution`, and `vpr_score` as properties."
+              },
+              {
+                "name": "use_readable_name",
+                "value": "",
+                "type": "query",
+                "description": "When set to `true`, returns the human-readable names of properties instead of internal key names."
+              },
+              {
+                "name": "max_chunk_file_size",
+                "value": "",
+                "type": "query",
+                "description": "Maximum size, in bytes, for each export chunk when exporting large datasets.\n\nIf omitted, the default is `20971520` bytes (20 MB). The maximum value is `104857600` (100 MB) and the minimum value is `5242880` (5 MB)."
+              },
+              {
+                "name": "sort",
+                "value": "severity:desc",
+                "type": "query",
+                "description": "The property and direction to sort the results by, in the format `property:direction`. For example: `finding_name:asc` or `severity:desc`"
+              },
+              {
+                "name": "file_format",
+                "value": "JSON",
+                "type": "query",
+                "description": "Specifies the file format for the export.\n\nDefaults to `JSON` if not provided. Valid values are `CSV` and `JSON`."
+              },
+              {
+                "name": "compress",
+                "value": "true",
+                "type": "query",
+                "description": "When set to `true`, the exported file is compressed using GZIP. \n\nThe compressed file retains its original format (CSV or JSON) but is smaller in size, which helps reduce download time and storage requirements. You must decompress the file with a standard GZIP tool before processing. This option is particularly useful for large exports or limited-bandwidth environments."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Exports findings in your organization that match the specified search criteria.\n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class=\"perms-callout\">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List asset export jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v1/t1/inventory/export/assets/status",
+            "params": [
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Filters the results by export job status. \n\nSupported values include:\n\n * `QUEUED`—The request is waiting for earlier requests to complete.\n * `PROCESSING`—The request is currently being processed. \n * `FINISHED`—Processing is complete, and all chunks are available.\n * `ERROR`—An error occurred while processing. Retry the request, and if the issue persists, contact Tenable Support."
+              },
+              {
+                "name": "limit",
+                "value": "100",
+                "type": "query",
+                "description": "The maximum number of export jobs to return from the last 3 days.\n\n**Note:** Only jobs submitted within the last 3 days are returned. The actual number of results may be less than the specified limit if fewer jobs exist.\n\nIf omitted, the default is `1000`. The maximum value is `1000` and the minimum value is `1`."
+              }
+            ]
+          },
+          "docs": "Returns a list of up to 1,000 asset export jobs submitted in the last 3 days, sorted by the most recent refresh time. <div class=\"perms-callout\">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List finding export jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v1/t1/inventory/export/findings/status",
+            "params": [
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Filters the results by export job status. \n\nSupported values include:\n\n * `QUEUED`—The request is waiting for earlier requests to complete.\n * `PROCESSING`—The request is currently being processed. \n * `FINISHED`—Processing is complete, and all chunks are available.\n * `ERROR`—An error occurred while processing. Retry the request, and if the issue persists, contact Tenable Support."
+              },
+              {
+                "name": "limit",
+                "value": "100",
+                "type": "query",
+                "description": "The maximum number of export jobs to return from the last 3 days.\n\n**Note:** Only jobs submitted within the last 3 days are returned. The actual number of results may be less than the specified limit if fewer jobs exist.\n\nIf omitted, the default is `1000`. The maximum value is `1000` and the minimum value is `1`."
+              }
+            ]
+          },
+          "docs": "Returns a list of up to 1,000 findings export jobs submitted in the last 3 days, sorted by the most recent refresh time. <div class=\"perms-callout\">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get export status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v1/t1/inventory/export/:export_id/status",
+            "params": [
+              {
+                "name": "export_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the export request whose status you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Returns the current status of an export request.\n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class=\"perms-callout\">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Download export",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v1/t1/inventory/export/:export_id/download/:chunk_id",
+            "params": [
+              {
+                "name": "export_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the export request for which you want to download a chunk."
+              },
+              {
+                "name": "chunk_id",
+                "value": "",
+                "type": "path",
+                "description": "The specific chunk number to retrieve from the export request.\n\n**Note:** For exports in CSV format, each chunk includes a header row."
+              }
+            ]
+          },
+          "docs": "Downloads a specific export chunk in JSON or CSV format.\n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class=\"perms-callout\">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,136 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Scan Exports API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Scan Exports",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Export scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/export",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The identifier for the scan you want to export. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [List scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              },
+              {
+                "name": "history_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier of the historical data that you want Tenable Vulnerability Management to export. This identifier corresponds to the `history.id` attribute of the response message from the [Get scan history](ref:scans-history) endpoint.\n\n**Note:** This parameter is required if the scan export request is for the `db` format."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Exports the a scan in the specified format. Use the [Check scan export status](ref:scans-export-status) endpoint to see the status of the requested export. On receiving a `ready` status, download the export file using the [Download scan export](ref:scans-export-download) endpoint. \n\nIf you request a scan export in the `nessus` file format, but do not specify filters for the export, Tenable Vulnerability Management truncates the plugins output data in the export file at 5 MB or 5,000,000 characte"
+        },
+        {
+          "info": {
+            "name": "List scan exports",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/exports",
+            "params": [
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the property and direction used to sort the results. The format is `<property>:<direction>`. If omitted, the system uses the default value of `created_at:desc`.\n\n**Supported properties:**\n\n* `export_id` — The unique identifier (UUID) for the export.\n* `created_at` — The date and time the export was created.\n* `updated_at` — The date and time the export was last updated.\n* `ready_at` — The date and time the export became ready for download.\n\n**Supported directions:**\n\n* `asc` — Ascending order.\n* `desc` — Descending order."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the number of records to skip for offset-based pagination. If omitted, the system uses the default value of `0`."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of records to return. If omitted, the system uses the default value of `20`. The maximum allowed value is `5001`."
+              }
+            ]
+          },
+          "docs": "Returns a list of scan exports generated within the past 30 days that the user is authorized to view. Use this endpoint to monitor the status of scan export requests, determine when the export is ready for download, or troubleshoot errors that occurred during the generation process. <div class=\"perms-callout\">Requires the Scan Operator [24] user role and the Can View [16] scan permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN.EXPORT` custom role privilege. See [Roles](doc:roles) and [P"
+        },
+        {
+          "info": {
+            "name": "Check scan export status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/export/:file_id/status",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [List scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              },
+              {
+                "name": "file_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the file to poll (included in response from [Export scan](ref:scans-export-request) endpoint."
+              }
+            ]
+          },
+          "docs": "Returns the file status of the specified exported scan. When an export has been requested, it is necessary to poll this endpoint until a `ready` status is returned, at which point the file is complete and can be downloaded using the [Download scan export](ref:scans-export-download) endpoint.<div class=\"perms-callout\">Requires the Scan Operator [24] user role and the Can View [16] scan permission. Alternatively, requires the or `VM.VM_SCAN.VM_SCAN.EXPORT` custom role privilege. See [Roles](doc:ro"
+        },
+        {
+          "info": {
+            "name": "Download scan export",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/export/:file_id/download",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the exported scan you want to download. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [List scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              },
+              {
+                "name": "file_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the file to download (Included in response from the [Export scan](ref:scans-export-request) endpoint)."
+              }
+            ]
+          },
+          "docs": "Download an exported scan.<div class=\"perms-callout\">Requires the Scan Operator [24] user role and the Can View [16] scan permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN.EXPORT` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

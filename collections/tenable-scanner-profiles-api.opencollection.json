@@ -1,0 +1,75 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Scanner Profiles API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Scanner Profiles",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Assign to scanner profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scanners/scanners/bulkAssignToProfile",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Assigns one or more scanners to a specific scanner profile. This request initiates an asynchronous bulk operation task to process the assignments. \n\n**Note:** You can create a scanner profile using the [Create profile](ref:profiles-create) endpoint.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.EDIT` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Remove from scanner profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/scanners/scanners/bulkAssignToProfile",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Removes one or more scanners from a specific scanner profile. This request initiates an asynchronous bulk operation task to process the removals. <div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.EDIT` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get scanner task status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scanners/request-status/:request_status_id",
+            "params": [
+              {
+                "name": "request_status_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the asynchronous task whose status you want to retrieve. This identifier corresponds to the `request_status_id` or `id` returned by supported endpoints."
+              }
+            ]
+          },
+          "docs": "Retrieves the current status of a specific asynchronous bulk operation task. \n\nUse the `request_status_id` or `id` value returned by supported endpoints to track the progress or completion of the asynchronous task.\n\n**Note:** This endpoint currently only supports task status retrieval for operations initiated by the [Assign to scanner profile](ref:scanner-profile-assign-bulk) and [Remove from scanner profile](ref:scanner-profile-remove-bulk) endpoints. <div class=\"perms-callout\">Requires the Sca"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

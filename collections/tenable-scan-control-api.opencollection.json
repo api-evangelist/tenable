@@ -1,0 +1,125 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Scan Control API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Scan Control",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Launch scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/launch",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan you want to launch. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Launches a scan. For more information, see [Launch a Scan](doc:launch-scan-tio).\n\n**Note:** There is a limit of 25 active scans per container. You can use use the [Get scan count](ref:io-scans-count) endpoint to retrieve the total number of active scans in your container. For more information, see [Concurrency Limiting](doc:concurrency-limiting). <div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can Execute [32] scan permissions. See [Roles](doc:roles) and [Permissions](do"
+        },
+        {
+          "info": {
+            "name": "Pause scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/pause",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan you want to pause. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              }
+            ]
+          },
+          "docs": "Pauses a scan. You can only pause scans that have a `running` status.<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can Execute [32] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Resume scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/resume",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan you want to resume. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              }
+            ]
+          },
+          "docs": "Resumes a scan. You can only resume a scan that has a status of `paused`.<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can Execute [32] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Stop scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/stop",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The identifier for the scan you want to stop. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the [GET /scans](ref:scans-list) endpoint's response message."
+              }
+            ]
+          },
+          "docs": "Stops a scan. \n\nYou can only stop a scan that has a status of `pending`, `running`, or `resuming`. To stop a scan with a status of `stopping` or `publishing`, use the [Force stop scan](ref:vm-scans-stop-force) endpoint. For more information about scan statuses, see [Scan Status](doc:scan-status-tio).<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can Execute [32] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Force stop scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:schedule_uuid/force-stop",
+            "params": [
+              {
+                "name": "schedule_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The identifier for the scan you want to force stop. For the identifier, use the `scans.schedule_uuid` in the [GET /scans](ref:scans-list) endpoint's response message."
+              }
+            ]
+          },
+          "docs": "Force stops a scan. A force stop cancels all the scan's incomplete scan tasks and updates the scan status to `aborted`. Tenable Vulnerability Management processes and indexes the completed scan tasks. After you force stop a scan, Tenable recommends re-running the scan in its entirety to ensure total scan coverage. \n\nYou can use the force stop endpoint to abort a stalled scan in the `stopping`, `publishing`, or `resuming` status. This can be helpful when you need to abort a scan before a freeze w"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,223 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Configurations API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Configurations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create scan configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/configs",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new scan configuration.\n\n This operation is asynchronous and returns with an immediate 202. The scan configuration is guaranteed to be created at some point in the immediate future depending on resource load. To track the status of the operation, use the [GET /was/v2/configs/{config_id}/status/{tracking_id}](ref:was-v2-config-status) endpoint. The `config_id` and `tracking_id` can be retrieved from the URI provided in the `Location` header of the `202 Accepted` response. <div class=\"pe"
+        },
+        {
+          "info": {
+            "name": "Get remediation scan configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v3/export/configs/remediation/:vuln_id",
+            "params": [
+              {
+                "name": "vuln_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the vulnerability you want to remediate. You can use the [Search vulnerabilities](ref:was-v2-vulns-search) endpoint or the [Search vulnerabilities for scan](ref:was-v2-scans-details-vulns-search) endpoint to determine the UUID of the vulnerability you want to remediate."
+              }
+            ]
+          },
+          "docs": "Returns a scan configuration for the vulnerability that you want to remediate.\n\n**Note:** This endpoint does not create the remediation scan configuration. Use the response from this endpoint as the request body for the [Create scan config](ref:was-v2-config-create) endpoint to create the remediation scan. <div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. Additionally, requires the Can Edit [64] scan permission. See [Roles](doc"
+        },
+        {
+          "info": {
+            "name": "Search scan configurations",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/configs/search",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`."
+              },
+              {
+                "name": "sort",
+                "value": "last_seen:desc,ipv4:asc",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `name:desc,created_at:asc` would first sort results by the `name` field in descending order and then by the `created_at` field in ascending order."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a list of web application scan configurations. If a scan has been run using the configuration, the list also contains information about the last scan that was run. <div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Get scan configuration details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/configs/:config_id",
+            "params": [
+              {
+                "name": "config_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan configuration that you want to retrieve details for."
+              }
+            ]
+          },
+          "docs": "Returns details for the specified scan configuration.<div class=\"perms-callout\">Requires the Scan Operator [24] user role or the `WAS.SCAN_WAS.READ` custom role privilege. Additionally, requires the Can Execute [32] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Upsert scan configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/configs/:config_id",
+            "params": [
+              {
+                "name": "config_id",
+                "value": "",
+                "type": "path",
+                "description": "If updating an existing scan configuration, the UUID of the scan configuration you want to update. If creating a new scan configuration, a new UUID generated with a tool like `uuidgen`."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates an existing scan configuration or creates a new scan configuration. \n\nThis operation is asynchronous and returns with an immediate 202. The scan configuration is guaranteed to be created at some point in the immediate future depending on resource load. To track the status of the operation, use the [GET /was/v2/configs/{config_id}/status/{tracking_id}](ref:was-v2-config-status) endpoint. The `config_id` and `tracking_id` can be retrieved from the URI provided in the `Location` header of t"
+        },
+        {
+          "info": {
+            "name": "Move scan configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/configs/:config_id",
+            "params": [
+              {
+                "name": "config_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan configuration you want to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Moves the scan configuration to the specified folder. <div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Delete scan configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/configs/:config_id",
+            "params": [
+              {
+                "name": "config_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan configuration you want to delete."
+              }
+            ]
+          },
+          "docs": "Deletes the specified scan configuration and all associated scan history and vulnerabilities. You cannot delete a scan configuration if a scan based on that configuration is currently running.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `WAS.SCAN_WAS.MANAGE` custom role privilege. Additionally, requires the Can Edit [64] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Get scan configuration processing status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/configs/:config_id/status/:tracking_id",
+            "params": [
+              {
+                "name": "config_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan configuration.\n\n**Note:** The `config_id` can be retrieved from the URI provided in the `Location` header of the `202 Accepted` response from the [POST /was/v2/configs](ref:was-v2-config-create) or [PUT /was/v2/configs/{config_id}](ref:was-v2-config-upsert) request used to create or update the scan configuration."
+              },
+              {
+                "name": "tracking_id",
+                "value": "",
+                "type": "path",
+                "description": "The tracking UUID for the request you want to retrieve the status for. \n\n**Note:** The `tracking_id` can be retrieved from the URI provided in the `Location` header of the `202 Accepted` response from the [POST /was/v2/configs](ref:was-v2-config-create) or [PUT /was/v2/configs/{config_id}](ref:was-v2-config-upsert) request used to create or update the scan configuration."
+              }
+            ]
+          },
+          "docs": "Tracks the current status of a scan configuration creation, update, or upsert process. When creating or updating a scan configuration, this endpoint can be used to determine the current status of the request. You can poll this endpoint using a sensible pause duration between each request until a `completed` or `failed` status is returned. \n\nThe `config_id` and `tracking_id` can be retrieved from the URI provided in the `Location` header of the `202 Accepted` response from the [POST /was/v2/confi"
+        },
+        {
+          "info": {
+            "name": "Export scan configuration for CI/CD",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v3/export/configs/:config_id",
+            "params": [
+              {
+                "name": "config_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scan configuration to export in HOCON format for WAS CI/CD mode. You can use the [POST /was/v2/configs/search](ref:was-v2-config-search) endpoint to determine the UUID of the scan configuration you want to export."
+              }
+            ]
+          },
+          "docs": "Downloads the specified scan configuration in HOCON (Human-Optimized Config Object Notation) format for use with WAS Docker images in CI/CD (continuous integration / continuous delivery) mode. \n\nYou can integrate Tenable WAS Docker images with GitHub, GitLab, Jenkins, CircleCI, or Bamboo to scan builds and prevent vulnerabilities before your code and applications are deployed. For more information, see [CI/CD Application Scan Overview](https://docs.tenable.com/web-app-scanning/Content/WAS/Gettin"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

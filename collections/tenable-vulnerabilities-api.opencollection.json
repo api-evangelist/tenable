@@ -1,0 +1,110 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Vulnerabilities API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Vulnerabilities",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Import vulnerabilities v1",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/import/vulnerabilities",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Imports a list of vulnerabilities in JSON format. The request cannot exceed 15 MB in total size. In addition, the request can contain a maximum of 50 asset objects. For request body examples, see [Add Vulnerability Data to Vulnerability Management](doc:add-vulnerability-data-to-tenableio).\n\n**Caution** This endpoint is deprecated. Tenable recommends that you use the [Import vulnerabilities v2](#vulnerabilities-import-v2) endpoint instead.\n\n**Note:** This endpoint can only import Tenable scan dat"
+        },
+        {
+          "info": {
+            "name": "Import vulnerabilities v2",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/api/v2/vulnerabilities",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Imports a list of vulnerabilities in JSON format. The request cannot exceed 15 MB in total size. In addition, the request can contain a maximum of 50 asset objects. For request body examples, see [Add Vulnerability Data to Vulnerability Management](doc:add-vulnerability-data-to-tenableio).\n\n**Note:** This endpoint can only import Tenable scan data. It cannot import vulnerability information from third-party vendors. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles"
+        },
+        {
+          "info": {
+            "name": "Get vulnerability details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/vulnerabilities/:vuln_id",
+            "params": [
+              {
+                "name": "vuln_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the vulnerability instance. To determine the UUID of a vulnerability, use either the [POST /was/v2/vulnerabilities/search](ref:was-v2-vulns-search) endpoint or the [POST /was/v2/scans/{scan_id}/vulnerabilities/search](ref:was-v2-scans-details-vulns-search) endpoint."
+              }
+            ]
+          },
+          "docs": "Returns vulnerability details for a specific vulnerability instance. <div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Search vulnerabilities",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/vulnerabilities/search",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`."
+              },
+              {
+                "name": "sort",
+                "value": "last_seen:desc,ipv4:asc",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `name:desc,created_at:asc` would first sort results by the `name` field in descending order and then by the `created_at` field in ascending order."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a list of vulnerabilities detected by Tenable Web App Scanning API v2 scans.<div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

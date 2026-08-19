@@ -1,0 +1,262 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Networks API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Networks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List networks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/networks",
+            "params": [
+              {
+                "name": "f",
+                "value": "",
+                "type": "query",
+                "description": "A filter condition in the following format: `field:operator:value`. For network objects, you can only filter on the `name` field, using the following operators: \n* eq—The name of the returned network object is equal to the text you specify. \n* neq—The returned list of network objects excludes the network object where the name is equal to the text you specify. \n* match—The returned list includes network objects where the name contains the text you specify at least partially.\n\nYou can specify multiple `f` parameters, separated by ampersand (&) characters. If you specify multiple `f` parameters, use the `ft` parameter to specify how Tenable Vulnerability Management applies the multiple filter conditions."
+              },
+              {
+                "name": "ft",
+                "value": "",
+                "type": "query",
+                "description": "The operator that Tenable Vulnerability Management applies if multiple \\`f\\` parameters are present. The `OR` operator is the only supported value. If you omit this parameter and multiple `f` parameters are present, Tenable Vulnerability Management applies the `OR` operator by default."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `50`."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`."
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:asc` would sort results by the `name` field in ascending order."
+              },
+              {
+                "name": "includeDeleted",
+                "value": "",
+                "type": "query",
+                "description": "Indicates whether Tenable Vulnerability Management includes deleted network objects in the response message. Deleted network objects contain the additional attributes, `deleted` and `deleted_by`, which specifies the date (in Unix time) when the network object was deleted and the UUID of the user that deleted the network object."
+              }
+            ]
+          },
+          "docs": "Lists network objects for your organization.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.NETWORK.READ` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Create network",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/networks",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a network object that you associate with scanners and scanner groups. \n\n**Note:** You cannot add AWS assets to network objects. For AWS assets, use the network segmentation provided by AWS instead.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.NETWORK.CREATE` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get network details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/networks/:network_id",
+            "params": [
+              {
+                "name": "network_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the network object for which you want to view details."
+              }
+            ]
+          },
+          "docs": "Returns the details of the specified network object.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.NETWORK.READ` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Update network",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/networks/:network_id",
+            "params": [
+              {
+                "name": "network_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the network object you want to update. You cannot update the default network object."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the name or description of a network object.\n\n**Note:** The `name` body parameter is required when updating the specified network with this endpoint. To retrieve the `name`, use the [GET /networks/{network_id}](ref:networks-details) endpoint.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.NETWORK.EDIT` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Delete network",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/networks/:network_id",
+            "params": [
+              {
+                "name": "network_id",
+                "value": "",
+                "type": "path",
+                "description": "UUID for the network object you want to delete. You cannot delete the default network object."
+              }
+            ]
+          },
+          "docs": "Deletes the specified network object. Before you delete a network object, consider moving assets to a different network using the bulk asset move endpoint ([POST /api/v2/assets/bulk-jobs/move-to-network](ref:assets-bulk-move)). If you delete a network object, Tenable Vulnerability Management:\n - Returns the scanners and scanner groups associated with the deleted object to the default network object.\n - Retains any asset records for the deleted network until the assets age out of your licensed as"
+        },
+        {
+          "info": {
+            "name": "Get network asset count",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/networks/:network_id/counts/assets-not-seen-in/:num_days",
+            "params": [
+              {
+                "name": "network_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the network object for which you want to view details."
+              },
+              {
+                "name": "num_days",
+                "value": "",
+                "type": "path",
+                "description": "Return a count of assets that have not been seen for the specified number of days.<ul><li>Minimum value: 1</li><li>Maximum value: 365</li></ul> "
+              }
+            ]
+          },
+          "docs": "Returns the total number of assets in the network along with the number of assets that have not been seen for the specified number of days.<p>Requires the Scan Manager [40] user role or `VM.VM_SENSOR.NETWORK.READ` custom role privilege.</p>"
+        },
+        {
+          "info": {
+            "name": "Assign scanners",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/networks/:network_id/scanners/:scanner_uuid",
+            "params": [
+              {
+                "name": "network_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the network object where you want to assign a scanner or scanner group."
+              },
+              {
+                "name": "scanner_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the scanner or scanner group you want to assign to the network object. To get UUID values, use the [GET /networks/{network_id}/assignable-scanners](ref:networks-list-assignable-scanners) endpoint."
+              }
+            ]
+          },
+          "docs": "Associates a scanner or scanner group with a network object. Use this endpoint to:<ul><li>Assign a scanner or scanner group to a custom network object.</li><li>Return a scanner or scanner group to the default network object.</li></ul><div class=\"perms-callout\">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List network scanners",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/networks/:network_id/scanners",
+            "params": [
+              {
+                "name": "network_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the network object for which you want to list assigned scanners and scanner groups."
+              }
+            ]
+          },
+          "docs": "Lists all scanners and scanner groups belonging to the specified network object.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Bulk assign scanners",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/networks/:network_id/scanners",
+            "params": [
+              {
+                "name": "network_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the network object where you want to bulk assign scanners and scanner groups."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Bulk assigns scanners and scanner groups to a custom network. The data in this request payload overwrites the full list of specified scanners and scanner groups previously assigned to the specified network object. If the payload excludes scanners or scanner groups previously assigned to the specified network object, Tenable Vulnerability Management returns those scanners and scanner groups to the default network. You cannot use this endpoint to bulk return scanners and scanner groups from multip"
+        },
+        {
+          "info": {
+            "name": "List assignable scanners",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/networks/:network_id/assignable-scanners",
+            "params": [
+              {
+                "name": "network_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the default network object."
+              }
+            ]
+          },
+          "docs": "Lists all scanners and scanner groups not yet assigned to a custom network object. This list includes all scanner groups within the default network AND any scanners within the default network that do not belong to a scanner group.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

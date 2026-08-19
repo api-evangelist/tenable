@@ -1,0 +1,230 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Shared Collections API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Shared Collections",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List shared collections",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/shared-collections"
+          },
+          "docs": "Returns a list of shared collections that the current user has access to. <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.READ` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Create shared collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/shared-collections",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a shared collection. You can create up to 1,000 total shared collections. \n\nThis request creates an asynchronous job in Tenable Vulnerability Management. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint. <div class=\"perms-callout\">Requires the Scan Operator [24] user role or the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.CREATE` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get shared collection details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/shared-collections/:shared_collection_id",
+            "params": [
+              {
+                "name": "shared_collection_id",
+                "value": "",
+                "type": "path",
+                "description": "The `uuid` of the shared collection to return details for."
+              }
+            ]
+          },
+          "docs": "Returns the details for the specified shared collection. <div class=\"perms-callout\">Requires the Basic [16] user role and the `CAN_VIEW` shared collections permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.READ` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Update shared collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/shared-collections/:shared_collection_id",
+            "params": [
+              {
+                "name": "shared_collection_id",
+                "value": "",
+                "type": "path",
+                "description": "The `uuid` of the shared collection to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates a shared collection. A shared collection can only be updated by the current owner or an administrator. \n\nThis request creates an asynchronous job in Tenable Vulnerability Management. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint.\n\n**Note:** To remove a user or group from a shared collection, update the permission to `REMOVE_USER`. <div class=\"perms-callout\">Requires the Scan Operator [24] user role and the `CAN_EDIT` shared coll"
+        },
+        {
+          "info": {
+            "name": "Delete shared collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/shared-collections/:shared_collection_id",
+            "params": [
+              {
+                "name": "shared_collection_id",
+                "value": "",
+                "type": "path",
+                "description": "The `uuid` of the shared collection to delete."
+              }
+            ]
+          },
+          "docs": "Deletes a shared collection. \n\nThis request creates an asynchronous job in Tenable Vulnerability Management. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint. <div class=\"perms-callout\">Requires the Administrator [64] user role, the `OWNER` shared collections permission, or the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.DELETE` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Get shared collection details by name",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/shared-collections/_byName",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns the details for the specified shared collection by name. <div class=\"perms-callout\">Requires the Basic [16] user role and the `CAN_VEW` shared collections permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.READ` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Get job status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/shared-collections/request-status/:request_status_id",
+            "params": [
+              {
+                "name": "request_status_id",
+                "value": "",
+                "type": "path",
+                "description": "The `request_status_id` or `id` of the asynchronous job you want to retrieve the status for."
+              }
+            ]
+          },
+          "docs": "Retrieves the status of the specified asynchronous shared collections job. \n\nYou can use the `request_status_id` returned in the response of the following endpoints to check the status of the asynchronous job: \n- [Create shared collection](ref:shared-collections-create) \n- [Update shared collection](ref:shared-collections-update) \n- [Delete shared collection](ref:shared-collections-delete) \n- [Add scan configs to shared collection](ref:shared-collections-config-add) \n- [Remove scan configs from "
+        },
+        {
+          "info": {
+            "name": "List scan configs in shared collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/shared-collections/:shared_collection_id/scan-configs",
+            "params": [
+              {
+                "name": "shared_collection_id",
+                "value": "",
+                "type": "path",
+                "description": "The `uuid` of the shared collection to list scan configurations for."
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Determines the sort order of the scan configurations. You must enter the sort order in the following format: \n\n`<sorting_property>:<sorting_order>`\n\n The supported sorting properties are `name` and `last_modification_date`. The supported sorting orders are ascending (`asc`) and descending (`desc`). For example, `name:asc` sorts results by the `name` property in ascending order."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `200`. The minimum value is `0` and the maximum value of `5000`. \n\nIf you need to retrieve more than 5000 records, use the offset parameter to iterate through the page responses."
+              }
+            ]
+          },
+          "docs": "Returns a list of scan configurations in a shared collection. <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.READ` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Add scan configs to shared collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/shared-collections/:shared_collection_id/scan-configs",
+            "params": [
+              {
+                "name": "shared_collection_id",
+                "value": "",
+                "type": "path",
+                "description": "The `uuid` of the shared collection to add scan configurations to."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Adds scan configurations to a shared collection. \n\nThis request creates an asynchronous job in Tenable Vulnerability Management. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint. <div class=\"perms-callout\">Requires the Scan Operator [24] user role and the `CAN_EDIT` shared collections permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.CREATE` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:per"
+        },
+        {
+          "info": {
+            "name": "Remove scan configs from shared collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/shared-collections/:shared_collection_id/scan-configs",
+            "params": [
+              {
+                "name": "shared_collection_id",
+                "value": "",
+                "type": "path",
+                "description": "The `uuid` of the shared collection to remove scan configurations from."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Removes scan configurations from a shared collection. \n\nThis request creates an asynchronous job in Tenable Vulnerability Management. You can query the status of the job with the [Get job status](ref:shared-collections-job-status) endpoint. <div class=\"perms-callout\">Requires the Scan Operator [24] user role and the `CAN_EDIT` shared collections permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN_SHARED_COLLECTION.DELETE` custom role privilege. See [Roles](doc:roles) and [Permissions](do"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

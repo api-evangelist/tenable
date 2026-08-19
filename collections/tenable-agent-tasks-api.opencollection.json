@@ -1,0 +1,214 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Agent Tasks API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Agent Tasks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get agent task status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scanners/null/agents/_bulk/:task_uuid",
+            "params": [
+              {
+                "name": "task_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the task."
+              }
+            ]
+          },
+          "docs": "Returns the status of the specified asynchronous bulk agent task. \n\nUse the `task_id` value returned by supported endpoints to track the progress or completion of the asynchronous task.<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Check agent group operation status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scanners/null/agent-groups/:group_id/agents/_bulk/:task_uuid",
+            "params": [
+              {
+                "name": "group_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID or UUID of the agent group."
+              },
+              {
+                "name": "task_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the task."
+              }
+            ]
+          },
+          "docs": "Check the status of a bulk operation on an agent group.<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Add agents to a group",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scanners/null/agent-groups/:group_id/agents/_bulk/add",
+            "params": [
+              {
+                "name": "group_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID or UUID of the agent group."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a bulk operation task to add agents to a group.<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Remove agents from group",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scanners/null/agent-groups/:group_id/agents/_bulk/remove",
+            "params": [
+              {
+                "name": "group_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID or UUID of the agent group."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a bulk operation task to remove agents from a group.<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Add agents to a network",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scanners/null/agents/_bulk/addToNetwork",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a bulk operation task to add agents to a custom network. <div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Remove agents from network",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scanners/null/agents/_bulk/removeFromNetwork",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a bulk operation task to remove agents from a custom network.\n\n**Note:** Agents that are removed from a custom network will be added to the `Default` network.<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Assign or remove profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scanners/null/agents/_bulk/assignToProfile",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Assigns or removes agents from a profile by creating an asynchronous bulk operation task. \n\n**Note:** You can create an agent profile using the [Create profile](ref:profiles-create) endpoint.<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Send instructions to agents",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scanners/null/agents/_bulk/directive",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create instructions for agents to perform. Instructions include restarting or changing local product settings.<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Send instructions to agents group",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scanners/null/agent-groups/:group_id/agents/_bulk/directive",
+            "params": [
+              {
+                "name": "group_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID or UUID of the agent group."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create instructions for agents in an agent group to perform. Instructions include restarting or changing local product settings.<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Unlink agents",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scanners/null/agents/_bulk/unlink",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a bulk operation task to unlink agents. For more information on unlinked agent data, see [Unlink an Agent](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/UnlinkAnAgent.htm).<div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

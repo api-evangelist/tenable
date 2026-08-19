@@ -1,0 +1,183 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Scan Tasks API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Scan Tasks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Enable schedule",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/schedule",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan you want to enable or disable. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Enables or disables a scan schedule.<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can Execute [32] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Copy scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/copy",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The identifier for the scan you want to copy. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Copies the specified scan.<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can Edit [64] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Convert credentials",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/credentials/:credentials_id/upgrade",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the scan where the scan-specific credentials are currently stored."
+              },
+              {
+                "name": "credentials_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the scan-specific credentials. For more information about determining this ID, see [Convert Scan-specific Credentials to Managed Credentials](doc:convert-scan-specific-credentials-to-managed-credentials)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Converts scan-specific credentials to managed credentials. For more information, see [Convert Scan-specific Credentials to Managed Credentials](doc:convert-scan-specific-credentials-to-managed-credentials). <div class=\"perms-callout\">Requires the Scan Manager [40] user role and Can Edit [64] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Import uploaded scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/import",
+            "params": [
+              {
+                "name": "include_aggregate",
+                "value": "",
+                "type": "query",
+                "description": "Specifies whether to include the imported scan data in the vulnerabilities dashboard views. To include, use `1`. To exclude, use `0`. If you don't specify the include_aggregate parameter, the data does not appear in the dashboard."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Import an existing scan that was previously uploaded using the [POST /file/upload](ref:file-upload) endpoint. Tenable Vulnerability Management supports scan imports up to 4 GB in size. \n\n**Note:** You cannot import results from scans run more than 15 months ago.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get scan count",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/count",
+            "params": [
+              {
+                "name": "active",
+                "value": "",
+                "type": "query",
+                "description": "If `true`, only active scans are counted. If `false`, all active and inactive scans are counted. If this parameter is omitted, Tenable Vulnerability Management defaults to `false`."
+              }
+            ]
+          },
+          "docs": "Returns the total number of scans in your container. You can use the `active` query parameter to return only the number of active scans. <div class=\"perms-callout\">Requires the Basic [16] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Get timezones",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/timezones"
+          },
+          "docs": "Returns the timezones list for creating a recurring scan. For more information, see [Example Assessment Scan: Recurring](doc:example-assessment-scan-recurring).<div class=\"perms-callout\">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Test scan routes",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/check-auto-targets",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Limit the number of missed targets returned in the response."
+              },
+              {
+                "name": "matched_resource_limit",
+                "value": "",
+                "type": "query",
+                "description": "Limit the number of matched resource UUIDs returned in the response."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Evaluates a list of targets and/or tags against the scan route configuration of scanner groups. Returns the list of missed targets (if any) and the list of matched scanner groups (if any).<div class=\"perms-callout\">Requires the Scan Operator [24] user role. See [Roles](doc:roles).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

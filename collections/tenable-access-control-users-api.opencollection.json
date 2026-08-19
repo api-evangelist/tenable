@@ -1,0 +1,345 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Access Control (Users) API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Access Control (Users)",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List users",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/users",
+            "params": [
+              {
+                "name": "withRoles",
+                "value": "",
+                "type": "query",
+                "description": "Specifies whether to include role-based access control (RBAC) role information in the response. If `true`, the system includes an `rbac_roles` array for each user containing the name and UUID of their assigned role. If omitted, the system uses the default value of `false`."
+              }
+            ]
+          },
+          "docs": "Returns a list of users.<div class=\"perms-callout\">Requires the Basic [16] user role. If the requesting user has the Administrator [64] user role, Tenable Vulnerability Management returns all attributes for individual user details. Otherwise, user details include only the `uuid`, `id`, `username`, and `email` attributes. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Create user",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/users",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new user.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get user details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/users/:user_id",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "Specifies the UUID (`uuid`) or unique ID (`id`) of the user."
+              }
+            ]
+          },
+          "docs": "Returns details for a specific user.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Update user",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/users/:user_id",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "Specifies the UUID (`uuid`) or unique ID (`id`) of the user."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates an existing user account.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Delete user",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/users/:user_id",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the user to delete."
+              },
+              {
+                "name": "successor_user_uuid",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the unique identifier (UUID) of the user to assign the deleted user's objects to.\n\n**Note:** Web App Scanning scans created by the deleted user are not automatically reassigned. Reassign WAS scans manually before deleting the user."
+              }
+            ]
+          },
+          "docs": "Deletes a user.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get user role",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/access-control/v1/users/:user_uuid/roles",
+            "params": [
+              {
+                "name": "user_uuid",
+                "value": "",
+                "type": "path",
+                "description": "Specifies the unique identifier (UUID) of the user whose role you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Returns the user role assigned to the specified user. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Change user role",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/access-control/v1/users/:user_uuid/roles",
+            "params": [
+              {
+                "name": "user_uuid",
+                "value": "",
+                "type": "path",
+                "description": "Specifies the unique identifier (UUID) of the user whose role you want to change."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Changes the role for the specified user. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Change password",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/users/:user_uuid/chpasswd",
+            "params": [
+              {
+                "name": "user_uuid",
+                "value": "",
+                "type": "path",
+                "description": "Specifies the unique identifier (UUID) of the user whose password you want to change."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Changes the password for the specified user. \n\nIf you reset a user's password, Tenable Vulnerability Management automatically resets the user's `login_fail_count` and `lockout` attributes to `0`. If you specify that the password is temporary, the user will be forced to reset their password upon next login.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Enable or disable user account",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/users/:user_id/enabled",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "Specifies the unique identifier (UUID) or unique ID of the user."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Enables or disables an existing user account.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get user authorizations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/users/:user_id/authorizations",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "Specifies the unique identifier (UUID) of the user. To determine the user UUID, use the [GET /users](ref:users-list) endpoint."
+              }
+            ]
+          },
+          "docs": "Returns user authorizations for accessing a Tenable Vulnerability Management instance. Access methods include user name and password, single sign-on (SSO) with SAML, and API.\n**Note:** All access methods are authorized by default.\n\nFor background information about managing user authorizations, see [Manage User Access Authorizations](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/ManageUserAccessAuthorizations.htm) in the Tenable Vulnerability Management User Gu"
+        },
+        {
+          "info": {
+            "name": "Update user authorizations",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/users/:user_id/authorizations",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "Specifies the unique identifier (UUID) of the user. To determine the user UUID, use the [GET /users](ref:users-list) endpoint."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates user authorizations for accessing a Tenable Vulnerability Management instance. Use the endpoint to grant and revoke authorizations.\n\n**Note:** You cannot update authorizations for the current user.\n\nFor background information about managing user authorizations, see [Manage User Access Authorizations](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/ManageUserAccessAuthorizations.htm) in the Tenable Vulnerability Management User Guide.<div class=\"perms-cal"
+        },
+        {
+          "info": {
+            "name": "Generate API keys",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/users/:user_id/keys",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "Specifies the unique identifier (UUID) or unique ID of the user."
+              }
+            ]
+          },
+          "docs": "Generates the API keys for a user.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Send verification code",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/users/:user_id/two-factor/send-verification",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "Specifies the unique identifier (UUID) or unique ID of the user."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Sends a one-time verification code to the user's phone number to start the process of enabling two-factor authentication.\n\n **Note:** The workflow for two-factor authentication is as follows:<ol><li>[Send a verification code](ref:users-two-factor-enable).</li><li>[Validate the verification code](ref:users-two-factor-enable-verify).</li><li>[Configure two-factor authentication](ref:users-two-factor).</li></ol><div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:ro"
+        },
+        {
+          "info": {
+            "name": "Validate verification code",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/users/:user_id/two-factor/verify-code",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "Specifies the unique identifier (UUID) or unique ID of the user."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Validate the verification code sent to a phone number. If this request is successful, it enables two-factor authentication for the specified user.\n\n **Note:** The workflow for two-factor authentication is as follows:<ol><li>[Send a verification code](ref:users-two-factor-enable).</li><li>[Validate the verification code](ref:users-two-factor-enable-verify).</li><li>[Configure two-factor authentication](ref:users-two-factor).</li></ol><div class=\"perms-callout\">Requires the Administrator [64] user"
+        },
+        {
+          "info": {
+            "name": "Configure two-factor authentication",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/users/:user_id/two-factor",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "Specifies the unique identifier (UUID) or unique ID of the user."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Enables or disables a user's two-factor authentication settings.\n\n **Note:** The workflow for two-factor authentication is as follows:<ol><li>[Send a verification code](ref:users-two-factor-enable).</li><li>[Validate the verification code](ref:users-two-factor-enable-verify).</li><li>[Configure two-factor authentication](ref:users-two-factor).</li></ol><div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

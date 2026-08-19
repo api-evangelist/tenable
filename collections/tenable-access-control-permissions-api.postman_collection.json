@@ -1,0 +1,3087 @@
+{
+  "item": [
+    {
+      "id": "ae2c68e3-7225-429d-b66b-395a224e8de2",
+      "name": "Access Control (Permissions)",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "a15a4c3c-77b0-4d23-baf4-aa7b3ad99106",
+          "name": "Create permission",
+          "request": {
+            "name": "Create permission",
+            "description": {
+              "content": "Creates a permission that grants the specified actions to the specified subjects on the specified objects.\n\n**Note:** The `AllAssets` object type is only compatible with `CanView`, `CanScan`, or empty actions. The `Tag` and `AllTags` object types are only compatible with `CanUse` and `CanEdit` actions.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "access-control",
+                "permissions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"actions\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"objects\": [\n    {\n      \"type\": \"<string>\",\n      \"uuid\": \"<uuid>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"type\": \"<string>\",\n      \"uuid\": \"<uuid>\",\n      \"name\": \"<string>\"\n    }\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"<string>\",\n      \"uuid\": \"<uuid>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"type\": \"<string>\",\n      \"uuid\": \"<uuid>\",\n      \"name\": \"<string>\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "933ed021-040c-4c6f-957d-2f7f8ccb4ec9",
+              "name": "Returned if the permission was created successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"UserGroup\",\n      \"uuid\": \"00000000-0000-0000-0000-000000000000\",\n      \"name\": \"All Users\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n      \"name\": \"Environment,Production\"\n    },\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"c3d4e5f6-a7b8-9012-cdef-234567890abc\",\n      \"name\": \"Location,Headquarters\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"permission_uuid\": \"f6a7b8c9-d0e1-2345-f678-90abcdef1234\",\n  \"name\": \"Security Team Tag Access\",\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"UserGroup\",\n      \"uuid\": \"00000000-0000-0000-0000-000000000000\",\n      \"name\": \"All Users\"\n    }\n  ],\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"objects\": [\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n      \"name\": \"Environment:Production\"\n    },\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"c3d4e5f6-a7b8-9012-cdef-234567890abc\",\n      \"name\": \"Location:Headquarters\"\n    }\n  ],\n  \"created_at\": 1784149965376,\n  \"created_by\": \"admin@example.com\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5f4edb8e-514d-4667-a658-2342546d95c4",
+              "name": "Returned if your request specified invalid parameters or was improperly formatted. For example, if the `AllAssets` object type is used with incompatible actions, if required fields are missing, or if the permission name does not meet the naming requirements.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"UserGroup\",\n      \"uuid\": \"00000000-0000-0000-0000-000000000000\",\n      \"name\": \"All Users\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n      \"name\": \"Environment,Production\"\n    },\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"c3d4e5f6-a7b8-9012-cdef-234567890abc\",\n      \"name\": \"Location,Headquarters\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "5be39fd3-770c-4de5-a561-a12a87bd6cfb",
+              "name": "Returned if the API keys specified in your request are invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"UserGroup\",\n      \"uuid\": \"00000000-0000-0000-0000-000000000000\",\n      \"name\": \"All Users\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n      \"name\": \"Environment,Production\"\n    },\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"c3d4e5f6-a7b8-9012-cdef-234567890abc\",\n      \"name\": \"Location,Headquarters\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 401,\n  \"error\": \"Unauthorized\",\n  \"message\": \"Invalid credentials.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2a484869-cf49-478a-9582-4d9cafdcf523",
+              "name": "Returned if you do not have permission to create permissions. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"UserGroup\",\n      \"uuid\": \"00000000-0000-0000-0000-000000000000\",\n      \"name\": \"All Users\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n      \"name\": \"Environment,Production\"\n    },\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"c3d4e5f6-a7b8-9012-cdef-234567890abc\",\n      \"name\": \"Location,Headquarters\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "d9398eb3-7efd-424c-8353-33b9771e646d",
+              "name": "Returned if a permission with the same name already exists or if the permission scope overlaps with an existing permission.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"UserGroup\",\n      \"uuid\": \"00000000-0000-0000-0000-000000000000\",\n      \"name\": \"All Users\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n      \"name\": \"Environment,Production\"\n    },\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"c3d4e5f6-a7b8-9012-cdef-234567890abc\",\n      \"name\": \"Location,Headquarters\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Name already exists\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ac3a0177-bb76-4b2e-8c3d-9900cd9b34d7",
+              "name": "Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/html"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"UserGroup\",\n      \"uuid\": \"00000000-0000-0000-0000-000000000000\",\n      \"name\": \"All Users\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n      \"name\": \"Environment,Production\"\n    },\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"c3d4e5f6-a7b8-9012-cdef-234567890abc\",\n      \"name\": \"Location,Headquarters\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/html"
+                }
+              ],
+              "body": "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "24dfe444-a875-4009-95c9-3e3b880547e8",
+              "name": "Returned if an internal error occurred.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"UserGroup\",\n      \"uuid\": \"00000000-0000-0000-0000-000000000000\",\n      \"name\": \"All Users\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n      \"name\": \"Environment,Production\"\n    },\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"c3d4e5f6-a7b8-9012-cdef-234567890abc\",\n      \"name\": \"Location,Headquarters\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred. Please wait a moment and try your request again.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "86cfce71-8f5d-4242-b137-ec6e49e6fd90",
+          "name": "List permissions",
+          "request": {
+            "name": "List permissions",
+            "description": {
+              "content": "Lists all permissions defined for your Tenable Vulnerability Management container.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "access-control",
+                "permissions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [
+            {
+              "id": "2974109f-5216-42ad-bd5e-d6aef198a5a5",
+              "name": "Returned if the list of permissions was retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"permissions\": [\n    {\n      \"permission_uuid\": \"00000000-0000-0000-0000-000000000000\",\n      \"name\": \"Administrators\",\n      \"subjects\": [\n        {\n          \"type\": \"AllAdmins\"\n        }\n      ],\n      \"actions\": [\n        \"CanScan\",\n        \"CanView\",\n        \"CanEdit\",\n        \"CanUse\",\n        \"CanViewMssp\",\n        \"CanEditMssp\",\n        \"CanImpersonateAdmin\",\n        \"CanImpersonateScanManager\",\n        \"CanImpersonateScanOperator\"\n      ],\n      \"objects\": [\n        {\n          \"type\": \"AllObjects\"\n        }\n      ]\n    },\n    {\n      \"permission_uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"All Assets [CanScan, CanView]\",\n      \"subjects\": [\n        {\n          \"type\": \"User\",\n          \"uuid\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n          \"name\": \"user@example.com\"\n        },\n        {\n          \"type\": \"UserGroup\",\n          \"uuid\": \"00000000-0000-0000-0000-000000000000\",\n          \"name\": \"All Users\"\n        }\n      ],\n      \"actions\": [\n        \"CanView\",\n        \"CanScan\"\n      ],\n      \"objects\": [\n        {\n          \"type\": \"AllAssets\"\n        }\n      ],\n      \"created_at\": 1648122396493,\n      \"created_by\": \"System\",\n      \"updated_at\": 1782106586733,\n      \"updated_by\": \"admin@example.com\"\n    },\n    {\n      \"permission_uuid\": \"c3d4e5f6-a7b8-9012-cdef-234567890abc\",\n      \"name\": \"Tag 'Location:Headquarters' owner permissions\",\n      \"subjects\": [\n        {\n          \"type\": \"User\",\n          \"uuid\": \"d4e5f6a7-b8c9-0123-def4-567890abcdef\",\n          \"name\": \"user2@example.com\"\n        }\n      ],\n      \"actions\": [\n        \"CanUse\",\n        \"CanEdit\"\n      ],\n      \"objects\": [\n        {\n          \"type\": \"Tag\",\n          \"uuid\": \"e5f6a7b8-c9d0-1234-ef56-7890abcdef12\",\n          \"name\": \"Location:Headquarters\"\n        }\n      ],\n      \"created_at\": 1706909726620,\n      \"created_by\": \"user2@example.com\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "19862040-368e-4b5b-bf06-1a6883b5a56b",
+              "name": "Returned if the API keys specified in your request are invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 401,\n  \"error\": \"Unauthorized\",\n  \"message\": \"Invalid credentials.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a7662e06-5d00-4f75-9a7b-ad060438eed1",
+              "name": "Returned if you do not have permission to list permissions. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "7703b1a1-3f42-458a-8133-aa4d9b0d2b7f",
+              "name": "Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/html"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/html"
+                }
+              ],
+              "body": "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "f9e90fdb-1bc1-4c4c-ab51-a43f7e759e99",
+              "name": "Returned if an internal error occurred.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred. Please wait a moment and try your request again.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "4fa84d76-d839-4231-b825-c18b563b5390",
+          "name": "Get permission details",
+          "request": {
+            "name": "Get permission details",
+            "description": {
+              "content": "Retrieves the details for the specified permission.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "access-control",
+                "permissions",
+                ":permission_uuid"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "permission_uuid",
+                  "description": "(Required) Specifies the unique identifier (UUID) of the permission."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [
+            {
+              "id": "9b185a44-8cc2-482e-8e02-26ed7f4f1246",
+              "name": "Returned if the details for the specified permission were retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"permission_uuid\": \"c3d4e5f6-a7b8-9012-cdef-234567890abc\",\n  \"name\": \"Tag 'Location:Headquarters' owner permissions\",\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"d4e5f6a7-b8c9-0123-def4-567890abcdef\",\n      \"name\": \"user2@example.com\"\n    }\n  ],\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"objects\": [\n    {\n      \"type\": \"Tag\",\n      \"uuid\": \"e5f6a7b8-c9d0-1234-ef56-7890abcdef12\",\n      \"name\": \"Location:Headquarters\"\n    }\n  ],\n  \"created_at\": 1706909726620,\n  \"created_by\": \"user2@example.com\",\n  \"updated_at\": 1758613360591,\n  \"updated_by\": \"admin@example.com\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "8b087a97-25c8-49c7-80d2-a236ab4ca91f",
+              "name": "Returned if your request specified invalid parameters or if your request was improperly formatted.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "784389b5-c3bc-4c66-8b82-0b899556ae5e",
+              "name": "Returned if the API keys specified in your request are invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 401,\n  \"error\": \"Unauthorized\",\n  \"message\": \"Invalid credentials.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "bd068ada-c222-4394-b01c-d1ea356d4553",
+              "name": "Returned if you do not have permission to retrieve permission details. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "802994e5-0d37-4ba8-8db5-060f066aefbb",
+              "name": "Returned if the specified permission was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "1cdb0bf3-694f-425e-b31e-2fc72c08abb8",
+              "name": "Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/html"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/html"
+                }
+              ],
+              "body": "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "006d0550-9b7c-419c-9e4f-70254cf58b7d",
+              "name": "Returned if an internal error occurred.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred. Please wait a moment and try your request again.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "2ec8e4fa-1748-4ee2-9dcc-7c4893377943",
+          "name": "Update permission",
+          "request": {
+            "name": "Update permission",
+            "description": {
+              "content": "Updates the specified permission.\n\n**Note:** This method overwrites the existing permission data. You must include all fields in the request body, not just the fields you want to change.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "access-control",
+                "permissions",
+                ":permission_uuid"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "permission_uuid",
+                  "description": "(Required) Specifies the unique identifier (UUID) of the permission to update."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"actions\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"objects\": [\n    {\n      \"type\": \"<string>\",\n      \"uuid\": \"<uuid>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"type\": \"<string>\",\n      \"uuid\": \"<uuid>\",\n      \"name\": \"<string>\"\n    }\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"<string>\",\n      \"uuid\": \"<uuid>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"type\": \"<string>\",\n      \"uuid\": \"<uuid>\",\n      \"name\": \"<string>\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "701fc931-354e-4259-8e87-8c57980e67ef",
+              "name": "Returned if the specified permission was updated successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"User\",\n      \"uuid\": \"d4e5f6a7-b8c9-0123-def4-567890abcdef\",\n      \"name\": \"user2@example.com\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"AllTags\",\n      \"name\": \"\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "49494fb3-ee5e-4a3a-91c2-a4d751c381c2",
+              "name": "Returned if your request specified invalid parameters or was improperly formatted. For example, if the `AllAssets` object type is used with incompatible actions, if required fields are missing, or if the permission name does not meet the naming requirements.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"User\",\n      \"uuid\": \"d4e5f6a7-b8c9-0123-def4-567890abcdef\",\n      \"name\": \"user2@example.com\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"AllTags\",\n      \"name\": \"\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "6daf3f9e-bc55-4bda-8cf3-7aedea8adfb7",
+              "name": "Returned if the API keys specified in your request are invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"User\",\n      \"uuid\": \"d4e5f6a7-b8c9-0123-def4-567890abcdef\",\n      \"name\": \"user2@example.com\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"AllTags\",\n      \"name\": \"\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 401,\n  \"error\": \"Unauthorized\",\n  \"message\": \"Invalid credentials.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "be75938a-3855-4ba5-b856-36614ea71a8f",
+              "name": "Returned if you do not have permission to update permissions. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"User\",\n      \"uuid\": \"d4e5f6a7-b8c9-0123-def4-567890abcdef\",\n      \"name\": \"user2@example.com\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"AllTags\",\n      \"name\": \"\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "ed435bdb-d627-4935-a08e-25a14777a14f",
+              "name": "Returned if the specified permission was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"User\",\n      \"uuid\": \"d4e5f6a7-b8c9-0123-def4-567890abcdef\",\n      \"name\": \"user2@example.com\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"AllTags\",\n      \"name\": \"\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "36bd6128-f074-4268-b4b6-cd22be7752d2",
+              "name": "Returned if the updated permission name conflicts with an existing permission or if the permission scope overlaps with an existing permission.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"User\",\n      \"uuid\": \"d4e5f6a7-b8c9-0123-def4-567890abcdef\",\n      \"name\": \"user2@example.com\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"AllTags\",\n      \"name\": \"\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Permission scope is overlapping existing permissions\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "79c1d83a-4a9b-4ab0-b511-183f2f714098",
+              "name": "Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/html"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"User\",\n      \"uuid\": \"d4e5f6a7-b8c9-0123-def4-567890abcdef\",\n      \"name\": \"user2@example.com\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"AllTags\",\n      \"name\": \"\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/html"
+                }
+              ],
+              "body": "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "bde102e9-ec32-4590-a835-7f6311178acb",
+              "name": "Returned if an internal error occurred.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Security Team Tag Access\",\n  \"actions\": [\n    \"CanUse\",\n    \"CanEdit\"\n  ],\n  \"subjects\": [\n    {\n      \"type\": \"User\",\n      \"uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"user@example.com\"\n    },\n    {\n      \"type\": \"User\",\n      \"uuid\": \"d4e5f6a7-b8c9-0123-def4-567890abcdef\",\n      \"name\": \"user2@example.com\"\n    }\n  ],\n  \"objects\": [\n    {\n      \"type\": \"AllTags\",\n      \"name\": \"\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred. Please wait a moment and try your request again.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "986f00bd-89b6-4ad4-a8e6-883a61ba9c65",
+          "name": "Delete permission",
+          "request": {
+            "name": "Delete permission",
+            "description": {
+              "content": "Deletes the specified permission.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "access-control",
+                "permissions",
+                ":permission_uuid"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "permission_uuid",
+                  "description": "(Required) Specifies the unique identifier (UUID) of the permission to delete."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE"
+          },
+          "response": [
+            {
+              "id": "12a6c30b-f540-4f27-a0de-6834b93e0ada",
+              "name": "Returned if the permission was deleted successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "8997fa4e-aa6f-4ace-a2dc-0277aeb2765c",
+              "name": "Returned if the API keys specified in your request are invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 401,\n  \"error\": \"Unauthorized\",\n  \"message\": \"Invalid credentials.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "db363851-e896-47bf-885a-f18366a4535d",
+              "name": "Returned if you do not have permission to delete permissions. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "46bfee9d-989b-4dd1-85be-a80cf1a57835",
+              "name": "Returned if the specified permission was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "a8b9410b-13fa-43a6-aac1-cc3c859410a7",
+              "name": "Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/html"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/html"
+                }
+              ],
+              "body": "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "04e44fa7-f89c-4922-a53d-9930d219a241",
+              "name": "Returned if an internal error occurred.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    ":permission_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "permission_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the permission to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred. Please wait a moment and try your request again.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e40d9ad6-f6f5-43fa-b1ae-4410aa5d8c5b",
+          "name": "List user permissions",
+          "request": {
+            "name": "List user permissions",
+            "description": {
+              "content": "Returns the permissions for the specified user.\n\n**Note:** In the response, the `permissions_granted` array lists all permissions granted to the specified user, and the `permissions_available` array lists all permissions available but not applied to the specified user.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "access-control",
+                "permissions",
+                "users",
+                ":user_uuid"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "user_uuid",
+                  "description": "(Required) Specifies the unique identifier (UUID) of the user to list permissions for."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [
+            {
+              "id": "8275ac4a-5d3f-4f7c-a2dc-036785cc4de7",
+              "name": "Returned if the list of permissions for the specified user was retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "users",
+                    ":user_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "user_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the user to list permissions for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"permissions_granted\": [\n    {\n      \"permission_uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"All Assets [CanScan, CanView]\",\n      \"subjects\": [\n        {\n          \"type\": \"UserGroup\",\n          \"uuid\": \"00000000-0000-0000-0000-000000000000\",\n          \"name\": \"All Users\"\n        }\n      ],\n      \"actions\": [\n        \"CanView\",\n        \"CanScan\"\n      ],\n      \"objects\": [\n        {\n          \"type\": \"AllAssets\"\n        }\n      ],\n      \"created_at\": 1648122396493,\n      \"created_by\": \"System\",\n      \"updated_at\": 1782106586733,\n      \"updated_by\": \"admin@example.com\"\n    }\n  ],\n  \"permissions_available\": [\n    {\n      \"permission_uuid\": \"c3d4e5f6-a7b8-9012-cdef-234567890abc\",\n      \"name\": \"Tag 'Location:Headquarters' owner permissions\",\n      \"subjects\": [\n        {\n          \"type\": \"User\",\n          \"uuid\": \"d4e5f6a7-b8c9-0123-def4-567890abcdef\",\n          \"name\": \"user2@example.com\"\n        }\n      ],\n      \"actions\": [\n        \"CanUse\",\n        \"CanEdit\"\n      ],\n      \"objects\": [\n        {\n          \"type\": \"Tag\",\n          \"uuid\": \"e5f6a7b8-c9d0-1234-ef56-7890abcdef12\",\n          \"name\": \"Location:Headquarters\"\n        }\n      ],\n      \"created_at\": 1706909726620,\n      \"created_by\": \"user2@example.com\",\n      \"updated_at\": 1758613360591,\n      \"updated_by\": \"admin@example.com\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0d410cba-0d1e-4871-8349-f71a8bc8c75c",
+              "name": "Returned if the API keys specified in your request are invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "users",
+                    ":user_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "user_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the user to list permissions for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 401,\n  \"error\": \"Unauthorized\",\n  \"message\": \"Invalid credentials.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "618b5a06-b32e-4c0b-b899-8e32ca0a2b25",
+              "name": "Returned if you do not have permission to list user permissions. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "users",
+                    ":user_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "user_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the user to list permissions for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "55261569-1b45-46f1-8a09-ee98a4524b2d",
+              "name": "Returned if the specified user was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "users",
+                    ":user_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "user_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the user to list permissions for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "3232a8b3-6648-4d5d-b881-4a0e628a721f",
+              "name": "Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "users",
+                    ":user_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "user_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the user to list permissions for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/html"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/html"
+                }
+              ],
+              "body": "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "d99fbf97-49b3-4cfb-b670-8b8efc61eb76",
+              "name": "Returned if an internal error occurred.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "users",
+                    ":user_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "user_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the user to list permissions for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred. Please wait a moment and try your request again.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "ab03ac6c-a737-44fd-9980-97794b5ea839",
+          "name": "List user group permissions",
+          "request": {
+            "name": "List user group permissions",
+            "description": {
+              "content": "Returns the permissions for the specified user group.\n\n**Note:** In the response, the `permissions_granted` array lists all permissions granted to the specified user group, and the `permissions_available` array lists all permissions available but not applied to the specified user group.<div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "access-control",
+                "permissions",
+                "user-groups",
+                ":user_group_uuid"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "user_group_uuid",
+                  "description": "(Required) Specifies the unique identifier (UUID) of the user group to list permissions for."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [
+            {
+              "id": "5a376481-fe6a-4a80-bde4-eccf7adf3525",
+              "name": "Returned if the list of user group permissions was retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "user-groups",
+                    ":user_group_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "user_group_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the user group to list permissions for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"permissions_granted\": [\n    {\n      \"permission_uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"All Assets [CanScan, CanView]\",\n      \"subjects\": [\n        {\n          \"type\": \"UserGroup\",\n          \"uuid\": \"f6a7b8c9-d0e1-2345-f678-90abcdef1234\",\n          \"name\": \"Security Team\"\n        }\n      ],\n      \"actions\": [\n        \"CanView\",\n        \"CanScan\"\n      ],\n      \"objects\": [\n        {\n          \"type\": \"AllAssets\"\n        }\n      ],\n      \"created_at\": 1648122396493,\n      \"created_by\": \"System\",\n      \"updated_at\": 1782106586733,\n      \"updated_by\": \"admin@example.com\"\n    }\n  ],\n  \"permissions_available\": [\n    {\n      \"permission_uuid\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n      \"name\": \"Tag 'OS:Windows' owner permissions\",\n      \"subjects\": [\n        {\n          \"type\": \"User\",\n          \"uuid\": \"d4e5f6a7-b8c9-0123-def4-567890abcdef\",\n          \"name\": \"user2@example.com\"\n        }\n      ],\n      \"actions\": [\n        \"CanUse\",\n        \"CanEdit\"\n      ],\n      \"objects\": [\n        {\n          \"type\": \"Tag\",\n          \"uuid\": \"a7b8c9d0-e1f2-3456-7890-abcdef123456\",\n          \"name\": \"OS:Windows\"\n        }\n      ],\n      \"created_at\": 1778588475717,\n      \"created_by\": \"user2@example.com\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2ab4f692-5b93-40b5-b8d1-ec91edcf585c",
+              "name": "Returned if the API keys specified in your request are invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "user-groups",
+                    ":user_group_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "user_group_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the user group to list permissions for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 401,\n  \"error\": \"Unauthorized\",\n  \"message\": \"Invalid credentials.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "512630de-70d0-433d-9444-ead2edd3840f",
+              "name": "Returned if you do not have permission to list user group permissions. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "user-groups",
+                    ":user_group_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "user_group_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the user group to list permissions for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "41c6a669-9f76-4d70-847c-ec99c5e3d966",
+              "name": "Returned if the specified user group was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "user-groups",
+                    ":user_group_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "user_group_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the user group to list permissions for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "93dd6054-dfc4-4430-896b-317aa3c6d81c",
+              "name": "Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "user-groups",
+                    ":user_group_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "user_group_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the user group to list permissions for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/html"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/html"
+                }
+              ],
+              "body": "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "7f1766ba-4284-412a-bd1d-09b929fa728b",
+              "name": "Returned if an internal error occurred.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "user-groups",
+                    ":user_group_uuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "user_group_uuid",
+                      "description": "(Required) Specifies the unique identifier (UUID) of the user group to list permissions for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred. Please wait a moment and try your request again.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "cad7c16e-9a0c-4cf7-b4ad-ead3fec53071",
+          "name": "Get current user permissions",
+          "request": {
+            "name": "Get current user permissions",
+            "description": {
+              "content": "Returns the permissions assigned to the current user.\n\n**Note:** The subjects in the response are redacted to return only the current user and the user groups the current user belongs to. The `permissions_available` array is always empty for this endpoint.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "access-control",
+                "permissions",
+                "users",
+                "me"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [
+            {
+              "id": "29bdcb11-daca-4af0-a4d5-de3462dcffcb",
+              "name": "Returned if the permissions for the current user were retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "users",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"permissions_granted\": [\n    {\n      \"permission_uuid\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"All Assets [CanScan, CanView]\",\n      \"subjects\": [\n        {\n          \"type\": \"UserGroup\",\n          \"uuid\": \"00000000-0000-0000-0000-000000000000\",\n          \"name\": \"All Users\"\n        }\n      ],\n      \"actions\": [\n        \"CanView\",\n        \"CanScan\"\n      ],\n      \"objects\": [\n        {\n          \"type\": \"AllAssets\"\n        }\n      ],\n      \"created_at\": 1648122396493,\n      \"created_by\": \"System\",\n      \"updated_at\": 1782106586733,\n      \"updated_by\": \"admin@example.com\"\n    },\n    {\n      \"permission_uuid\": \"c3d4e5f6-a7b8-9012-cdef-234567890abc\",\n      \"name\": \"Tag 'Location:Headquarters' owner permissions\",\n      \"subjects\": [\n        {\n          \"type\": \"User\",\n          \"uuid\": \"d4e5f6a7-b8c9-0123-def4-567890abcdef\",\n          \"name\": \"user@example.com\"\n        }\n      ],\n      \"actions\": [\n        \"CanUse\",\n        \"CanEdit\"\n      ],\n      \"objects\": [\n        {\n          \"type\": \"Tag\",\n          \"uuid\": \"e5f6a7b8-c9d0-1234-ef56-7890abcdef12\",\n          \"name\": \"Location:Headquarters\"\n        }\n      ],\n      \"created_at\": 1706909726620,\n      \"created_by\": \"user@example.com\"\n    }\n  ],\n  \"permissions_available\": []\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "349706d6-3381-400b-bb84-67493d85d03f",
+              "name": "Returned if the API keys specified in your request are invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "users",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 401,\n  \"error\": \"Unauthorized\",\n  \"message\": \"Invalid credentials.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ad408058-c6ac-46da-86ad-a304badf895f",
+              "name": "Returned if you do not have permission to retrieve permissions for the current user. For more information, see [Roles](doc:roles) and [Permissions](doc:permissions).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "users",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "61a187b9-67f1-46b3-bd13-ba8b20805409",
+              "name": "Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "users",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/html"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/html"
+                }
+              ],
+              "body": "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "d86fe0ce-ef0a-4d71-b8b9-0a8b0114ae92",
+              "name": "Returned if an internal error occurred.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v3",
+                    "access-control",
+                    "permissions",
+                    "users",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred. Please wait a moment and try your request again.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://www.tenable.com/downloads/api/v2",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "Authorization"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "e2393549-0c9a-45b1-96e2-887ff46d9506",
+    "name": "Downloads About Access Control (Permissions) API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.\n\n**Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:\n\n`https://www.tenable.com/downloads/api/v2/pages`.\n\n### Authentication\n\nLike the Downloads website, certain files require authentication to download. When files have a `\"requires_auth\": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:\n```\nAuthorization: Bearer AbCdEf123456\n```\n\nTo access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.\n\nExamples of product downloads that **do not** require authentication include Nessus and Nessus Agents.",
+      "type": "text/plain"
+    }
+  }
+}

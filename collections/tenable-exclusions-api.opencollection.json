@@ -1,0 +1,154 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Exclusions API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Exclusions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List exclusions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/exclusions",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of exclusions to return in the response. If omitted, the system uses the default value of `200`. The maximum allowed value is `500`."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the number of records to skip for offset-based pagination. If omitted, the system uses the default value of `0`. The API does not enforce a maximum limit on the offset value."
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the property and direction used to sort the results. The format is `<property>:<direction>`. Supported properties:\n\n* `name` — The descriptive name of the exclusion.\n* `type` — The operational type of the exclusion, derived from the `schedule.enabled` property. If `schedule.enabled` is `false`, the type evaluates to `Always On`. If `schedule.enabled` is `true`, the type evaluates to `Scheduled`.\n* `last_modification_date` — The date and time the exclusion was last modified."
+              }
+            ]
+          },
+          "docs": "Returns a list of exclusions for your Tenable Vulnerability Management scans.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.READ` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Create exclusion",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/exclusions",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new exclusion.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.CREATE` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Import exclusion",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/exclusions/import",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "file",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Imports exclusions from the [exclusion import file](doc:import-file-formats) provided in your request and returns a list of saved exclusions. \n\n**Note:** This endpoint does not support the `network_id` attribute in exclusion objects for import. Tenable Vulnerability Management automatically assigns imported exclusions to the default network object. To assign imported exclusions to a custom network, use the [Update exclusion](ref:exclusions-edit) endpoint after import. For more information about "
+        },
+        {
+          "info": {
+            "name": "Get exclusion details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/exclusions/:exclusion_id",
+            "params": [
+              {
+                "name": "exclusion_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the exclusion. The value can be either the integer ID or the exclusion UUID."
+              }
+            ]
+          },
+          "docs": "Returns the details for the specified exclusion.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.READ` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Update exclusion",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/exclusions/:exclusion_id",
+            "params": [
+              {
+                "name": "exclusion_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the exclusion. The value can be either the integer ID or the exclusion UUID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified exclusion.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.EDIT` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Delete exclusion",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/exclusions/:exclusion_id",
+            "params": [
+              {
+                "name": "exclusion_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the exclusion. The value can be either the integer ID or the exclusion UUID."
+              }
+            ]
+          },
+          "docs": "Deletes the specified exclusion.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.DELETE` custom role privilege. See [Roles](doc:roles).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

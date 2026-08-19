@@ -1,0 +1,1109 @@
+{
+  "item": [
+    {
+      "id": "df1653f9-8130-4944-bb6f-87ec2b959861",
+      "name": "Attack Path",
+      "description": {
+        "content": "The Tenable Attack Path API enables users to retrieve details about attack path findings and attack path vectors. A Finding is an attack technique that exists in one or more attack paths that lead to one or more critical assets. The Findings tab in Attack Path Analysis takes your data and pairs it with advanced graph analytics and the MITRE ATT&CK® Framework to create Findings, which enables you to understand and act on the unknowns that enable and amplify threat impact on your assets and information. For more information about findings, see [Attack Path](https://docs.tenable.com/exposure-management/Content/exposure-management/attack-path/attack-path.htm) in the _Tenable Exposure Management User Guide._",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "515bba49-7223-45a0-a3c9-7356b45c4513",
+          "name": "Search attack paths",
+          "request": {
+            "name": "Search attack paths",
+            "description": {
+              "content": "Returns a list of the top attack paths leading to critical assets. The response includes details about each attack path, such as associated techniques, nodes, and metadata. This endpoint enables you to use advanced search capabilities, including filtering, sorting, and pagination.\n\n**Note:** Attack paths inherit their status from underlying techniques. To prioritize active threats, the system excludes the following statuses by default:\n- `chain_prevented` — The attack chain is partially fixed.\n- `accepted` — The risk is accepted.\n- `done` — Remediation is complete.\n\nTo retrieve all paths regardless of status, set the `exclude_resolved` parameter to `false`.\n\nFor more information, see [Top Attack Paths](https://docs.tenable.com/exposure-management/Content/attack-path/top-attack-paths.htm) in the _Exposure Management User Guide_. <div class=\"perms-callout\">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.QUERY.SEARCH` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "t1",
+                "apa",
+                "top-attack-paths",
+                "search"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "1000",
+                  "description": "The number of attack path records to retrieve. If omitted, the default value is `1000`. The minimum value is `100` and the maximum value is `10000`."
+                },
+                {
+                  "disabled": false,
+                  "key": "offset",
+                  "value": "0",
+                  "description": "The number of records to skip for offset-based pagination. If omitted, the default value is `0`."
+                },
+                {
+                  "disabled": false,
+                  "key": "sort",
+                  "value": "<string>",
+                  "description": "The property and direction to sort the results by, in the format `property:direction`. For example: `name:asc`, `priority:desc`, or `path_status:asc`. \n\nSupported properties for sorting include `name`, `priority`, and `path_status`."
+                },
+                {
+                  "disabled": false,
+                  "key": "run_ai_summarization",
+                  "value": "false",
+                  "description": "Indicates whether or not to run the AI summarization for missing paths. \n\nGenerative AI enables users to better understand attack paths and their associated risk, and it provides additional insight into the assets affected by the attack paths. \n\nNote that enabling the AI summarization results in slower response times."
+                },
+                {
+                  "disabled": false,
+                  "key": "exclude_resolved",
+                  "value": "true",
+                  "description": "Excludes resolved attack paths from the results. When `true` (default), the system filters out paths with the following `path_status` values:\n\n* `done` — Remediation is complete.\n* `chain_prevented` — The attack chain is partially broken.\n* `accepted` — The risk is accepted.\n\nSet to `false` to include all attack paths regardless of status."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"property\": \"<string>\",\n  \"operator\": \"<string>\",\n  \"value\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "3715096f-17e3-4e90-9102-54973615b392",
+              "name": "Returned if the attack path search results were retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "apa",
+                    "top-attack-paths",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "1000"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "priority:desc"
+                    },
+                    {
+                      "key": "run_ai_summarization",
+                      "value": "false"
+                    },
+                    {
+                      "key": "exclude_resolved",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"operator\": \"AND\",\n  \"value\": [\n    {\n      \"property\": \"priority\",\n      \"operator\": \"gte\",\n      \"value\": 8\n    },\n    {\n      \"property\": \"critical_asset\",\n      \"operator\": \"eq\",\n      \"value\": true\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"vectorId\": \"vec_123\",\n      \"name\": \"High Priority Attack Path\",\n      \"priority\": 9,\n      \"path\": {\n        \"nodes\": [\n          {\n            \"name\": \"Source Asset\",\n            \"full_name\": \"source.example.com\",\n            \"asset_id\": \"asset-123\",\n            \"id\": 1001,\n            \"labels\": [\n              \"Computer\",\n              \"WindowsObject\"\n            ]\n          },\n          {\n            \"name\": \"Target Asset\",\n            \"full_name\": \"target.example.com\",\n            \"asset_id\": \"asset-456\",\n            \"id\": 1002,\n            \"labels\": [\n              \"Computer\",\n              \"CriticalAsset\"\n            ]\n          }\n        ],\n        \"relationships\": [\n          {\n            \"type\": \"ATTACKS\",\n            \"source\": 1001,\n            \"target\": 1002\n          }\n        ]\n      },\n      \"techniques\": [\n        {\n          \"name\": \"Initial Access\",\n          \"full_name\": \"Initial Access Technique\",\n          \"asset_id\": \"asset-123\",\n          \"id\": 2001,\n          \"labels\": [\n            \"Procedure\"\n          ],\n          \"procedure_uuid\": \"uuid-123\"\n        }\n      ],\n      \"summary\": \"Attack path description showing the route from source to critical asset\",\n      \"firstAES\": 8,\n      \"lastACR\": 9,\n      \"path_status\": \"to_do\"\n    }\n  ],\n  \"total\": 1\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "68d99bd8-d73a-46ac-abe2-88dd49984c7f",
+              "name": "Returned if your request specified invalid parameters or if your request was improperly formatted.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "apa",
+                    "top-attack-paths",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "1000"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "priority:desc"
+                    },
+                    {
+                      "key": "run_ai_summarization",
+                      "value": "false"
+                    },
+                    {
+                      "key": "exclude_resolved",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"operator\": \"AND\",\n  \"value\": [\n    {\n      \"property\": \"priority\",\n      \"operator\": \"gte\",\n      \"value\": 8\n    },\n    {\n      \"property\": \"critical_asset\",\n      \"operator\": \"eq\",\n      \"value\": true\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Invalid limit parameter. Must be between 100 and 10000.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "6c2c863b-e81f-4b68-bf97-51e9c20cadbf",
+              "name": "Returned if the API keys specified in your request are invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "apa",
+                    "top-attack-paths",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "1000"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "priority:desc"
+                    },
+                    {
+                      "key": "run_ai_summarization",
+                      "value": "false"
+                    },
+                    {
+                      "key": "exclude_resolved",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"operator\": \"AND\",\n  \"value\": [\n    {\n      \"property\": \"priority\",\n      \"operator\": \"gte\",\n      \"value\": 8\n    },\n    {\n      \"property\": \"critical_asset\",\n      \"operator\": \"eq\",\n      \"value\": true\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 401,\n  \"error\": \"Unauthorized\",\n  \"message\": \"Invalid credentials.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e89cf717-16b2-4ba7-a2c1-0850031f3555",
+              "name": "Returned if you do not have permission to search attack paths.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "apa",
+                    "top-attack-paths",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "1000"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "priority:desc"
+                    },
+                    {
+                      "key": "run_ai_summarization",
+                      "value": "false"
+                    },
+                    {
+                      "key": "exclude_resolved",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"operator\": \"AND\",\n  \"value\": [\n    {\n      \"property\": \"priority\",\n      \"operator\": \"gte\",\n      \"value\": 8\n    },\n    {\n      \"property\": \"critical_asset\",\n      \"operator\": \"eq\",\n      \"value\": true\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 7182,\n  \"error\": \"string\",\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3c499e14-4e36-44f6-8c4e-fff6541a7b20",
+              "name": "Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "apa",
+                    "top-attack-paths",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "1000"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "priority:desc"
+                    },
+                    {
+                      "key": "run_ai_summarization",
+                      "value": "false"
+                    },
+                    {
+                      "key": "exclude_resolved",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/html"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"operator\": \"AND\",\n  \"value\": [\n    {\n      \"property\": \"priority\",\n      \"operator\": \"gte\",\n      \"value\": 8\n    },\n    {\n      \"property\": \"critical_asset\",\n      \"operator\": \"eq\",\n      \"value\": true\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/html"
+                }
+              ],
+              "body": "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "f5fed6b8-a0ae-41b7-813a-9d8390677675",
+              "name": "Returned if an internal error occurred.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "apa",
+                    "top-attack-paths",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "1000"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "priority:desc"
+                    },
+                    {
+                      "key": "run_ai_summarization",
+                      "value": "false"
+                    },
+                    {
+                      "key": "exclude_resolved",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"operator\": \"AND\",\n  \"value\": [\n    {\n      \"property\": \"priority\",\n      \"operator\": \"gte\",\n      \"value\": 8\n    },\n    {\n      \"property\": \"critical_asset\",\n      \"operator\": \"eq\",\n      \"value\": true\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred. Please wait a moment and try your request again.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "3fc67030-6b8e-4669-925f-5dc215994831",
+          "name": "Search attack techniques",
+          "request": {
+            "name": "Search attack techniques",
+            "description": {
+              "content": "Returns a paginated list of the top attack techniques identified within your organization that match the specified search criteria. This endpoint supports advanced filtering, sorting, and metadata enrichment, including MITRE ATT&CK framework mappings and recommended mitigations.\n\n**Note:** To prioritize actionable data, this endpoint applies default filters to results:\n- **Excluded Statuses** — `done`, `accepted`\n- **Excluded States** — `archive`\n\nTo retrieve all techniques, including archived or resolved items, set the `exclude_resolved` parameter to `false`.\n\nFor more information, see [Top Attack Techniques](https://docs.tenable.com/exposure-management/Content/attack-path/top-attack-techniques.htm) in the _Exposure Management User Guide_. <div class=\"perms-callout\">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.QUERY.SEARCH` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "t1",
+                "apa",
+                "top-attack-techniques",
+                "search"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "1000",
+                  "description": "The number of attack technique records to retrieve. If omitted, the default value is `1000`. The minimum value is `100` and the maximum value is `10000`."
+                },
+                {
+                  "disabled": false,
+                  "key": "offset",
+                  "value": "0",
+                  "description": "The number of records to skip for offset-based pagination. If omitted, the default value is `0`."
+                },
+                {
+                  "disabled": false,
+                  "key": "sort",
+                  "value": "<string>",
+                  "description": "The property and direction to sort the results by, in the format `property:direction`. For example: `name:asc` or `priority:desc`. \n\nSupported properties for sorting include `last_updated_at`, `priority`, `mitre_id`, `name`, `technique_name`, `status`, `state`, and `vector_ount`."
+                },
+                {
+                  "disabled": false,
+                  "key": "exclude_resolved",
+                  "value": "true",
+                  "description": "Excludes resolved attack techniques from the results. When `true` (default), the system filters out techniques with the following values:\n\n* Status — `done`, `accepted` \n* State — `archive` \n\nSet to `false` to include all techniques regardless of status or state."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"property\": \"<string>\",\n  \"operator\": \"<string>\",\n  \"value\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "1dbbccfd-c5d4-4ec2-ba62-8af8e1f6193d",
+              "name": "Returned if the attack technique search results were retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "apa",
+                    "top-attack-techniques",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "1000"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "priority:desc"
+                    },
+                    {
+                      "key": "exclude_resolved",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"operator\": \"==\",\n  \"property\": \"priority\",\n  \"value\": \"high\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"mitre_id\": \"attack-pattern--1ecfdab8-7d59-4c98-95d4-dc41970f57fc\",\n      \"mitigations\": [\n        \"Privileged Account Management\",\n        \"User Training\",\n        \"Password Policies\"\n      ],\n      \"malwares\": [\n        \"CosmicDuke\",\n        \"IceApple\"\n      ],\n      \"tools\": [\n        \"Impacket\",\n        \"Pupy\",\n        \"CrackMapExec\",\n        \"gsecdump\",\n        \"Mimikatz\",\n        \"LaZagne\",\n        \"AADInternals\"\n      ],\n      \"name\": \"Remote Desktop Protocol\",\n      \"procedureName\": \"Network Sniffing-10931\",\n      \"priority\": \"high\",\n      \"state\": \"open\",\n      \"status\": \"to_do\",\n      \"tactics\": [\n        \"Lateral Movement\",\n        \"Persistence\"\n      ],\n      \"target\": \"ARCHIE\",\n      \"source\": \"WORKSTATION-01\",\n      \"cause\": \"Weak Authentication\",\n      \"created\": \"2024-06-01T10:30:00.000Z\",\n      \"last_updated_at\": \"2024-06-02T11:29:12.498763Z\",\n      \"serial_id\": \"RDP-001\"\n    }\n  ],\n  \"pagination\": {\n    \"total\": 1,\n    \"offset\": 0,\n    \"limit\": 1000,\n    \"sort\": {\n      \"field\": \"priority\",\n      \"order\": \"desc\"\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5e094996-6c9e-48e2-a6ba-16ab23d8fd3a",
+              "name": "Returned if your request specified invalid parameters or if your request was improperly formatted.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "apa",
+                    "top-attack-techniques",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "1000"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "priority:desc"
+                    },
+                    {
+                      "key": "exclude_resolved",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"operator\": \"==\",\n  \"property\": \"priority\",\n  \"value\": \"high\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Invalid limit parameter. Must be between 100 and 10000.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "30f6b8d4-1ef4-4507-8c69-3ccdb00cb48d",
+              "name": "Returned if the API keys specified in your request are invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "apa",
+                    "top-attack-techniques",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "1000"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "priority:desc"
+                    },
+                    {
+                      "key": "exclude_resolved",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"operator\": \"==\",\n  \"property\": \"priority\",\n  \"value\": \"high\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 401,\n  \"error\": \"Unauthorized\",\n  \"message\": \"Invalid credentials.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d4fdcff0-5202-4f92-b789-a1504ddd2d2a",
+              "name": "Returned if you do not have permission to search attack techniques.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "apa",
+                    "top-attack-techniques",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "1000"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "priority:desc"
+                    },
+                    {
+                      "key": "exclude_resolved",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"operator\": \"==\",\n  \"property\": \"priority\",\n  \"value\": \"high\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 7182,\n  \"error\": \"string\",\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "62fa215e-8f29-4cbb-9475-d45ec5ed5cf3",
+              "name": "Returned if you attempt to send too many requests in a specific period of time. For more information, see [Rate Limiting](doc:rate-limiting).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "apa",
+                    "top-attack-techniques",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "1000"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "priority:desc"
+                    },
+                    {
+                      "key": "exclude_resolved",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/html"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"operator\": \"==\",\n  \"property\": \"priority\",\n  \"value\": \"high\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/html"
+                }
+              ],
+              "body": "<html>\n\n<head>\n    <title>429 Too Many Requests</title>\n</head>\n\n<body bgcolor=\"white\">\n    <center>\n        <h1>429 Too Many Requests</h1>\n    </center>\n    <hr>\n    <center>nginx</center>\n</body>\n\n</html>",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "c89e91cc-545e-479c-bd69-fb21b71c33cd",
+              "name": "Returned if an internal error occurred.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "t1",
+                    "apa",
+                    "top-attack-techniques",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "1000"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "priority:desc"
+                    },
+                    {
+                      "key": "exclude_resolved",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"operator\": \"==\",\n  \"property\": \"priority\",\n  \"value\": \"high\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred. Please wait a moment and try your request again.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://www.tenable.com/downloads/api/v2",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "Authorization"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "28342c43-46cd-40ca-be36-784d2830d5f9",
+    "name": "Downloads About Attack Path API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.\n\n**Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:\n\n`https://www.tenable.com/downloads/api/v2/pages`.\n\n### Authentication\n\nLike the Downloads website, certain files require authentication to download. When files have a `\"requires_auth\": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:\n```\nAuthorization: Bearer AbCdEf123456\n```\n\nTo access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.\n\nExamples of product downloads that **do not** require authentication include Nessus and Nessus Agents.",
+      "type": "text/plain"
+    }
+  }
+}

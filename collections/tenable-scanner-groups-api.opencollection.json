@@ -1,0 +1,224 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Scanner Groups API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Scanner Groups",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List scanner groups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scanner-groups"
+          },
+          "docs": "Lists scanner groups for your Tenable Vulnerability Management instance.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.READ` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Create scanner group",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scanner-groups",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new scanner group. You cannot use this endpoint to:<ul><li>Assign the new scanner group to a network object. Tenable Vulnerability Management automatically assigns new scanner groups to the default network object. To assign a scanner group to a network object, use the [POST /networks/{network_id}/scanners/{scanner_uuid}](ref:networks-assign-scanner) endpoint.</li><li>Configure scan routes for the scanner group. Instead, use the [PUT /scanner-groups/group_id/routes](ref:io-scanner-group"
+        },
+        {
+          "info": {
+            "name": "List scanner group details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scanner-groups/:group_id",
+            "params": [
+              {
+                "name": "group_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the scanner group."
+              }
+            ]
+          },
+          "docs": "Returns details for the specified scanner group.\n\n**Note:** This endpoint does not return details about scan routes configured for the scanner group. For scan routes, use the [GET /scanner-groups/group_id/routes](ref:io-scanner-groups-list-routes) endpoint instead.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.READ` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Update scanner group",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/scanner-groups/:group_id",
+            "params": [
+              {
+                "name": "group_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the scanner group."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates a scanner group. You cannot use this endpoint to:<ul><li>Assign a scanner group to a network object. Instead, use the [POST /networks/{network_id}/scanners/{scanner_uuid}](ref:networks-assign-scanner) endpoint.</li><li>Update scan routes configured for the scanner group. Instead, use the [PUT /scanner-groups/group_id/routes](ref:io-scanner-groups-update-routes) endpoint.</li></ul><div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.EDIT` "
+        },
+        {
+          "info": {
+            "name": "Delete a scanner group",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/scanner-groups/:group_id",
+            "params": [
+              {
+                "name": "group_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the scanner group."
+              }
+            ]
+          },
+          "docs": "Deletes a scanner group.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.DELETE` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List scanners within scanner group",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scanner-groups/:group_id/scanners",
+            "params": [
+              {
+                "name": "group_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the scanner group."
+              }
+            ]
+          },
+          "docs": "Lists scanners associated with the scanner group.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Add scanner to scanner group",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/scanner-groups/:group_id/scanners/:scanner_id",
+            "params": [
+              {
+                "name": "group_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the scanner group."
+              },
+              {
+                "name": "scanner_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the scanner to add to the scanner group."
+              }
+            ]
+          },
+          "docs": "Adds a scanner to the scanner group. You can use the [GET /scanner-groups/{group_id}/scanners](ref:scanner-groups-list-scanners) endpoint to verify that the scanner has been added to the specified scanner group.<div class=\"perms-callout\">Requires the Basic [16] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Remove scanner from scanner group",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/scanner-groups/:group_id/scanners/:scanner_id",
+            "params": [
+              {
+                "name": "group_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the scanner group."
+              },
+              {
+                "name": "scanner_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the scanner to remove from the scanner group."
+              }
+            ]
+          },
+          "docs": "Remove a scanner from the scanner group.<div class=\"perms-callout\">Requires the Basic [16] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List scan routes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scanner-groups/:group_id/routes",
+            "params": [
+              {
+                "name": "group_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the scanner group. Corresponds to the `id` element in the 200 response for the [GET /scanner-groups](ref:scanner-groups-list) endpoint."
+              }
+            ]
+          },
+          "docs": "List the hostnames, wildcards, IP addresses, and IP address ranges that Tenable Vulnerability Management matches against targets in auto-routed scans. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats). <div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.READ` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Update scan routes",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/scanner-groups/:group_id/routes",
+            "params": [
+              {
+                "name": "group_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the scanner group. Corresponds to the `id` element in the 200 response for the [GET /scanner-groups](ref:scanner-groups-list) endpoint."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the hostnames, hostname wildcards, IP addresses, and IP address ranges that Tenable Vulnerability Management matches against targets in auto-routed scans. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats). <div class=\"perms-callout\">Requires the Scan Manager [40] user role and the Can Edit [64] scan permission. Alternatively, requires the `VM.VM_SENSOR.SCANNER_GROUP.ED"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

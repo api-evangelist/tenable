@@ -1,0 +1,604 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Workbenches API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Workbenches",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List vulnerabilities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/vulnerabilities",
+            "params": [
+              {
+                "name": "date_range",
+                "value": "",
+                "type": "query",
+                "description": "The number of days of data prior to and including today that should be returned."
+              },
+              {
+                "name": "filter.0.filter",
+                "value": "plugin.name",
+                "type": "query",
+                "description": "The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).\n\n**Note:** There is a limit of 10 filters. A `400 Bad Request` error is returned if you exceed this limit."
+              },
+              {
+                "name": "filter.0.quality",
+                "value": "match",
+                "type": "query",
+                "description": "The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.value",
+                "value": "RHEL",
+                "type": "query",
+                "description": "The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).\n\n**Note:** There is a limit of 10 filter values per filter. A `400 Bad Request` error is returned if you exceed this limit."
+              },
+              {
+                "name": "filter.search_type",
+                "value": "",
+                "type": "query",
+                "description": "For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters)."
+              }
+            ]
+          },
+          "docs": "Returns a list of recorded vulnerabilities. The list returned is limited to 5,000. To retrieve more than 5,000 vulnerabilities, use the [export-request API](ref:workbenches-export-request). Additionally, this endpoint only returns data less than 450 days (15 months) old.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your "
+        },
+        {
+          "info": {
+            "name": "Get plugin details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/vulnerabilities/:plugin_id/info",
+            "params": [
+              {
+                "name": "plugin_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the plugin. You can find the plugin ID by examining the output of the [GET /workbenches/vulnerabilities](ref:workbenches-vulnerabilities) endpoint."
+              },
+              {
+                "name": "date_range",
+                "value": "",
+                "type": "query",
+                "description": "The number of days of data prior to and including today that should be returned."
+              },
+              {
+                "name": "filter.0.filter",
+                "value": "plugin.name",
+                "type": "query",
+                "description": "The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.quality",
+                "value": "match",
+                "type": "query",
+                "description": "The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.value",
+                "value": "RHEL",
+                "type": "query",
+                "description": "The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.search_type",
+                "value": "",
+                "type": "query",
+                "description": "For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters)."
+              }
+            ]
+          },
+          "docs": "Retrieves the details for a plugin.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vulnerability d"
+        },
+        {
+          "info": {
+            "name": "List plugin outputs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/vulnerabilities/:plugin_id/outputs",
+            "params": [
+              {
+                "name": "plugin_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the plugin. You can find the plugin ID by examining the output of the [GET /workbenches/vulnerabilities](ref:workbenches-vulnerabilities) endpoint."
+              },
+              {
+                "name": "date_range",
+                "value": "",
+                "type": "query",
+                "description": "The number of days of data prior to and including today that should be returned."
+              },
+              {
+                "name": "filter.0.filter",
+                "value": "plugin.name",
+                "type": "query",
+                "description": "The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.quality",
+                "value": "match",
+                "type": "query",
+                "description": "The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.value",
+                "value": "RHEL",
+                "type": "query",
+                "description": "The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/vulnerabilities](ref:io-filters-vulnerabilities-workbench-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.search_type",
+                "value": "",
+                "type": "query",
+                "description": "For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters)."
+              }
+            ]
+          },
+          "docs": "Retrieves the vulnerability outputs for a plugin. The list returned is limited to 5,000. To retrieve more than 5,000 vulnerability outputs, use the [export-request API](ref:workbenches-export-request). Additionally, this endpoint only returns data less than 450 days (15 months) old.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiti"
+        },
+        {
+          "info": {
+            "name": "List assets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/assets",
+            "params": [
+              {
+                "name": "date_range",
+                "value": "",
+                "type": "query",
+                "description": "The number of days of data prior to and including today that should be returned."
+              },
+              {
+                "name": "filter.0.filter",
+                "value": "plugin.name",
+                "type": "query",
+                "description": "The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. If you specify the name of the filter, you must specify the operator as the filter.0.quality parameter and the value as the filter.0.value parameter. To use multiple filters, increment the `<INDEX>` portion of `filter.<INDEX>.filter`, for example, `filter.0.filter`. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.quality",
+                "value": "match",
+                "type": "query",
+                "description": "The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.value",
+                "value": "RHEL",
+                "type": "query",
+                "description": "The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters).\n\n **Note:** The value is case sensitive when used with the `match` (contains) or `nmatch` (does not contain) operators."
+              },
+              {
+                "name": "filter.search_type",
+                "value": "",
+                "type": "query",
+                "description": "For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "all_fields",
+                "value": "",
+                "type": "query",
+                "description": "Specifies whether to return all asset fields or only the default fields. When this parameter is present in the request (for example, `all_fields=full`), the system returns the full set of asset attributes. When this parameter is absent, the system returns only the default fields. The schema for this endpoint defines the default fields only. For a definition of the full fields, see [Common Asset Attributes](doc:common-asset-attributes)."
+              }
+            ]
+          },
+          "docs": "Retrieves a list of assets. The list can be modified using filters. The list returned is limited to 5,000. To retrieve more than 5,000 assets, use the [Export assets v2](ref:export-assets-v2) endpoint.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to ex"
+        },
+        {
+          "info": {
+            "name": "List assets with vulnerabilities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/assets/vulnerabilities",
+            "params": [
+              {
+                "name": "date_range",
+                "value": "",
+                "type": "query",
+                "description": "The number of days of data prior to and including today that should be returned."
+              },
+              {
+                "name": "filter.0.filter",
+                "value": "plugin.name",
+                "type": "query",
+                "description": "The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.quality",
+                "value": "match",
+                "type": "query",
+                "description": "The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint.For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.value",
+                "value": "RHEL",
+                "type": "query",
+                "description": "The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.search_type",
+                "value": "",
+                "type": "query",
+                "description": "For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters)."
+              }
+            ]
+          },
+          "docs": "Returns a list of assets with vulnerabilities. The list is limited to 5,000. To retrieve more than 5,000 assets, use the [export-request API](ref:workbenches-export-request).\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additional"
+        },
+        {
+          "info": {
+            "name": "Get asset information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/assets/:asset_id/info",
+            "params": [
+              {
+                "name": "asset_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the asset. You can find the UUID by examining the output of the [GET /workbenches/assets](ref:workbenches-assets) endpoint."
+              },
+              {
+                "name": "all_fields",
+                "value": "",
+                "type": "query",
+                "description": "Specifies whether to return all asset fields or only the default fields. When this parameter is present in the request (for example, `all_fields=full`), the system returns the full set of asset attributes. When this parameter is absent, the system returns only the default fields. The schema for this endpoint defines the default fields only. For a definition of the full fields, see [Common Asset Attributes](doc:common-asset-attributes)."
+              }
+            ]
+          },
+          "docs": "Returns information about the specified asset.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large or frequent exports of vuln"
+        },
+        {
+          "info": {
+            "name": "Get asset activity log",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/assets/:asset_uuid/activity",
+            "params": [
+              {
+                "name": "asset_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the asset. You can find the UUID by examining the output of the [GET /workbenches/assets](ref:workbenches-assets) endpoint."
+              }
+            ]
+          },
+          "docs": "Returns the activity log for the specified asset. Event types include:<ul><li>discovered—Asset created (for example, by a network scan or import).</li><li>seen—Asset observed by a network scan without any changes to its attributes.</li><li>tagging—Tag added to or removed from asset.</li><li>attribute_change—A scan identified new or changed attributes for the asset (for example, new software applications installed on the asset).</li><li>updated—Asset updated either manually by a user or automatic"
+        },
+        {
+          "info": {
+            "name": "List asset vulnerabilities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/assets/:asset_id/vulnerabilities",
+            "params": [
+              {
+                "name": "asset_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the asset. You can find the UUID by examining the output of the [GET /workbenches/assets](ref:workbenches-assets) endpoint."
+              },
+              {
+                "name": "date_range",
+                "value": "",
+                "type": "query",
+                "description": "The number of days of data prior to and including today that should be returned."
+              },
+              {
+                "name": "filter.0.filter",
+                "value": "plugin.name",
+                "type": "query",
+                "description": "The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.quality",
+                "value": "match",
+                "type": "query",
+                "description": "The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.value",
+                "value": "RHEL",
+                "type": "query",
+                "description": "The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.search_type",
+                "value": "",
+                "type": "query",
+                "description": "For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters)."
+              }
+            ]
+          },
+          "docs": "Retrieves a list of the vulnerabilities recorded for a specified asset. By default, this list is sorted by vulnerability count in descending order. The list returned is limited to 5,000. To retrieve more than 5,000 vulnerabilities, use the [export-request API](ref:workbenches-export-request).\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurre"
+        },
+        {
+          "info": {
+            "name": "Get asset vulnerability details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/assets/:asset_id/vulnerabilities/:plugin_id/info",
+            "params": [
+              {
+                "name": "asset_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the asset."
+              },
+              {
+                "name": "plugin_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the plugin."
+              },
+              {
+                "name": "date_range",
+                "value": "",
+                "type": "query",
+                "description": "The number of days of data prior to and including today that should be returned."
+              },
+              {
+                "name": "filter.0.filter",
+                "value": "plugin.name",
+                "type": "query",
+                "description": "The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.quality",
+                "value": "match",
+                "type": "query",
+                "description": "The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.value",
+                "value": "RHEL",
+                "type": "query",
+                "description": "The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.search_type",
+                "value": "",
+                "type": "query",
+                "description": "For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters)."
+              }
+            ]
+          },
+          "docs": "Retrieves the details for a vulnerability recorded on a specified asset.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for large o"
+        },
+        {
+          "info": {
+            "name": "List asset vulnerabilities for plugin",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/assets/:asset_id/vulnerabilities/:plugin_id/outputs",
+            "params": [
+              {
+                "name": "asset_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the asset."
+              },
+              {
+                "name": "plugin_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the plugin."
+              },
+              {
+                "name": "date_range",
+                "value": "",
+                "type": "query",
+                "description": "The number of days of data prior to and including today that should be returned."
+              },
+              {
+                "name": "filter.0.filter",
+                "value": "plugin.name",
+                "type": "query",
+                "description": "The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.quality",
+                "value": "match",
+                "type": "query",
+                "description": "The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.value",
+                "value": "RHEL",
+                "type": "query",
+                "description": "The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.search_type",
+                "value": "",
+                "type": "query",
+                "description": "For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters)."
+              }
+            ]
+          },
+          "docs": "Retrieves the vulnerability outputs for a plugin recorded on a specified asset.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, reduce the volume, [rate](doc:rate-limiting), or [concurrency](doc:concurrency-limiting) of your requests or narrow your filters. Contact support if you continue to experience errors. Additionally, Tenable recommends the [POST /vulns/export](ref:exports-vulns-request-export) endpoint for "
+        },
+        {
+          "info": {
+            "name": "Delete asset",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/assets/:asset_uuid",
+            "params": [
+              {
+                "name": "asset_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the asset. You can find the UUID by examining the output of the [GET /workbenches/assets](ref:workbenches-assets) endpoint."
+              }
+            ]
+          },
+          "docs": "Deletes the specified asset. When you delete an asset, Tenable Vulnerability Management deletes vulnerability data associated with the asset. Deleting an asset does not immediately subtract the asset from your licensed assets count. Deleted assets continue to be included in the count until they automatically age out as inactive.\n\n**Caution:** This endpoint is deprecated. Tenable recommends that customers use the [Bulk delete assets](ref:assets-bulk-delete) endpoint instead. Please update any exi"
+        },
+        {
+          "info": {
+            "name": "Export workbench",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/export",
+            "params": [
+              {
+                "name": "format",
+                "value": "",
+                "type": "query",
+                "description": "The file format to use (Nessus, HTML, PDF, or CSV).\n\n**Note:** Tag-based filters are supported for the `CSV` file format type only."
+              },
+              {
+                "name": "report",
+                "value": "",
+                "type": "query",
+                "description": "The type of workbench report to be exported"
+              },
+              {
+                "name": "start_date",
+                "value": "",
+                "type": "query",
+                "description": "The date (in unixtime) at which the exported results should begin to be included. Defaults to today."
+              },
+              {
+                "name": "chapter",
+                "value": "vuln_by_asset",
+                "type": "query",
+                "description": "Semicolon-separated list of chapters to include for vulnerabilities/hosts reports (vuln\\_by\\_plugin, vuln\\_by\\_asset, vuln\\_hosts\\_summary) or a single chapter for Executive Summary (exec\\_summary). Currently, only vuln\\_by\\_asset is supported for .nessus workbench exports."
+              },
+              {
+                "name": "date_range",
+                "value": "",
+                "type": "query",
+                "description": "The number of days of data prior to and including start\\_date that should be returned. If not specified, data for all dates is returned."
+              },
+              {
+                "name": "filter.0.filter",
+                "value": "plugin.name",
+                "type": "query",
+                "description": "The name of the filter to apply to the exported scan report. You can find available filters by using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.quality",
+                "value": "match",
+                "type": "query",
+                "description": "The operator of the filter to apply to the exported scan report. You can find the operators for the filter using the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.0.value",
+                "value": "RHEL",
+                "type": "query",
+                "description": "The value of the filter to apply to the exported scan report. You can find valid values for the filter in the 'control' attribute of the objects returned by the [GET /filters/workbenches/assets](ref:io-filters-assets-list) endpoint. For more information about the format of this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "filter.search_type",
+                "value": "",
+                "type": "query",
+                "description": "For multiple filters, specifies whether to use the AND or the OR logical operator. The default is AND. For more information about this parameter, see [Workbench Filters](doc:workbench-filters)."
+              },
+              {
+                "name": "minimum_vuln_info",
+                "value": "",
+                "type": "query",
+                "description": "When `true`, Tenable Vulnerability Management returns only a minimal subset of scan details for each result, excluding plugin attributes. In this case, only plugin\\_output and vulnerability\\_state fields are always returned; first\\_found, last\\_found and last\\_fixed are also returned if possible."
+              },
+              {
+                "name": "plugin_id",
+                "value": "",
+                "type": "query",
+                "description": "A plugin ID. Restricts the export data to vulnerabilities that only the specified plugin detects."
+              },
+              {
+                "name": "asset_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier of an asset. Restricts the export data to findings on the specified asset only."
+              }
+            ]
+          },
+          "docs": "Exports the specified workbench to a file. Once requested, the file can be downloaded using the [export download](ref:workbenches-export-download) method upon receiving a \"ready\" status from the [export status](ref:workbenches-export-status) method. For more information about workbench export files, see [Export File Formats](doc:export-file-formats).\n\n**Caution:** This endpoint is deprecated. Tenable recommends that customers use the [Create report](ref:vm-reports-create) endpoint instead. Pleas"
+        },
+        {
+          "info": {
+            "name": "Check export status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/export/:file_id/status",
+            "params": [
+              {
+                "name": "file_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the workbench report being exported. The value for this parameter can be obtained from the response of the initial export request."
+              }
+            ]
+          },
+          "docs": "Returns the status of a pending export. When an export has been requested, it is necessary to poll this endpoint until a \"ready\" status is returned, at which point the file is complete and can be downloaded using the [export download](ref:workbenches-export-download) endpoint.\n\n**Caution:** This endpoint is deprecated. Tenable recommends that customers use the [Create report](ref:vm-reports-create) endpoint instead. Please update any existing integrations that your organization has. \n\n **Note:**"
+        },
+        {
+          "info": {
+            "name": "Download export file",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/workbenches/export/:file_id/download",
+            "params": [
+              {
+                "name": "file_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the workbench report being downloaded. The value for this parameter can be obtained from the response of the initial export request."
+              }
+            ]
+          },
+          "docs": "Downloads a file that has been prepared for export. For more information about workbench export files, see [Export File Formats](doc:export-file-formats).\n\n **Caution:** This endpoint is deprecated. Tenable recommends that customers use the [Create report](ref:vm-reports-create) endpoint instead. Please update any existing integrations that your organization has.\n\n **Note:** This endpoint is not intended for large or frequent exports of vulnerability or assets data. If you experience errors, red"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

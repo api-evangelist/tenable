@@ -1,0 +1,115 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Exports (Vulnerabilities) API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Exports (Vulnerabilities)",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Export vulnerabilities",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/vulns/export",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Exports vulnerabilities that match the request criteria. \n\nUsers need at least the Basic [16] user permission or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. The Can View access control permission can be set for all assets with the `All Assets` object. Administrator [64] users can export without the explicit Can View access control permission. \n\nFor more information about this endp"
+        },
+        {
+          "info": {
+            "name": "Get vulnerability export status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/vulns/export/:export_uuid/status",
+            "params": [
+              {
+                "name": "export_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID for the vulnerabilities export request to retrieve the status for."
+              }
+            ]
+          },
+          "docs": "Returns the status of a vulnerability export request. Tenable Vulnerability Management processes the chunks in parallel so the chunks may not complete in order, and the chunk IDs may not be arranged sequentially in the completed output.\n\n **Note:** Output for an individual plugin is limited to 1,024 KB (1 MB). <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List vuln export jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/vulns/export/status"
+          },
+          "docs": "Retrieves a list of vulnerability export jobs. This list includes the 1,000 most recent export jobs regardless of status. However, this list includes completed jobs only if the job completed in the previous three days. <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Download vulnerabilities chunk",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/vulns/export/:export_uuid/chunks/:chunk_id",
+            "params": [
+              {
+                "name": "export_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the export request for which you want to download a chunk."
+              },
+              {
+                "name": "chunk_id",
+                "value": "",
+                "type": "path",
+                "description": "The specific chunk number to retrieve from the export request."
+              }
+            ]
+          },
+          "docs": "Downloads a specific vulnerabilities export chunk. The response content type is `application/octet-stream`.\n\nChunks are available for download for up to 24 hours after they have been created. Tenable Vulnerability Management returns a 404 message for expired chunks. Export chunks do not include an attribute if that attribute is empty in the vulnerability record.\n\nA successful response message contains attributes that correspond to CVSS metrics; these metrics are described fully in the following "
+        },
+        {
+          "info": {
+            "name": "Cancel vuln export",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/vulns/export/:export_uuid/cancel",
+            "params": [
+              {
+                "name": "export_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID for the vulnerabilities export request to cancel."
+              }
+            ]
+          },
+          "docs": "Cancels the specified vulnerability export job. If you cancel an export job, Tenable Vulnerability Management finishes any chunk that is currently processing, terminates the processing of any unprocessed chunks, and updates the job status to `CANCELLED`. If a canceled job includes completed chunks, you can download those chunks for three days after cancellation. <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

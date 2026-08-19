@@ -1,0 +1,179 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Plugins API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Plugins",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List plugins",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/plugins/plugin",
+            "params": [
+              {
+                "name": "last_updated",
+                "value": "",
+                "type": "query",
+                "description": "The last updated date to filter on in the `YYYY-MM-DD` format. Tenable Vulnerability Management returns only the plugins that have been updated after the specified date. \n\n**Note:** This parameter does not take VPR updates into account. If you need to filter the plugin list by VPR update date, you should use a `last_updated` date of `1970-01-01` to return all plugins, and then filter the result set manually based on the `updated` field in the `vpr` object."
+              },
+              {
+                "name": "size",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to include in the result set. Default is 1,000. The maximum size is 10,000."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The index of the page to return relative to the specified page size. For example, to return records 10-19 with page size 10, you must specify page 2. If you omit this parameter, Tenable Vulnerability Management applies the default value of 1."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of Tenable plugins sorted by plugin ID with detailed plugin information.\n\nYou can filter the list on the value of the `last_updated` date field. However, note that the `last_updated` parameter does not take VPR updates into account. See the note on the `last_updated` parameter description for special considerations.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get plugin details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/plugins/plugin/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the plugin."
+              }
+            ]
+          },
+          "docs": "Returns details for a specified plugin.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List plugin families",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/plugins/families",
+            "params": [
+              {
+                "name": "all",
+                "value": "",
+                "type": "query",
+                "description": "Specifies whether to return all plugin families. If `true`, the plugin families hidden in Tenable Vulnerability Management UI, for example, Port Scanners, are included in the list."
+              }
+            ]
+          },
+          "docs": "Returns the list of plugin families.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List plugins in family (ID)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/plugins/families/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the plugin family you want to retrieve the list of plugins for."
+              }
+            ]
+          },
+          "docs": "Returns the list of plugins for the specified family ID.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List plugins in family (name)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/plugins/families/_byName",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns the list of plugins for the specified family name.<div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List plugins",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/plugins",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`."
+              },
+              {
+                "name": "sort",
+                "value": "family:asc;name:desc",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `plugin_id:asc` would sort results by the `plugin_id` field in ascending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `family:asc;name:desc` would first sort results by the `family` field in ascending order and then by the `name` field in descending order."
+              }
+            ]
+          },
+          "docs": "Returns a list of plugins used in Tenable Web App Scanning scans. <div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get plugin details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/plugins/:plugin_id",
+            "params": [
+              {
+                "name": "plugin_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of a Tenable Web App Scanning plugin."
+              }
+            ]
+          },
+          "docs": "Returns details for the specified Tenable Web App Scanning plugin. <div class=\"perms-callout\">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. See [Roles](doc:roles).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

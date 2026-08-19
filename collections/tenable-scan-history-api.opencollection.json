@@ -1,0 +1,125 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Scan History API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Scan History",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get scan history",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/history",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [List scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `50`."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of `0`."
+              },
+              {
+                "name": "sort",
+                "value": "start_date:desc,status:asc",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `start_date:desc` would sort results by the `start_date` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `start_date:desc,status:asc` would first sort results by the `start_date` field in descending order and then by the `status` field in ascending order."
+              },
+              {
+                "name": "exclude_rollover",
+                "value": "",
+                "type": "query",
+                "description": "Indicates whether or not to exclude rollover scans from the scan history. If no value is provided for this parameter, Tenable Vulnerability Management uses the default value `false`."
+              }
+            ]
+          },
+          "docs": "Returns a list of objects, each of which represent an individual run of the specified scan.\n\n**Note:** Scans with `agent_scan_launch_type` set to `triggered` will not have scan history. <div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Get scan history details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/history/:history_uuid",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan in your Tenable Vulnerability Management instance. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              },
+              {
+                "name": "history_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the historical scan result to return details about. This identifier corresponds to the `history.scan_uuid` attribute of the response message from the [Get scan history](ref:scans-history) endpoint."
+              }
+            ]
+          },
+          "docs": "Returns the details of a previous run of the specified scan. Scan details include information about when and where the scan ran, as well as the scan results for the target hosts.<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Delete scan history",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/scans/:scan_id/history/:history_uuid",
+            "params": [
+              {
+                "name": "scan_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the scan. This identifier can be either the `scans.schedule_uuid` or the `scans.id` attribute in the response message from the [GET /scans](ref:scans-list) endpoint. Tenable recommends that you use `scans.schedule_uuid`."
+              },
+              {
+                "name": "history_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the historical data that you want Tenable Vulnerability Management to delete. This identifier corresponds to the `history.scan_uuid` attribute of the response message from the [GET scan history](ref:scans-history) endpoint."
+              },
+              {
+                "name": "delete_rollovers",
+                "value": "",
+                "type": "query",
+                "description": "Indicates whether or not to delete scan rollover history. If `true`, the scan history and its associated rollover scan data are deleted. If `false` or null and the scan has rollover data, you receive a 409 error: \"This scan contains rollover scan data. If you want to delete it and all the associated rollover scan data, use query parameter `delete_rollovers=true`.\""
+              }
+            ]
+          },
+          "docs": "Deletes historical results from a scan. Note that rollover scan data is also deleted.<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can Edit [64] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

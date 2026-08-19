@@ -1,0 +1,193 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Attestations API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Attestations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List attestations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/pci-asv/attestations/list",
+            "params": [
+              {
+                "name": "status_type",
+                "value": "",
+                "type": "query",
+                "description": "Filters the list of PCI attestations by status.\n\nTo retrieve attestations that are currently in progress but have yet to be submitted for review, you can use the following status types:<ul><li>`IN_PROGRESS`—Attestations that are in progress.</li><li>`NEEDS_WORK`—Attestations that require additional work.</li></ul>\n\nTo retrieve attestations that are currently in review, you can use the following status types: <ul><li>`IN_REVIEW`—Attestations that are currently under review.</li><li>`INFO_REQUESTED`—Attestations that require additional information for one or more disputes.</li><li>`INFO_PROVIDED`—Attestations where you have provided additional information but the information is yet to be reviewed.</li></ul>\n\nTo retrieve attestations that have completed the review process, you can use the following status types: <ul><li>`FAILED`—Attestations that have failed review.</li><li>`PASSED`—Attestations that have passed review.</li><li>`CLOSED`—Attestations that are no longer active.</li></ul>"
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `name:desc,started_at:asc` would first sort results by the `name` field in descending order and then by the `started_at` field in ascending order."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable PCI ASV uses the default value of `0`."
+              }
+            ]
+          },
+          "docs": "Returns a list of PCI attestations in PCI ASV.\n\n**Note:** You need to request access to this endpoint through Tenable support even if you have a valid PCI ASV license. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get attestation details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/pci-asv/attestations/details/:attestation_uuid",
+            "params": [
+              {
+                "name": "attestation_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the PCI attestation you want to retrieve details for."
+              }
+            ]
+          },
+          "docs": "Returns the details for the specified PCI attestation.\n\n**Note:** You need to request access to this endpoint through Tenable support even if you have a valid PCI ASV license. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List attestation disputes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/pci-asv/attestations/details/:attestation_uuid/disputes",
+            "params": [
+              {
+                "name": "attestation_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the PCI attestation you want to retrieve disputes for."
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `created_at:desc` would sort results by the `created_at` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `created_at:desc,severity:asc` would first sort results by the `created_at` field in descending order and then by the `severity` field in ascending order."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable PCI ASV uses the default value of `0`."
+              }
+            ]
+          },
+          "docs": "Returns a list of disputes for the specified PCI attestation.\n\n**Note:** You need to request access to this endpoint through Tenable support even if you have a valid PCI ASV license. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List undisputed failures",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/pci-asv/attestations/:attestation_uuid/failures/undisputed/list",
+            "params": [
+              {
+                "name": "attestation_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the PCI attestation you want to retrieve undisputed failures for."
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `asset_name:desc` would sort results by the `asset_name` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `asset_name:desc,severity:asc` would first sort results by the `asset_name` field in descending order and then by the `severity` field in ascending order."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable PCI ASV uses the default value of `0`."
+              }
+            ]
+          },
+          "docs": "Returns a list of undisputed failures of the specified PCI attestation.\n\n**Note:** You need to request access to this endpoint through Tenable support even if you have a valid PCI ASV license. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "List attestation assets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/pci-asv/attestations/:attestation_uuid/assets/list",
+            "params": [
+              {
+                "name": "attestation_uuid",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the PCI attestation you want to retrieve assets for."
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `fqdn:desc` would sort results by the `fqdn` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `fqdn:desc,scan_name:asc` would first sort results by the `fqdn` field in descending order and then by the `scan_name` field in ascending order."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable PCI ASV uses the default value of `0`."
+              }
+            ]
+          },
+          "docs": "Returns a list of PCI assets attested in the specified attestation in PCI ASV.\n\n**Note:** You need to request access to this endpoint through Tenable support even if you have a valid PCI ASV license. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

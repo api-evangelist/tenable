@@ -1,0 +1,663 @@
+{
+  "item": [
+    {
+      "id": "32fffab6-737e-4b9a-87c7-d409b31f00de",
+      "name": "Downloads",
+      "description": {
+        "content": "The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.\n\n**Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:\n\n`https://www.tenable.com/downloads/api/v2/pages`.\n\n### Authentication\n\nLike the Downloads website, certain files require authentication to download. When files have a `\"requires_auth\": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:\n```\nAuthorization: Bearer AbCdEf123456\n```\n\nTo access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.\n\nExamples of product downloads that **do not** require authentication include Nessus and Nessus Agents.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "a371696a-7db6-4d98-a8fc-db3a15d53b61",
+          "name": "List product pages",
+          "request": {
+            "name": "List product pages",
+            "description": {
+              "content": "Returns a list of product pages.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "pages"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "ef408171-7c3e-431e-8462-099cc16a61fa",
+              "name": "Returned if the list of product pages is retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "pages"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"title\": \"Nessus\",\n    \"page_slug\": \"nessus\",\n    \"description\": \"Binary download files for Nessus Professional, Nessus Manager, and connecting Nessus Scanners to Tenable Vulnerability Management & Tenable Security Center.\\n\",\n    \"files_index_url\": \"https://www.tenable.com/downloads/api/v2/pages/nessus\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c729c607-4daa-4909-8e3e-db44ceec4ea3",
+              "name": "Returned if an internal error occurred while processing the request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "pages"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred\",\n  \"trace\": {\n    \"correlationId\": \"ecd926ba-f4be-4cdd-a9bb-4391b1c3689d\",\n    \"traceId\": \"Root=2-abedaa56-32e211f8793b433b55245772\",\n    \"rayId\": \"5623bad2367aa43d-IAD\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b24ab290-d91e-4c1b-ac3e-3d37aa4b2904",
+          "name": "List downloadable files for a product",
+          "request": {
+            "name": "List downloadable files for a product",
+            "description": {
+              "content": "Returns a JSON hash of all download files for a given product page.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "pages",
+                ":slug"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "slug",
+                  "description": "(Required) The product page slug; for example, `nessus`."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "02259a22-be90-4159-89e6-6f8a7ad0b5bc",
+              "name": "Returned if the list of downloadable files for the specified product was retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "pages",
+                    ":slug"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "slug",
+                      "description": "(Required) The product page slug; for example, `nessus`."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"releases\": {\n    \"latest\": {\n      \"Product Name - X.X.X\": [\n        {\n          \"file\": \"Nessus-8.2.1-debian6_i386.deb\",\n          \"version\": \"8.2.1\",\n          \"size\": 67331530,\n          \"release_date\": \"01/24/2019\",\n          \"product_release_date\": \"01/24/2019\",\n          \"md5\": \"098f6bcd4621d373cade4e832627b4f6\",\n          \"sha256\": \"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\",\n          \"file_url\": \"https://www.tenable.com/downloads/api/v2/pages/nessus/files/Nessus-latest-debian6_i386.deb\",\n          \"requires_auth\": false\n        }\n      ]\n    },\n    \"Product Name - X.X.X\": [\n      {\n        \"file\": \"Nessus-8.2.1-debian6_i386.deb\",\n        \"version\": \"8.2.1\",\n        \"size\": 67331530,\n        \"release_date\": \"01/24/2019\",\n        \"product_release_date\": \"01/24/2019\",\n        \"md5\": \"098f6bcd4621d373cade4e832627b4f6\",\n        \"sha256\": \"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\",\n        \"file_url\": \"https://www.tenable.com/downloads/api/v2/pages/nessus/files/Nessus-8.2.1-debian6_i386.deb\",\n        \"requires_auth\": false\n      }\n    ]\n  },\n  \"signing_keys\": [\n    {\n      \"file\": \"Tenable GPG Key - 2048 bit\",\n      \"size\": 1764,\n      \"md5\": \"098f6bcd4621d373cade4e832627b4f6\",\n      \"sha256\": \"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\",\n      \"file_url\": \"https://www.tenable.com/downloads/api/v2/pages/nessus/files/tenable-2048.gpg\",\n      \"requires_auth\": false\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a6eb1744-75ba-459a-9595-fca75800b59b",
+              "name": "Returned if the specified page cannot be found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "pages",
+                    ":slug"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "slug",
+                      "description": "(Required) The product page slug; for example, `nessus`."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"statusCode\": 404,\n  \"error\": \"Not Found\",\n  \"message\": \"Page Not Found\",\n  \"trace\": {\n    \"correlationId\": \"ecd926ba-f4be-4cdd-a9bb-4391b1c3689d\",\n    \"traceId\": \"Root=2-abedaa56-32e211f8793b433b55245772\",\n    \"rayId\": \"5623bad2367aa43d-IAD\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a66adb1c-0f0c-4352-8177-df9edd4903e5",
+              "name": "Returned if an internal error occurred while processing the request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "pages",
+                    ":slug"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "slug",
+                      "description": "(Required) The product page slug; for example, `nessus`."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred\",\n  \"trace\": {\n    \"correlationId\": \"ecd926ba-f4be-4cdd-a9bb-4391b1c3689d\",\n    \"traceId\": \"Root=2-abedaa56-32e211f8793b433b55245772\",\n    \"rayId\": \"5623bad2367aa43d-IAD\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "9d1f34f4-622c-4190-9113-efc89a19d5ac",
+          "name": "Download a file",
+          "request": {
+            "name": "Download a file",
+            "description": {
+              "content": "Downloads a requested file.\n\n**Note:** Some files require an authentication token to download.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "pages",
+                ":slug",
+                "files",
+                ":file"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "slug",
+                  "description": "(Required) The product page slug; for example, `nessus`."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "file",
+                  "description": "(Required) The name of the file; for example, `Nessus-latest-x64.msi`."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "66f9a1d5-2057-4f2a-9ad6-ddfa22f40274",
+              "name": "Returned if the requested file is successfully retrieved.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "pages",
+                    ":slug",
+                    "files",
+                    ":file"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "slug",
+                      "description": "(Required) The product page slug; for example, `nessus`."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "file",
+                      "description": "(Required) The name of the file; for example, `Nessus-latest-x64.msi`."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "03526b55-e18b-4770-808f-42f1fc6578b6",
+              "name": "Returned if a file requires authentication to download and the token is missing or invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "pages",
+                    ":slug",
+                    "files",
+                    ":file"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "slug",
+                      "description": "(Required) The product page slug; for example, `nessus`."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "file",
+                      "description": "(Required) The name of the file; for example, `Nessus-latest-x64.msi`."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthorized\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "dba716b5-540f-4978-9692-cf6eb8ebb7da",
+              "name": "Returned if the specified file cannot be found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "pages",
+                    ":slug",
+                    "files",
+                    ":file"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "slug",
+                      "description": "(Required) The product page slug; for example, `nessus`."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "file",
+                      "description": "(Required) The name of the file; for example, `Nessus-latest-x64.msi`."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"statusCode\": 404,\n  \"error\": \"Not Found\",\n  \"message\": \"Page Not Found\",\n  \"trace\": {\n    \"correlationId\": \"ecd926ba-f4be-4cdd-a9bb-4391b1c3689d\",\n    \"traceId\": \"Root=2-abedaa56-32e211f8793b433b55245772\",\n    \"rayId\": \"5623bad2367aa43d-IAD\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "da67e911-73aa-4590-901c-3a01edea6011",
+              "name": "Returned if an internal error occurred while processing the request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "pages",
+                    ":slug",
+                    "files",
+                    ":file"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "slug",
+                      "description": "(Required) The product page slug; for example, `nessus`."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "file",
+                      "description": "(Required) The name of the file; for example, `Nessus-latest-x64.msi`."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"statusCode\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"An internal server error occurred\",\n  \"trace\": {\n    \"correlationId\": \"ecd926ba-f4be-4cdd-a9bb-4391b1c3689d\",\n    \"traceId\": \"Root=2-abedaa56-32e211f8793b433b55245772\",\n    \"rayId\": \"5623bad2367aa43d-IAD\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://www.tenable.com/downloads/api/v2",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "Authorization"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "b7270b33-9684-4f22-ad8f-d3c7fdcb0e55",
+    "name": "About Downloads API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.\n\n**Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:\n\n`https://www.tenable.com/downloads/api/v2/pages`.\n\n### Authentication\n\nLike the Downloads website, certain files require authentication to download. When files have a `\"requires_auth\": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:\n```\nAuthorization: Bearer AbCdEf123456\n```\n\nTo access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.\n\nExamples of product downloads that **do not** require authentication include Nessus and Nessus Agents.",
+      "type": "text/plain"
+    }
+  }
+}

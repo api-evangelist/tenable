@@ -1,0 +1,172 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Downloads About Templates API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Templates",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Tenable-provided templates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/templates",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`."
+              },
+              {
+                "name": "sort",
+                "value": "last_seen:desc,ipv4:asc",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `name:desc,created_at:asc` would first sort results by the `name` field in descending order and then by the `created_at` field in ascending order."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of Tenable-provided templates that are available to be used for scan configurations.<div class=\"perms-callout\">Requires the Standard [32] user role or the `WAS.SCAN_WAS_SYSTEM_TEMPLATE.USE` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Get Tenable-provided template details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/templates/:template_id",
+            "params": [
+              {
+                "name": "template_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Tenable-provided template resource."
+              }
+            ]
+          },
+          "docs": "Returns the details for a Tenable-provided template. Tenable-provided templates can be used to define scan configurations.<div class=\"perms-callout\">Requires the Standard [32] user role or the `WAS.SCAN_WAS_SYSTEM_TEMPLATE.USE` custom role privilege. See [Roles](doc:roles).</div>"
+        },
+        {
+          "info": {
+            "name": "Search user-defined templates",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/user-templates/search",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`."
+              },
+              {
+                "name": "sort",
+                "value": "last_seen:desc,ipv4:asc",
+                "type": "query",
+                "description": "The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.\n\nIf you specify multiple fields, the fields must be separated by commas. For example, `name:desc,created_at:asc` would first sort results by the `name` field in descending order and then by the `created_at` field in ascending order."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a paginated list of user-defined templates that are available to be used for scan configurations.<div class=\"perms-callout\">Requires either the Scan Operator [24] user role, the `WAS.SCAN_WAS.MANAGE` custom role privilege, or the `WAS.SCAN_WAS_USER_TEMPLATE.READ` custom role privilege. Additionally, requires the Can View [16] scan template (policy) permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Get user-defined template details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/user-templates/:user_template_id",
+            "params": [
+              {
+                "name": "user_template_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the user-defined template."
+              }
+            ]
+          },
+          "docs": "Returns details for a user-defined template. User-defined templates can be used to define scan configurations.<div class=\"perms-callout\">Requires either the Scan Operator [24] user role, the `WAS.SCAN_WAS.MANAGE` custom role privilege, or the `WAS.SCAN_WAS_USER_TEMPLATE.READ` custom role privilege. Additionally, requires the Can View [16] scan template (policy) permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Update user-defined template",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/user-templates/:user_template_id",
+            "params": [
+              {
+                "name": "user_template_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the user-defined template."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified user-defined template.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `WAS.SCAN_WAS_USER_TEMPLATE.MANAGE` custom role privilege. Additionally, requires the Can Edit [64] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+        },
+        {
+          "info": {
+            "name": "Delete user-defined template",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.tenable.com/downloads/api/v2/was/v2/user-templates/:user_template_id",
+            "params": [
+              {
+                "name": "user_template_id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the user-defined template."
+              }
+            ]
+          },
+          "docs": "Deletes the specified user-defined template. You cannot delete a user-defined template if scan configurations currently use the template. You must delete any scan configuration using the template prior to deleting the template. You can delete scan configurations with the [DELETE /was/v2/configs/{config_id}](ref:was-v2-config-delete) endpoint. <div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `WAS.SCAN_WAS_USER_TEMPLATE.MANAGE` custom role privilege. Additionally, require"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
