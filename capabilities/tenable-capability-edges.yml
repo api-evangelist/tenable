@@ -1,0 +1,381 @@
+slug: tenable
+provider: Tenable
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 38
+edges:
+- tag: Vulnerabilities
+  spec_file: tenable-vulnerabilities-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.95
+  evidence: POST /import/vulnerabilities vulnerabilities-import Import vulnerabilities v1; POST /was/v2/vulnerabilities/search
+    was-v2-vulns-search Search vulnerabilities
+  reason: Operations import, search and detail vulnerability findings (schemas Vulnerability, vulnerabilities_vuln_finding)
+    — squarely vulnerability scanning and remediation tracking.
+- tag: Exports (Vulnerabilities)
+  spec_file: tenable-exports-vulnerabilities-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.92
+  evidence: POST /vulns/export  exports-vulns-request-export  Export vulnerabilities; Export_Vulnerabilities_cvss3_vector,
+    Export_Vulnerabilities_software-vuln-fix
+  reason: Operations export vulnerability findings with CVSS/VPR/EPSS scoring and fix data — plainly vulnerability
+    management.
+- tag: Scans
+  spec_file: tenable-scans-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.92
+  evidence: POST /scans 'Create scan'; POST /was/v2/configs/{config_id}/scans 'Launch scan'; GET /pci-asv/scans/list
+    'List PCI scans'; schema VulnerabilityDetails
+  reason: Core create/launch/manage lifecycle of vulnerability and web-application security scans, with
+    VulnerabilityDetails and ReportFindings schemas — plainly Vulnerability Management.
+- tag: Access Control (Permissions)
+  spec_file: tenable-access-control-permissions-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.9
+  evidence: io-v3-access-control-permission-create Create permission; io-v3-access-control-permissions-user-list
+    List user permissions
+  reason: Permission definition and per-user/per-group permission resolution is Identity & Access Management.
+- tag: Access Control (Roles)
+  spec_file: tenable-access-control-roles-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.9
+  evidence: access-control-roles-create Create role; access-control-roles-list-permissions List role permissions
+  reason: Role and role-permission administration (RBAC) is Identity & Access Management.
+- tag: Access Control (Users)
+  spec_file: tenable-access-control-users-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.9
+  evidence: users-create Create user; users-password Change password; users-enabled Enable or disable
+    user account; users-keys Generate API keys
+  reason: User lifecycle, credentials, role assignment and API key issuance are Identity & Access Management
+    operations, not HR employee records.
+- tag: Remediation Scans
+  spec_file: tenable-remediation-scans-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.9
+  evidence: POST /scans/remediation  io-scans-remediation-create  "Create remediation scan"
+  reason: Creating and listing remediation scans to verify that vulnerabilities have been fixed is squarely
+    vulnerability scanning/remediation verification.
+- tag: Workbenches
+  spec_file: tenable-workbenches-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.9
+  evidence: GET /workbenches/assets/vulnerabilities workbenches-assets-vulnerabilities List assets with
+    vulnerabilities; GET /workbenches/vulnerabilities/{plugin_id}/info Get plugin details
+  reason: Read/analysis surface over assets and their vulnerability findings with severity and exploit
+    metadata — vulnerability visibility and remediation prioritisation within Cybersecurity Management.
+- tag: Scan Results
+  spec_file: tenable-scan-results-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.88
+  evidence: GET /scans/{scan_uuid}/hosts/{host_id} 'Get host details'; schemas Scan_Results_host_vulnerability,
+    Scan_Results_host_compliance, Scan_Results_plugin_output
+  reason: Operations retrieve per-host vulnerability and compliance findings and plugin output from security
+    scans — the results side of vulnerability scanning, which is Vulnerability Management under Cybersecurity.
+- tag: Access Control (Groups)
+  spec_file: tenable-access-control-groups-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.85
+  evidence: POST /groups groups-create Create group; POST /groups/{group_uuid}/users/{user_uuid} groups-add-user
+    Add user to group
+  reason: CRUD on user groups and group membership is classic identity and access administration.
+- tag: Exports
+  spec_file: tenable-exports-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.85
+  evidence: POST /was/v1/export/vulns 'Export findings', schemas cvss3_vector, vpr_filter, epss_filter,
+    exploit_framework
+  reason: Bulk export of web-application vulnerability findings with CVSS/VPR/EPSS scoring data — plainly
+    vulnerability management data, despite the export mechanics being technical.
+- tag: Recast Rules
+  spec_file: tenable-recast-rules-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.85
+  evidence: POST /v1/recast/rules  recast-rules-create  "Create recast rule"; schema "recast-rules_recastFilter"
+  reason: Recast rules in Tenable Vulnerability Management adjust the severity of detected vulnerabilities;
+    managing these rules is part of the vulnerability management/remediation-prioritisation practice.
+- tag: Role
+  spec_file: tenable-role-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.85
+  evidence: POST /api/roles  "Create role instance."; PUT /api/roles/{id}/permissions  "Replace permission
+    list for a role"
+  reason: Role and permission-list CRUD, including default roles for user creation, is role-based access
+    control administration — identity and access management.
+- tag: Scan Control
+  spec_file: tenable-scan-control-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.85
+  evidence: POST /scans/{scan_id}/launch  scans-launch  "Launch scan"; "Force stop scan"
+  reason: Launching, pausing, resuming and stopping vulnerability scans is direct operation of the vulnerability
+    scanning capability.
+- tag: Plugins
+  spec_file: tenable-plugins-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.8
+  evidence: GET /plugins/plugin  io-plugins-list  "List plugins"; schemas plugins_cvss_vector, PluginWithMetadata
+  reason: Plugins are Nessus/WAS vulnerability detection checks carrying CVSS vectors and families; listing
+    and inspecting them is core vulnerability management content, not generic software plugins.
+- tag: SAML configuration
+  spec_file: tenable-saml-configuration-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.8
+  evidence: GET /api/saml-configuration  "Get saml-configuration singleton."; "Generates SAML certificate"
+  reason: Configuring SAML single sign-on and its certificate is identity federation administration, i.e.
+    identity & access management (could alternatively be read as tenant identity federation).
+- tag: Scan History
+  spec_file: tenable-scan-history-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.8
+  evidence: GET /scans/{scan_id}/history  scans-history  "Get scan history"
+  reason: Retrieving and deleting the historical runs of vulnerability scans is part of managing the vulnerability
+    scanning lifecycle.
+- tag: Scan Tasks
+  spec_file: tenable-scan-tasks-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.8
+  evidence: PUT /scans/{scan_id}/schedule 'Enable schedule'; POST /scans/import 'Import uploaded scan';
+    POST /scans/check-auto-targets 'Test scan routes'
+  reason: Scheduling, copying, importing and target-routing of vulnerability scans — operational management
+    of the scanning programme.
+- tag: Access Groups v1
+  spec_file: tenable-access-groups-v1-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.78
+  evidence: io-v1-access-groups-create Create access group; GET /access-groups/rules/filters List asset
+    rule filters, schema access-groups_AssetRulePrincipal
+  reason: Access groups with asset rules and principals define which users may see which assets — access
+    authorisation administration.
+- tag: Access Groups v2
+  spec_file: tenable-access-groups-v2-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.78
+  evidence: io-v2-access-groups-create Create access group; schema access-groups_v2_v2-AccessGroupPrincipal
+  reason: 'Version 2 of the same surface: access groups binding principals to asset rules, i.e. access
+    authorisation administration.'
+- tag: Configurations
+  spec_file: tenable-configurations-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.78
+  evidence: POST /was/v2/configs 'Create scan configuration'; GET /api/v3/export/configs/remediation/{vuln_id}
+    'Get remediation scan configuration'
+  reason: Web Application Scanning scan configurations, including a remediation scan keyed by vuln_id
+    and scan schedules/plugin settings, are the setup surface for vulnerability scanning and remediation.
+- tag: Attack Path Exports
+  spec_file: tenable-attack-path-exports-api-openapi.yml
+  capability_id: BC-620
+  capability_id_l1: BC-620
+  capability_name: Cybersecurity Management
+  confidence: 0.75
+  evidence: POST /api/v1/export/attack-path 'Export top attack paths'; POST /api/v1/export/mitre-heatmap
+    'Export MITRE ATT&CK heatmap'
+  reason: Operations export attack-path and MITRE ATT&CK technique analytics — security threat/exposure
+    analysis on the Tenable platform. Clearly Cybersecurity Management at L1; ambiguous between threat
+    detection analytics and vulnerability/exposure management, so no L2 asserted.
+- tag: LDAP configuration
+  spec_file: tenable-ldap-configuration-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.75
+  evidence: GET /api/ldap-configuration    Get ldap-configuration singleton.
+  reason: Configuration of LDAP directory integration for user authentication/directory lookup — identity
+    and access management, though context is thin (no schemas).
+- tag: Permissions
+  spec_file: tenable-permissions-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.75
+  evidence: GET /permissions/{object_type}/{object_id}  permissions-list  "Get object permissions"; schema
+    permissions_ACL_Request
+  reason: ACL read/update on platform objects is access control administration, mapping to Identity &
+    Access Management. Slight ambiguity with tenant-level access configuration keeps it below 0.8.
+- tag: Scan Exports
+  spec_file: tenable-scan-exports-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.75
+  evidence: POST /scans/{scan_id}/export  scans-export-request  "Export scan"; "Download scan export"
+  reason: Exporting and downloading vulnerability scan results delivers scan findings for remediation
+    workflows; mechanics are export-oriented but the payload is vulnerability scan data.
+- tag: Scanners
+  spec_file: tenable-scanners-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.75
+  evidence: GET /scanners 'List scanners'; GET /scanners/{scanner_id}/aws-targets 'List AWS scan targets';
+    GET /scanners/{scanner_id}/scans 'List running scans'
+  reason: Lifecycle and inventory of vulnerability scanner instances and their targets/running scans within
+    Tenable's vulnerability management platform.
+- tag: Agent Exclusions
+  spec_file: tenable-agent-exclusions-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.72
+  evidence: POST /scanners/null/agents/exclusions  agent-exclusions-create  Create agent exclusion
+  reason: Tenable vulnerability-management scanning agents; exclusion windows/schedules govern when agents
+    scan. This is scanning/vulnerability management configuration, so Cybersecurity Management / Vulnerability
+    Management is the honest fit; some ambiguity as it is scheduling configuration.
+- tag: Applications
+  spec_file: tenable-applications-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.72
+  evidence: POST /api/v2/was/applications  was-v2-add-application  Add web application
+  reason: Registers a web application as a scan target in Tenable Web App Scanning; part of vulnerability
+    scanning scope management.
+- tag: Scan Status
+  spec_file: tenable-scan-status-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.72
+  evidence: GET /scans/{scan_id}/latest-status 'Get latest scan status'; GET /scans/{scan_id}/progress
+    'Get scan progress'
+  reason: Status/progress tracking of Tenable vulnerability scans; thin surface (largely operational plumbing)
+    but unambiguously scoped to the vulnerability scanning workflow.
+- tag: Agent Groups
+  spec_file: tenable-agent-groups-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.7
+  evidence: POST /scanners/null/agent-groups  agent-groups-create  Create agent group
+  reason: Grouping of Nessus scanning agents used for vulnerability scanning; organisational plumbing
+    within the vulnerability management capability. Moderate confidence as the operations are pure grouping
+    CRUD.
+- tag: Agents
+  spec_file: tenable-agents-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.7
+  evidence: GET /scanners/null/agents  agents-list  List agents
+  reason: Inventory and lifecycle of Nessus scanning agents that perform vulnerability scans; maps to
+    Vulnerability Management scanning infrastructure.
+- tag: Deviance
+  spec_file: tenable-deviance-api-openapi.yml
+  capability_id: BC-620
+  capability_id_l1: BC-620
+  capability_name: Cybersecurity Management
+  confidence: 0.7
+  evidence: '''Get all deviances for a directory.'', ''Get all deviances related to a single directory
+    and checker.'', ''Update the deviances emitted on a specific AD object'''
+  reason: Deviances are security-check findings raised against Active Directory objects by checkers —
+    identity exposure/security posture findings, i.e. cybersecurity management. Sub-capability (vulnerability
+    vs threat detection) is ambiguous, so L1 only.
+- tag: Exclusions
+  spec_file: tenable-exclusions-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.7
+  evidence: '''Create exclusion'', ''Import exclusion'', schemas exclusions_schedule, exclusions_rrules'
+  reason: Scan exclusion windows/targets with schedules — configuration of the vulnerability scanning
+    programme within Tenable Vulnerability Management.
+- tag: Exports (Assets)
+  spec_file: tenable-exports-assets-api-openapi.yml
+  capability_id: BC-620
+  capability_id_l1: BC-620
+  capability_name: Cybersecurity Management
+  confidence: 0.7
+  evidence: POST /assets/export  export-assets-v1  Export assets v1; Export_Assets_open_ports, Export_Assets_scan
+  reason: Bulk export of scanned security asset inventory from Tenable's vulnerability management platform.
+    Grounded in cybersecurity asset/exposure data; L1 Cybersecurity Management is the honest level since
+    no L2 (vulnerability mgmt) is specifically named by these export operations.
+- tag: Exposure View
+  spec_file: tenable-exposure-view-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.7
+  evidence: GET /api/v1/t1/exposure-view/cards  exposure-view-cards-search; Exposure_View_CESScore, Exposure_View_Asset-Risk-Breakdown,
+    Exposure_View_SLA-Breakdown
+  reason: Cyber exposure scoring, risk breakdown and remediation SLA cards over asset vulnerabilities
+    — exposure/vulnerability posture reporting within cybersecurity management.
+- tag: Inventory
+  spec_file: tenable-inventory-api-openapi.yml
+  capability_id: BC-620
+  capability_id_l1: BC-620
+  capability_name: Cybersecurity Management
+  confidence: 0.7
+  evidence: POST /api/v1/t1/inventory/findings/search  inventory-findings-search  Search findings; Inventory_AssetClasses
+  reason: Search over security asset, software and finding inventory in the exposure-management platform
+    — cybersecurity asset/exposure inventory rather than supply-chain inventory (BC-530 would be a homograph
+    error).
+- tag: Scanner Groups
+  spec_file: tenable-scanner-groups-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.7
+  evidence: POST /scanner-groups 'Create scanner group'; GET /scanner-groups/{group_id}/routes 'List scan
+    routes'
+  reason: Organisation and routing of the vulnerability scanner fleet — infrastructure supporting Tenable's
+    vulnerability scanning capability.
+- tag: Templates
+  spec_file: tenable-templates-api-openapi.yml
+  capability_id: BC-620.40
+  capability_id_l1: BC-620
+  capability_name: Vulnerability Management
+  confidence: 0.7
+  evidence: GET /was/v2/templates was-v2-templates-list List Tenable-provided templates; schemas AuditSettings,
+    PluginSettings, ScopeSettings, AssessmentSettings, Credentials
+  reason: These are Web App Scanning scan-configuration templates (plugin, scope, assessment, credential
+    settings), i.e. configuration of vulnerability scanning activity, which sits under Vulnerability Management.
