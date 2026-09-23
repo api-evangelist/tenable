@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings Access Control (Permissions) API
   version: 1.0.0
-  title: Downloads About Access Control (Permissions) API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Access Control (Permissions)
   x-displayName: Access Control (Permissions)
@@ -41,7 +14,9 @@ paths:
       description: 'Creates a permission that grants the specified actions to the specified subjects on the specified objects.
 
 
-        **Note:** The `AllAssets` object type is only compatible with `CanView`, `CanScan`, or empty actions. The `Tag` and `AllTags` object types are only compatible with `CanUse` and `CanEdit` actions.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+        **Note:** The `AllAssets` object type is only compatible with `CanView`, `CanScan`, or empty actions. The `Tag` and `AllTags` object types are only compatible with `CanUse` and `CanEdit` actions.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-v3-access-control-permission-create
       tags:
       - Access Control (Permissions)
@@ -174,7 +149,9 @@ paths:
       - Access_Control_Permissions_cloud: []
     get:
       summary: List permissions
-      description: Lists all permissions defined for your Tenable Vulnerability Management container.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Lists all permissions defined for your Tenable Vulnerability Management container.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-v3-access-control-permissions-list
       tags:
       - Access Control (Permissions)
@@ -282,7 +259,9 @@ paths:
   /api/v3/access-control/permissions/{permission_uuid}:
     get:
       summary: Get permission details
-      description: Retrieves the details for the specified permission.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Retrieves the details for the specified permission.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-v3-access-control-permissions-details
       tags:
       - Access Control (Permissions)
@@ -366,7 +345,9 @@ paths:
       description: 'Updates the specified permission.
 
 
-        **Note:** This method overwrites the existing permission data. You must include all fields in the request body, not just the fields you want to change.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+        **Note:** This method overwrites the existing permission data. You must include all fields in the request body, not just the fields you want to change.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-v3-access-control-permission-update
       tags:
       - Access Control (Permissions)
@@ -456,7 +437,9 @@ paths:
       - Access_Control_Permissions_cloud: []
     delete:
       summary: Delete permission
-      description: Deletes the specified permission.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Deletes the specified permission.
+
+        Requires the Administrator [64] user role. See Roles.'
       tags:
       - Access Control (Permissions)
       operationId: io-v3-access-control-permission-delete
@@ -515,7 +498,9 @@ paths:
       description: 'Returns the permissions for the specified user.
 
 
-        **Note:** In the response, the `permissions_granted` array lists all permissions granted to the specified user, and the `permissions_available` array lists all permissions available but not applied to the specified user.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+        **Note:** In the response, the `permissions_granted` array lists all permissions granted to the specified user, and the `permissions_available` array lists all permissions available but not applied to the specified user.
+
+        Requires the Administrator [64] user role. See Roles.'
       tags:
       - Access Control (Permissions)
       operationId: io-v3-access-control-permissions-user-list
@@ -615,7 +600,9 @@ paths:
       description: 'Returns the permissions for the specified user group.
 
 
-        **Note:** In the response, the `permissions_granted` array lists all permissions granted to the specified user group, and the `permissions_available` array lists all permissions available but not applied to the specified user group.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+        **Note:** In the response, the `permissions_granted` array lists all permissions granted to the specified user group, and the `permissions_available` array lists all permissions available but not applied to the specified user group.
+
+        Requires the Administrator [64] user role. See Roles.'
       tags:
       - Access Control (Permissions)
       operationId: io-v3-access-control-permissions-user-group-list
@@ -713,7 +700,9 @@ paths:
       description: 'Returns the permissions assigned to the current user.
 
 
-        **Note:** The subjects in the response are redacted to return only the current user and the user groups the current user belongs to. The `permissions_available` array is always empty for this endpoint.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+        **Note:** The subjects in the response are redacted to return only the current user and the user groups the current user belongs to. The `permissions_available` array is always empty for this endpoint.
+
+        Requires the Basic [16] user role. See Roles.'
       tags:
       - Access Control (Permissions)
       operationId: io-v3-access-control-permissions-current-user-list
@@ -796,6 +785,87 @@ paths:
       - Access_Control_Permissions_cloud: []
 components:
   schemas:
+    Access_Control_Permissions_Response-Permission:
+      type: object
+      properties:
+        permission_uuid:
+          description: The unique identifier (UUID) of the permission.
+          type: string
+          format: uuid
+        name:
+          description: The name of the permission.
+          type: string
+        subjects:
+          description: The users or user groups to which the permission is granted.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_PermissionSubject'
+        actions:
+          description: The actions granted by the permission. User-created permissions support `CanScan`, `CanView`, `CanEdit`, and `CanUse`. System-generated administrator permissions may include additional actions such as `CanViewMssp`, `CanEditMssp`, `CanImpersonateAdmin`, `CanImpersonateScanManager`, and `CanImpersonateScanOperator`.
+          type: array
+          items:
+            type: string
+            enum:
+            - CanScan
+            - CanView
+            - CanEdit
+            - CanUse
+            - CanViewMssp
+            - CanEditMssp
+            - CanImpersonateAdmin
+            - CanImpersonateScanManager
+            - CanImpersonateScanOperator
+        objects:
+          description: The objects (tags or assets) to which the permission applies.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_PermissionObject'
+        created_at:
+          description: A timestamp in Unix milliseconds indicating when the permission was created. This property is not present on system-generated permissions (for example, the Administrators permission).
+          type: integer
+          format: int64
+        created_by:
+          description: The username of the user who created the permission, or `System` for system-generated permissions. This property is not present on system-generated permissions that predate audit tracking.
+          type: string
+        updated_at:
+          description: A timestamp in Unix milliseconds indicating when the permission was last updated. This property is only present if the permission has been updated at least once.
+          type: integer
+          format: int64
+        updated_by:
+          description: The username of the user who last updated the permission. This property is only present if the permission has been updated at least once.
+          type: string
+    Access_Control_Permissions_PermissionSubject:
+      type: object
+      properties:
+        type:
+          description: 'Specifies the type of subject. Supported values are:
+
+            * `User` — A specific user. Requires `uuid` and `name`.
+
+            * `UserGroup` — A specific user group. Requires `uuid` and `name`.
+
+            * `AllUsers` — All users in the container. No `uuid` or `name` required.
+
+            * `AllAdmins` — All administrators in the container (system-generated only).'
+          type: string
+          enum:
+          - User
+          - UserGroup
+          - AllUsers
+          - AllAdmins
+        uuid:
+          description: 'Specifies the unique identifier (UUID) of the user or user group.
+
+
+            **Note:** This parameter is valid for subjects of type `User` or `UserGroup` only. This parameter is ignored for the `AllUsers` and `AllAdmins` subject types.'
+          type: string
+          format: uuid
+        name:
+          description: 'Specifies the name of the user or user group.
+
+
+            **Note:** This parameter is valid for subjects of type `User` or `UserGroup` only. This parameter is ignored for the `AllUsers` and `AllAdmins` subject types.'
+          type: string
     Access_Control_Permissions_Request-Permission:
       type: object
       properties:
@@ -853,63 +923,6 @@ components:
       - actions
       - objects
       - subjects
-    Access_Control_Permissions_Response-UserPermissions:
-      type: object
-      properties:
-        permissions_available:
-          description: The permissions available but not currently applied to the specified user or user group.
-          type: array
-          items:
-            $ref: '#/components/schemas/Access_Control_Permissions_Response-Permission'
-        permissions_granted:
-          description: The permissions currently granted to the specified user or user group.
-          type: array
-          items:
-            $ref: '#/components/schemas/Access_Control_Permissions_Response-Permission'
-    Access_Control_Permissions_PermissionSubject:
-      type: object
-      properties:
-        type:
-          description: 'Specifies the type of subject. Supported values are:
-
-            * `User` — A specific user. Requires `uuid` and `name`.
-
-            * `UserGroup` — A specific user group. Requires `uuid` and `name`.
-
-            * `AllUsers` — All users in the container. No `uuid` or `name` required.
-
-            * `AllAdmins` — All administrators in the container (system-generated only).'
-          type: string
-          enum:
-          - User
-          - UserGroup
-          - AllUsers
-          - AllAdmins
-        uuid:
-          description: 'Specifies the unique identifier (UUID) of the user or user group.
-
-
-            **Note:** This parameter is valid for subjects of type `User` or `UserGroup` only. This parameter is ignored for the `AllUsers` and `AllAdmins` subject types.'
-          type: string
-          format: uuid
-        name:
-          description: 'Specifies the name of the user or user group.
-
-
-            **Note:** This parameter is valid for subjects of type `User` or `UserGroup` only. This parameter is ignored for the `AllUsers` and `AllAdmins` subject types.'
-          type: string
-    Access_Control_Permissions_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     Access_Control_Permissions_PermissionObject:
       type: object
       properties:
@@ -942,65 +955,179 @@ components:
 
             **Note:** This parameter is valid for objects of type `Tag` only. Use the format `Category,Value` when passing this parameter in a request. The system returns this value in the format `Category:Value` in responses. This parameter is ignored for the `AllAssets`, `AllTags`, and `AllObjects` types.'
           type: string
-    Access_Control_Permissions_Response-Permission:
+    Access_Control_Permissions_ErrorResponse:
       type: object
       properties:
-        permission_uuid:
-          description: The unique identifier (UUID) of the permission.
-          type: string
-          format: uuid
-        name:
-          description: The name of the permission.
-          type: string
-        subjects:
-          description: The users or user groups to which the permission is granted.
-          type: array
-          items:
-            $ref: '#/components/schemas/Access_Control_Permissions_PermissionSubject'
-        actions:
-          description: The actions granted by the permission. User-created permissions support `CanScan`, `CanView`, `CanEdit`, and `CanUse`. System-generated administrator permissions may include additional actions such as `CanViewMssp`, `CanEditMssp`, `CanImpersonateAdmin`, `CanImpersonateScanManager`, and `CanImpersonateScanOperator`.
-          type: array
-          items:
-            type: string
-            enum:
-            - CanScan
-            - CanView
-            - CanEdit
-            - CanUse
-            - CanViewMssp
-            - CanEditMssp
-            - CanImpersonateAdmin
-            - CanImpersonateScanManager
-            - CanImpersonateScanOperator
-        objects:
-          description: The objects (tags or assets) to which the permission applies.
-          type: array
-          items:
-            $ref: '#/components/schemas/Access_Control_Permissions_PermissionObject'
-        created_at:
-          description: A timestamp in Unix milliseconds indicating when the permission was created. This property is not present on system-generated permissions (for example, the Administrators permission).
+        statusCode:
           type: integer
-          format: int64
-        created_by:
-          description: The username of the user who created the permission, or `System` for system-generated permissions. This property is not present on system-generated permissions that predate audit tracking.
-          type: string
-        updated_at:
-          description: A timestamp in Unix milliseconds indicating when the permission was last updated. This property is only present if the permission has been updated at least once.
+          description: The HTTP status code of the error.
+        error:
           type: integer
-          format: int64
-        updated_by:
-          description: The username of the user who last updated the permission. This property is only present if the permission has been updated at least once.
+          description: The standard HTTP error name.
+        message:
           type: string
+          description: A brief message about the cause of the error.
+    Access_Control_Permissions_Response-UserPermissions:
+      type: object
+      properties:
+        permissions_available:
+          description: The permissions available but not currently applied to the specified user or user group.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_Response-Permission'
+        permissions_granted:
+          description: The permissions currently granted to the specified user or user group.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_Response-Permission'
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

@@ -1,46 +1,30 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: MSSP Portal Domains API
+  description: 'The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Endpoints in the Tenable MSSP Portal API enables customers to view and manage your MSSP customer accounts.
+
+
+    For more information about the Tenable MSSP Portal, see the Tenable MSSP Portal User Guide.'
   version: 1.0.0
-  title: Downloads About Domains API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
+- url: https://cloud.tenable.com
 security:
-- Bearer: []
+- cloud: []
 tags:
 - name: Domains
-  description: "The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Domains endpoints in the Tenable MSSP Portal API enables customers to add domains, list domains, get domain details, update domains, and send activation codes to add domains. \n\nFor more information about the Tenable MSSP Portal, see the [Tenable MSSP Portal User Guide](https://docs.tenable.com/managed-security-service-provider/Content/Welcome.htm)."
+  description: 'The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Domains endpoints in the Tenable MSSP Portal API enables customers to add domains, list domains, get domain details, update domains, and send activation codes to add domains.
+
+
+    For more information about the Tenable MSSP Portal, see the Tenable MSSP Portal User Guide.'
 paths:
   /mssp/domains:
     post:
       tags:
       - Domains
       summary: Add domain
-      description: Adds a new domain to the specified container. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Adds a new domain to the specified container.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-mssp-domains-add
       requestBody:
         required: true
@@ -113,7 +97,9 @@ paths:
       tags:
       - Domains
       summary: List domains
-      description: Returns a list of all child containers and their domains. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Returns a list of all child containers and their domains.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-mssp-domains-list
       responses:
         '200':
@@ -172,7 +158,9 @@ paths:
       tags:
       - Domains
       summary: Get domain details
-      description: Returns a list of domains and their details for the specified account UUID. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Returns a list of domains and their details for the specified account UUID.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-mssp-domains-details-list
       parameters:
       - name: account_uuid
@@ -259,7 +247,9 @@ paths:
       tags:
       - Domains
       summary: Update domain
-      description: Updates a domain associated with the specified account UUID. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Updates a domain associated with the specified account UUID.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-mssp-domains-update
       parameters:
       - name: account_uuid
@@ -339,7 +329,9 @@ paths:
       tags:
       - Domains
       summary: Send activation code
-      description: Sends a verification code to add a domain to a container. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Sends a verification code to add a domain to a container.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-mssp-domains-verification
       requestBody:
         required: true
@@ -397,48 +389,6 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
-    Response-Domains-List-Object:
-      type: object
-      properties:
-        container_uuid:
-          type: string
-          format: uuid
-          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
-          description: The UUID of the child container in the Tenable MSSP Portal.
-        domains:
-          type: array
-          description: An array of domains associated with the container.
-          items:
-            type: string
-        message:
-          type: string
-          description: A short status message about the operation.
-    Request-Domains-Add:
-      type: object
-      required:
-      - container_uuid
-      - domain_name
-      - activation_code
-      properties:
-        container_uuid:
-          type: string
-          format: uuid
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-          description: The UUID of the container to add the new domain to.
-        domain_name:
-          type: string
-          description: The domain you want to add to the container.
-        activation_code:
-          type: string
-          description: The required activation code to add the domain to the specified container.
-    Response-Domains-List:
-      type: object
-      properties:
-        domains_list:
-          description: An array of customer account objects.
-          type: array
-          items:
-            $ref: '#/components/schemas/Response-Domains-List-Object'
     Request-Domains-Verify:
       type: object
       required:
@@ -460,23 +410,6 @@ components:
         is_resend:
           type: boolean
           description: Indicates whether or not to resend the verification code.
-    Response-Domains-Details-List-Object:
-      type: object
-      properties:
-        domain_name:
-          type: string
-          example: example.com
-          description: The name of the domain.
-        status:
-          type: string
-          description: The status of the domain. For example, `ACTIVE`, ACTIVATION_PENDING`, or `DISABLED`.
-        type:
-          type: string
-          description: The type of domain. For example, `PRIMARY` or `SECONDARY`.
-        date_added:
-          type: integer
-          description: The Unix timestamp when the domain was added.
-          format: int64
     ErrorResponse:
       type: object
       properties:
@@ -497,16 +430,73 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Response-Domains-Details-List-Object'
+    Response-Domains-List-Object:
+      type: object
+      properties:
+        container_uuid:
+          type: string
+          format: uuid
+          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
+          description: The UUID of the child container in the Tenable MSSP Portal.
+        domains:
+          type: array
+          description: An array of domains associated with the container.
+          items:
+            type: string
+        message:
+          type: string
+          description: A short status message about the operation.
+    Response-Domains-List:
+      type: object
+      properties:
+        domains_list:
+          description: An array of customer account objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/Response-Domains-List-Object'
+    Request-Domains-Add:
+      type: object
+      required:
+      - container_uuid
+      - domain_name
+      - activation_code
+      properties:
+        container_uuid:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          description: The UUID of the container to add the new domain to.
+        domain_name:
+          type: string
+          description: The domain you want to add to the container.
+        activation_code:
+          type: string
+          description: The required activation code to add the domain to the specified container.
+    Response-Domains-Details-List-Object:
+      type: object
+      properties:
+        domain_name:
+          type: string
+          example: example.com
+          description: The name of the domain.
+        status:
+          type: string
+          description: The status of the domain. For example, `ACTIVE`, ACTIVATION_PENDING`, or `DISABLED`.
+        type:
+          type: string
+          description: The type of domain. For example, `PRIMARY` or `SECONDARY`.
+        date_added:
+          type: integer
+          description: The Unix timestamp when the domain was added.
+          format: int64
   securitySchemes:
-    Bearer:
+    cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

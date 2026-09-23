@@ -1,29 +1,27 @@
 generated: '2026-07-21'
 method: searched
 host: https://www.tenable.com
-documents:
-  - path: /.well-known/security.txt          # RFC 9116
+notes: Only the RFC 9116 security.txt is publicly served (on www.tenable.com). The API host cloud.tenable.com
+  sits behind X-ApiKeys auth and returns 401 for all /.well-known/ probes. No OpenID/OAuth discovery documents
+  are published (Tenable APIs use API-key auth, not OAuth).
+hosts:
+- host: https://www.tenable.com
+  documents:
+  - path: /.well-known/security.txt
     status: 200
     file: tenable-security.txt
-    host: https://www.tenable.com
   - path: /.well-known/openid-configuration
     status: 404
-    host: https://www.tenable.com
   - path: /.well-known/oauth-authorization-server
     status: 404
-    host: https://www.tenable.com
   - path: /.well-known/api-catalog
     status: 404
-    host: https://www.tenable.com
   - path: /.well-known/ai-plugin.json
     status: 404
-    host: https://www.tenable.com
-  # cloud.tenable.com is auth-gated; all /.well-known/* return 401 (behind API auth)
   - path: /.well-known/openid-configuration
     status: 401
-    host: https://cloud.tenable.com
-notes: >-
-  Only the RFC 9116 security.txt is publicly served (on www.tenable.com).
-  The API host cloud.tenable.com sits behind X-ApiKeys auth and returns 401
-  for all /.well-known/ probes. No OpenID/OAuth discovery documents are
-  published (Tenable APIs use API-key auth, not OAuth).
+x-shape-fix:
+  converted: '2026-08-20'
+  from: documents
+  note: Rewritten into hosts[] -> documents[], the only shape well_known_docs() in score.rb reads. A served
+    .well-known surface recorded in any other shape scores as absent.

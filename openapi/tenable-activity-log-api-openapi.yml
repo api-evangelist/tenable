@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings Activity Log API
   version: 1.0.0
-  title: Downloads About Activity Log API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Activity Log
   x-displayName: Activity Log
@@ -38,7 +11,18 @@ paths:
   /audit-log/v1/events:
     get:
       summary: List activity log events
-      description: "Returns a list of activity log events for all users in your organization's Tenable Vulnerability Management account. \n\nEach event includes details such as the timestamp, action taken, actor, and other relevant metadata. You can apply filters to narrow the results and specify the number of events to return. By default, the response includes up to 50 events. \n\nFor more information, see [Activity Logs](doc:vm-activity-log) in the developer documentation. \n\n**Note:** Tenable retains activity log data for three years, after which it is permanently deleted from the database. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+      description: 'Returns a list of activity log events for all users in your organization''s Tenable Vulnerability Management account.
+
+
+        Each event includes details such as the timestamp, action taken, actor, and other relevant metadata. You can apply filters to narrow the results and specify the number of events to return. By default, the response includes up to 50 events.
+
+
+        For more information, see Activity Logs in the developer documentation.
+
+
+        **Note:** Tenable retains activity log data for three years, after which it is permanently deleted from the database.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: audit-log-events
       tags:
       - Activity Log
@@ -265,6 +249,18 @@ paths:
       - activity-log_cloud: []
 components:
   schemas:
+    activity-log_target:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The UUID of the target entity. For example, a user UUID.
+        name:
+          type: string
+          description: The name of the target entity. For example, a username.
+        type:
+          type: string
+          description: The type of entity that was the target of the action. For example, a user.
     activity-log_Response-Pagination:
       description: An object containing pagination information for the current result set.
       type: object
@@ -285,18 +281,15 @@ components:
           description: The total number of events that match the search criteria.
           type: integer
           format: int32
-    activity-log_ErrorResponse:
+    activity-log_actor:
       type: object
       properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
+        id:
           type: string
-          description: The standard HTTP error name.
-        message:
+          description: The UUID of the user that took the action.
+        name:
           type: string
-          description: A brief message about the cause of the error.
+          description: The username of the user that took the action.
     activity-log_Response-Events-Object:
       type: object
       properties:
@@ -336,41 +329,170 @@ components:
         value:
           type: string
           description: A value that corresponds to the key. The exact value varies based on the action that was taken.
-    activity-log_actor:
+    activity-log_ErrorResponse:
       type: object
       properties:
-        id:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
           type: string
-          description: The UUID of the user that took the action.
-        name:
+          description: The standard HTTP error name.
+        message:
           type: string
-          description: The username of the user that took the action.
-    activity-log_target:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The UUID of the target entity. For example, a user UUID.
-        name:
-          type: string
-          description: The name of the target entity. For example, a username.
-        type:
-          type: string
-          description: The type of entity that was the target of the action. For example, a user.
+          description: A brief message about the cause of the error.
     activity-log_fields:
       type: array
       items:
         $ref: '#/components/schemas/activity-log_pair'
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

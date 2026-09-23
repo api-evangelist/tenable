@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings Scanner Profiles API
   version: 1.0.0
-  title: Downloads About Scanner Profiles API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Scanner Profiles
   x-displayName: Scanner Profiles
@@ -38,7 +11,12 @@ paths:
   /scanners/scanners/bulkAssignToProfile:
     post:
       summary: Assign to scanner profile
-      description: "Assigns one or more scanners to a specific scanner profile. This request initiates an asynchronous bulk operation task to process the assignments. \n\n**Note:** You can create a scanner profile using the [Create profile](ref:profiles-create) endpoint.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.EDIT` custom role privilege. See [Roles](doc:roles).</div>"
+      description: 'Assigns one or more scanners to a specific scanner profile. This request initiates an asynchronous bulk operation task to process the assignments.
+
+
+        **Note:** You can create a scanner profile using the Create profile endpoint.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.EDIT` custom role privilege. See Roles.'
       operationId: scanner-profile-assign-bulk
       tags:
       - Scanner Profiles
@@ -126,7 +104,9 @@ paths:
       - Scanner_Profiles_cloud: []
     delete:
       summary: Remove from scanner profile
-      description: Removes one or more scanners from a specific scanner profile. This request initiates an asynchronous bulk operation task to process the removals. <div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.EDIT` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Removes one or more scanners from a specific scanner profile. This request initiates an asynchronous bulk operation task to process the removals.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.EDIT` custom role privilege. See Roles.'
       operationId: scanner-profile-remove-bulk
       tags:
       - Scanner Profiles
@@ -215,7 +195,15 @@ paths:
   /scanners/request-status/{request_status_id}:
     get:
       summary: Get scanner task status
-      description: "Retrieves the current status of a specific asynchronous bulk operation task. \n\nUse the `request_status_id` or `id` value returned by supported endpoints to track the progress or completion of the asynchronous task.\n\n**Note:** This endpoint currently only supports task status retrieval for operations initiated by the [Assign to scanner profile](ref:scanner-profile-assign-bulk) and [Remove from scanner profile](ref:scanner-profile-remove-bulk) endpoints. <div class=\"perms-callout\">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>"
+      description: 'Retrieves the current status of a specific asynchronous bulk operation task.
+
+
+        Use the `request_status_id` or `id` value returned by supported endpoints to track the progress or completion of the asynchronous task.
+
+
+        **Note:** This endpoint currently only supports task status retrieval for operations initiated by the Assign to scanner profile and Remove from scanner profile endpoints.
+
+        Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See Roles.'
       operationId: scanner-task-status
       tags:
       - Scanner Profiles
@@ -289,6 +277,24 @@ paths:
       - Scanner_Profiles_cloud: []
 components:
   schemas:
+    Scanner_Profiles_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Scanner_Profiles_ErrorResponse-400:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A brief message about the cause of the error.
     Scanner_Profiles_response-scanner-task-status:
       type: object
       properties:
@@ -318,34 +324,154 @@ components:
           type: string
           description: A Unix timestamp indicating the date and time when the asynchronous task was modified.
           example: '1734376665'
-    Scanner_Profiles_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    Scanner_Profiles_ErrorResponse-400:
-      type: object
-      properties:
-        error:
-          type: string
-          description: A brief message about the cause of the error.
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

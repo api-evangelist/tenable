@@ -1,43 +1,20 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  version: 1.0.0
-  title: Downloads About Role API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+  title: Identity Exposure Role API
+  description: API to interact with Identity Exposure.
+  version: production
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: '{protocol}://customer.tenable.ad'
+  variables:
+    protocol:
+      default: https
 tags:
 - name: Role
   description: Groupment of permissions that may be assigned to several users
 paths:
   /api/roles:
     get:
-      summary: Retrieve all role instances.
+      summary: Retrieve all role instances
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '200':
@@ -79,17 +56,19 @@ paths:
                           action:
                             type: string
                           entityIds:
-                            type: array
+                            type:
+                            - array
+                            - 'null'
                             items:
                               type: string
-                            nullable: true
                           dynamicId:
-                            type: string
+                            type:
+                            - string
+                            - 'null'
                             enum:
                             - self-user-id
                             - null
                             default: null
-                            nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -111,8 +90,10 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiRoles
+      x-operation-id-source: derived
     post:
-      summary: Create role instance.
+      summary: Create role instance
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '201':
@@ -155,17 +136,19 @@ paths:
                           action:
                             type: string
                           entityIds:
-                            type: array
+                            type:
+                            - array
+                            - 'null'
                             items:
                               type: string
-                            nullable: true
                           dynamicId:
-                            type: string
+                            type:
+                            - string
+                            - 'null'
                             enum:
                             - self-user-id
                             - null
                             default: null
-                            nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -206,6 +189,8 @@ paths:
                     type: string
                   description:
                     type: string
+      operationId: postApiRoles
+      x-operation-id-source: derived
   /api/roles/user-creation-defaults:
     get:
       summary: Return the default roles for user creation
@@ -250,17 +235,19 @@ paths:
                           action:
                             type: string
                           entityIds:
-                            type: array
+                            type:
+                            - array
+                            - 'null'
                             items:
                               type: string
-                            nullable: true
                           dynamicId:
-                            type: string
+                            type:
+                            - string
+                            - 'null'
                             enum:
                             - self-user-id
                             - null
                             default: null
-                            nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -282,9 +269,11 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiRolesUserCreationDefaults
+      x-operation-id-source: derived
   /api/roles/{id}:
     get:
-      summary: Get role instance by id.
+      summary: Get role instance by id
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '200':
@@ -322,17 +311,19 @@ paths:
                         action:
                           type: string
                         entityIds:
-                          type: array
+                          type:
+                          - array
+                          - 'null'
                           items:
                             type: string
-                          nullable: true
                         dynamicId:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           enum:
                           - self-user-id
                           - null
                           default: null
-                          nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -362,8 +353,10 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiRolesById
+      x-operation-id-source: derived
     patch:
-      summary: Update role instance.
+      summary: Update role instance
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '200':
@@ -402,17 +395,19 @@ paths:
                         action:
                           type: string
                         entityIds:
-                          type: array
+                          type:
+                          - array
+                          - 'null'
                           items:
                             type: string
-                          nullable: true
                         dynamicId:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           enum:
                           - self-user-id
                           - null
                           default: null
-                          nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -455,8 +450,10 @@ paths:
                   type: string
                 description:
                   type: string
+      operationId: patchApiRolesById
+      x-operation-id-source: derived
     delete:
-      summary: Delete role instance.
+      summary: Delete role instance
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '204':
@@ -465,7 +462,6 @@ paths:
             application/json:
               schema:
                 description: Role
-                nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -495,6 +491,8 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: deleteApiRolesById
+      x-operation-id-source: derived
   /api/roles/from/{fromId}:
     post:
       summary: Creates a new role from another one
@@ -536,17 +534,19 @@ paths:
                         action:
                           type: string
                         entityIds:
-                          type: array
+                          type:
+                          - array
+                          - 'null'
                           items:
                             type: string
-                          nullable: true
                         dynamicId:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           enum:
                           - self-user-id
                           - null
                           default: null
-                          nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -589,6 +589,8 @@ paths:
               properties:
                 name:
                   type: string
+      operationId: postApiRolesFromByFromId
+      x-operation-id-source: derived
   /api/roles/{id}/permissions:
     put:
       summary: Replace permission list for a role
@@ -630,17 +632,19 @@ paths:
                         action:
                           type: string
                         entityIds:
-                          type: array
+                          type:
+                          - array
+                          - 'null'
                           items:
                             type: string
-                          nullable: true
                         dynamicId:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           enum:
                           - self-user-id
                           - null
                           default: null
-                          nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -691,39 +695,28 @@ paths:
                   action:
                     type: string
                   entityIds:
-                    type: array
+                    type:
+                    - array
+                    - 'null'
                     items:
                       type: string
-                    nullable: true
                   dynamicId:
-                    type: string
+                    type:
+                    - string
+                    - 'null'
                     enum:
                     - self-user-id
                     - null
                     default: null
-                    nullable: true
+      operationId: putApiRolesByIdPermissions
+      x-operation-id-source: derived
 components:
   securitySchemes:
-    Bearer:
-      type: apiKey
+    ApiKey:
+      name: x-api-key
+      description: The user's API key
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      type: apiKey
 x-readme:
-  proxy-enabled: false
   explorer-enabled: true
-  samples-enabled: true
-  samples-languages:
-  - python
-  - curl
-  - node
-  - powershell
-  - ruby
-  - javascript
-  - objectivec
-  - java
-  - php
-  - csharp
-  - go
-  - swift
-  - kotlin
+  proxy-enabled: true

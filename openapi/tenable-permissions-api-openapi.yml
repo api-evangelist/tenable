@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings Permissions API
   version: 1.0.0
-  title: Downloads About Permissions API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Permissions
   x-displayName: Permissions
@@ -38,7 +11,18 @@ paths:
   /permissions/{object_type}/{object_id}:
     get:
       summary: Get object permissions
-      description: "Returns the object's permissions.<div class=\"perms-callout\">Requires the Basic [16] user role, or a custom role with one of the following privileges depending on the object type: \n* **Scanner objects** — `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ` \n* **Scanner-pool objects** — `VM.VM_SENSOR.SCANNER_GROUP.READ` \n* **Agent-group objects** — `VM.VM_SENSOR.AGENT_GROUP.READ` \n\nSee [Roles](doc:roles).</div>"
+      description: 'Returns the object''s permissions.
+
+        Requires the Basic [16] user role, or a custom role with one of the following privileges depending on the object type:
+
+        * **Scanner objects** — `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`
+
+        * **Scanner-pool objects** — `VM.VM_SENSOR.SCANNER_GROUP.READ`
+
+        * **Agent-group objects** — `VM.VM_SENSOR.AGENT_GROUP.READ`
+
+
+        See Roles.'
       operationId: permissions-list
       tags:
       - Permissions
@@ -122,7 +106,18 @@ paths:
       - permissions_cloud: []
     put:
       summary: Update object permissions
-      description: "Updates the permissions for a Tenable Vulnerability Management object.<div class=\"perms-callout\">Requires the Basic [16] user role, or a custom role with one of the following privileges depending on the object type: \n* **Scanner objects** — `VM.VM_SENSOR.VM_SCANNER.EDIT` \n* **Scanner-pool objects** — `VM.VM_SENSOR.SCANNER_GROUP.EDIT` \n* **Agent-group objects** — `VM.VM_SENSOR.AGENT_GROUP.EDIT` \n\nSee [Roles](doc:roles).</div>"
+      description: 'Updates the permissions for a Tenable Vulnerability Management object.
+
+        Requires the Basic [16] user role, or a custom role with one of the following privileges depending on the object type:
+
+        * **Scanner objects** — `VM.VM_SENSOR.VM_SCANNER.EDIT`
+
+        * **Scanner-pool objects** — `VM.VM_SENSOR.SCANNER_GROUP.EDIT`
+
+        * **Agent-group objects** — `VM.VM_SENSOR.AGENT_GROUP.EDIT`
+
+
+        See Roles.'
       operationId: permissions-change
       tags:
       - Permissions
@@ -261,15 +256,153 @@ components:
           type: string
           description: A brief message about the cause of the error.
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

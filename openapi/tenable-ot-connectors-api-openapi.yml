@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings OT Connectors API
   version: 1.0.0
-  title: Downloads About OT Connectors API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: OT Connectors
   x-displayName: OT Connectors
@@ -38,7 +11,13 @@ paths:
   /sensors:
     post:
       summary: Create OT connector
-      description: "Creates an OT connector. \n\nThe response includes a token when you create the OT connector. The token is the only credential that is used for authentication when the OT connector connects to Tenable Vulnerability Management.\n\n**Note:** You can generate the required linking key and retrieve the target site with the [Create linking key](ref:sensors-ot-linking-key-generate) endpoint."
+      description: 'Creates an OT connector.
+
+
+        The response includes a token when you create the OT connector. The token is the only credential that is used for authentication when the OT connector connects to Tenable Vulnerability Management.
+
+
+        **Note:** You can generate the required linking key and retrieve the target site with the Create linking key endpoint.'
       operationId: sensors-ot-create
       tags:
       - OT Connectors
@@ -109,7 +88,9 @@ paths:
   /sensors/{type}:
     get:
       summary: List OT connectors
-      description: Returns a list of Tenable OT connectors. <div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Returns a list of Tenable OT connectors.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.READ` custom role privilege. See Roles.'
       operationId: sensors-ot-list
       tags:
       - OT Connectors
@@ -206,7 +187,9 @@ paths:
   /sensors/{type}/{id}:
     get:
       summary: Get OT connector details
-      description: Returns details for the specified OT connector. <div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Returns details for the specified OT connector.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.READ` custom role privilege. See Roles.'
       operationId: sensors-ot-details
       tags:
       - OT Connectors
@@ -273,7 +256,9 @@ paths:
       - OT_Connectors_cloud: []
     put:
       summary: Update OT connector
-      description: Updates the specified OT connector. This endpoint can also be used to enable or disable an OT connector. <div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.EDIT` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Updates the specified OT connector. This endpoint can also be used to enable or disable an OT connector.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.EDIT` custom role privilege. See Roles.'
       operationId: sensors-ot-update
       tags:
       - OT Connectors
@@ -347,7 +332,9 @@ paths:
       - OT_Connectors_cloud: []
     delete:
       summary: Delete OT connector
-      description: Deletes an OT connector. <div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.DELETE` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Deletes an OT connector.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.VM_SCANNER.DELETE` custom role privilege. See Roles.'
       operationId: sensors-ot-delete
       tags:
       - OT Connectors
@@ -408,7 +395,15 @@ paths:
   /sensors/{type}/linking-key:
     post:
       summary: Generate linking key
-      description: "Generates a single-use linking key that is valid for two hours. Additionally, the target site for your account is retrieved (ex. `us-2b`). \n\nThe linking key and target site are required when creating an OT connector with the [Create OT connector](ref:sensors-ot-create) endpoint.\n\nOnce linked, an OT connector can transmit assets and findings data from Tenable OT Security to Tenable Vulnerability Management. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+      description: 'Generates a single-use linking key that is valid for two hours. Additionally, the target site for your account is retrieved (ex. `us-2b`).
+
+
+        The linking key and target site are required when creating an OT connector with the Create OT connector endpoint.
+
+
+        Once linked, an OT connector can transmit assets and findings data from Tenable OT Security to Tenable Vulnerability Management.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: sensors-ot-linking-key-generate
       tags:
       - OT Connectors
@@ -464,49 +459,41 @@ paths:
       security:
       - OT_Connectors_cloud: []
 components:
+  parameters:
+    OT_Connectors_id-path-param:
+      description: The OT connector's unique identifier.
+      required: true
+      name: id
+      in: path
+      schema:
+        type: string
+        format: uuid
+    OT_Connectors_x-linking-key-header:
+      description: The linking key for the OT connector. You can generate the required linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+      required: true
+      name: x-linking-key
+      in: header
+      schema:
+        type: string
+    OT_Connectors_x-target-site-header:
+      description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+      required: true
+      name: x-target-site
+      in: header
+      schema:
+        type: string
+        example: us-2b
+    OT_Connectors_type-path-param:
+      description: The type of connector or sensor. This value is always `ot` for OT connectors.
+      required: true
+      name: type
+      in: path
+      schema:
+        default: ot
+        type: string
+        enum:
+        - ot
   schemas:
-    OT_Connectors_Sensor-Object:
-      type: object
-      properties:
-        containerUuid:
-          type: string
-          description: The unique ID of your Tenable Vulnerability Management instance.
-          example: 3584b24b-7f26-4684-b644-a2a92103d6c2
-        id:
-          type: string
-          description: The unique ID of the OT connector.
-          example: 0214f554-1ef2-4752-8363-12b73d3fe57a
-        name:
-          type: string
-          description: The OT connectors name.
-          example: My-Sensor
-        type:
-          type: string
-          description: The sensor type. This value is always `ot` for OT connectors.
-          example: ot
-        subType:
-          type: string
-          description: The OT connector's type. There are two types of OT connectors, Industrial Core Platform (ICP) and Enterprise Manager (EM).
-          example: icp
-        created:
-          type: integer
-          format: int64
-          description: The Unix timestamp of when the OT connector was created.
-          example: 1687532223
-        modified:
-          type: integer
-          format: int64
-          description: The Unix timestamp of when the OT connector was last modified.
-          example: 1687532223
-        lastAuth:
-          type: integer
-          format: int64
-          description: The Unix timestamp of when the OT connector was last authenticated.
-          example: 1687532223
-        enabled:
-          type: boolean
-          description: Indicates whether or not the OT connector is enabled.
-          example: true
     OT_Connectors_sensor-linking-key-create-response:
       type: object
       properties:
@@ -518,6 +505,39 @@ components:
           type: string
           description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
           example: us-2b
+    OT_Connectors_sensor-create-request-body:
+      type: object
+      required:
+      - name
+      - subType
+      - enabled
+      properties:
+        name:
+          type: string
+          description: The name of the OT connector. The maximum character length is 64 chars.
+          maxLength: 64
+          example: My-Sensor
+        subType:
+          type: string
+          description: The type of OT connector. There are two types of OT connectors, Industrial Core Platform (ICP) and Enterprise Manager (EM).
+          enum:
+          - icp
+          - em
+        enabled:
+          type: boolean
+          description: Indicates whether or not the OT connector is enabled.
+    OT_Connectors_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     OT_Connectors_sensor-list-response:
       type: object
       properties:
@@ -580,39 +600,48 @@ components:
             modified: 1681330682
             lastAuth: 1681330682
             enabled: true
-    OT_Connectors_ErrorResponse:
+    OT_Connectors_Sensor-Object:
       type: object
       properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
+        containerUuid:
           type: string
-          description: The standard HTTP error name.
-        message:
+          description: The unique ID of your Tenable Vulnerability Management instance.
+          example: 3584b24b-7f26-4684-b644-a2a92103d6c2
+        id:
           type: string
-          description: A brief message about the cause of the error.
-    OT_Connectors_sensor-create-request-body:
-      type: object
-      required:
-      - name
-      - subType
-      - enabled
-      properties:
+          description: The unique ID of the OT connector.
+          example: 0214f554-1ef2-4752-8363-12b73d3fe57a
         name:
           type: string
-          description: The name of the OT connector. The maximum character length is 64 chars.
-          maxLength: 64
+          description: The OT connectors name.
           example: My-Sensor
+        type:
+          type: string
+          description: The sensor type. This value is always `ot` for OT connectors.
+          example: ot
         subType:
           type: string
-          description: The type of OT connector. There are two types of OT connectors, Industrial Core Platform (ICP) and Enterprise Manager (EM).
-          enum:
-          - icp
-          - em
+          description: The OT connector's type. There are two types of OT connectors, Industrial Core Platform (ICP) and Enterprise Manager (EM).
+          example: icp
+        created:
+          type: integer
+          format: int64
+          description: The Unix timestamp of when the OT connector was created.
+          example: 1687532223
+        modified:
+          type: integer
+          format: int64
+          description: The Unix timestamp of when the OT connector was last modified.
+          example: 1687532223
+        lastAuth:
+          type: integer
+          format: int64
+          description: The Unix timestamp of when the OT connector was last authenticated.
+          example: 1687532223
         enabled:
           type: boolean
           description: Indicates whether or not the OT connector is enabled.
+          example: true
     OT_Connectors_sensor-update-request-body:
       type: object
       properties:
@@ -630,50 +659,154 @@ components:
         enabled:
           type: boolean
           description: Indicates whether or not the OT connector is enabled.
-  parameters:
-    OT_Connectors_id-path-param:
-      description: The OT connector's unique identifier.
-      required: true
-      name: id
-      in: path
-      schema:
-        type: string
-        format: uuid
-    OT_Connectors_x-linking-key-header:
-      description: The linking key for the OT connector. You can generate the required linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
-      required: true
-      name: x-linking-key
-      in: header
-      schema:
-        type: string
-    OT_Connectors_x-target-site-header:
-      description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
-      required: true
-      name: x-target-site
-      in: header
-      schema:
-        type: string
-        example: us-2b
-    OT_Connectors_type-path-param:
-      description: The type of connector or sensor. This value is always `ot` for OT connectors.
-      required: true
-      name: type
-      in: path
-      schema:
-        default: ot
-        type: string
-        enum:
-        - ot
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

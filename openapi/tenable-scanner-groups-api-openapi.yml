@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings Scanner Groups API
   version: 1.0.0
-  title: Downloads About Scanner Groups API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Scanner Groups
   x-displayName: Scanner Groups
@@ -38,7 +11,16 @@ paths:
   /scanner-groups:
     post:
       summary: Create scanner group
-      description: Creates a new scanner group. You cannot use this endpoint to:<ul><li>Assign the new scanner group to a network object. Tenable Vulnerability Management automatically assigns new scanner groups to the default network object. To assign a scanner group to a network object, use the [POST /networks/{network_id}/scanners/{scanner_uuid}](ref:networks-assign-scanner) endpoint.</li><li>Configure scan routes for the scanner group. Instead, use the [PUT /scanner-groups/group_id/routes](ref:io-scanner-groups-update-routes) endpoint.</li></ul><div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.CREATE` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Creates a new scanner group. You cannot use this endpoint to:
+
+
+        Assign the new scanner group to a network object. Tenable Vulnerability Management automatically assigns new scanner groups to the default network object. To assign a scanner group to a network object, use the POST /networks/{network_id}/scanners/{scanner_uuid} endpoint.
+
+
+        Configure scan routes for the scanner group. Instead, use the PUT /scanner-groups/group_id/routes endpoint.
+
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.CREATE` custom role privilege. See Roles.'
       operationId: scanner-groups-create
       tags:
       - Scanner Groups
@@ -120,7 +102,9 @@ paths:
       - Scanner_Groups_cloud: []
     get:
       summary: List scanner groups
-      description: Lists scanner groups for your Tenable Vulnerability Management instance.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Lists scanner groups for your Tenable Vulnerability Management instance.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.READ` custom role privilege. See Roles.'
       operationId: scanner-groups-list
       tags:
       - Scanner Groups
@@ -236,7 +220,9 @@ paths:
       description: 'Returns details for the specified scanner group.
 
 
-        **Note:** This endpoint does not return details about scan routes configured for the scanner group. For scan routes, use the [GET /scanner-groups/group_id/routes](ref:io-scanner-groups-list-routes) endpoint instead.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.READ` custom role privilege. See [Roles](doc:roles).</div>'
+        **Note:** This endpoint does not return details about scan routes configured for the scanner group. For scan routes, use the GET /scanner-groups/group_id/routes endpoint instead.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.READ` custom role privilege. See Roles.'
       operationId: scanner-groups-details
       tags:
       - Scanner Groups
@@ -316,7 +302,16 @@ paths:
       - Scanner_Groups_cloud: []
     put:
       summary: Update scanner group
-      description: Updates a scanner group. You cannot use this endpoint to:<ul><li>Assign a scanner group to a network object. Instead, use the [POST /networks/{network_id}/scanners/{scanner_uuid}](ref:networks-assign-scanner) endpoint.</li><li>Update scan routes configured for the scanner group. Instead, use the [PUT /scanner-groups/group_id/routes](ref:io-scanner-groups-update-routes) endpoint.</li></ul><div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.EDIT` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Updates a scanner group. You cannot use this endpoint to:
+
+
+        Assign a scanner group to a network object. Instead, use the POST /networks/{network_id}/scanners/{scanner_uuid} endpoint.
+
+
+        Update scan routes configured for the scanner group. Instead, use the PUT /scanner-groups/group_id/routes endpoint.
+
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.EDIT` custom role privilege. See Roles.'
       operationId: scanner-groups-edit
       tags:
       - Scanner Groups
@@ -407,7 +402,9 @@ paths:
       - Scanner_Groups_cloud: []
     delete:
       summary: Delete a scanner group
-      description: Deletes a scanner group.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.DELETE` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Deletes a scanner group.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.DELETE` custom role privilege. See Roles.'
       operationId: scanner-groups-delete
       tags:
       - Scanner Groups
@@ -470,7 +467,9 @@ paths:
   /scanner-groups/{group_id}/scanners:
     get:
       summary: List scanners within scanner group
-      description: 'Lists scanners associated with the scanner group.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>'
+      description: 'Lists scanners associated with the scanner group.
+
+        Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See Roles.'
       operationId: scanner-groups-list-scanners
       tags:
       - Scanner Groups
@@ -613,7 +612,9 @@ paths:
   /scanner-groups/{group_id}/scanners/{scanner_id}:
     post:
       summary: Add scanner to scanner group
-      description: 'Adds a scanner to the scanner group. You can use the [GET /scanner-groups/{group_id}/scanners](ref:scanner-groups-list-scanners) endpoint to verify that the scanner has been added to the specified scanner group.<div class="perms-callout">Requires the Basic [16] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See [Roles](doc:roles).</div>'
+      description: 'Adds a scanner to the scanner group. You can use the GET /scanner-groups/{group_id}/scanners endpoint to verify that the scanner has been added to the specified scanner group.
+
+        Requires the Basic [16] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See Roles.'
       operationId: scanner-groups-add-scanner
       tags:
       - Scanner Groups
@@ -690,7 +691,9 @@ paths:
       - Scanner_Groups_cloud: []
     delete:
       summary: Remove scanner from scanner group
-      description: 'Remove a scanner from the scanner group.<div class="perms-callout">Requires the Basic [16] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See [Roles](doc:roles).</div>'
+      description: 'Remove a scanner from the scanner group.
+
+        Requires the Basic [16] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See Roles.'
       operationId: scanner-groups-delete-scanner
       tags:
       - Scanner Groups
@@ -760,7 +763,9 @@ paths:
   /scanner-groups/{group_id}/routes:
     get:
       summary: List scan routes
-      description: List the hostnames, wildcards, IP addresses, and IP address ranges that Tenable Vulnerability Management matches against targets in auto-routed scans. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats). <div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'List the hostnames, wildcards, IP addresses, and IP address ranges that Tenable Vulnerability Management matches against targets in auto-routed scans. For more information about supported route formats, see Supported Scan Routing Target Formats.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.SCANNER_GROUP.READ` custom role privilege. See Roles.'
       operationId: io-scanner-groups-list-routes
       tags:
       - Scanner Groups
@@ -826,7 +831,9 @@ paths:
       - Scanner_Groups_cloud: []
     put:
       summary: Update scan routes
-      description: Updates the hostnames, hostname wildcards, IP addresses, and IP address ranges that Tenable Vulnerability Management matches against targets in auto-routed scans. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats). <div class="perms-callout">Requires the Scan Manager [40] user role and the Can Edit [64] scan permission. Alternatively, requires the `VM.VM_SENSOR.SCANNER_GROUP.EDIT` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Updates the hostnames, hostname wildcards, IP addresses, and IP address ranges that Tenable Vulnerability Management matches against targets in auto-routed scans. For more information about supported route formats, see Supported Scan Routing Target Formats.
+
+        Requires the Scan Manager [40] user role and the Can Edit [64] scan permission. Alternatively, requires the `VM.VM_SENSOR.SCANNER_GROUP.EDIT` custom role privilege. See Roles and Permissions.'
       operationId: io-scanner-groups-update-routes
       tags:
       - Scanner Groups
@@ -934,6 +941,139 @@ paths:
       - Scanner_Groups_cloud: []
 components:
   schemas:
+    Scanner_Groups_route_objects:
+      type: array
+      items:
+        $ref: '#/components/schemas/Scanner_Groups_route'
+    Scanner_Groups_response-update-scanner_group:
+      type: object
+      properties:
+        owner_uuid:
+          type: integer
+          description: The UUID of the owner of the scanner group.
+        created:
+          type: integer
+          format: int64
+          description: A Unix timestamp (milliseconds precision) indicating the date and time when the scanner group was created.
+        modified:
+          type: integer
+          format: int64
+          description: A Unix timestamp (milliseconds precision) indicating the date and time when the scanner group was last modified.
+        container_uuid:
+          type: string
+          description: The UUID of the container.
+        uuid:
+          type: string
+          description: The UUID of the scanner group.
+        id:
+          type: integer
+          description: The unique ID of the scanner group.
+        name:
+          type: string
+          description: The name of the scanner group.
+        type:
+          type: string
+          description: The type of scanner group. This is set to "load_balancing" by default.
+        distributed:
+          type: boolean
+          description: Indicates whether or not the scanner group is distributed.
+        network_name:
+          type: string
+          description: The name of the network object associated with the scanner group. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        default_permissions:
+          type: integer
+          description: The access permissions for the Default group.
+        shared:
+          type: integer
+          description: Indicates whether or not the scanner group is shared.
+        user_permissions:
+          type: integer
+          description: The sharing permissions for the scanner group.
+        supports_webapp:
+          type: boolean
+          description: Indicates whether or not the scanner group supports Tenable Web App Scanning scanners.
+        created_in_seconds:
+          type: integer
+          format: int64
+          description: A Unix timestamp (seconds precision) indicating the date and time when the scanner group was created.
+        modified_in_seconds:
+          type: integer
+          description: A Unix timestamp (seconds precision) indicating the date and time when the scanner group was last modified.
+    Scanner_Groups_object-scanner_group:
+      type: object
+      properties:
+        creation_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the scanner group was created.
+        last_modification_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the scanner group was last modified.
+        owner_id:
+          type: integer
+          description: The unique ID of the owner of the scanner group.
+        owner:
+          type: string
+          description: The username of the owner of the scanner group.
+        default_permissions:
+          type: integer
+          description: The access permissions for the Default group.
+        user_permissions:
+          type: integer
+          description: The sharing permissions for the scanner group.
+        shared:
+          type: integer
+          description: Indicates whether or not the scanner group is shared.
+        scan_count:
+          type: integer
+          description: The number of scans currently tasked to the scanner group.
+        scanner_count:
+          type: string
+          description: The number of scanners associated with this scanner group.
+        uuid:
+          type: string
+          description: The UUID of the scanner group.
+        token:
+          type: string
+          description: The unique token for a scanner group.
+        flag:
+          type: string
+          description: The flag indicating what type of scanner group.
+        type:
+          type: string
+          description: The type of scanner group. This is set to "load_balancing" by default.
+        name:
+          type: string
+          description: The name of the scanner group.
+        network_name:
+          type: string
+          description: The name of the network object associated with the scanner group. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        id:
+          type: integer
+          description: The unique ID of the scanner group.
+        supports_webapp:
+          type: boolean
+          description: Indicates whether or not the scanner group supports Tenable Web App Scanning scanners.
+        scanner_id:
+          type: integer
+          description: The unique scanner ID of the scanner group.
+        scanner_uuid:
+          type: string
+          description: The UUID of the scanner group.
+        owner_name:
+          type: string
+          description: The username of the owner of the scanner group.
+    Scanner_Groups_routes:
+      type: object
+      properties:
+        routes:
+          type: array
+          items:
+            type: string
+          description: A list of zero or more hostnames, hostname wildcards, IP addresses, CIDR addresses, or IP ranges. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats).
+      required:
+      - routes
     Scanner_Groups_ErrorResponse:
       type: object
       properties:
@@ -946,10 +1086,6 @@ components:
         message:
           type: string
           description: A brief message about the cause of the error.
-    Scanner_Groups_route_objects:
-      type: array
-      items:
-        $ref: '#/components/schemas/Scanner_Groups_route'
     Scanner_Groups_response-scanner-object:
       type: object
       properties:
@@ -1142,143 +1278,6 @@ components:
         profile_name:
           type: string
           description: The name of the scanner profile that the scanner belongs to.
-    Scanner_Groups_routes:
-      type: object
-      properties:
-        routes:
-          type: array
-          items:
-            type: string
-          description: A list of zero or more hostnames, hostname wildcards, IP addresses, CIDR addresses, or IP ranges. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats).
-      required:
-      - routes
-    Scanner_Groups_object-scanner_group:
-      type: object
-      properties:
-        creation_date:
-          type: integer
-          format: int64
-          description: A Unix timestamp indicating the date and time when the scanner group was created.
-        last_modification_date:
-          type: integer
-          format: int64
-          description: A Unix timestamp indicating the date and time when the scanner group was last modified.
-        owner_id:
-          type: integer
-          description: The unique ID of the owner of the scanner group.
-        owner:
-          type: string
-          description: The username of the owner of the scanner group.
-        default_permissions:
-          type: integer
-          description: The access permissions for the Default group.
-        user_permissions:
-          type: integer
-          description: The sharing permissions for the scanner group.
-        shared:
-          type: integer
-          description: Indicates whether or not the scanner group is shared.
-        scan_count:
-          type: integer
-          description: The number of scans currently tasked to the scanner group.
-        scanner_count:
-          type: string
-          description: The number of scanners associated with this scanner group.
-        uuid:
-          type: string
-          description: The UUID of the scanner group.
-        token:
-          type: string
-          description: The unique token for a scanner group.
-        flag:
-          type: string
-          description: The flag indicating what type of scanner group.
-        type:
-          type: string
-          description: The type of scanner group. This is set to "load_balancing" by default.
-        name:
-          type: string
-          description: The name of the scanner group.
-        network_name:
-          type: string
-          description: The name of the network object associated with the scanner group. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
-        id:
-          type: integer
-          description: The unique ID of the scanner group.
-        supports_webapp:
-          type: boolean
-          description: Indicates whether or not the scanner group supports Tenable Web App Scanning scanners.
-        scanner_id:
-          type: integer
-          description: The unique scanner ID of the scanner group.
-        scanner_uuid:
-          type: string
-          description: The UUID of the scanner group.
-        owner_name:
-          type: string
-          description: The username of the owner of the scanner group.
-    Scanner_Groups_response-update-scanner_group:
-      type: object
-      properties:
-        owner_uuid:
-          type: integer
-          description: The UUID of the owner of the scanner group.
-        created:
-          type: integer
-          format: int64
-          description: A Unix timestamp (milliseconds precision) indicating the date and time when the scanner group was created.
-        modified:
-          type: integer
-          format: int64
-          description: A Unix timestamp (milliseconds precision) indicating the date and time when the scanner group was last modified.
-        container_uuid:
-          type: string
-          description: The UUID of the container.
-        uuid:
-          type: string
-          description: The UUID of the scanner group.
-        id:
-          type: integer
-          description: The unique ID of the scanner group.
-        name:
-          type: string
-          description: The name of the scanner group.
-        type:
-          type: string
-          description: The type of scanner group. This is set to "load_balancing" by default.
-        distributed:
-          type: boolean
-          description: Indicates whether or not the scanner group is distributed.
-        network_name:
-          type: string
-          description: The name of the network object associated with the scanner group. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
-        default_permissions:
-          type: integer
-          description: The access permissions for the Default group.
-        shared:
-          type: integer
-          description: Indicates whether or not the scanner group is shared.
-        user_permissions:
-          type: integer
-          description: The sharing permissions for the scanner group.
-        supports_webapp:
-          type: boolean
-          description: Indicates whether or not the scanner group supports Tenable Web App Scanning scanners.
-        created_in_seconds:
-          type: integer
-          format: int64
-          description: A Unix timestamp (seconds precision) indicating the date and time when the scanner group was created.
-        modified_in_seconds:
-          type: integer
-          description: A Unix timestamp (seconds precision) indicating the date and time when the scanner group was last modified.
-    Scanner_Groups_route:
-      type: object
-      properties:
-        route:
-          type: string
-          description: A hostname, hostname wildcard, IP address, CIDR address, or IP range. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats).
-      required:
-      - route
     Scanner_Groups_response-create-scanner_group:
       type: object
       properties:
@@ -1320,16 +1319,162 @@ components:
         owner_name:
           type: string
           description: The username of the owner of the scanner group.
+    Scanner_Groups_route:
+      type: object
+      properties:
+        route:
+          type: string
+          description: A hostname, hostname wildcard, IP address, CIDR address, or IP range. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats).
+      required:
+      - route
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

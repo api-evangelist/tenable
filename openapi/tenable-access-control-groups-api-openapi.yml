@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings Access Control (Groups) API
   version: 1.0.0
-  title: Downloads About Access Control (Groups) API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Access Control (Groups)
   x-displayName: Access Control (Groups)
@@ -38,7 +11,9 @@ paths:
   /groups:
     post:
       summary: Create group
-      description: Creates a user group.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Creates a user group.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: groups-create
       tags:
       - Access Control (Groups)
@@ -121,7 +96,9 @@ paths:
       - Access_Control_Groups_cloud: []
     get:
       summary: List groups
-      description: Lists all user groups for your container.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Lists all user groups for your container.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: groups-list
       tags:
       - Access Control (Groups)
@@ -198,7 +175,9 @@ paths:
   /groups/{group_uuid}:
     put:
       summary: Update group
-      description: Updates the specified user group.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Updates the specified user group.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: groups-edit
       tags:
       - Access Control (Groups)
@@ -301,7 +280,9 @@ paths:
       - Access_Control_Groups_cloud: []
     delete:
       summary: Delete group
-      description: Deletes the specified user group. The group must have no users before it can be deleted.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Deletes the specified user group. The group must have no users before it can be deleted.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: groups-delete
       tags:
       - Access Control (Groups)
@@ -382,7 +363,9 @@ paths:
   /groups/{group_uuid}/users:
     get:
       summary: List users in group
-      description: Lists the users in the specified group.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Lists the users in the specified group.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: groups-list-users
       tags:
       - Access Control (Groups)
@@ -513,7 +496,9 @@ paths:
   /groups/{group_uuid}/users/{user_uuid}:
     post:
       summary: Add user to group
-      description: Adds a user to the specified group.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Adds a user to the specified group.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: groups-add-user
       tags:
       - Access Control (Groups)
@@ -589,7 +574,9 @@ paths:
       - Access_Control_Groups_cloud: []
     delete:
       summary: Remove user from group
-      description: Removes a user from the specified group.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Removes a user from the specified group.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: groups-delete-user
       tags:
       - Access Control (Groups)
@@ -676,53 +663,24 @@ components:
           description: Specifies whether to allow users to be added to or removed from this group during SAML single sign-on (`true`) or to manage group membership independently of SAML (`false`).
       required:
       - name
-    Access_Control_Groups_Response-Group:
-      type: object
-      properties:
-        uuid:
-          type: string
-          format: uuid
-          description: The unique identifier (UUID) for the group.
-        name:
-          type: string
-          description: The name of the group.
-        id:
-          type: integer
-          description: The unique integer identifier of the group.
-        container_uuid:
-          type: string
-          format: uuid
-          description: The UUID of the container the group belongs to.
-        user_count:
-          type: integer
-          description: The number of users in the group. Only present on list and update responses.
-        managed_by_saml:
-          type: boolean
-          description: A flag indicating whether users can be added to or removed from this group during SAML single sign-on. Only present if SAML management is enabled for the group.
-        immutable:
-          type: boolean
-          description: A flag indicating the group cannot be modified. Only present on the default `All Users` group.
-        membership_fixed:
-          type: boolean
-          description: A flag indicating users cannot be added to or removed from this group. Only present on the default `All Users` group.
     Access_Control_Groups_ErrorResponse-Error:
       type: object
       properties:
         error:
           type: string
           description: A brief description of the error.
-    Access_Control_Groups_TwoFactor:
+    Access_Control_Groups_ErrorResponse:
       type: object
       properties:
-        sms_phone:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
           type: string
-          description: The phone number used for two-factor authentication. The phone number begins with the `+` character and the country code. This field is required when sms_enabled is set to `true`.
-        sms_enabled:
-          type: integer
-          description: Indicates whether two-factor authentication is enabled (`1`) or disabled (`0`).
-        email_enabled:
-          type: integer
-          description: Indicates whether backup notification for two-factor authentication is enabled (`1`) or disabled (`0`). If enabled, Tenable Vulnerability Management sends the two-factor verification code via e-mail, as well as via the default SMS message.
+          description: A brief message about the cause of the error.
     Access_Control_Groups_user-object:
       type: object
       properties:
@@ -823,28 +781,195 @@ components:
         uuid_id:
           type: string
           description: The UUID for the user.
-    Access_Control_Groups_ErrorResponse:
+    Access_Control_Groups_Response-Group:
       type: object
       properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
+        uuid:
           type: string
-          description: A brief message about the cause of the error.
+          format: uuid
+          description: The unique identifier (UUID) for the group.
+        name:
+          type: string
+          description: The name of the group.
+        id:
+          type: integer
+          description: The unique integer identifier of the group.
+        container_uuid:
+          type: string
+          format: uuid
+          description: The UUID of the container the group belongs to.
+        user_count:
+          type: integer
+          description: The number of users in the group. Only present on list and update responses.
+        managed_by_saml:
+          type: boolean
+          description: A flag indicating whether users can be added to or removed from this group during SAML single sign-on. Only present if SAML management is enabled for the group.
+        immutable:
+          type: boolean
+          description: A flag indicating the group cannot be modified. Only present on the default `All Users` group.
+        membership_fixed:
+          type: boolean
+          description: A flag indicating users cannot be added to or removed from this group. Only present on the default `All Users` group.
+    Access_Control_Groups_TwoFactor:
+      type: object
+      properties:
+        sms_phone:
+          type: string
+          description: The phone number used for two-factor authentication. The phone number begins with the `+` character and the country code. This field is required when sms_enabled is set to `true`.
+        sms_enabled:
+          type: integer
+          description: Indicates whether two-factor authentication is enabled (`1`) or disabled (`0`).
+        email_enabled:
+          type: integer
+          description: Indicates whether backup notification for two-factor authentication is enabled (`1`) or disabled (`0`). If enabled, Tenable Vulnerability Management sends the two-factor verification code via e-mail, as well as via the default SMS message.
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

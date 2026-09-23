@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Vulnerability Management Scan Exports API
   version: 1.0.0
-  title: Downloads About Scan Exports API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Scan Exports
   x-displayName: Scan Exports
@@ -38,7 +11,18 @@ paths:
   /scans/{scan_id}/export:
     post:
       summary: Export scan
-      description: "Exports the a scan in the specified format. Use the [Check scan export status](ref:scans-export-status) endpoint to see the status of the requested export. On receiving a `ready` status, download the export file using the [Download scan export](ref:scans-export-download) endpoint. \n\nIf you request a scan export in the `nessus` file format, but do not specify filters for the export, Tenable Vulnerability Management truncates the plugins output data in the export file at 5 MB or 5,000,000 characters, and appends `TRUNCATED` (bracketed by three asterisks) at the end of the output in the export file. You can obtain the full plugins output by exporting a scan in any file format other than `nessus` or `db`.\n\n Additionally, scan exports in the `db` format do not contain the full scan data set, and they are sourced from the scan task prior to the scan being indexed/processed. Scan `db` exports only contain the data for the hosts specified in the export request with the `asset_id` body parameter. Agent scan `db` exports contain only one host (the agent), and you can't export triggered agent scans. \n\n **Note:** Vulnerability findings with a `first_observed` date within the last 14 days are marked in the exported results as being in the `New` state. Vulnerability findings with a `first_observed` date older than 14 days are marked in the exported results as being in the `Active` state. <div class=\"perms-callout\">Requires the Scan Operator [24] user role and the Can View [16] scan permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN.EXPORT` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      description: 'Exports the a scan in the specified format. Use the Check scan export status endpoint to see the status of the requested export. On receiving a `ready` status, download the export file using the Download scan export endpoint.
+
+
+        If you request a scan export in the `nessus` file format, but do not specify filters for the export, Tenable Vulnerability Management truncates the plugins output data in the export file at 5 MB or 5,000,000 characters, and appends `TRUNCATED` (bracketed by three asterisks) at the end of the output in the export file. You can obtain the full plugins output by exporting a scan in any file format other than `nessus` or `db`.
+
+
+        Additionally, scan exports in the `db` format do not contain the full scan data set, and they are sourced from the scan task prior to the scan being indexed/processed. Scan `db` exports only contain the data for the hosts specified in the export request with the `asset_id` body parameter. Agent scan `db` exports contain only one host (the agent), and you can''t export triggered agent scans.
+
+
+        **Note:** Vulnerability findings with a `first_observed` date within the last 14 days are marked in the exported results as being in the `New` state. Vulnerability findings with a `first_observed` date older than 14 days are marked in the exported results as being in the `Active` state.
+
+        Requires the Scan Operator [24] user role and the Can View [16] scan permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN.EXPORT` custom role privilege. See Roles and Permissions.'
       operationId: scans-export-request
       tags:
       - Scan Exports
@@ -170,7 +154,9 @@ paths:
   /scans/exports:
     get:
       summary: List scan exports
-      description: Returns a list of scan exports generated within the past 30 days that the user is authorized to view. Use this endpoint to monitor the status of scan export requests, determine when the export is ready for download, or troubleshoot errors that occurred during the generation process. <div class="perms-callout">Requires the Scan Operator [24] user role and the Can View [16] scan permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN.EXPORT` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Returns a list of scan exports generated within the past 30 days that the user is authorized to view. Use this endpoint to monitor the status of scan export requests, determine when the export is ready for download, or troubleshoot errors that occurred during the generation process.
+
+        Requires the Scan Operator [24] user role and the Can View [16] scan permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN.EXPORT` custom role privilege. See Roles and Permissions.'
       operationId: scans-export-list
       tags:
       - Scan Exports
@@ -335,7 +321,9 @@ paths:
   /scans/{scan_id}/export/{file_id}/status:
     get:
       summary: Check scan export status
-      description: Returns the file status of the specified exported scan. When an export has been requested, it is necessary to poll this endpoint until a `ready` status is returned, at which point the file is complete and can be downloaded using the [Download scan export](ref:scans-export-download) endpoint.<div class="perms-callout">Requires the Scan Operator [24] user role and the Can View [16] scan permission. Alternatively, requires the or `VM.VM_SCAN.VM_SCAN.EXPORT` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Returns the file status of the specified exported scan. When an export has been requested, it is necessary to poll this endpoint until a `ready` status is returned, at which point the file is complete and can be downloaded using the Download scan export endpoint.
+
+        Requires the Scan Operator [24] user role and the Can View [16] scan permission. Alternatively, requires the or `VM.VM_SCAN.VM_SCAN.EXPORT` custom role privilege. See Roles and Permissions.'
       operationId: scans-export-status
       tags:
       - Scan Exports
@@ -407,7 +395,9 @@ paths:
   /scans/{scan_id}/export/{file_id}/download:
     get:
       summary: Download scan export
-      description: Download an exported scan.<div class="perms-callout">Requires the Scan Operator [24] user role and the Can View [16] scan permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN.EXPORT` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Download an exported scan.
+
+        Requires the Scan Operator [24] user role and the Can View [16] scan permission. Alternatively, requires the `VM.VM_SCAN.VM_SCAN.EXPORT` custom role privilege. See Roles and Permissions.'
       operationId: scans-export-download
       tags:
       - Scan Exports
@@ -470,6 +460,38 @@ paths:
       - Scan_Exports_cloud: []
 components:
   schemas:
+    Scan_Exports_Response-List-Exports:
+      type: object
+      properties:
+        export_id:
+          type: string
+          description: The unique identifier for the scan export request.
+        scan_uuid:
+          type: string
+          description: The unique identifier (UUID) for the scan.
+        schedule_id:
+          type: string
+          description: The identifier for the scan schedule.
+        schedule_uuid:
+          type: string
+          description: The unique identifier (UUID) for the scan schedule.
+        ready:
+          type: boolean
+          description: A boolean value indicating whether the export is ready for download.
+        error:
+          type: boolean
+          description: A boolean value indicating whether an error occurred during export generation.
+        format:
+          type: string
+          description: The file format of the scan export. Possible values include `nessus`, `html`, `pdf`, `csv`, and `json`.
+          enum:
+          - nessus
+          - html
+          - pdf
+          - csv
+          - json
+        metadata:
+          $ref: '#/components/schemas/Scan_Exports_ExportMetadata'
     Scan_Exports_ExportMetadata:
       type: object
       properties:
@@ -504,38 +526,6 @@ components:
         num_chunks:
           type: integer
           description: The total number of data chunks that make up the complete export file. Large exports are divided into multiple chunks to facilitate more reliable and efficient downloads.
-    Scan_Exports_Response-List-Exports:
-      type: object
-      properties:
-        export_id:
-          type: string
-          description: The unique identifier for the scan export request.
-        scan_uuid:
-          type: string
-          description: The unique identifier (UUID) for the scan.
-        schedule_id:
-          type: string
-          description: The identifier for the scan schedule.
-        schedule_uuid:
-          type: string
-          description: The unique identifier (UUID) for the scan schedule.
-        ready:
-          type: boolean
-          description: A boolean value indicating whether the export is ready for download.
-        error:
-          type: boolean
-          description: A boolean value indicating whether an error occurred during export generation.
-        format:
-          type: string
-          description: The file format of the scan export. Possible values include `nessus`, `html`, `pdf`, `csv`, and `json`.
-          enum:
-          - nessus
-          - html
-          - pdf
-          - csv
-          - json
-        metadata:
-          $ref: '#/components/schemas/Scan_Exports_ExportMetadata'
     Scan_Exports_ErrorResponse:
       type: object
       properties:
@@ -549,15 +539,123 @@ components:
           type: string
           description: A brief message about the cause of the error.
   securitySchemes:
-    Bearer:
+    assets_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Asset_Custom_Attributes_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    editor_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Assets_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Compliance_Data_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    file_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    filters_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    folders_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    plugins_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    policies_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Reports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Control_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Exports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_History_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Results_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Status_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Shared_Collections_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Remediation_Scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    workbenches_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

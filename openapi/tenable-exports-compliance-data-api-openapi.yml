@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Vulnerability Management Exports (Compliance Data) API
   version: 1.0.0
-  title: Downloads About Exports (Compliance Data) API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Exports (Compliance Data)
   x-displayName: Exports (Compliance Data)
@@ -38,7 +11,15 @@ paths:
   /compliance/export:
     post:
       summary: Export compliance data
-      description: "Exports compliance data that matches the request criteria. The compliance export API does not return results for individual scans. Instead, the exported data is an aggregation / summary of all compliance scan data. As new compliance scans are run, the summary is updated with the latest audit results.\n\n**Note:** If you do not submit a request body with the POST request, Tenable Vulnerability Management returns a `415 Unsupported Media Type` error. If you do not want to use any body parameters, you must still supply an empty JSON body with the request to avoid this error. For example: `{}` \n\n**Note:** There are limits for concurrent export requests. For more information, see [Concurrency Limiting](doc:concurrency-limiting) and [Rate Limiting](doc:rate-limiting). <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      description: 'Exports compliance data that matches the request criteria. The compliance export API does not return results for individual scans. Instead, the exported data is an aggregation / summary of all compliance scan data. As new compliance scans are run, the summary is updated with the latest audit results.
+
+
+        **Note:** If you do not submit a request body with the POST request, Tenable Vulnerability Management returns a `415 Unsupported Media Type` error. If you do not want to use any body parameters, you must still supply an empty JSON body with the request to avoid this error. For example: `{}`
+
+
+        **Note:** There are limits for concurrent export requests. For more information, see Concurrency Limiting and Rate Limiting.
+
+        Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. See Roles and Permissions.'
       operationId: io-exports-compliance-create
       tags:
       - Exports (Compliance Data)
@@ -227,7 +208,9 @@ paths:
   /compliance/export/{export_uuid}/status:
     get:
       summary: Get compliance export status
-      description: Returns the status of the specified compliance export. Tenable Vulnerability Management processes the chunks in parallel so the chunks may not complete in order. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Returns the status of the specified compliance export. Tenable Vulnerability Management processes the chunks in parallel so the chunks may not complete in order.
+
+        Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See Roles.'
       operationId: io-exports-compliance-status
       tags:
       - Exports (Compliance Data)
@@ -303,7 +286,9 @@ paths:
   /compliance/export/status:
     get:
       summary: List compliance export jobs
-      description: Returns a list of the last 1,000 compliance export requests along with their statuses and related metadata. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Returns a list of the last 1,000 compliance export requests along with their statuses and related metadata.
+
+        Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See Roles.'
       operationId: exports-compliance-status-list
       tags:
       - Exports (Compliance Data)
@@ -383,7 +368,9 @@ paths:
   /compliance/export/{export_uuid}/chunks/{chunk_id}:
     get:
       summary: Download compliance chunk
-      description: Downloads a specific compliance data chunk by ID. Chunks are processed in parallel and remain available for download for up to 3 days after creation. A `404` response is returned for expired chunks. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Downloads a specific compliance data chunk by ID. Chunks are processed in parallel and remain available for download for up to 3 days after creation. A `404` response is returned for expired chunks.
+
+        Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See Roles.'
       operationId: io-exports-compliance-download
       tags:
       - Exports (Compliance Data)
@@ -568,7 +555,9 @@ paths:
   /compliance/export/{export_uuid}/cancel:
     post:
       summary: Cancel compliance export
-      description: Cancels the specified compliance export job. If you cancel an export job, Tenable Vulnerability Management finishes any chunk that is currently processing, terminates the processing of any unprocessed chunks, and updates the job status to `CANCELLED`. If a canceled job includes completed chunks, you can still download those chunks after cancellation. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Cancels the specified compliance export job. If you cancel an export job, Tenable Vulnerability Management finishes any chunk that is currently processing, terminates the processing of any unprocessed chunks, and updates the job status to `CANCELLED`. If a canceled job includes completed chunks, you can still download those chunks after cancellation.
+
+        Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See Roles.'
       operationId: io-exports-compliance-cancel
       tags:
       - Exports (Compliance Data)
@@ -661,71 +650,18 @@ paths:
       - Export_Compliance_Data_cloud: []
 components:
   schemas:
-    Export_Compliance_Data_compliance-tags:
+    Export_Compliance_Data_ErrorResponse:
       type: object
       properties:
-        category:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
           type: string
-          description: The tag category.
-        values:
-          type: array
-          description: The tag value,
-          items:
-            type: string
-    Export_Compliance_Data_response-compliance-export-chunk-asset:
-      type: object
-      properties:
-        id:
+          description: The standard HTTP error name.
+        message:
           type: string
-          description: The UUID of the asset in Tenable Vulnerability Management. Use this value as the unique key for the asset.
-        ipv4_addresses:
-          description: A list of IPv4 addresses that are associated with the asset.
-          type: array
-          items:
-            type: string
-        ipv6_addresses:
-          description: A list of IPv6 addresses that are associated with the asset.
-          type: array
-          items:
-            type: string
-        fqdns:
-          description: A list of fully-qualified domain names (FQDNs) that are associated with the asset.
-          type: array
-          items:
-            type: string
-        name:
-          type: string
-          description: The name of the asset.
-        agent_name:
-          type: string
-          description: The name of the Nessus agent that scanned and identified the asset.
-        agent_uuid:
-          type: string
-          description: The unique identifier of the Nessus agent that identified the asset.
-        netbios_name:
-          type: string
-          description: The NetBIOS name that is associated with the asset.
-        mac_addresses:
-          type: array
-          description: A list of MAC addresses that are associated with the asset.
-          items:
-            type: string
-        operating_systems:
-          type: array
-          description: The operating systems that scans have associated with the asset record.
-          items:
-            type: string
-        system_type:
-          type: string
-          description: The system type as reported by Plugin ID 54615. Possible values include `router`, `general-purpose`, `scan-host`, and `embedded`.
-        network_id:
-          type: string
-          description: The ID of the network associated with the scanners that that gathered the compliance data. The default network ID is `00000000-0000-0000-0000-000000000000`. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
-        tags:
-          type: array
-          description: The tags assigned to the asset in Tenable Vulnerability Management.
-          items:
-            $ref: '#/components/schemas/Export_Compliance_Data_compliance-tags'
+          description: A brief message about the cause of the error.
     Export_Compliance_Data_response-compliance-export-status:
       description: Information about the compliance export job, including the current status of the export and the total number of chunks.
       type: object
@@ -816,18 +752,17 @@ components:
           type: integer
           format: int64
           description: The Unix timestamp when the compliance export job was created.
-    Export_Compliance_Data_ErrorResponse:
+    Export_Compliance_Data_compliance-tags:
       type: object
       properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
+        category:
           type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
+          description: The tag category.
+        values:
+          type: array
+          description: The tag value,
+          items:
+            type: string
     Export_Compliance_Data_response-compliance-export-chunk:
       description: ''
       type: object
@@ -953,16 +888,178 @@ components:
           type: string
         assets:
           $ref: '#/components/schemas/Export_Compliance_Data_response-compliance-export-chunk-asset'
+    Export_Compliance_Data_response-compliance-export-chunk-asset:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The UUID of the asset in Tenable Vulnerability Management. Use this value as the unique key for the asset.
+        ipv4_addresses:
+          description: A list of IPv4 addresses that are associated with the asset.
+          type: array
+          items:
+            type: string
+        ipv6_addresses:
+          description: A list of IPv6 addresses that are associated with the asset.
+          type: array
+          items:
+            type: string
+        fqdns:
+          description: A list of fully-qualified domain names (FQDNs) that are associated with the asset.
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+          description: The name of the asset.
+        agent_name:
+          type: string
+          description: The name of the Nessus agent that scanned and identified the asset.
+        agent_uuid:
+          type: string
+          description: The unique identifier of the Nessus agent that identified the asset.
+        netbios_name:
+          type: string
+          description: The NetBIOS name that is associated with the asset.
+        mac_addresses:
+          type: array
+          description: A list of MAC addresses that are associated with the asset.
+          items:
+            type: string
+        operating_systems:
+          type: array
+          description: The operating systems that scans have associated with the asset record.
+          items:
+            type: string
+        system_type:
+          type: string
+          description: The system type as reported by Plugin ID 54615. Possible values include `router`, `general-purpose`, `scan-host`, and `embedded`.
+        network_id:
+          type: string
+          description: The ID of the network associated with the scanners that that gathered the compliance data. The default network ID is `00000000-0000-0000-0000-000000000000`. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        tags:
+          type: array
+          description: The tags assigned to the asset in Tenable Vulnerability Management.
+          items:
+            $ref: '#/components/schemas/Export_Compliance_Data_compliance-tags'
   securitySchemes:
-    Bearer:
+    assets_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Asset_Custom_Attributes_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    editor_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Assets_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Compliance_Data_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    file_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    filters_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    folders_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    plugins_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    policies_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Reports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Control_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Exports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_History_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Results_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Status_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Shared_Collections_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Remediation_Scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    workbenches_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

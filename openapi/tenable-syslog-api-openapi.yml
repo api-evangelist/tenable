@@ -1,43 +1,20 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  version: 1.0.0
-  title: Downloads About Syslog API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+  title: Identity Exposure Syslog API
+  description: API to interact with Identity Exposure.
+  version: production
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: '{protocol}://customer.tenable.ad'
+  variables:
+    protocol:
+      default: https
 tags:
 - name: Syslog
   description: A syslog alert
 paths:
   /api/syslogs:
     get:
-      summary: Retrieve all syslog instances.
+      summary: Retrieve all syslog instances
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '200':
@@ -81,11 +58,13 @@ paths:
                     criticityThreshold:
                       type: integer
                     description:
-                      type: string
-                      nullable: true
+                      type:
+                      - string
+                      - 'null'
                     filterExpression:
-                      type: object
-                      nullable: true
+                      type:
+                      - object
+                      - 'null'
                     inputType:
                       type: string
                       enum:
@@ -99,34 +78,39 @@ paths:
                       items:
                         type: integer
                     checkers:
-                      type: array
+                      type:
+                      - array
+                      - 'null'
                       minItems: 1
                       items:
                         type: integer
-                      nullable: true
                     attackTypes:
-                      type: array
+                      type:
+                      - array
+                      - 'null'
                       minItems: 1
                       items:
                         type: integer
-                      nullable: true
                     profiles:
-                      type: array
+                      type:
+                      - array
+                      - 'null'
                       minItems: 1
                       items:
                         type: integer
-                      nullable: true
                     shouldNotifyOnInitialFullSecurityCheck:
                       type: boolean
                     relayId:
-                      type: number
-                      nullable: true
+                      type:
+                      - number
+                      - 'null'
                     healthCheckNames:
-                      type: array
+                      type:
+                      - array
+                      - 'null'
                       minItems: 1
                       items:
                         type: string
-                      nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -148,8 +132,10 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiSyslogs
+      x-operation-id-source: derived
     post:
-      summary: Create syslog instance.
+      summary: Create syslog instance
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '201':
@@ -193,11 +179,13 @@ paths:
                     criticityThreshold:
                       type: integer
                     description:
-                      type: string
-                      nullable: true
+                      type:
+                      - string
+                      - 'null'
                     filterExpression:
-                      type: object
-                      nullable: true
+                      type:
+                      - object
+                      - 'null'
                     inputType:
                       type: string
                       enum:
@@ -211,34 +199,39 @@ paths:
                       items:
                         type: integer
                     checkers:
-                      type: array
+                      type:
+                      - array
+                      - 'null'
                       minItems: 1
                       items:
                         type: integer
-                      nullable: true
                     attackTypes:
-                      type: array
+                      type:
+                      - array
+                      - 'null'
                       minItems: 1
                       items:
                         type: integer
-                      nullable: true
                     profiles:
-                      type: array
+                      type:
+                      - array
+                      - 'null'
                       minItems: 1
                       items:
                         type: integer
-                      nullable: true
                     shouldNotifyOnInitialFullSecurityCheck:
                       type: boolean
                     relayId:
-                      type: number
-                      nullable: true
+                      type:
+                      - number
+                      - 'null'
                     healthCheckNames:
-                      type: array
+                      type:
+                      - array
+                      - 'null'
                       minItems: 1
                       items:
                         type: string
-                      nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -310,8 +303,9 @@ paths:
                     shouldNotifyOnInitialFullSecurityCheck:
                       type: boolean
                     relayId:
-                      type: number
-                      nullable: true
+                      type:
+                      - number
+                      - 'null'
                 - description: List the properties that depend on the input type
                   type: object
                   oneOf:
@@ -389,9 +383,11 @@ paths:
                                   minItems: 1
                                   items:
                                     type: string
+      operationId: postApiSyslogs
+      x-operation-id-source: derived
   /api/syslogs/{id}:
     get:
-      summary: Get syslog instance by id.
+      summary: Get syslog instance by id
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '200':
@@ -432,11 +428,13 @@ paths:
                   criticityThreshold:
                     type: integer
                   description:
-                    type: string
-                    nullable: true
+                    type:
+                    - string
+                    - 'null'
                   filterExpression:
-                    type: object
-                    nullable: true
+                    type:
+                    - object
+                    - 'null'
                   inputType:
                     type: string
                     enum:
@@ -450,34 +448,39 @@ paths:
                     items:
                       type: integer
                   checkers:
-                    type: array
+                    type:
+                    - array
+                    - 'null'
                     minItems: 1
                     items:
                       type: integer
-                    nullable: true
                   attackTypes:
-                    type: array
+                    type:
+                    - array
+                    - 'null'
                     minItems: 1
                     items:
                       type: integer
-                    nullable: true
                   profiles:
-                    type: array
+                    type:
+                    - array
+                    - 'null'
                     minItems: 1
                     items:
                       type: integer
-                    nullable: true
                   shouldNotifyOnInitialFullSecurityCheck:
                     type: boolean
                   relayId:
-                    type: number
-                    nullable: true
+                    type:
+                    - number
+                    - 'null'
                   healthCheckNames:
-                    type: array
+                    type:
+                    - array
+                    - 'null'
                     minItems: 1
                     items:
                       type: string
-                    nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -507,8 +510,10 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiSyslogsById
+      x-operation-id-source: derived
     patch:
-      summary: Update syslog instance.
+      summary: Update syslog instance
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '200':
@@ -549,11 +554,13 @@ paths:
                   criticityThreshold:
                     type: integer
                   description:
-                    type: string
-                    nullable: true
+                    type:
+                    - string
+                    - 'null'
                   filterExpression:
-                    type: object
-                    nullable: true
+                    type:
+                    - object
+                    - 'null'
                   inputType:
                     type: string
                     enum:
@@ -567,34 +574,39 @@ paths:
                     items:
                       type: integer
                   checkers:
-                    type: array
+                    type:
+                    - array
+                    - 'null'
                     minItems: 1
                     items:
                       type: integer
-                    nullable: true
                   attackTypes:
-                    type: array
+                    type:
+                    - array
+                    - 'null'
                     minItems: 1
                     items:
                       type: integer
-                    nullable: true
                   profiles:
-                    type: array
+                    type:
+                    - array
+                    - 'null'
                     minItems: 1
                     items:
                       type: integer
-                    nullable: true
                   shouldNotifyOnInitialFullSecurityCheck:
                     type: boolean
                   relayId:
-                    type: number
-                    nullable: true
+                    type:
+                    - number
+                    - 'null'
                   healthCheckNames:
-                    type: array
+                    type:
+                    - array
+                    - 'null'
                     minItems: 1
                     items:
                       type: string
-                    nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -662,28 +674,34 @@ paths:
                   items:
                     type: integer
                 checkers:
-                  type: array
+                  type:
+                  - array
+                  - 'null'
                   minItems: 1
                   items:
                     type: integer
-                  nullable: true
                 profiles:
-                  type: array
+                  type:
+                  - array
+                  - 'null'
                   minItems: 1
                   items:
                     type: integer
-                  nullable: true
                 attackTypes:
-                  type: array
+                  type:
+                  - array
+                  - 'null'
                   minItems: 1
                   items:
                     type: integer
-                  nullable: true
                 relayId:
-                  type: number
-                  nullable: true
+                  type:
+                  - number
+                  - 'null'
+      operationId: patchApiSyslogsById
+      x-operation-id-source: derived
     delete:
-      summary: Delete syslog instance.
+      summary: Delete syslog instance
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '204':
@@ -693,7 +711,6 @@ paths:
               schema:
                 description: syslog
                 additionalProperties: false
-                nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -723,6 +740,8 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: deleteApiSyslogsById
+      x-operation-id-source: derived
   /api/syslogs/test-message/{id}:
     get:
       summary: Send a test syslog notification by id
@@ -734,7 +753,6 @@ paths:
             application/json:
               schema:
                 description: Validates the post /syslogs/ response
-                nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -764,6 +782,8 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiSyslogsTestMessageById
+      x-operation-id-source: derived
   /api/syslogs/test-message:
     post:
       summary: Send a test syslog notification
@@ -775,7 +795,6 @@ paths:
             application/json:
               schema:
                 description: Validates the post /syslogs/ response
-                nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -842,8 +861,9 @@ paths:
                     - attacks
                     - healthChecks
                   relayId:
-                    type: number
-                    nullable: true
+                    type:
+                    - number
+                    - 'null'
               - description: List the properties that depend on the input type
                 type: object
                 oneOf:
@@ -921,28 +941,15 @@ paths:
                                 minItems: 1
                                 items:
                                   type: string
+      operationId: postApiSyslogsTestMessage
+      x-operation-id-source: derived
 components:
   securitySchemes:
-    Bearer:
-      type: apiKey
+    ApiKey:
+      name: x-api-key
+      description: The user's API key
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      type: apiKey
 x-readme:
-  proxy-enabled: false
   explorer-enabled: true
-  samples-enabled: true
-  samples-languages:
-  - python
-  - curl
-  - node
-  - powershell
-  - ruby
-  - javascript
-  - objectivec
-  - java
-  - php
-  - csharp
-  - go
-  - swift
-  - kotlin
+  proxy-enabled: true

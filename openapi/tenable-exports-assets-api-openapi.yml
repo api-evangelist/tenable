@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Vulnerability Management Exports (Assets) API
   version: 1.0.0
-  title: Downloads About Exports (Assets) API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Exports (Assets)
   x-displayName: Exports (Assets)
@@ -38,7 +11,18 @@ paths:
   /assets/export:
     post:
       summary: Export assets v1
-      description: "Exports all assets that match the request criteria. \n\nUsers need at least the Basic [16] user permission or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. The Can View access control permission can be set for all assets with the `All Assets` object. Administrator [64] users can export without the explicit Can View access control permission. \n\nFor more information about this endpoint, see guidelines and limitations described in [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).  \n\n**Note:** There are limits for concurrent export requests. For more information, see [Concurrency Limiting](doc:concurrency-limiting) and [Rate Limiting](doc:rate-limiting). <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. Administrator [64] users can export without the explicit Can View access control permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      description: 'Exports all assets that match the request criteria.
+
+
+        Users need at least the Basic [16] user permission or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. The Can View access control permission can be set for all assets with the `All Assets` object. Administrator [64] users can export without the explicit Can View access control permission.
+
+
+        For more information about this endpoint, see guidelines and limitations described in Retrieve Asset Data from Vulnerability Management.
+
+
+        **Note:** There are limits for concurrent export requests. For more information, see Concurrency Limiting and Rate Limiting.
+
+        Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. Administrator [64] users can export without the explicit Can View access control permission. See Roles and Permissions.'
       operationId: export-assets-v1
       tags:
       - Exports (Assets)
@@ -190,7 +174,21 @@ paths:
   /assets/v2/export:
     post:
       summary: Export assets v2
-      description: "Exports all assets that match the request criteria. \n\nThis endpoint supersedes the [Export assets v1](ref:export-assets-v1) endpoint. Export assets v2 adds support for Tenable Web App Scanning assets. WAS assets can be included in the export by specifying `WAS` with the `sources` parameter or `webapp` with the `types` parameter. The Export assets v2 endpoint supports most filters supported by [Export assets v1](ref:export-assets-v1) in addition to the new `types` and `since` parameters. The tag filter (`tag.<category>`) available in Export assets v1 is not supported in this endpoint.  Additionally, the asset chunks are returned using an improved data model. See [Download assets chunk](ref:exports-assets-download-chunk) for the assets v2 data model specification.\n\nUsers need at least the Basic [16] user permission or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. The Can View access control permission can be set for all assets with the `All Assets` object. Administrator [64] users can export without the explicit Can View access control permission. FedRAMP customers who use the GovCloud region must have the Administrator [64] user permission. \n\nFor more information about this endpoint, see guidelines and limitations described in [Retrieve Asset Data from Vulnerability Management](doc:retrieve-asset-data-from-tenableio).  \n\n**Note:** There are limits for concurrent export requests. For more information, see [Concurrency Limiting](doc:concurrency-limiting) and [Rate Limiting](doc:rate-limiting). <div class=\"perms-callout\">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. Administrator [64] users can export without the explicit Can View access control permission. FedRAMP customers who use the GovCloud region must have the Administrator [64] user permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      description: 'Exports all assets that match the request criteria.
+
+
+        This endpoint supersedes the Export assets v1 endpoint. Export assets v2 adds support for Tenable Web App Scanning assets. WAS assets can be included in the export by specifying `WAS` with the `sources` parameter or `webapp` with the `types` parameter. The Export assets v2 endpoint supports most filters supported by Export assets v1 in addition to the new `types` and `since` parameters. The tag filter (`tag.`) available in Export assets v1 is not supported in this endpoint. Additionally, the asset chunks are returned using an improved data model. See Download assets chunk for the assets v2 data model specification.
+
+
+        Users need at least the Basic [16] user permission or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. The Can View access control permission can be set for all assets with the `All Assets` object. Administrator [64] users can export without the explicit Can View access control permission. FedRAMP customers who use the GovCloud region must have the Administrator [64] user permission.
+
+
+        For more information about this endpoint, see guidelines and limitations described in Retrieve Asset Data from Vulnerability Management.
+
+
+        **Note:** There are limits for concurrent export requests. For more information, see Concurrency Limiting and Rate Limiting.
+
+        Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. Additionally, requires the Can View access control permission for the asset objects to be exported. Administrator [64] users can export without the explicit Can View access control permission. FedRAMP customers who use the GovCloud region must have the Administrator [64] user permission. See Roles and Permissions.'
       operationId: export-assets-v2
       tags:
       - Exports (Assets)
@@ -349,7 +347,9 @@ paths:
   /assets/export/{export_uuid}/status:
     get:
       summary: Get assets export status
-      description: Returns the status of an assets export request. Tenable Vulnerability Management processes the chunks in parallel so the chunks may not complete in order, and the chunk IDs may not be arranged sequentially in the completed output. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Returns the status of an assets export request. Tenable Vulnerability Management processes the chunks in parallel so the chunks may not complete in order, and the chunk IDs may not be arranged sequentially in the completed output.
+
+        Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See Roles.'
       operationId: exports-assets-export-status
       tags:
       - Exports (Assets)
@@ -429,7 +429,9 @@ paths:
   /assets/export/status:
     get:
       summary: List asset export jobs
-      description: Retrieves a list of asset export jobs. This list includes the 1,000 most recent export jobs regardless of status. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Retrieves a list of asset export jobs. This list includes the 1,000 most recent export jobs regardless of status.
+
+        Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See Roles.'
       operationId: exports-assets-export-status-recent
       tags:
       - Exports (Assets)
@@ -568,7 +570,9 @@ paths:
       description: 'Downloads a specific asset export chunk. Chunks are available for download for up to 24 hours after they have been created. Tenable Vulnerability Management returns a 404 message for expired chunks.
 
 
-        **Note:** This endpoint can be used to download asset chunks generated by either the [Export assets v1](ref:export-assets-v1) endpoint or the [Export assets v2](ref:export-assets-v2) endpoint. However, the response model differs between the two versions. The two response models are provided in the response section below. <div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>'
+        **Note:** This endpoint can be used to download asset chunks generated by either the Export assets v1 endpoint or the Export assets v2 endpoint. However, the response model differs between the two versions. The two response models are provided in the response section below.
+
+        Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See Roles.'
       operationId: exports-assets-download-chunk
       tags:
       - Exports (Assets)
@@ -1083,7 +1087,9 @@ paths:
   /assets/export/{export_uuid}/cancel:
     post:
       summary: Cancel asset export
-      description: Cancels the specified assets export job. If you cancel an export job, Tenable Vulnerability Management finishes any chunk that is currently processing, terminates the processing of any unprocessed chunks, and updates the job status to `CANCELLED`. If a canceled job includes completed chunks, you can download those chunks for three days after cancellation.<div class="perms-callout">Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Cancels the specified assets export job. If you cancel an export job, Tenable Vulnerability Management finishes any chunk that is currently processing, terminates the processing of any unprocessed chunks, and updates the job status to `CANCELLED`. If a canceled job includes completed chunks, you can download those chunks for three days after cancellation.
+
+        Requires the Basic [16] user role or the `VM.VM_EXPLORE.VM_EXPLORE.EXPORT` custom role privilege. See Roles.'
       operationId: exports-assets-export-cancel
       tags:
       - Exports (Assets)
@@ -1180,178 +1186,66 @@ paths:
       - Export_Assets_cloud: []
 components:
   schemas:
-    Export_Assets_network_interfaces_v2:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the interface.
-        mac_addresses:
-          type: array
-          description: The MAC addresses of the interface.
-          items:
-            type: string
-        ipv4s:
-          type: array
-          description: One or more IPv4 addresses belonging to the interface.
-          items:
-            type: string
-        ipv6s:
-          type: array
-          description: One or more IPv6 addresses belonging to the interface.
-          items:
-            type: string
-        fqdns:
-          type: array
-          description: One or more FQDN belonging to the interface.
-          items:
-            type: string
-        virtual:
-          type: boolean
-          description: True if network interface is a virtual interface.
-        aliased:
-          type: boolean
-          description: True if network interface is a virtual interface.
-    Export_Assets_scan:
-      type: object
-      properties:
-        first_scan_time:
-          type: string
-          description: The date and time of the first scan run against the asset.
-        last_scan_time:
-          type: string
-          description: The date and time of the last scan run against the asset.
-        last_authenticated_scan_date:
-          type: string
-          description: The date and time of the most recent credentialed scan performed on the asset.
-        last_licensed_scan_date:
-          type: string
-          description: The date and time of the last scan that identified the asset as licensed. Tenable Vulnerability Management categorizes an asset as licensed if a scan of that asset has returned results from a non-discovery plugin within the last 90 days.
-        last_scan_id:
-          type: string
-          format: uuid
-          description: The unique identifier of the scan configuration used for the most recent scan of the asset.
-        last_schedule_id:
-          type: string
-          description: The `schedule_uuid` of the scan schedule used for the most recent scan of the asset.
-        last_authentication_attempt_date:
-          type: string
-          description: The date and time a scan last attempted to authenticate using SSH (on Unix-based systems) or SMB (on Windows systems).
-        last_authentication_success_date:
-          type: string
-          description: 'The date and time a scan last authenticated successfully. Note: This property is not updated by Tenable Agent scans, as agents do not perform login-based authentication.'
-        last_authentication_scan_status:
-          type: string
-          description: The last authentication scan status.
-        last_scan_target:
-          type: string
-          description: The last scan target which was scanned.
-    Export_Assets_response-assets-chunk-v2:
+    Export_Assets_custom_attributes:
       type: object
       properties:
         id:
           type: string
-          description: The unique identifier of the asset in Tenable Vulnerability Management. Use this value as the unique key for the asset.
-        has_agent:
-          type: boolean
-          description: Specifies whether a Nessus agent scan identified the asset.
-        has_plugin_results:
-          type: boolean
-          description: Specifies whether the asset has plugin results associated with it.
-        agent_uuid:
+          description: Id of the attribute.
+        value:
           type: string
-          description: This property represents the `tenable_uuid`. This identifier can originate from either an agent or a credentialed remote Nessus scan. If no agent is present on the asset, a UUID is assigned by Tenable Vulnerability Management during a credentialed scan when the [Create unique identifier on hosts scanned with credentials](https://docs.tenable.com/vulnerability-management/Content/Scans/AdvancedSettings.htm) option is enabled. Note that no UUID is set for an uncredentialed non-agent scans.
-        is_licensed:
-          type: boolean
-          description: Specifies whether the asset has plugin results associated with it.
-        terminated_by:
+          description: Value of the attribute.
+    Export_Assets_gcp:
+      type: object
+      properties:
+        project_id:
           type: string
-          description: The user who terminated the AWS instance of the asset.
-        deleted_by:
+          description: The unique identifier of the virtual machine instance in Google Cloud Platform (GCP).
+        zone:
           type: string
-          description: The user who deleted the asset record.
-        types:
-          type: array
-          description: The type of asset.
-          items:
-            type: string
-        agent_names:
-          type: array
-          description: The names of any Nessus agents that scanned and identified the asset.
-          items:
-            type: string
-        operating_systems:
-          type: array
-          description: The operating systems that scans have associated with the asset record.
-          items:
-            type: string
-        system_types:
-          type: array
-          description: The system types as reported by Plugin ID 54615. Possible values include `router`, `general-purpose`, `scan-host`, `embedded`, and `firewall`.
-          items:
-            type: string
-        manufacturer_tpm_ids:
-          type: array
-          description: The manufacturer's unique identifiers of the Trusted Platform Module (TPM) associated with the asset.
-          items:
-            type: string
-        installed_software:
-          type: array
-          description: 'A list of Common Platform Enumeration (CPE) values that represent software applications a scan identified as present on an asset. This attribute supports the CPE 2.2 format. For more information, see the "Component Syntax" section of the [CPE Specification, Version 2.2](https://cpe.mitre.org/files/cpe-specification_2.2.pdf). For assets identified in Tenable scans, this attribute contains data only if a scan using [Nessus Plugin ID 45590](https://www.tenable.com/plugins/nessus/45590) has evaluated the asset.
-
-
-            **Note:** If no scan detects an application within 30 days of the scan that originally detected the application, Tenable Vulnerability Management considers the detection of that application expired. As a result, the next time a scan evaluates the asset, Tenable Vulnerability Management removes the expired application from the installed_software attribute. This activity is logged as a `remove` type of `attribute_change` update in the asset activity log.'
-          items:
-            type: string
-        is_public:
-          type: boolean
-          description: Specifies whether if the asset is an internet-facing and accessible externally.
-        network_device_serial_identifier:
+          description: The customized name of the project to which the virtual machine instance belongs in GCP. For more information see "Creating and Managing Projects" in the GCP documentation.
+        instance_id:
           type: string
-          description: Specifies network device serial identifier.
-        custom_attributes:
-          type: array
-          description: List of custom-attributes associated with the asset.
-          items:
-            $ref: '#/components/schemas/Export_Assets_custom_attributes'
-        sources:
-          type: array
-          description: "The sources of the scans that identified the asset. An asset source is the entity that reported the asset details. Sources can include sensors, connectors, and API imports. If your request specifies multiple sources, Tenable Vulnerability Management returns all assets seen by any of the specified sources.\n\nThe items in the `sources` array must correspond to the names of the sources as defined in your organization's implementation of Tenable Vulnerability Management. Commonly used names include:\n - AWS—The asset data was obtained from an Amazon Web Services connector.\n - NESSUS_AGENT—The asset data was obtained from a Tenable Nessus Agent scan.\n - PVS—The asset data from a Tenable Nessus Network Monitor (NNM) scan.\n - NESSUS_SCAN—The asset data was obtained from a Tenable Nessus scan.\n - WAS—The asset data was obtained from a Tenable Web App Scanning scan."
-          items:
-            $ref: '#/components/schemas/Export_Assets_sources'
-        tags:
-          type: array
-          description: The tags assigned to the asset in Tenable Vulnerability Management.
-          items:
-            $ref: '#/components/schemas/Export_Assets_tags'
-        scan:
-          $ref: '#/components/schemas/Export_Assets_scan'
-        cloud:
-          type: object
-          description: Attributes related to cloud asset.
-          properties:
-            azure:
-              $ref: '#/components/schemas/Export_Assets_azure'
-            gcp:
-              $ref: '#/components/schemas/Export_Assets_gcp'
-            aws:
-              $ref: '#/components/schemas/Export_Assets_aws'
-        third_party_ids:
-          $ref: '#/components/schemas/Export_Assets_third-party-ids'
-        network:
-          $ref: '#/components/schemas/Export_Assets_network'
-        timestamps:
-          $ref: '#/components/schemas/Export_Assets_timestamps'
-        tenable_agent_days_since_active:
-          type: integer
-          description: If `sources` includes `NESSUS_AGENT`, the time in days since the agent last observed the asset.
-        ratings:
-          $ref: '#/components/schemas/Export_Assets_ratings-object'
-        resource_tags:
-          type: array
-          description: "An array of resource tags applicable to the asset. Resource tags are imported from a cloud provider like AWS, Azure, or GCP by a Cloud Discovery Connector and are used to identify cloud assets. \n\nFor more information about resource tags, see [Cloud Resources](https://docs.tenable.com/vulnerability-management/Content/Explore/Assets/exploreAssetsCloudResources.htm) and [Host Assets](https://docs.tenable.com/vulnerability-management/Content/Explore/Assets/ExploreAssetsHosts.htm) in the Tenable Vulnerability Management User Guide."
-          items:
-            $ref: '#/components/schemas/Export_Assets_resource_tags'
+          description: The zone where the virtual machine instance runs in GCP. For more information, see "Regions and Zones" in the GCP documentation.
+    Export_Assets_aws:
+      type: object
+      properties:
+        ec2_instance_ami_id:
+          type: string
+          description: The unique identifier of the Linux AMI image in Amazon Elastic Compute Cloud (Amazon EC2). For more information, see the Amazon Elastic Compute Cloud documentation.
+        ec2_instance_id:
+          type: string
+          description: The unique identifier of the Linux instance in Amazon EC2. For more information, see the Amazon Elastic Compute Cloud documentation.
+        owner_id:
+          type: string
+          description: The canonical user identifier for the AWS account associated with the virtual machine instance. For example, `79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be`. For more information, see AWS Account Identifiers in the AWS documentation.
+        availability_zone:
+          type: string
+          description: The availability zone where Amazon Web Services hosts the virtual machine instance, for example, `us-east-1a``. Availability zones are subdivisions of AWS regions. For more information, see "Regions and Availability Zones" in the AWS documentation.
+        region:
+          type: string
+          description: The region where AWS hosts the virtual machine instance, for example, `us-east-1`. For more information, see "Regions and Availability Zones" in the AWS documentation.
+        vpc_id:
+          type: string
+          description: The unique identifier for the virtual public cloud that hosts the AWS virtual machine instance. For more information, see the Amazon Virtual Private Cloud User Guide.
+        ec2_instance_group_name:
+          type: string
+          description: The unique identifier for the virtual public cloud that hosts the AWS virtual machine instance. For more information, see the Amazon Virtual Private Cloud User Guide.
+        ec2_instance_state_name:
+          type: string
+          description: The state of the virtual machine instance in AWS at the time of the scan.
+        ec2_instance_type:
+          type: string
+          description: The type of instance in AWS EC2.
+        subnet_id:
+          type: string
+          description: The unique identifier of the AWS subnet where the virtual machine instance was running at the time of the scan.
+        ec2_product_code:
+          type: string
+          description: The product code associated with the AMI used to launch the virtual machine instance in AWS EC2.
+        ec2_name:
+          type: string
+          description: The name of the virtual machine instance in AWS EC2.
     Export_Assets_response-assets-chunk-v1:
       type: object
       properties:
@@ -1629,185 +1523,36 @@ components:
           description: "An array of resource tags applicable to the asset. Resource tags are imported from a cloud provider like AWS, Azure, or GCP by a Cloud Discovery Connector and are used to identify cloud assets. \n\nFor more information about resource tags, see [Cloud Resources](https://docs.tenable.com/vulnerability-management/Content/Explore/Assets/exploreAssetsCloudResources.htm) and [Host Assets](https://docs.tenable.com/vulnerability-management/Content/Explore/Assets/ExploreAssetsHosts.htm) in the Tenable Vulnerability Management User Guide."
           items:
             $ref: '#/components/schemas/Export_Assets_resource_tags'
-    Export_Assets_resource_tags:
-      type: object
-      properties:
-        key:
-          type: string
-          description: The resource tag key.
-        value:
-          type: string
-          description: The resource tag value.
-    Export_Assets_tags:
+    Export_Assets_response-asset-export-jobs:
+      description: Information about the export job.
       type: object
       properties:
         uuid:
           type: string
-          description: The unique identifier of the tag.
-        key:
+          description: The unique identifier of the asset export request.
+        status:
           type: string
-          description: The tag key, representing the category portion of a category:value tag pair.
-        value:
+          description: "The status of the export request. Possible values include:\n - QUEUED—Tenable Vulnerability Management has queued the export request until it completes other requests currently in process.\n - PROCESSING—Tenable Vulnerability Management has started processing the export request.\n - FINISHED—Tenable Vulnerability Management has completed processing the export request. The list of chunks is complete.\n - CANCELLED—An administrator has cancelled the export request.\n - ERROR—Tenable Vulnerability Management encountered an error while processing the export request. Tenable recommends that you retry the request. If the status persists on retry, contact Support."
+        reason:
           type: string
-          description: The tag value, representing the value portion of a category:value tag pair.
-        added_by:
-          type: string
-          description: The unique identifier of the user who assigned the tag to the asset.
-        added_at:
-          type: string
-          description: A timestamp in ISO 8601 format indicating the date and time the tag was assigned to the asset.
-    Export_Assets_azure:
-      type: object
-      properties:
-        vm_id:
-          type: string
-          description: The unique identifier of the Microsoft Azure virtual machine instance. For more information, see "Accessing and Using Azure VM Unique ID" in the Microsoft Azure documentation.
-        resource_id:
-          type: string
-          description: The unique identifier of the resource in the Azure Resource Manager. For more information, see the Azure Resource Manager Documentation.
-    Export_Assets_ratings-object:
-      type: object
-      description: A list of metrics that provide a comprehensive view of asset exposure and prioritization. Currently, the available metrics include the Asset Criticality Rating (ACR), which measures the relative business importance of an asset, and the Asset Exposure Score (AES), which quantifies the risk exposure of an asset based on its vulnerabilities.
-      properties:
-        acr:
-          description: "The Tenable-defined Asset Criticality Rating (ACR) assigned to the asset. This score, ranging from 1 to 10, reflects the relative importance of the asset to your organization, with higher values indicating more critical assets. In Lumin, the ACR is calculated using an algorithm based on the [asset profile](http://docs.tenable.com/vulnerability-management/Content/Explore/asset-types.htm). \n\nFor more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the _Tenable Vulnerability Management User Guide_."
-          type: object
-          properties:
-            score:
-              description: The Asset Criticality Rating (ACR) value.
-              type: number
-              format: float
-              maximum: 10
-              minimum: 0
-        aes:
-          description: "The Tenable-defined Asset Exposure Score (AES) assigned to the asset. This score, ranging from 1 to 1000, represents how exposed an asset is based on a weighted calculation of its [Vulnerability Priority Rating (VPR)](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm#VPR) and [Asset Criticality Rating (ACR)](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm#ACR). Higher values indicate greater exposure. \n\nFor more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the _Tenable Vulnerability Management User Guide_."
-          type: object
-          properties:
-            score:
-              description: The Asset Exposure Score (AES) value.
-              type: number
-              format: float
-              maximum: 1000
-              minimum: 0
-    Export_Assets_open_ports:
-      type: object
-      properties:
-        port:
+          description: "A human-readable description explaining the reason the export failed. This property is only present when the export status is `ERROR`. Possible values include:\n - \"The export request timed out. Try again.\"\n - \"An unexpected error occurred while processing the export. Try again later.\"\n - \"The export could not be completed. If this issue persists, please contact support.\""
+        total_chunks:
           type: integer
-          description: The open port number.
-        protocol:
-          type: string
-          description: The communication protocol corresponding to the open port.
-        service_names:
-          type: array
-          description: The names of the services associated with the open port.
-          items:
-            type: string
-        first_seen:
-          type: string
-          description: The ISO timestamp when the source first detected the open port on the asset.
-        last_seen:
-          type: string
-          description: The ISO timestamp when the source last detected the open port on the asset.
-    Export_Assets_timestamps:
-      type: object
-      description: Timestamps associated with the asset.
-      properties:
-        created_at:
-          type: string
-          description: The date and time when Tenable Vulnerability Management created the asset record.
-        updated_at:
-          type: string
-          description: The date and time when the asset record was last updated.
-        deleted_at:
-          type: string
-          description: The date and time a user deleted the asset record. After deletion, the asset record is retained until it ages out of the license count.
-        terminated_at:
-          type: string
-          description: The date and time the asset was terminated from a cloud platform (for example, Amazon Web Services [AWS]).
-        first_seen:
-          type: string
-          description: The date and time when a scan first identified the asset.
-        last_seen:
-          type: string
-          description: The date and time of the scan that most recently identified the asset.
-    Export_Assets_network_interfaces:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the interface.
-        mac_addresses:
-          type: array
-          description: The MAC addresses of the interface.
-          items:
-            type: string
-        ipv4s:
-          type: array
-          description: One or more IPv4 addresses belonging to the interface.
-          items:
-            type: string
-        ipv6s:
-          type: array
-          description: One or more IPv6 addresses belonging to the interface.
-          items:
-            type: string
-        fqdns:
-          type: array
-          description: One or more FQDN belonging to the interface.
-          items:
-            type: string
-    Export_Assets_gcp:
-      type: object
-      properties:
-        project_id:
-          type: string
-          description: The unique identifier of the virtual machine instance in Google Cloud Platform (GCP).
-        zone:
-          type: string
-          description: The customized name of the project to which the virtual machine instance belongs in GCP. For more information see "Creating and Managing Projects" in the GCP documentation.
-        instance_id:
-          type: string
-          description: The zone where the virtual machine instance runs in GCP. For more information, see "Regions and Zones" in the GCP documentation.
-    Export_Assets_aws:
-      type: object
-      properties:
-        ec2_instance_ami_id:
-          type: string
-          description: The unique identifier of the Linux AMI image in Amazon Elastic Compute Cloud (Amazon EC2). For more information, see the Amazon Elastic Compute Cloud documentation.
-        ec2_instance_id:
-          type: string
-          description: The unique identifier of the Linux instance in Amazon EC2. For more information, see the Amazon Elastic Compute Cloud documentation.
-        owner_id:
-          type: string
-          description: The canonical user identifier for the AWS account associated with the virtual machine instance. For example, `79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be`. For more information, see AWS Account Identifiers in the AWS documentation.
-        availability_zone:
-          type: string
-          description: The availability zone where Amazon Web Services hosts the virtual machine instance, for example, `us-east-1a``. Availability zones are subdivisions of AWS regions. For more information, see "Regions and Availability Zones" in the AWS documentation.
-        region:
-          type: string
-          description: The region where AWS hosts the virtual machine instance, for example, `us-east-1`. For more information, see "Regions and Availability Zones" in the AWS documentation.
-        vpc_id:
-          type: string
-          description: The unique identifier for the virtual public cloud that hosts the AWS virtual machine instance. For more information, see the Amazon Virtual Private Cloud User Guide.
-        ec2_instance_group_name:
-          type: string
-          description: The unique identifier for the virtual public cloud that hosts the AWS virtual machine instance. For more information, see the Amazon Virtual Private Cloud User Guide.
-        ec2_instance_state_name:
-          type: string
-          description: The state of the virtual machine instance in AWS at the time of the scan.
-        ec2_instance_type:
-          type: string
-          description: The type of instance in AWS EC2.
-        subnet_id:
-          type: string
-          description: The unique identifier of the AWS subnet where the virtual machine instance was running at the time of the scan.
-        ec2_product_code:
-          type: string
-          description: The product code associated with the AMI used to launch the virtual machine instance in AWS EC2.
-        ec2_name:
-          type: string
-          description: The name of the virtual machine instance in AWS EC2.
+          description: The total number of chunks associated with the export job as a whole.
+        filters:
+          type: object
+          description: The filters used in the asset export job request. For a list of possible filters, see the [POST /assets/export](ref:export-assets-v1) and [POST /assets/v2/export](ref:export-assets-v2) endpoints.
+          properties: {}
+        finished_chunks:
+          type: integer
+          description: The number of chunks that have been processed and are available for download.
+        num_assets_per_chunk:
+          type: integer
+          description: The number of assets contained in each export chunk.
+        created:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the asset export job was created.
     Export_Assets_network:
       type: object
       properties:
@@ -1865,6 +1610,330 @@ components:
           description: "An array of open ports and their services as reported by the info-level plugins. \n\nFor more information about open ports reported by info-level plugins, see [Relocate Open Port Findings](https://docs.tenable.com/vulnerability-management/Content/Settings/General/General.htm#Relocate-Open-Port-Findings) in the Tenable Vulnerability Management User Guide and the [Relocate Open Port Findings Quick Reference Guide](https://docs.tenable.com/quick-reference/relocate-open-port-findings/)."
           items:
             $ref: '#/components/schemas/Export_Assets_open_ports'
+    Export_Assets_network_interfaces_v2:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the interface.
+        mac_addresses:
+          type: array
+          description: The MAC addresses of the interface.
+          items:
+            type: string
+        ipv4s:
+          type: array
+          description: One or more IPv4 addresses belonging to the interface.
+          items:
+            type: string
+        ipv6s:
+          type: array
+          description: One or more IPv6 addresses belonging to the interface.
+          items:
+            type: string
+        fqdns:
+          type: array
+          description: One or more FQDN belonging to the interface.
+          items:
+            type: string
+        virtual:
+          type: boolean
+          description: True if network interface is a virtual interface.
+        aliased:
+          type: boolean
+          description: True if network interface is a virtual interface.
+    Export_Assets_open_ports:
+      type: object
+      properties:
+        port:
+          type: integer
+          description: The open port number.
+        protocol:
+          type: string
+          description: The communication protocol corresponding to the open port.
+        service_names:
+          type: array
+          description: The names of the services associated with the open port.
+          items:
+            type: string
+        first_seen:
+          type: string
+          description: The ISO timestamp when the source first detected the open port on the asset.
+        last_seen:
+          type: string
+          description: The ISO timestamp when the source last detected the open port on the asset.
+    Export_Assets_response-assets-chunk-v2:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the asset in Tenable Vulnerability Management. Use this value as the unique key for the asset.
+        has_agent:
+          type: boolean
+          description: Specifies whether a Nessus agent scan identified the asset.
+        has_plugin_results:
+          type: boolean
+          description: Specifies whether the asset has plugin results associated with it.
+        agent_uuid:
+          type: string
+          description: This property represents the `tenable_uuid`. This identifier can originate from either an agent or a credentialed remote Nessus scan. If no agent is present on the asset, a UUID is assigned by Tenable Vulnerability Management during a credentialed scan when the [Create unique identifier on hosts scanned with credentials](https://docs.tenable.com/vulnerability-management/Content/Scans/AdvancedSettings.htm) option is enabled. Note that no UUID is set for an uncredentialed non-agent scans.
+        is_licensed:
+          type: boolean
+          description: Specifies whether the asset has plugin results associated with it.
+        terminated_by:
+          type: string
+          description: The user who terminated the AWS instance of the asset.
+        deleted_by:
+          type: string
+          description: The user who deleted the asset record.
+        types:
+          type: array
+          description: The type of asset.
+          items:
+            type: string
+        agent_names:
+          type: array
+          description: The names of any Nessus agents that scanned and identified the asset.
+          items:
+            type: string
+        operating_systems:
+          type: array
+          description: The operating systems that scans have associated with the asset record.
+          items:
+            type: string
+        system_types:
+          type: array
+          description: The system types as reported by Plugin ID 54615. Possible values include `router`, `general-purpose`, `scan-host`, `embedded`, and `firewall`.
+          items:
+            type: string
+        manufacturer_tpm_ids:
+          type: array
+          description: The manufacturer's unique identifiers of the Trusted Platform Module (TPM) associated with the asset.
+          items:
+            type: string
+        installed_software:
+          type: array
+          description: 'A list of Common Platform Enumeration (CPE) values that represent software applications a scan identified as present on an asset. This attribute supports the CPE 2.2 format. For more information, see the "Component Syntax" section of the [CPE Specification, Version 2.2](https://cpe.mitre.org/files/cpe-specification_2.2.pdf). For assets identified in Tenable scans, this attribute contains data only if a scan using [Nessus Plugin ID 45590](https://www.tenable.com/plugins/nessus/45590) has evaluated the asset.
+
+
+            **Note:** If no scan detects an application within 30 days of the scan that originally detected the application, Tenable Vulnerability Management considers the detection of that application expired. As a result, the next time a scan evaluates the asset, Tenable Vulnerability Management removes the expired application from the installed_software attribute. This activity is logged as a `remove` type of `attribute_change` update in the asset activity log.'
+          items:
+            type: string
+        is_public:
+          type: boolean
+          description: Specifies whether if the asset is an internet-facing and accessible externally.
+        network_device_serial_identifier:
+          type: string
+          description: Specifies network device serial identifier.
+        custom_attributes:
+          type: array
+          description: List of custom-attributes associated with the asset.
+          items:
+            $ref: '#/components/schemas/Export_Assets_custom_attributes'
+        sources:
+          type: array
+          description: "The sources of the scans that identified the asset. An asset source is the entity that reported the asset details. Sources can include sensors, connectors, and API imports. If your request specifies multiple sources, Tenable Vulnerability Management returns all assets seen by any of the specified sources.\n\nThe items in the `sources` array must correspond to the names of the sources as defined in your organization's implementation of Tenable Vulnerability Management. Commonly used names include:\n - AWS—The asset data was obtained from an Amazon Web Services connector.\n - NESSUS_AGENT—The asset data was obtained from a Tenable Nessus Agent scan.\n - PVS—The asset data from a Tenable Nessus Network Monitor (NNM) scan.\n - NESSUS_SCAN—The asset data was obtained from a Tenable Nessus scan.\n - WAS—The asset data was obtained from a Tenable Web App Scanning scan."
+          items:
+            $ref: '#/components/schemas/Export_Assets_sources'
+        tags:
+          type: array
+          description: The tags assigned to the asset in Tenable Vulnerability Management.
+          items:
+            $ref: '#/components/schemas/Export_Assets_tags'
+        scan:
+          $ref: '#/components/schemas/Export_Assets_scan'
+        cloud:
+          type: object
+          description: Attributes related to cloud asset.
+          properties:
+            azure:
+              $ref: '#/components/schemas/Export_Assets_azure'
+            gcp:
+              $ref: '#/components/schemas/Export_Assets_gcp'
+            aws:
+              $ref: '#/components/schemas/Export_Assets_aws'
+        third_party_ids:
+          $ref: '#/components/schemas/Export_Assets_third-party-ids'
+        network:
+          $ref: '#/components/schemas/Export_Assets_network'
+        timestamps:
+          $ref: '#/components/schemas/Export_Assets_timestamps'
+        tenable_agent_days_since_active:
+          type: integer
+          description: If `sources` includes `NESSUS_AGENT`, the time in days since the agent last observed the asset.
+        ratings:
+          $ref: '#/components/schemas/Export_Assets_ratings-object'
+        resource_tags:
+          type: array
+          description: "An array of resource tags applicable to the asset. Resource tags are imported from a cloud provider like AWS, Azure, or GCP by a Cloud Discovery Connector and are used to identify cloud assets. \n\nFor more information about resource tags, see [Cloud Resources](https://docs.tenable.com/vulnerability-management/Content/Explore/Assets/exploreAssetsCloudResources.htm) and [Host Assets](https://docs.tenable.com/vulnerability-management/Content/Explore/Assets/ExploreAssetsHosts.htm) in the Tenable Vulnerability Management User Guide."
+          items:
+            $ref: '#/components/schemas/Export_Assets_resource_tags'
+    Export_Assets_timestamps:
+      type: object
+      description: Timestamps associated with the asset.
+      properties:
+        created_at:
+          type: string
+          description: The date and time when Tenable Vulnerability Management created the asset record.
+        updated_at:
+          type: string
+          description: The date and time when the asset record was last updated.
+        deleted_at:
+          type: string
+          description: The date and time a user deleted the asset record. After deletion, the asset record is retained until it ages out of the license count.
+        terminated_at:
+          type: string
+          description: The date and time the asset was terminated from a cloud platform (for example, Amazon Web Services [AWS]).
+        first_seen:
+          type: string
+          description: The date and time when a scan first identified the asset.
+        last_seen:
+          type: string
+          description: The date and time of the scan that most recently identified the asset.
+    Export_Assets_sources:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "The name of the entity that reported the asset details. Sources can include sensors, connectors, and API imports. Source names can be customized by your organization (for example, you specify a name when you import asset records). If your organization does not customize source names, the system-generated names include:\n - AWS—The asset data was obtained from an Amazon Web Services connector.\n - NESSUS_AGENT—The asset data was obtained from a Tenable Nessus Agent scan.\n - PVS—The asset data was obtained from a Tenable Nessus Network Monitor (NNM) scan.\n - NESSUS_SCAN—The asset data was obtained from a Tenable Nessus scan.\n - WAS—The asset data was obtained from a Web App Scanning scan."
+        first_seen:
+          type: string
+          description: The ISO timestamp when the source first reported the asset.
+        last_seen:
+          type: string
+          description: The ISO timestamp when the source last reported the asset.
+    Export_Assets_azure:
+      type: object
+      properties:
+        vm_id:
+          type: string
+          description: The unique identifier of the Microsoft Azure virtual machine instance. For more information, see "Accessing and Using Azure VM Unique ID" in the Microsoft Azure documentation.
+        resource_id:
+          type: string
+          description: The unique identifier of the resource in the Azure Resource Manager. For more information, see the Azure Resource Manager Documentation.
+    Export_Assets_resource_tags:
+      type: object
+      properties:
+        key:
+          type: string
+          description: The resource tag key.
+        value:
+          type: string
+          description: The resource tag value.
+    Export_Assets_tags:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: The unique identifier of the tag.
+        key:
+          type: string
+          description: The tag key, representing the category portion of a category:value tag pair.
+        value:
+          type: string
+          description: The tag value, representing the value portion of a category:value tag pair.
+        added_by:
+          type: string
+          description: The unique identifier of the user who assigned the tag to the asset.
+        added_at:
+          type: string
+          description: A timestamp in ISO 8601 format indicating the date and time the tag was assigned to the asset.
+    Export_Assets_ratings-object:
+      type: object
+      description: A list of metrics that provide a comprehensive view of asset exposure and prioritization. Currently, the available metrics include the Asset Criticality Rating (ACR), which measures the relative business importance of an asset, and the Asset Exposure Score (AES), which quantifies the risk exposure of an asset based on its vulnerabilities.
+      properties:
+        acr:
+          description: "The Tenable-defined Asset Criticality Rating (ACR) assigned to the asset. This score, ranging from 1 to 10, reflects the relative importance of the asset to your organization, with higher values indicating more critical assets. In Lumin, the ACR is calculated using an algorithm based on the [asset profile](http://docs.tenable.com/vulnerability-management/Content/Explore/asset-types.htm). \n\nFor more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the _Tenable Vulnerability Management User Guide_."
+          type: object
+          properties:
+            score:
+              description: The Asset Criticality Rating (ACR) value.
+              type: number
+              format: float
+              maximum: 10
+              minimum: 0
+        aes:
+          description: "The Tenable-defined Asset Exposure Score (AES) assigned to the asset. This score, ranging from 1 to 1000, represents how exposed an asset is based on a weighted calculation of its [Vulnerability Priority Rating (VPR)](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm#VPR) and [Asset Criticality Rating (ACR)](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm#ACR). Higher values indicate greater exposure. \n\nFor more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the _Tenable Vulnerability Management User Guide_."
+          type: object
+          properties:
+            score:
+              description: The Asset Exposure Score (AES) value.
+              type: number
+              format: float
+              maximum: 1000
+              minimum: 0
+    Export_Assets_scan:
+      type: object
+      properties:
+        first_scan_time:
+          type: string
+          description: The date and time of the first scan run against the asset.
+        last_scan_time:
+          type: string
+          description: The date and time of the last scan run against the asset.
+        last_authenticated_scan_date:
+          type: string
+          description: The date and time of the most recent credentialed scan performed on the asset.
+        last_licensed_scan_date:
+          type: string
+          description: The date and time of the last scan that identified the asset as licensed. Tenable Vulnerability Management categorizes an asset as licensed if a scan of that asset has returned results from a non-discovery plugin within the last 90 days.
+        last_scan_id:
+          type: string
+          format: uuid
+          description: The unique identifier of the scan configuration used for the most recent scan of the asset.
+        last_schedule_id:
+          type: string
+          description: The `schedule_uuid` of the scan schedule used for the most recent scan of the asset.
+        last_authentication_attempt_date:
+          type: string
+          description: The date and time a scan last attempted to authenticate using SSH (on Unix-based systems) or SMB (on Windows systems).
+        last_authentication_success_date:
+          type: string
+          description: 'The date and time a scan last authenticated successfully. Note: This property is not updated by Tenable Agent scans, as agents do not perform login-based authentication.'
+        last_authentication_scan_status:
+          type: string
+          description: The last authentication scan status.
+        last_scan_target:
+          type: string
+          description: The last scan target which was scanned.
+    Export_Assets_network_interfaces:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the interface.
+        mac_addresses:
+          type: array
+          description: The MAC addresses of the interface.
+          items:
+            type: string
+        ipv4s:
+          type: array
+          description: One or more IPv4 addresses belonging to the interface.
+          items:
+            type: string
+        ipv6s:
+          type: array
+          description: One or more IPv6 addresses belonging to the interface.
+          items:
+            type: string
+        fqdns:
+          type: array
+          description: One or more FQDN belonging to the interface.
+          items:
+            type: string
+    Export_Assets_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     Export_Assets_third-party-ids:
       type: object
       properties:
@@ -1895,79 +1964,124 @@ components:
           description: The hardware keys for the asset in Symantec Endpoint Protection.
           items:
             type: string
-    Export_Assets_sources:
-      type: object
-      properties:
-        name:
-          type: string
-          description: "The name of the entity that reported the asset details. Sources can include sensors, connectors, and API imports. Source names can be customized by your organization (for example, you specify a name when you import asset records). If your organization does not customize source names, the system-generated names include:\n - AWS—The asset data was obtained from an Amazon Web Services connector.\n - NESSUS_AGENT—The asset data was obtained from a Tenable Nessus Agent scan.\n - PVS—The asset data was obtained from a Tenable Nessus Network Monitor (NNM) scan.\n - NESSUS_SCAN—The asset data was obtained from a Tenable Nessus scan.\n - WAS—The asset data was obtained from a Web App Scanning scan."
-        first_seen:
-          type: string
-          description: The ISO timestamp when the source first reported the asset.
-        last_seen:
-          type: string
-          description: The ISO timestamp when the source last reported the asset.
-    Export_Assets_response-asset-export-jobs:
-      description: Information about the export job.
-      type: object
-      properties:
-        uuid:
-          type: string
-          description: The unique identifier of the asset export request.
-        status:
-          type: string
-          description: "The status of the export request. Possible values include:\n - QUEUED—Tenable Vulnerability Management has queued the export request until it completes other requests currently in process.\n - PROCESSING—Tenable Vulnerability Management has started processing the export request.\n - FINISHED—Tenable Vulnerability Management has completed processing the export request. The list of chunks is complete.\n - CANCELLED—An administrator has cancelled the export request.\n - ERROR—Tenable Vulnerability Management encountered an error while processing the export request. Tenable recommends that you retry the request. If the status persists on retry, contact Support."
-        reason:
-          type: string
-          description: "A human-readable description explaining the reason the export failed. This property is only present when the export status is `ERROR`. Possible values include:\n - \"The export request timed out. Try again.\"\n - \"An unexpected error occurred while processing the export. Try again later.\"\n - \"The export could not be completed. If this issue persists, please contact support.\""
-        total_chunks:
-          type: integer
-          description: The total number of chunks associated with the export job as a whole.
-        filters:
-          type: object
-          description: The filters used in the asset export job request. For a list of possible filters, see the [POST /assets/export](ref:export-assets-v1) and [POST /assets/v2/export](ref:export-assets-v2) endpoints.
-          properties: {}
-        finished_chunks:
-          type: integer
-          description: The number of chunks that have been processed and are available for download.
-        num_assets_per_chunk:
-          type: integer
-          description: The number of assets contained in each export chunk.
-        created:
-          type: integer
-          format: int64
-          description: The Unix timestamp when the asset export job was created.
-    Export_Assets_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    Export_Assets_custom_attributes:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Id of the attribute.
-        value:
-          type: string
-          description: Value of the attribute.
   securitySchemes:
-    Bearer:
+    assets_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Asset_Custom_Attributes_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    editor_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Assets_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Compliance_Data_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    file_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    filters_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    folders_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    plugins_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    policies_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Reports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Control_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Exports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_History_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Results_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Status_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Shared_Collections_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Remediation_Scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    workbenches_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

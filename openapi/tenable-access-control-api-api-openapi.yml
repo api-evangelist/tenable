@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings Access Control (API) API
   version: 1.0.0
-  title: Downloads About Access Control (API) API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Access Control (API)
   x-displayName: Access Control (API)
@@ -38,7 +11,9 @@ paths:
   /access-control/v1/api-security-settings:
     get:
       summary: List allowed IP addresses
-      description: Returns a list of IPv4 and IPv6 addresses that are allowed to access the Tenable Vulnerability Management API. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Returns a list of IPv4 and IPv6 addresses that are allowed to access the Tenable Vulnerability Management API.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: vm-api-security-settings-list
       tags:
       - Access Control (API)
@@ -84,7 +59,9 @@ paths:
       description: 'Adds IP addresses or updates the existing list of IP addresses allowed to access the Tenable Vulnerability Management API.
 
 
-        **Caution:** Unless your network assignments are restricted to only IPv4 addresses or only IPv6 addresses, you must specify allowed ranges for both IPv4 and IPv6 in order to avoid blocking some API traffic. It is not always predictable whether a client will connect via IPv4 or IPv6. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>'
+        **Caution:** Unless your network assignments are restricted to only IPv4 addresses or only IPv6 addresses, you must specify allowed ranges for both IPv4 and IPv6 in order to avoid blocking some API traffic. It is not always predictable whether a client will connect via IPv4 or IPv6.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: vm-api-security-settings-update
       tags:
       - Access Control (API)
@@ -131,6 +108,27 @@ paths:
       - Access_Control_API_cloud: []
 components:
   schemas:
+    Access_Control_API_request-allowed_ip_addresses:
+      type: object
+      properties:
+        allowed_ipv4_addresses:
+          type: string
+          description: 'A comma-separated list of IPv4 addresses to allow. The list can include discrete IPv4 addresses, IPv4 address ranges, and IPv4 subnets. For example, `"192.0.2.0, 198.51.100.4-198.51.100.10, 203.0.113.0/24"`.
+
+
+            If an empty string is provided then the API can be accessed from all IPv4 addresses.
+
+
+            **Caution:** Ensure that you have reviewed the list of allowed IPv4 addresses before submission since inappropriate IPv4 address restrictions can result in users being locked out from API access. If this occurs, an administrator can log in to the Vulnerability Management user interface and update the list of allowed IPv4 addresses in the access control settings. For more information, see [API Access Security](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/api-access-security.htm) in the Tenable Vulnerability Management User Guide.'
+        allowed_ipv6_addresses:
+          type: string
+          description: 'A comma-separated list of IPv6 addresses to allow. The list can include discrete IPv6 addresses, IPv6 address ranges, and IPv6 subnets. For example, `"2001:db8:2e92:75f2:d40a:e290:10b3:c0f, 2001:db8:1e1f:46a1:e3cb:2110:22c6:0000-2001:db8:1e1f:46a1:e3cb:2110:22c6:ffff, 2001:0DB8::/32"`.
+
+
+            If an empty string is provided then the API can be accessed from all IPv6 addresses.
+
+
+            **Caution:** Ensure that you have reviewed the list of allowed IPv6 addresses before submission since inappropriate IPv6 address restrictions can result in users being locked out from API access. If this occurs, an administrator can log in to the Vulnerability Management user interface and update the list of allowed IPv6 addresses in the access control settings. For more information, see [API Access Security](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/api-access-security.htm) in the Tenable Vulnerability Management User Guide.'
     Access_Control_API_ErrorResponse:
       type: object
       properties:
@@ -158,37 +156,154 @@ components:
 
 
             If an empty string is provided then the API can be accessed from all IPv6 addresses.'
-    Access_Control_API_request-allowed_ip_addresses:
-      type: object
-      properties:
-        allowed_ipv4_addresses:
-          type: string
-          description: 'A comma-separated list of IPv4 addresses to allow. The list can include discrete IPv4 addresses, IPv4 address ranges, and IPv4 subnets. For example, `"192.0.2.0, 198.51.100.4-198.51.100.10, 203.0.113.0/24"`.
-
-
-            If an empty string is provided then the API can be accessed from all IPv4 addresses.
-
-
-            **Caution:** Ensure that you have reviewed the list of allowed IPv4 addresses before submission since inappropriate IPv4 address restrictions can result in users being locked out from API access. If this occurs, an administrator can log in to the Vulnerability Management user interface and update the list of allowed IPv4 addresses in the access control settings. For more information, see [API Access Security](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/api-access-security.htm) in the Tenable Vulnerability Management User Guide.'
-        allowed_ipv6_addresses:
-          type: string
-          description: 'A comma-separated list of IPv6 addresses to allow. The list can include discrete IPv6 addresses, IPv6 address ranges, and IPv6 subnets. For example, `"2001:db8:2e92:75f2:d40a:e290:10b3:c0f, 2001:db8:1e1f:46a1:e3cb:2110:22c6:0000-2001:db8:1e1f:46a1:e3cb:2110:22c6:ffff, 2001:0DB8::/32"`.
-
-
-            If an empty string is provided then the API can be accessed from all IPv6 addresses.
-
-
-            **Caution:** Ensure that you have reviewed the list of allowed IPv6 addresses before submission since inappropriate IPv6 address restrictions can result in users being locked out from API access. If this occurs, an administrator can log in to the Vulnerability Management user interface and update the list of allowed IPv6 addresses in the access control settings. For more information, see [API Access Security](https://docs.tenable.com/vulnerability-management/Content/Settings/access-control/api-access-security.htm) in the Tenable Vulnerability Management User Guide.'
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings Exclusions API
   version: 1.0.0
-  title: Downloads About Exclusions API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Exclusions
   x-displayName: Exclusions
@@ -38,7 +11,9 @@ paths:
   /exclusions:
     post:
       summary: Create exclusion
-      description: Creates a new exclusion.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.CREATE` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Creates a new exclusion.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.CREATE` custom role privilege. See Roles.'
       operationId: exclusions-create
       tags:
       - Exclusions
@@ -113,7 +88,9 @@ paths:
       - exclusions_cloud: []
     get:
       summary: List exclusions
-      description: Returns a list of exclusions for your Tenable Vulnerability Management scans.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Returns a list of exclusions for your Tenable Vulnerability Management scans.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.READ` custom role privilege. See Roles.'
       operationId: exclusions-list
       tags:
       - Exclusions
@@ -272,7 +249,12 @@ paths:
   /exclusions/import:
     post:
       summary: Import exclusion
-      description: "Imports exclusions from the [exclusion import file](doc:import-file-formats) provided in your request and returns a list of saved exclusions. \n\n**Note:** This endpoint does not support the `network_id` attribute in exclusion objects for import. Tenable Vulnerability Management automatically assigns imported exclusions to the default network object. To assign imported exclusions to a custom network, use the [Update exclusion](ref:exclusions-edit) endpoint after import. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).<div class=\"perms-callout\">Requires the Standard [32] user role or one of the following custom role privileges: `VM.VM_SCAN.VM_SCAN_EXCLUSION.CREATE`, `VM.VM_SCAN.VM_SCAN_EXCLUSION.EDIT`, or `VM.VM_SCAN.VM_SCAN_EXCLUSION.DELETE`. See [Roles](doc:roles).</div>"
+      description: 'Imports exclusions from the exclusion import file provided in your request and returns a list of saved exclusions.
+
+
+        **Note:** This endpoint does not support the `network_id` attribute in exclusion objects for import. Tenable Vulnerability Management automatically assigns imported exclusions to the default network object. To assign imported exclusions to a custom network, use the Update exclusion endpoint after import. For more information about network objects, see Manage Networks.
+
+        Requires the Standard [32] user role or one of the following custom role privileges: `VM.VM_SCAN.VM_SCAN_EXCLUSION.CREATE`, `VM.VM_SCAN.VM_SCAN_EXCLUSION.EDIT`, or `VM.VM_SCAN.VM_SCAN_EXCLUSION.DELETE`. See Roles.'
       operationId: exclusions-import
       tags:
       - Exclusions
@@ -334,7 +316,9 @@ paths:
   /exclusions/{exclusion_id}:
     get:
       summary: Get exclusion details
-      description: Returns the details for the specified exclusion.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Returns the details for the specified exclusion.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.READ` custom role privilege. See Roles.'
       operationId: exclusions-details
       tags:
       - Exclusions
@@ -405,7 +389,9 @@ paths:
       - exclusions_cloud: []
     put:
       summary: Update exclusion
-      description: Updates the specified exclusion.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.EDIT` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Updates the specified exclusion.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.EDIT` custom role privilege. See Roles.'
       operationId: exclusions-edit
       tags:
       - Exclusions
@@ -484,7 +470,9 @@ paths:
       - exclusions_cloud: []
     delete:
       summary: Delete exclusion
-      description: Deletes the specified exclusion.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.DELETE` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Deletes the specified exclusion.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SCAN.VM_SCAN_EXCLUSION.DELETE` custom role privilege. See Roles.'
       operationId: exclusions-delete
       tags:
       - Exclusions
@@ -539,14 +527,6 @@ paths:
       security:
       - exclusions_cloud: []
 components:
-  parameters:
-    exclusions_exclusion_id_param:
-      description: The ID of the exclusion. The value can be either the integer ID or the exclusion UUID.
-      required: true
-      name: exclusion_id
-      in: path
-      schema:
-        type: string
   schemas:
     exclusions_pagination:
       type: object
@@ -568,30 +548,28 @@ components:
           type: string
           description: The property and direction used to sort the results, formatted as `<property>:<direction>`.
           example: last_modification_date:desc
-    exclusions_exclusion-request-body:
+    exclusions_schedule:
       type: object
-      required:
-      - name
-      - members
+      description: The schedule parameters for the exclusion. When `enabled` is `false` (Always On), only the `enabled` field is returned.
       properties:
-        name:
+        enabled:
+          type: boolean
+          description: If `true`, the exclusion schedule is active (Scheduled). If `false`, the exclusion is always active (Always On).
+          example: true
+        starttime:
           type: string
-          description: The name of the exclusion.
-          example: My-Exclusion
-        description:
+          description: The start time for the exclusion formatted as `YYYY-MM-DD HH:MM:SS` (ISO 8601 format).
+          example: '2023-09-01 00:00:00'
+        endtime:
           type: string
-          description: The description of the exclusion.
-          example: My description.
-        members:
+          description: The end time for the exclusion formatted as `YYYY-MM-DD HH:MM:SS` (ISO 8601 format).
+          example: '2023-09-02 00:00:00'
+        rrules:
+          $ref: '#/components/schemas/exclusions_rrules'
+        timezone:
           type: string
-          description: "The targets that you want excluded from scans. Specify multiple targets as a comma-separated string. Targets can be in the following formats:\n - An individual IPv4 address (`192.0.2.1`)\n - A range of IPv4 addresses (`192.0.2.1-192.0.2.255`)\n - CIDR notation (`192.0.2.0/24`)\n - A fully-qualified domain name (FQDN) (`host.domain.com`)"
-          example: host.domain.com, 192.0.2.1, 192.0.2.1-192.0.2.255
-        schedule:
-          $ref: '#/components/schemas/exclusions_schedule'
-        network_id:
-          type: string
-          description: The ID of the network object associated with scanners where Tenable Vulnerability Management applies the exclusion. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
-          example: 00000000-0000-0000-0000-000000000000
+          description: The timezone for the exclusion. You can retrieve a list of timezones from the [Get timezones](ref:scans-timezones) endpoint.
+          example: America/New_York
     exclusions_exclusion-response:
       type: object
       properties:
@@ -608,8 +586,9 @@ components:
           description: The name of the exclusion.
           example: My-Exclusion
         description:
-          type: string
-          nullable: true
+          type:
+          - string
+          - 'null'
           description: The description of the exclusion.
           example: My description.
         id:
@@ -658,28 +637,30 @@ components:
           type: integer
           description: The day of the month to repeat a MONTHLY freq rule on.
           example: 1
-    exclusions_schedule:
+    exclusions_exclusion-request-body:
       type: object
-      description: The schedule parameters for the exclusion. When `enabled` is `false` (Always On), only the `enabled` field is returned.
+      required:
+      - name
+      - members
       properties:
-        enabled:
-          type: boolean
-          description: If `true`, the exclusion schedule is active (Scheduled). If `false`, the exclusion is always active (Always On).
-          example: true
-        starttime:
+        name:
           type: string
-          description: The start time for the exclusion formatted as `YYYY-MM-DD HH:MM:SS` (ISO 8601 format).
-          example: '2023-09-01 00:00:00'
-        endtime:
+          description: The name of the exclusion.
+          example: My-Exclusion
+        description:
           type: string
-          description: The end time for the exclusion formatted as `YYYY-MM-DD HH:MM:SS` (ISO 8601 format).
-          example: '2023-09-02 00:00:00'
-        rrules:
-          $ref: '#/components/schemas/exclusions_rrules'
-        timezone:
+          description: The description of the exclusion.
+          example: My description.
+        members:
           type: string
-          description: The timezone for the exclusion. You can retrieve a list of timezones from the [Get timezones](ref:scans-timezones) endpoint.
-          example: America/New_York
+          description: "The targets that you want excluded from scans. Specify multiple targets as a comma-separated string. Targets can be in the following formats:\n - An individual IPv4 address (`192.0.2.1`)\n - A range of IPv4 addresses (`192.0.2.1-192.0.2.255`)\n - CIDR notation (`192.0.2.0/24`)\n - A fully-qualified domain name (FQDN) (`host.domain.com`)"
+          example: host.domain.com, 192.0.2.1, 192.0.2.1-192.0.2.255
+        schedule:
+          $ref: '#/components/schemas/exclusions_schedule'
+        network_id:
+          type: string
+          description: The ID of the network object associated with scanners where Tenable Vulnerability Management applies the exclusion. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+          example: 00000000-0000-0000-0000-000000000000
     exclusions_ErrorResponse:
       type: object
       properties:
@@ -692,16 +673,162 @@ components:
         message:
           type: string
           description: A brief message about the cause of the error.
+  parameters:
+    exclusions_exclusion_id_param:
+      description: The ID of the exclusion. The value can be either the integer ID or the exclusion UUID.
+      required: true
+      name: exclusion_id
+      in: path
+      schema:
+        type: string
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

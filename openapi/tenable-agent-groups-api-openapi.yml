@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings Agent Groups API
   version: 1.0.0
-  title: Downloads About Agent Groups API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Agent Groups
   x-displayName: Agent Groups
@@ -38,7 +11,9 @@ paths:
   /scanners/null/agent-groups:
     post:
       summary: Create agent group
-      description: Creates an agent group.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.CREATE` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Creates an agent group.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.CREATE` custom role privilege. See Roles.'
       operationId: agent-groups-create
       tags:
       - Agent Groups
@@ -116,7 +91,9 @@ paths:
       - agent-groups_cloud: []
     get:
       summary: List agent groups
-      description: Lists all agent groups.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Lists all agent groups.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.READ` custom role privilege. See Roles.'
       operationId: agent-groups-list
       tags:
       - Agent Groups
@@ -182,7 +159,9 @@ paths:
   /scanners/null/agent-groups/{group_id}:
     get:
       summary: Get agent group details
-      description: Retrieves details for the specified agent group, including the agent records that belong to the group. You can apply filtering, sorting, or pagination to the agent records.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Retrieves details for the specified agent group, including the agent records that belong to the group. You can apply filtering, sorting, or pagination to the agent records.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.READ` custom role privilege. See Roles.'
       operationId: agent-groups-details
       tags:
       - Agent Groups
@@ -338,7 +317,9 @@ paths:
       - agent-groups_cloud: []
     put:
       summary: Update agent group name
-      description: Changes the name of the agent group.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.EDIT` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Changes the name of the agent group.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.EDIT` custom role privilege. See Roles.'
       operationId: agent-groups-configure
       tags:
       - Agent Groups
@@ -422,7 +403,9 @@ paths:
       - agent-groups_cloud: []
     delete:
       summary: Delete agent group
-      description: Deletes an agent group.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.DELETE` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Deletes an agent group.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.AGENT_GROUP.DELETE` custom role privilege. See Roles.'
       operationId: agent-groups-delete
       tags:
       - Agent Groups
@@ -481,7 +464,9 @@ paths:
   /scanners/null/agent-groups/{group_id}/agents/{agent_id}:
     put:
       summary: Add agent to group
-      description: Adds an agent to the agent group. You can use the [GET /scanners/{scanner_id}/agent-groups/{group_id}](ref:agent-groups-details) endpoint to verify that the agent was added to the specified agent group.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      description: 'Adds an agent to the agent group. You can use the GET /scanners/{scanner_id}/agent-groups/{group_id} endpoint to verify that the agent was added to the specified agent group.
+
+        Requires the Scan Manager [40] user role. See Roles.'
       operationId: agent-groups-add-agent
       tags:
       - Agent Groups
@@ -546,7 +531,9 @@ paths:
       - agent-groups_cloud: []
     delete:
       summary: Remove agent from group
-      description: Removes an agent from the specified agent group.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      description: 'Removes an agent from the specified agent group.
+
+        Requires the Scan Manager [40] user role. See Roles.'
       operationId: agent-groups-delete-agent
       tags:
       - Agent Groups
@@ -611,6 +598,53 @@ paths:
       - agent-groups_cloud: []
 components:
   schemas:
+    agent-groups_group:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of the agent group.
+        uuid:
+          type: string
+          description: The UUID of the agent group.
+        name:
+          type: string
+          description: The name of the agent group.
+        creation_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the agent group was created.
+        last_modification_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the agent group was last modified.
+        timestamp:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the agent group was last modified.
+        shared:
+          type: integer
+          description: Indicates whether or not the agent group is shared.
+        owner:
+          type: string
+          description: The username for the owner of the agent group.
+        owner_id:
+          type: integer
+          description: The unique ID of the owner of the agent group.
+        owner_name:
+          type: string
+          description: The name of the owner of the agent group.
+        owner_uuid:
+          type: string
+          description: The UUID of the owner of the agent group.
+        user_permissions:
+          type: integer
+          description: The sharing permissions for the agent group.
+        agents_count:
+          type: integer
+          description: The number of agents in the group.
+        agents:
+          $ref: '#/components/schemas/agent-groups_response-list-agents'
     agent-groups_groups:
       type: object
       properties:
@@ -618,18 +652,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/agent-groups_group'
-    agent-groups_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     agent-groups_response-list-agents:
       type: object
       properties:
@@ -740,63 +762,166 @@ components:
         fredi_status:
           type: boolean
           description: Indicates whether the agent is enabled with continuous assessment scanning via an agent profile.
-    agent-groups_group:
+    agent-groups_ErrorResponse:
       type: object
       properties:
-        id:
+        statusCode:
           type: integer
-          description: The unique ID of the agent group.
-        uuid:
+          description: The HTTP status code of the error.
+        error:
           type: string
-          description: The UUID of the agent group.
-        name:
+          description: The standard HTTP error name.
+        message:
           type: string
-          description: The name of the agent group.
-        creation_date:
-          type: integer
-          format: int64
-          description: A Unix timestamp indicating the date and time when the agent group was created.
-        last_modification_date:
-          type: integer
-          format: int64
-          description: A Unix timestamp indicating the date and time when the agent group was last modified.
-        timestamp:
-          type: integer
-          format: int64
-          description: A Unix timestamp indicating the date and time when the agent group was last modified.
-        shared:
-          type: integer
-          description: Indicates whether or not the agent group is shared.
-        owner:
-          type: string
-          description: The username for the owner of the agent group.
-        owner_id:
-          type: integer
-          description: The unique ID of the owner of the agent group.
-        owner_name:
-          type: string
-          description: The name of the owner of the agent group.
-        owner_uuid:
-          type: string
-          description: The UUID of the owner of the agent group.
-        user_permissions:
-          type: integer
-          description: The sharing permissions for the agent group.
-        agents_count:
-          type: integer
-          description: The number of agents in the group.
-        agents:
-          $ref: '#/components/schemas/agent-groups_response-list-agents'
+          description: A brief message about the cause of the error.
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

@@ -1,39 +1,15 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Exposure Management Inventory Exports API
   version: 1.0.0
-  title: Downloads About Inventory Exports API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+  license:
+    name: Exposure Management
+  description: The Tenable Inventory Exports API enables users to export inventory assets and findings in JSON or CSV format. For more information about exporting assets and findings from Tenable Exposure Management, see Assets and Findings in the _Tenable Exposure Management User Guide_.
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Inventory Exports
-  description: The Tenable Inventory Exports API enables users to export inventory assets and findings in JSON or CSV format. For more information about exporting assets and findings from Tenable Exposure Management, see [Assets](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/assets.htm) and [Findings](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/findings.htm) in the _Tenable Exposure Management User Guide_.
+  description: The Tenable Inventory Exports API enables users to export inventory assets and findings in JSON or CSV format. For more information about exporting assets and findings from Tenable Exposure Management, see Assets and Findings in the _Tenable Exposure Management User Guide_.
   x-displayName: Inventory Exports
 paths:
   /api/v1/t1/inventory/export/assets:
@@ -42,7 +18,9 @@ paths:
       description: 'Exports assets in your organization that match the specified search criteria.
 
 
-        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>'
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model.
+
+        Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See Roles.'
       operationId: inventory-export-assets
       tags:
       - Inventory Exports
@@ -118,13 +96,15 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              nullable: true
+              type:
+              - object
+              - 'null'
               properties:
                 filters:
                   description: "A set of asset properties used to filter the export results. \n\nUse the [List asset properties](ref:inventory-asset-properties-list) endpoint to view available asset properties that can be used as filters."
-                  type: array
-                  nullable: true
+                  type:
+                  - array
+                  - 'null'
                   items:
                     $ref: '#/components/schemas/Inventory_Exports_Assets-Property-Filter'
                 query:
@@ -216,7 +196,9 @@ paths:
       description: 'Exports findings in your organization that match the specified search criteria.
 
 
-        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>'
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model.
+
+        Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See Roles.'
       operationId: inventory-export-findings
       tags:
       - Inventory Exports
@@ -292,13 +274,15 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              nullable: true
+              type:
+              - object
+              - 'null'
               properties:
                 filters:
                   description: "A set of asset properties used to filter the export results. \n\nUse the [List finding properties](ref:inventory-finding-properties-list) endpoint to view available finding properties that can be used as filters."
-                  type: array
-                  nullable: true
+                  type:
+                  - array
+                  - 'null'
                   items:
                     $ref: '#/components/schemas/Inventory_Exports_Findings-Property-Filter'
                 query:
@@ -387,7 +371,9 @@ paths:
   /api/v1/t1/inventory/export/assets/status:
     get:
       summary: List asset export jobs
-      description: Returns a list of up to 1,000 asset export jobs submitted in the last 3 days, sorted by the most recent refresh time. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>
+      description: 'Returns a list of up to 1,000 asset export jobs submitted in the last 3 days, sorted by the most recent refresh time.
+
+        Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See Roles.'
       operationId: inventory-export-assets-jobs
       tags:
       - Inventory Exports
@@ -450,7 +436,9 @@ paths:
   /api/v1/t1/inventory/export/findings/status:
     get:
       summary: List finding export jobs
-      description: Returns a list of up to 1,000 findings export jobs submitted in the last 3 days, sorted by the most recent refresh time. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>
+      description: 'Returns a list of up to 1,000 findings export jobs submitted in the last 3 days, sorted by the most recent refresh time.
+
+        Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See Roles.'
       operationId: inventory-export-findings-jobs
       tags:
       - Inventory Exports
@@ -521,7 +509,9 @@ paths:
       description: 'Returns the current status of an export request.
 
 
-        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>'
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model.
+
+        Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See Roles.'
       operationId: inventory-export-status
       tags:
       - Inventory Exports
@@ -619,7 +609,9 @@ paths:
       description: 'Downloads a specific export chunk in JSON or CSV format.
 
 
-        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>'
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model.
+
+        Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See Roles.'
       operationId: inventory-export-download
       tags:
       - Inventory Exports
@@ -852,6 +844,75 @@ paths:
       - Inventory_Exports_cloud: []
 components:
   schemas:
+    Inventory_Exports_Response-Export-Job:
+      type: object
+      properties:
+        export_id:
+          description: The unique identifier (UUID) of the export request.
+          type: string
+          format: uuid
+        submitted_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
+          format: date-time
+          type: string
+        last_refreshed_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was last checked for completion.
+          format: date-time
+          type: string
+        status:
+          description: "The status of the export request. Possible values include\n\n * QUEUED—The request is waiting for earlier requests to complete.\n * PROCESSING—The request is currently being processed. \n * FINISHED—Processing is complete, and all chunks are available.\n * ERROR—An error occurred while processing. Retry the request, and if the issue persists, contact Tenable Support."
+          type: string
+          enum:
+          - QUEUED
+          - PROCESSING
+          - FINISHED
+          - ERROR
+        export_type:
+          description: The type of export request. Possible values are `assets` or `findings`.
+          type: string
+          enum:
+          - assets
+          - findings
+    Inventory_Exports_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Inventory_Exports_Response-Export-Status:
+      type: object
+      properties:
+        export_id:
+          description: The unique identifier (UUID) of the export request.
+          type: string
+          format: uuid
+        submitted_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
+          format: date-time
+          type: string
+        last_refreshed_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was last checked for completion.
+          format: date-time
+          type: string
+        status:
+          description: "The status of the export request. Possible values include\n\n * `QUEUED`—Tenable Exposure Management has queued the export request until earlier requests have completed.\n * `PROCESSING`—Tenable Exposure Management is currently processing the export request. \n * `FINISHED`—Tenable Exposure Management has completed processing the export request. All chunks are available.\n * `ERROR`—An error occurred while processing the export request. Retry the request. If the error persists, contact Tenable Support."
+          type: string
+          enum:
+          - QUEUED
+          - PROCESSING
+          - FINISHED
+          - ERROR
+        chunks_available:
+          type: array
+          description: A list of completed chunk numbers available for download. Each integer represents a chunk file that can be downloaded. If no chunks are available, the list will be empty.
+          items:
+            type: integer
     Inventory_Exports_Response-Findings-Chunk-JSON:
       type: object
       additionalProperties: true
@@ -908,55 +969,6 @@ components:
           - ACTIVE
           - RESURFACED
           - FIXED
-    Inventory_Exports_ErrorResponseStatus-400:
-      type: object
-      properties:
-        error:
-          type: integer
-          description: The HTTP response response status.
-        message:
-          type: string
-          description: An error message indicating the invalid parameter or value.
-    Inventory_Exports_Response-Export-Status:
-      type: object
-      properties:
-        export_id:
-          description: The unique identifier (UUID) of the export request.
-          type: string
-          format: uuid
-        submitted_at:
-          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
-          format: date-time
-          type: string
-        last_refreshed_at:
-          description: A timestamp in ISO 8601 format indicating the date and time the export request was last checked for completion.
-          format: date-time
-          type: string
-        status:
-          description: "The status of the export request. Possible values include\n\n * `QUEUED`—Tenable Exposure Management has queued the export request until earlier requests have completed.\n * `PROCESSING`—Tenable Exposure Management is currently processing the export request. \n * `FINISHED`—Tenable Exposure Management has completed processing the export request. All chunks are available.\n * `ERROR`—An error occurred while processing the export request. Retry the request. If the error persists, contact Tenable Support."
-          type: string
-          enum:
-          - QUEUED
-          - PROCESSING
-          - FINISHED
-          - ERROR
-        chunks_available:
-          type: array
-          description: A list of completed chunk numbers available for download. Each integer represents a chunk file that can be downloaded. If no chunks are available, the list will be empty.
-          items:
-            type: integer
-    Inventory_Exports_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     Inventory_Exports_Findings-Property-Filter:
       type: object
       required:
@@ -992,21 +1004,57 @@ components:
           type: array
           items:
             type: string
+    Inventory_Exports_Response-Assets-Chunk-JSON:
+      type: object
+      additionalProperties: true
+      properties:
+        aes:
+          description: The Tenable-defined Asset Exposure Score (AES) for the asset. This metric weighs an asset's [Vulnerability Priority Rating (VPR)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Vulnerability-Priority-Rating-(VPR)) and [Asset Criticality Rating (AES)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Exposure-Score-(AES)) and then assigns a number from 1 to 1000, with higher numbers for more exposed assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm) in the _Tenable Exposure Management User Guide_.
+          type: integer
+          maximum: 1000
+          minimum: 0
+        asset_class:
+          description: The class that Tenable Exposure Management has assigned to the asset. Asset classes enable users to easily separate asset data based on its type. For more information about asset classes, see [Asset Classes](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) in the Tenable Exposure Management User Guide.
+          type: string
+          enum:
+          - ACCOUNT
+          - APPLICATION
+          - CONTAINER
+          - DEVICE
+          - GENERAL
+          - GROUP
+          - IAC
+          - IDENTITY
+          - RESOURCE
+          - ROLE
+          - STORAGE
+          - UNKNOWN
+        asset_criticality_rating_(acr):
+          description: The Tenable-defined Asset Criticality Rating (ACR) for the asset. With Lumin, Tenable uses an algorithm based on the [asset class](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) to assign a metric rating the importance of an asset to your organization from 1 to 10, with higher numbers for more critical assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Criticality-Rating-(ACR)) in the _Tenable Exposure Management User Guide_.
+          type: integer
+          maximum: 10
+          minimum: 0
+        asset_id:
+          description: The unique identifier (UUID) of the asset in Tenable Exposure Management. Use this value as the unique key for the asset.
+          type: string
+        asset_name:
+          description: The name of the asset.
+          type: string
     Inventory_Exports_Dataset-File-Format:
       default: JSON
       enum:
       - CSV
       - JSON
       type: string
-    Inventory_Exports_ErrorResponseStatus:
+    Inventory_Exports_ErrorResponseStatus-400:
       type: object
       properties:
+        error:
+          type: integer
+          description: The HTTP response response status.
         message:
           type: string
           description: An error message indicating the invalid parameter or value.
-        status:
-          type: integer
-          description: The HTTP response response status code.
     Inventory_Exports_Assets-Property-Filter:
       type: object
       required:
@@ -1045,71 +1093,15 @@ components:
           type: array
           items:
             type: string
-    Inventory_Exports_Response-Export-Job:
+    Inventory_Exports_ErrorResponseStatus:
       type: object
       properties:
-        export_id:
-          description: The unique identifier (UUID) of the export request.
+        message:
           type: string
-          format: uuid
-        submitted_at:
-          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
-          format: date-time
-          type: string
-        last_refreshed_at:
-          description: A timestamp in ISO 8601 format indicating the date and time the export request was last checked for completion.
-          format: date-time
-          type: string
+          description: An error message indicating the invalid parameter or value.
         status:
-          description: "The status of the export request. Possible values include\n\n * QUEUED—The request is waiting for earlier requests to complete.\n * PROCESSING—The request is currently being processed. \n * FINISHED—Processing is complete, and all chunks are available.\n * ERROR—An error occurred while processing. Retry the request, and if the issue persists, contact Tenable Support."
-          type: string
-          enum:
-          - QUEUED
-          - PROCESSING
-          - FINISHED
-          - ERROR
-        export_type:
-          description: The type of export request. Possible values are `assets` or `findings`.
-          type: string
-          enum:
-          - assets
-          - findings
-    Inventory_Exports_Response-Assets-Chunk-JSON:
-      type: object
-      additionalProperties: true
-      properties:
-        aes:
-          description: The Tenable-defined Asset Exposure Score (AES) for the asset. This metric weighs an asset's [Vulnerability Priority Rating (VPR)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Vulnerability-Priority-Rating-(VPR)) and [Asset Criticality Rating (AES)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Exposure-Score-(AES)) and then assigns a number from 1 to 1000, with higher numbers for more exposed assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm) in the _Tenable Exposure Management User Guide_.
           type: integer
-          maximum: 1000
-          minimum: 0
-        asset_class:
-          description: The class that Tenable Exposure Management has assigned to the asset. Asset classes enable users to easily separate asset data based on its type. For more information about asset classes, see [Asset Classes](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) in the Tenable Exposure Management User Guide.
-          type: string
-          enum:
-          - ACCOUNT
-          - APPLICATION
-          - CONTAINER
-          - DEVICE
-          - GENERAL
-          - GROUP
-          - IAC
-          - IDENTITY
-          - RESOURCE
-          - ROLE
-          - STORAGE
-          - UNKNOWN
-        asset_criticality_rating_(acr):
-          description: The Tenable-defined Asset Criticality Rating (ACR) for the asset. With Lumin, Tenable uses an algorithm based on the [asset class](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) to assign a metric rating the importance of an asset to your organization from 1 to 10, with higher numbers for more critical assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Criticality-Rating-(ACR)) in the _Tenable Exposure Management User Guide_.
-          type: integer
-          maximum: 10
-          minimum: 0
-        asset_id:
-          description: The unique identifier (UUID) of the asset in Tenable Exposure Management. Use this value as the unique key for the asset.
-          type: string
-        asset_name:
-          description: The name of the asset.
-          type: string
+          description: The HTTP response response status code.
   parameters:
     Inventory_Exports_limit-query-param:
       description: 'The maximum number of export jobs to return from the last 3 days.
@@ -1145,15 +1137,33 @@ components:
         - ERROR
       style: form
   securitySchemes:
-    Bearer:
+    Attack_Path_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Attack_Path_Exports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Exposure_View_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Inventory_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Inventory_Exports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

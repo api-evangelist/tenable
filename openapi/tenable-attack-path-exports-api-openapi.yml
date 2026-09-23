@@ -1,45 +1,23 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Exposure Management Attack Path Exports API
   version: 1.0.0
-  title: Downloads About Attack Path Exports API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+  license:
+    name: Exposure Management
+  description: The Tenable Attack Path Exports API enables users to export top attack paths, attack technique data, and MITRE ATT&CK heatmap data in JSON or CSV format. MITRE heatmap exports in JSON conform to the MITRE ATT&CK Navigator layer schema, allowing direct import into Navigator. For more information about attack paths and attack techniques, see Attack Path in the _Tenable Exposure Management User Guide_.
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Attack Path Exports
-  description: The Tenable Attack Path Exports API enables users to export top attack paths, attack technique data, and MITRE ATT&CK heatmap data in JSON or CSV format. MITRE heatmap exports in JSON conform to the MITRE ATT&CK Navigator layer schema, allowing direct import into Navigator. For more information about attack paths and attack techniques, see [Attack Path](https://docs.tenable.com/exposure-management/Content/exposure-management/attack-path/attack-path.htm) in the _Tenable Exposure Management User Guide_.
+  description: The Tenable Attack Path Exports API enables users to export top attack paths, attack technique data, and MITRE ATT&CK heatmap data in JSON or CSV format. MITRE heatmap exports in JSON conform to the MITRE ATT&CK Navigator layer schema, allowing direct import into Navigator. For more information about attack paths and attack techniques, see Attack Path in the _Tenable Exposure Management User Guide_.
   x-displayName: Attack Path Exports
 paths:
   /api/v1/export/attack-path:
     post:
       summary: Export top attack paths
-      description: Submits an export request for top attack paths that match the specified search criteria. Returns an export ID used to check the status of the export and download the results. <div class="perms-callout">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Submits an export request for top attack paths that match the specified search criteria. Returns an export ID used to check the status of the export and download the results.
+
+        Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See Roles and Permissions.'
       operationId: apa-export-attack-path
       tags:
       - Attack Path Exports
@@ -149,7 +127,9 @@ paths:
   /api/v1/export/attack-technique:
     post:
       summary: Export attack techniques
-      description: Submits an export request for attack technique data that matches the specified search criteria. Returns an export ID used to check the status of the export and download the results. <div class="perms-callout">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Submits an export request for attack technique data that matches the specified search criteria. Returns an export ID used to check the status of the export and download the results.
+
+        Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See Roles and Permissions.'
       operationId: apa-export-attack-technique
       tags:
       - Attack Path Exports
@@ -254,7 +234,9 @@ paths:
   /api/v1/export/mitre-heatmap:
     post:
       summary: Export MITRE ATT&CK heatmap
-      description: Submits an export request for MITRE ATT&CK heatmap data that matches the specified filter criteria. JSON exports conform to the [MITRE ATT&CK Navigator](https://mitre-attack.github.io/attack-navigator/) layer schema, enabling direct import into Navigator. CSV exports return a flat table of technique data. Returns an export ID used to check the status of the export and download the results. <div class="perms-callout">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Submits an export request for MITRE ATT&CK heatmap data that matches the specified filter criteria. JSON exports conform to the MITRE ATT&CK Navigator layer schema, enabling direct import into Navigator. CSV exports return a flat table of technique data. Returns an export ID used to check the status of the export and download the results.
+
+        Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See Roles and Permissions.'
       operationId: apa-export-mitre-heatmap
       tags:
       - Attack Path Exports
@@ -365,7 +347,9 @@ paths:
   /api/v1/export/{export_id}/status:
     get:
       summary: Get export status
-      description: Retrieves the current status of an attack path, attack technique, or MITRE heatmap export request. <div class="perms-callout">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Retrieves the current status of an attack path, attack technique, or MITRE heatmap export request.
+
+        Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See Roles and Permissions.'
       operationId: apa-export-status
       tags:
       - Attack Path Exports
@@ -465,7 +449,9 @@ paths:
   /api/v1/export/{export_id}/download:
     get:
       summary: Download export
-      description: Downloads the results of a completed attack path, attack technique, or MITRE heatmap export request. The response format depends on the `file_format` specified in the original export request. MITRE heatmap exports in JSON format conform to the [MITRE ATT&CK Navigator](https://mitre-attack.github.io/attack-navigator/) layer schema. <div class="perms-callout">Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Downloads the results of a completed attack path, attack technique, or MITRE heatmap export request. The response format depends on the `file_format` specified in the original export request. MITRE heatmap exports in JSON format conform to the MITRE ATT&CK Navigator layer schema.
+
+        Requires the Basic [16] user role or the `ATTACK_PATH_ANALYSIS.EXPORT.MANAGE_OWN` custom role privilege. See Roles and Permissions.'
       operationId: apa-export-download
       tags:
       - Attack Path Exports
@@ -659,6 +645,41 @@ components:
       - CSV
       - JSON
       type: string
+    Attack_Path_Exports_Response-Export-Status:
+      type: object
+      properties:
+        export_id:
+          description: The unique identifier (UUID) for the export request. Use this ID to check the status of the export and download the results.
+          type: string
+          format: uuid
+        status:
+          description: 'The current status of the export request. Possible values include:
+
+
+            * `QUEUED` — The request is waiting for earlier requests to complete.
+
+            * `PROCESSING` — The system is currently processing the export request.
+
+            * `FINISHED` — The system has completed processing the export request. The file is available for download.
+
+            * `ERROR` — An error occurred while processing the export request. Retry the request; if the error persists, contact Tenable Support.
+
+            * `CANCELLED` — The export request was cancelled.'
+          type: string
+          enum:
+          - QUEUED
+          - PROCESSING
+          - FINISHED
+          - ERROR
+          - CANCELLED
+        submitted_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
+          format: date-time
+          type: string
+        last_refreshed_at:
+          description: A timestamp in ISO 8601 format indicating when the export status was last updated. Compare this value with `submitted_at` to gauge total processing time.
+          format: date-time
+          type: string
     Attack_Path_Exports_ErrorResponseStatus:
       type: object
       properties:
@@ -668,23 +689,6 @@ components:
         status:
           type: integer
           description: The HTTP response status code.
-    Attack_Path_Exports_Attack-Technique-Multiple-Filters-Nested:
-      description: Defines a nested logical operator used within a compound filter. This enables deep filtering logic while preventing circular references.
-      type: object
-      properties:
-        operator:
-          type: string
-          description: Specifies the logical operator used to combine the nested conditions.
-          enum:
-          - and
-          - or
-        value:
-          type: array
-          description: Contains an array of single filter conditions.
-          items:
-            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Technique-Single-Filter'
-      required:
-      - value
     Attack_Path_Exports_AttackPathExportRecord:
       type: object
       description: A single attack path record in the export results.
@@ -710,18 +714,46 @@ components:
         asset_ids:
           type: string
           description: A semicolon-separated list of the unique identifiers (UUIDs) for all assets involved in the attack path, listed in order of progression.
-    Attack_Path_Exports_ErrorResponse:
+    Attack_Path_Exports_Attack-Path-Multiple-Filters:
+      description: Defines a compound filter that combines multiple conditions using logical operators.
       type: object
       properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
+        operator:
           type: string
-          description: The standard HTTP error name.
-        message:
+          description: Specifies the logical operator used to combine multiple filter conditions.
+          enum:
+          - and
+          - or
+          default: and
+        value:
+          type: array
+          description: Contains an array of filter objects. Each item can be a single filter condition or a nested operator object.
+          items:
+            oneOf:
+            - title: Single Filter
+              $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Single-Filter'
+            - title: Multiple Filters
+              $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Multiple-Filters-Nested'
+      required:
+      - value
+    Attack_Path_Exports_Attack-Path-Multiple-Filters-Nested:
+      description: Defines a nested logical operator used within a compound filter. This enables deep filtering logic while preventing circular references.
+      type: object
+      properties:
+        operator:
           type: string
-          description: A brief message about the cause of the error.
+          description: Specifies the logical operator used to combine the nested conditions.
+          enum:
+          - and
+          - or
+          default: and
+        value:
+          type: array
+          description: Contains an array of single filter conditions.
+          items:
+            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Single-Filter'
+      required:
+      - value
     Attack_Path_Exports_Attack-Technique-Multiple-Filters:
       description: Defines a compound filter that combines multiple conditions using logical operators.
       type: object
@@ -745,202 +777,6 @@ components:
       - operator
       - value
       title: AttackTechniqueFilterOperator
-    Attack_Path_Exports_MitreHeatmapTechniqueRecord:
-      type: object
-      description: A single technique entry in the MITRE heatmap export. CSV exports represent the same fields flattened to one row per technique.
-      properties:
-        techniqueID:
-          type: string
-          description: The MITRE ATT&CK technique identifier (for example, `T1078` or `T1078.004`).
-        tactic:
-          type: string
-          description: The MITRE ATT&CK tactic slug associated with this technique entry (for example, `initial-access`).
-        score:
-          type: number
-          description: The exposure score for this technique in your environment. Derived from the count and severity of active findings mapped to this technique. Higher values indicate greater exposure.
-        color:
-          type: string
-          description: The hex color code Navigator renders for this technique, derived from the score and the layer gradient definition.
-        comment:
-          type: string
-          description: A pipe-delimited summary of the key metrics driving this technique's score, including the top attack technique count, top attack path count, and critical asset count.
-        enabled:
-          type: boolean
-          description: Indicates whether Navigator highlights this technique. The system sets this to `true` for techniques with active findings, and `false` for techniques included only because `show_all_techniques` is `true`.
-        metadata:
-          type: array
-          description: A list of structured key-value metadata entries that surface the same metrics as the `comment` field, suitable for programmatic access in Navigator.
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-                description: 'The name of the metadata metric. Supported values: `Top Attack Technique Count`, `Top Attack Path Count`, `Critical Asset Count`.'
-              value:
-                type: string
-                description: The value of the metadata metric.
-    Attack_Path_Exports_Request-Export-Attack-Paths:
-      type: object
-      required:
-      - file_format
-      properties:
-        file_format:
-          $ref: '#/components/schemas/Attack_Path_Exports_FileFormat'
-        filters:
-          description: Specifies filter conditions for the export. Accepts a single condition or multiple conditions combined with a logical operator.
-          oneOf:
-          - title: Single Filter
-            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Single-Filter'
-          - title: Multiple Filters
-            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Multiple-Filters'
-        vector_ids:
-          description: Specifies an optional list of attack path vector IDs (UUIDs) to export. If specified, the system only exports the vectors matching these IDs. If omitted, the system exports all vectors matching the filter criteria.
-          type: array
-          items:
-            type: string
-        columns:
-          description: Specifies the columns to include in the export. If omitted, the system includes all available columns.
-          type: array
-          example:
-          - path_name
-          items:
-            type: string
-            enum:
-            - path_name
-            - priority
-            - source_nes
-            - target_acr
-            - sequence_chain
-            - enabler_list
-            - asset_ids
-        file_name:
-          description: Specifies a custom name for the exported file. If omitted, the system generates a default name.
-          type: string
-          maxLength: 100
-        sort:
-          $ref: '#/components/schemas/Attack_Path_Exports_ExportSortParams'
-    Attack_Path_Exports_Request-Export-Attack-Techniques:
-      type: object
-      required:
-      - file_format
-      properties:
-        file_format:
-          $ref: '#/components/schemas/Attack_Path_Exports_FileFormat'
-        filters:
-          description: Specifies filter conditions for the export. Accepts a single condition or multiple conditions combined with a logical operator.
-          oneOf:
-          - title: Single Filter
-            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Technique-Single-Filter'
-          - title: Multiple Filters
-            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Technique-Multiple-Filters'
-        attack_technique_ids:
-          description: Specifies an optional list of attack technique UUIDs to export. If specified, the system only exports the techniques matching these IDs. If omitted, the system exports all techniques matching the filter criteria.
-          type: array
-          items:
-            type: string
-        columns:
-          description: Specifies the columns to include in the export. If omitted, the system includes all available columns.
-          type: array
-          example:
-          - mitre_id
-          items:
-            type: string
-            enum:
-            - mitre_id
-            - technique_name
-            - priority
-            - status
-            - state
-            - through
-            - source_names
-            - source_classes
-            - source_ids
-            - target_names
-            - target_classes
-            - target_ids
-            - tactics
-            - data_sources
-            - top_attack_path_count
-            - critical_assets_count
-        file_name:
-          description: Specifies a custom name for the exported file. If omitted, the system generates a default name.
-          type: string
-          maxLength: 100
-        sort:
-          $ref: '#/components/schemas/Attack_Path_Exports_ExportSortParams'
-    Attack_Path_Exports_Attack-Path-Multiple-Filters-Nested:
-      description: Defines a nested logical operator used within a compound filter. This enables deep filtering logic while preventing circular references.
-      type: object
-      properties:
-        operator:
-          type: string
-          description: Specifies the logical operator used to combine the nested conditions.
-          enum:
-          - and
-          - or
-          default: and
-        value:
-          type: array
-          description: Contains an array of single filter conditions.
-          items:
-            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Single-Filter'
-      required:
-      - value
-    Attack_Path_Exports_Attack-Technique-Single-Filter:
-      description: Defines a single filter condition used to narrow the search results for attack techniques.
-      type: object
-      properties:
-        property:
-          type: string
-          description: 'Specifies the property used to filter the results. For example: `priority`, `name`, or `last_updated_at`.'
-          enum:
-          - priority
-          - state
-          - status
-          - name
-          - procedureName
-          - mitre_id
-          - tactics
-          - target
-          - source
-          - cause
-          - last_updated_at
-          - created
-          - serial_id
-        operator:
-          type: string
-          description: 'Specifies the comparison operator applied to the property filter. For example: `eq` (equals), `ne` (not equals), or `contains`.'
-          enum:
-          - eq
-          - ne
-          - gt
-          - gte
-          - lt
-          - lte
-          - contains
-          - not_contains
-          - in
-          - not_in
-        value:
-          description: Defines the specific value or values to match against the property. This can be a single value or an array of values depending on the operator used.
-          oneOf:
-          - title: Single String Value
-            type: string
-          - title: Multiple String Values
-            type: array
-            items:
-              type: string
-          - title: Single Integer Value
-            type: integer
-          - title: Multiple Integer Values
-            type: array
-            items:
-              type: integer
-          - title: Single Boolean Value
-            type: boolean
-            enum:
-            - true
-            - false
     Attack_Path_Exports_AttackTechniqueExportRecord:
       type: object
       description: A single attack technique record in the export results.
@@ -993,86 +829,36 @@ components:
         critical_assets_count:
           type: integer
           description: The total number of critical assets that could be compromised using this technique.
-    Attack_Path_Exports_ExportSortParams:
+    Attack_Path_Exports_Mitre-Heatmap-Filter:
       type: object
-      description: Defines the sort order applied to the exported results.
-      required:
-      - property
-      - direction
+      description: Defines the filter criteria used to narrow the MITRE ATT&CK heatmap export. All fields are optional. If omitted entirely, the system returns the full heatmap for the default `enterprise` matrix.
       properties:
-        property:
-          description: Specifies the property used to sort the results.
+        matrix:
           type: string
-        direction:
-          description: Specifies the sort direction, either ascending (`asc`) or descending (`desc`).
-          type: string
+          description: 'Specifies the MITRE ATT&CK matrix to export. Supported values: `enterprise` (Enterprise matrix) or `ics` (Industrial Control Systems matrix). If omitted, the system uses the default value of `enterprise`.'
           enum:
-          - asc
-          - desc
-    Attack_Path_Exports_Response-Export-Status:
-      type: object
-      properties:
-        export_id:
-          description: The unique identifier (UUID) for the export request. Use this ID to check the status of the export and download the results.
+          - enterprise
+          - ics
+        platform:
           type: string
-          format: uuid
-        status:
-          description: 'The current status of the export request. Possible values include:
-
-
-            * `QUEUED` — The request is waiting for earlier requests to complete.
-
-            * `PROCESSING` — The system is currently processing the export request.
-
-            * `FINISHED` — The system has completed processing the export request. The file is available for download.
-
-            * `ERROR` — An error occurred while processing the export request. Retry the request; if the error persists, contact Tenable Support.
-
-            * `CANCELLED` — The export request was cancelled.'
+          description: "Specifies the platform used to filter techniques. Only techniques applicable to the specified platform are included in the export. \n\nSupported platforms:\n\n* `Windows`\n* `Linux`\n* `macOS`\n* `Network`\n* `PRE`\n* `Containers`\n* `Office Suite` — Cloud platform.\n* `Identity Provider` — Cloud platform.\n* `SaaS` — Cloud platform.\n* `IaaS` — Cloud platform."
+        query:
           type: string
-          enum:
-          - QUEUED
-          - PROCESSING
-          - FINISHED
-          - ERROR
-          - CANCELLED
-        submitted_at:
-          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
-          format: date-time
-          type: string
-        last_refreshed_at:
-          description: A timestamp in ISO 8601 format indicating when the export status was last updated. Compare this value with `submitted_at` to gauge total processing time.
-          format: date-time
-          type: string
-    Attack_Path_Exports_Attack-Path-Multiple-Filters:
-      description: Defines a compound filter that combines multiple conditions using logical operators.
-      type: object
-      properties:
-        operator:
-          type: string
-          description: Specifies the logical operator used to combine multiple filter conditions.
-          enum:
-          - and
-          - or
-          default: and
-        value:
+          description: Specifies a search string used to filter techniques by name. The system performs a case-insensitive substring match against technique names.
+        show_all_techniques:
+          type: boolean
+          description: Specifies whether to include all techniques in the matrix, regardless of active findings. When `true`, the export includes techniques with no findings in your environment. If omitted, the system uses the default value of `false`, returning only techniques with at least one active finding.
+        severities:
           type: array
-          description: Contains an array of filter objects. Each item can be a single filter condition or a nested operator object.
+          description: 'Specifies the severity levels used to filter techniques. Only techniques with at least one finding at the specified severity levels are included. Supported values: `info`, `low`, `medium`, `high`, `critical`.'
           items:
-            oneOf:
-            - title: Single Filter
-              $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Single-Filter'
-            - title: Multiple Filters
-              $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Multiple-Filters-Nested'
-      required:
-      - value
-    Attack_Path_Exports_ExportRequestId:
-      type: object
-      properties:
-        export_id:
-          description: The unique identifier (UUID) for the export request. Use this ID to check the status of the export and download the results.
-          type: string
-          format: uuid
+            type: string
+            enum:
+            - info
+            - low
+            - medium
+            - high
+            - critical
     Attack_Path_Exports_Attack-Path-Single-Filter:
       description: Defines a single filter condition used to narrow the search results for attack paths.
       type: object
@@ -1131,6 +917,261 @@ components:
             enum:
             - true
             - false
+    Attack_Path_Exports_Request-Export-Attack-Techniques:
+      type: object
+      required:
+      - file_format
+      properties:
+        file_format:
+          $ref: '#/components/schemas/Attack_Path_Exports_FileFormat'
+        filters:
+          description: Specifies filter conditions for the export. Accepts a single condition or multiple conditions combined with a logical operator.
+          oneOf:
+          - title: Single Filter
+            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Technique-Single-Filter'
+          - title: Multiple Filters
+            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Technique-Multiple-Filters'
+        attack_technique_ids:
+          description: Specifies an optional list of attack technique UUIDs to export. If specified, the system only exports the techniques matching these IDs. If omitted, the system exports all techniques matching the filter criteria.
+          type: array
+          items:
+            type: string
+        columns:
+          description: Specifies the columns to include in the export. If omitted, the system includes all available columns.
+          type: array
+          example:
+          - mitre_id
+          items:
+            type: string
+            enum:
+            - mitre_id
+            - technique_name
+            - priority
+            - status
+            - state
+            - through
+            - source_names
+            - source_classes
+            - source_ids
+            - target_names
+            - target_classes
+            - target_ids
+            - tactics
+            - data_sources
+            - top_attack_path_count
+            - critical_assets_count
+        file_name:
+          description: Specifies a custom name for the exported file. If omitted, the system generates a default name.
+          type: string
+          maxLength: 100
+        sort:
+          $ref: '#/components/schemas/Attack_Path_Exports_ExportSortParams'
+    Attack_Path_Exports_MitreHeatmapTechniqueRecord:
+      type: object
+      description: A single technique entry in the MITRE heatmap export. CSV exports represent the same fields flattened to one row per technique.
+      properties:
+        techniqueID:
+          type: string
+          description: The MITRE ATT&CK technique identifier (for example, `T1078` or `T1078.004`).
+        tactic:
+          type: string
+          description: The MITRE ATT&CK tactic slug associated with this technique entry (for example, `initial-access`).
+        score:
+          type: number
+          description: The exposure score for this technique in your environment. Derived from the count and severity of active findings mapped to this technique. Higher values indicate greater exposure.
+        color:
+          type: string
+          description: The hex color code Navigator renders for this technique, derived from the score and the layer gradient definition.
+        comment:
+          type: string
+          description: A pipe-delimited summary of the key metrics driving this technique's score, including the top attack technique count, top attack path count, and critical asset count.
+        enabled:
+          type: boolean
+          description: Indicates whether Navigator highlights this technique. The system sets this to `true` for techniques with active findings, and `false` for techniques included only because `show_all_techniques` is `true`.
+        metadata:
+          type: array
+          description: A list of structured key-value metadata entries that surface the same metrics as the `comment` field, suitable for programmatic access in Navigator.
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: 'The name of the metadata metric. Supported values: `Top Attack Technique Count`, `Top Attack Path Count`, `Critical Asset Count`.'
+              value:
+                type: string
+                description: The value of the metadata metric.
+    Attack_Path_Exports_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Attack_Path_Exports_Request-Export-Attack-Paths:
+      type: object
+      required:
+      - file_format
+      properties:
+        file_format:
+          $ref: '#/components/schemas/Attack_Path_Exports_FileFormat'
+        filters:
+          description: Specifies filter conditions for the export. Accepts a single condition or multiple conditions combined with a logical operator.
+          oneOf:
+          - title: Single Filter
+            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Single-Filter'
+          - title: Multiple Filters
+            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Path-Multiple-Filters'
+        vector_ids:
+          description: Specifies an optional list of attack path vector IDs (UUIDs) to export. If specified, the system only exports the vectors matching these IDs. If omitted, the system exports all vectors matching the filter criteria.
+          type: array
+          items:
+            type: string
+        columns:
+          description: Specifies the columns to include in the export. If omitted, the system includes all available columns.
+          type: array
+          example:
+          - path_name
+          items:
+            type: string
+            enum:
+            - path_name
+            - priority
+            - source_nes
+            - target_acr
+            - sequence_chain
+            - enabler_list
+            - asset_ids
+        file_name:
+          description: Specifies a custom name for the exported file. If omitted, the system generates a default name.
+          type: string
+          maxLength: 100
+        sort:
+          $ref: '#/components/schemas/Attack_Path_Exports_ExportSortParams'
+    Attack_Path_Exports_Attack-Technique-Multiple-Filters-Nested:
+      description: Defines a nested logical operator used within a compound filter. This enables deep filtering logic while preventing circular references.
+      type: object
+      properties:
+        operator:
+          type: string
+          description: Specifies the logical operator used to combine the nested conditions.
+          enum:
+          - and
+          - or
+        value:
+          type: array
+          description: Contains an array of single filter conditions.
+          items:
+            $ref: '#/components/schemas/Attack_Path_Exports_Attack-Technique-Single-Filter'
+      required:
+      - value
+    Attack_Path_Exports_Attack-Technique-Single-Filter:
+      description: Defines a single filter condition used to narrow the search results for attack techniques.
+      type: object
+      properties:
+        property:
+          type: string
+          description: 'Specifies the property used to filter the results. For example: `priority`, `name`, or `last_updated_at`.'
+          enum:
+          - priority
+          - state
+          - status
+          - name
+          - procedureName
+          - mitre_id
+          - tactics
+          - target
+          - source
+          - cause
+          - last_updated_at
+          - created
+          - serial_id
+        operator:
+          type: string
+          description: 'Specifies the comparison operator applied to the property filter. For example: `eq` (equals), `ne` (not equals), or `contains`.'
+          enum:
+          - eq
+          - ne
+          - gt
+          - gte
+          - lt
+          - lte
+          - contains
+          - not_contains
+          - in
+          - not_in
+        value:
+          description: Defines the specific value or values to match against the property. This can be a single value or an array of values depending on the operator used.
+          oneOf:
+          - title: Single String Value
+            type: string
+          - title: Multiple String Values
+            type: array
+            items:
+              type: string
+          - title: Single Integer Value
+            type: integer
+          - title: Multiple Integer Values
+            type: array
+            items:
+              type: integer
+          - title: Single Boolean Value
+            type: boolean
+            enum:
+            - true
+            - false
+    Attack_Path_Exports_ExportSortParams:
+      type: object
+      description: Defines the sort order applied to the exported results.
+      required:
+      - property
+      - direction
+      properties:
+        property:
+          description: Specifies the property used to sort the results.
+          type: string
+        direction:
+          description: Specifies the sort direction, either ascending (`asc`) or descending (`desc`).
+          type: string
+          enum:
+          - asc
+          - desc
+    Attack_Path_Exports_Request-Export-Mitre-Heatmap:
+      type: object
+      required:
+      - file_format
+      properties:
+        file_format:
+          $ref: '#/components/schemas/Attack_Path_Exports_FileFormat'
+        filter:
+          $ref: '#/components/schemas/Attack_Path_Exports_Mitre-Heatmap-Filter'
+        columns:
+          description: Specifies the columns to include in the export. Applies to the CSV format only; the JSON (Navigator Layer) format ignores this field. If omitted, the system includes all available columns.
+          type: array
+          example:
+          - technique_id
+          - tactic
+          - technique_name
+          - max_priority
+          items:
+            type: string
+            enum:
+            - technique_id
+            - tactic
+            - technique_name
+            - max_priority
+            - critical_assets_count
+            - top_attack_technique_count
+            - top_attack_path_count
+            - link
+        file_name:
+          description: Specifies a custom name for the exported file. If omitted, the system uses a default name in the format `Tenable_APA_MITRE_YYYY-MM-DD`.
+          type: string
+          maxLength: 100
     Attack_Path_Exports_MitreHeatmapNavigatorLayer:
       type: object
       description: The MITRE ATT&CK Navigator layer document returned for JSON exports. Conforms to the [official Navigator layer format](https://github.com/mitre-attack/attack-navigator/blob/master/layers/spec/v4.5/layerformat.md), enabling direct import into Navigator.
@@ -1235,78 +1276,41 @@ components:
               color:
                 type: string
                 description: The hex color code associated with this legend entry.
-    Attack_Path_Exports_Mitre-Heatmap-Filter:
+    Attack_Path_Exports_ExportRequestId:
       type: object
-      description: Defines the filter criteria used to narrow the MITRE ATT&CK heatmap export. All fields are optional. If omitted entirely, the system returns the full heatmap for the default `enterprise` matrix.
       properties:
-        matrix:
+        export_id:
+          description: The unique identifier (UUID) for the export request. Use this ID to check the status of the export and download the results.
           type: string
-          description: 'Specifies the MITRE ATT&CK matrix to export. Supported values: `enterprise` (Enterprise matrix) or `ics` (Industrial Control Systems matrix). If omitted, the system uses the default value of `enterprise`.'
-          enum:
-          - enterprise
-          - ics
-        platform:
-          type: string
-          description: "Specifies the platform used to filter techniques. Only techniques applicable to the specified platform are included in the export. \n\nSupported platforms:\n\n* `Windows`\n* `Linux`\n* `macOS`\n* `Network`\n* `PRE`\n* `Containers`\n* `Office Suite` — Cloud platform.\n* `Identity Provider` — Cloud platform.\n* `SaaS` — Cloud platform.\n* `IaaS` — Cloud platform."
-        query:
-          type: string
-          description: Specifies a search string used to filter techniques by name. The system performs a case-insensitive substring match against technique names.
-        show_all_techniques:
-          type: boolean
-          description: Specifies whether to include all techniques in the matrix, regardless of active findings. When `true`, the export includes techniques with no findings in your environment. If omitted, the system uses the default value of `false`, returning only techniques with at least one active finding.
-        severities:
-          type: array
-          description: 'Specifies the severity levels used to filter techniques. Only techniques with at least one finding at the specified severity levels are included. Supported values: `info`, `low`, `medium`, `high`, `critical`.'
-          items:
-            type: string
-            enum:
-            - info
-            - low
-            - medium
-            - high
-            - critical
-    Attack_Path_Exports_Request-Export-Mitre-Heatmap:
-      type: object
-      required:
-      - file_format
-      properties:
-        file_format:
-          $ref: '#/components/schemas/Attack_Path_Exports_FileFormat'
-        filter:
-          $ref: '#/components/schemas/Attack_Path_Exports_Mitre-Heatmap-Filter'
-        columns:
-          description: Specifies the columns to include in the export. Applies to the CSV format only; the JSON (Navigator Layer) format ignores this field. If omitted, the system includes all available columns.
-          type: array
-          example:
-          - technique_id
-          - tactic
-          - technique_name
-          - max_priority
-          items:
-            type: string
-            enum:
-            - technique_id
-            - tactic
-            - technique_name
-            - max_priority
-            - critical_assets_count
-            - top_attack_technique_count
-            - top_attack_path_count
-            - link
-        file_name:
-          description: Specifies a custom name for the exported file. If omitted, the system uses a default name in the format `Tenable_APA_MITRE_YYYY-MM-DD`.
-          type: string
-          maxLength: 100
+          format: uuid
   securitySchemes:
-    Bearer:
+    Attack_Path_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Attack_Path_Exports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Exposure_View_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Inventory_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Inventory_Exports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

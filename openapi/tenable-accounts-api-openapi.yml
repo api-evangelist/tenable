@@ -1,46 +1,33 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: MSSP Portal Accounts API
+  description: 'The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Endpoints in the Tenable MSSP Portal API enables customers to view and manage your MSSP customer accounts.
+
+
+    For more information about the Tenable MSSP Portal, see the Tenable MSSP Portal User Guide.'
   version: 1.0.0
-  title: Downloads About Accounts API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
+- url: https://cloud.tenable.com
 security:
-- Bearer: []
+- cloud: []
 tags:
 - name: Accounts
-  description: "The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Account endpoints in the Tenable MSSP Portal API enables customers to view and manage your MSSP customer accounts. \n\nFor more information about the Tenable MSSP Portal, see the [Tenable MSSP Portal User Guide](https://docs.tenable.com/managed-security-service-provider/Content/Welcome.htm)."
+  description: 'The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Account endpoints in the Tenable MSSP Portal API enables customers to view and manage your MSSP customer accounts.
+
+
+    For more information about the Tenable MSSP Portal, see the Tenable MSSP Portal User Guide.'
 paths:
   /mssp/accounts/eval:
     post:
       tags:
       - Accounts
       summary: Create evaluation account v1
-      description: "Creates an evaluation account. \n\n**Caution:** This endpoint is deprecated. Tenable recommends that customers use the [Create evaluation account v2](ref:mssp-accounts-eval-v2) endpoint instead. Please update any existing integrations that your organization has. <div class=\"perms-callout\">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>"
+      description: 'Creates an evaluation account.
+
+
+        **Caution:** This endpoint is deprecated. Tenable recommends that customers use the Create evaluation account v2 endpoint instead. Please update any existing integrations that your organization has.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-mssp-accounts-eval
       deprecated: true
       requestBody:
@@ -101,7 +88,9 @@ paths:
       tags:
       - Accounts
       summary: Create evaluation account v2
-      description: Creates an evaluation account. <div class="perms-callout">Requires ADMINISTRATOR [64] user permissions. See [Permissions](doc:permissions).</div>
+      description: 'Creates an evaluation account.
+
+        Requires ADMINISTRATOR [64] user permissions. See Permissions.'
       operationId: mssp-accounts-eval-v2
       requestBody:
         required: true
@@ -161,7 +150,9 @@ paths:
       tags:
       - Accounts
       summary: Create quote
-      description: Creates a quote for a customer. <div class="perms-callout">Requires ADMINISTRATOR [64] user permissions. See [Permissions](doc:permissions).</div>
+      description: 'Creates a quote for a customer.
+
+        Requires ADMINISTRATOR [64] user permissions. See Permissions.'
       operationId: mssp-accounts-quote
       requestBody:
         required: true
@@ -229,7 +220,12 @@ paths:
       tags:
       - Accounts
       summary: List child accounts
-      description: "Returns a list of child accounts in the Tenable MSSP Portal.\n\n A child account contains information about a customer instance of a Tenable product, including product license information and user-defined notes that can include valuable internal tracking or customer contact information. <div class=\"perms-callout\">Requires the Basic [16] user role. See [Roles](doc:roles).</div>"
+      description: 'Returns a list of child accounts in the Tenable MSSP Portal.
+
+
+        A child account contains information about a customer instance of a Tenable product, including product license information and user-defined notes that can include valuable internal tracking or customer contact information.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-mssp-accounts-list
       parameters:
       - description: The UUID of an account group. This parameter can be used to retrieve only child accounts in the specified account group.
@@ -360,7 +356,9 @@ paths:
       tags:
       - Accounts
       summary: Get child account details
-      description: Returns details for the specified child account. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Returns details for the specified child account.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-mssp-accounts-details
       parameters:
       - name: account_uuid
@@ -441,7 +439,9 @@ paths:
       tags:
       - Accounts
       summary: List domains
-      description: Returns a list of domains for the specified child account. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Returns a list of domains for the specified child account.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-mssp-accounts-domains-list
       parameters:
       - name: account_uuid
@@ -504,48 +504,6 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
-    Licensed-Apps-Quote-Object:
-      type: object
-      properties:
-        sku:
-          type: string
-          example: TIOVM
-          description: The product SKU for the Tenable application you're requesting. You can use the [Get partner details](ref:mssp-partner-details) endpoint to retrieve the list of SKUs that can be requested from the specified partner.
-        assets:
-          type: integer
-          description: The number of assets you want to license for the requested Tenable product. This number must fall between the `minQuantity` and `maxQuantity` range for the Tenable application's SKU from the partner. You can retrieve these values from the [Get partner details](ref:mssp-partner-details) endpoint.
-        expiration_date:
-          type: string
-          description: The date when the account expires. The expiration date must be specified in YYYY-MM-DD format and it must be at least 90 days in the future.
-    Response-Create-Quote:
-      type: object
-      properties:
-        success:
-          type: string
-          example: 'true'
-          description: Indicates whether or not Tenable MSSP successfully created the quote.
-        message:
-          type: string
-          example: Quote created successfully.
-          description: A short message about the creation of the quote.
-        name:
-          type: string
-          example: example.com-830759035
-          description: The name associated with the quote. This corresponds with the `admin_username`.
-        uuid:
-          type: string
-          format: uuid
-          description: The UUID of the quote.
-    ChildAccountListResponse:
-      type: object
-      required:
-      - accounts
-      properties:
-        accounts:
-          description: An array of customer account objects.
-          type: array
-          items:
-            $ref: '#/components/schemas/ChildAccountResponse-Object'
     Request-Create-Quote:
       type: object
       required:
@@ -598,6 +556,66 @@ components:
         value:
           type: string
           description: The domain value.
+    Response-Create-Quote:
+      type: object
+      properties:
+        success:
+          type: string
+          example: 'true'
+          description: Indicates whether or not Tenable MSSP successfully created the quote.
+        message:
+          type: string
+          example: Quote created successfully.
+          description: A short message about the creation of the quote.
+        name:
+          type: string
+          example: example.com-830759035
+          description: The name associated with the quote. This corresponds with the `admin_username`.
+        uuid:
+          type: string
+          format: uuid
+          description: The UUID of the quote.
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Response-Create-Eval-Account:
+      type: object
+      properties:
+        success:
+          type: string
+          example: 'true'
+          description: Indicates whether or not Tenable MSSP successfully created the new evaluation account.
+        message:
+          type: string
+          example: successfully created new eval container and sfdc evaluation
+          description: A short message about the creation of the evaluation account.
+        name:
+          type: string
+          example: example.com-830759035
+          description: The name of the evaluation account. The name is the specified email domain followed by a dash and random integers. For example `example.com-830759035`.
+        uuid:
+          type: string
+          format: uuid
+          description: The UUID of the new evaluation account.
+    ChildAccountListResponse:
+      type: object
+      required:
+      - accounts
+      properties:
+        accounts:
+          description: An array of customer account objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/ChildAccountResponse-Object'
     Object-Distributor:
       type: object
       required:
@@ -615,23 +633,63 @@ components:
         lms_customer_id:
           type: string
           description: The distributor's licensing management system customer ID.
-    Object-Partner:
+    Request-Create-Eval-Account-v1:
       type: object
       required:
-      - id
-      - name
-      - lms_customer_id
+      - email
+      - country
       properties:
-        id:
+        email:
           type: string
-          example: 001We0000024vrNIAQ
-          description: The ID of the partner in the Tenable MSSP Portal.
-        name:
+          description: The MSSP partner's email address. A valid email address must be in the format `name@domain`.
+        country:
           type: string
-          description: The name of the partner in the Tenable MSSP Portal.
-        lms_customer_id:
+          description: The primary contact's country in ISO 3166-1 alpha-2 format. Valid country codes are `AU`, `BR`, `CA`, `EU`, `IN`, `JP`, `SG`, `UK`, and `US`.
+    Object-Requester:
+      type: object
+      required:
+      - firstname
+      - lastname
+      properties:
+        firstname:
           type: string
-          description: The partner's licensing management system customer ID.
+          description: The first name of the customer that requested the quote.
+        lastname:
+          type: string
+          description: The last name of the customer that requested the quote.
+    Object-Contact:
+      type: object
+      required:
+      - email
+      - street
+      - city
+      - state
+      - zip
+      - country
+      - website
+      properties:
+        email:
+          type: string
+          description: The default email address used for contacting the customer. The domain name of the email address must match the MSSP partner's domain name.
+        street:
+          type: string
+          description: The street address for the customer's address.
+        city:
+          type: string
+          description: The city for the customer's address.
+        state:
+          type: string
+          description: The state for the customer's address. For example `MD`.
+        zip:
+          type: string
+          description: The zip code for the customer's address.
+        country:
+          type: string
+          example: US
+          description: The customer's country in ISO 3166-1 alpha-2 format. For example, `US`. The country should match one of the countries from the chosen distributor. You can use the [Get partner details](ref:mssp-partner-details) endpoint to retrieve a list of a distributor's countries.
+        website:
+          type: string
+          description: The customer's website.
     ChildAccountResponse-Object:
       type: object
       required:
@@ -690,58 +748,42 @@ components:
         modified:
           type: string
           description: An ISO timestamp indicating the date and time on which the container was last modified; for example, `2021-01-16T12:00:00Z`.
-    Object-Contact:
+    Response-Accounts-Domains:
+      type: object
+      properties:
+        domains:
+          description: An array of domain objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/Response-Accounts-Domains-Object'
+    Object-Partner:
       type: object
       required:
-      - email
-      - street
-      - city
-      - state
-      - zip
-      - country
-      - website
+      - id
+      - name
+      - lms_customer_id
       properties:
-        email:
+        id:
           type: string
-          description: The default email address used for contacting the customer. The domain name of the email address must match the MSSP partner's domain name.
-        street:
-          type: string
-          description: The street address for the customer's address.
-        city:
-          type: string
-          description: The city for the customer's address.
-        state:
-          type: string
-          description: The state for the customer's address. For example `MD`.
-        zip:
-          type: string
-          description: The zip code for the customer's address.
-        country:
-          type: string
-          example: US
-          description: The customer's country in ISO 3166-1 alpha-2 format. For example, `US`. The country should match one of the countries from the chosen distributor. You can use the [Get partner details](ref:mssp-partner-details) endpoint to retrieve a list of a distributor's countries.
-        website:
-          type: string
-          description: The customer's website.
-    Response-Create-Eval-Account:
-      type: object
-      properties:
-        success:
-          type: string
-          example: 'true'
-          description: Indicates whether or not Tenable MSSP successfully created the new evaluation account.
-        message:
-          type: string
-          example: successfully created new eval container and sfdc evaluation
-          description: A short message about the creation of the evaluation account.
+          example: 001We0000024vrNIAQ
+          description: The ID of the partner in the Tenable MSSP Portal.
         name:
           type: string
-          example: example.com-830759035
-          description: The name of the evaluation account. The name is the specified email domain followed by a dash and random integers. For example `example.com-830759035`.
-        uuid:
+          description: The name of the partner in the Tenable MSSP Portal.
+        lms_customer_id:
           type: string
-          format: uuid
-          description: The UUID of the new evaluation account.
+          description: The partner's licensing management system customer ID.
+    ErrorResponse-400:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A brief message about the missing or invalid parameter value(s).
+    Licensed-Apps:
+      type: array
+      description: 'An array of strings defining the list of licensed Tenable applications For example, `["vm", "was", "lumin"]`. Valid strings include the following: <ul><li>ad—Tenable Identity Exposure</li><li>asm—Tenable Attack Surface Management</li><li>lumin—Tenable Lumin</li><li>one—Tenable One</li><li>vm—Tenable Vulnerability Management</li><li>was—Tenable Web App Scanning</li></ul>'
+      items:
+        type: string
     Request-Create-Eval-Account-v2:
       type: object
       required:
@@ -765,71 +807,27 @@ components:
         country:
           type: string
           description: The primary contact's country in ISO 3166-1 alpha-2 format. Valid country codes are `AU`, `BR`, `CA`, `EU`, `IN`, `JP`, `SG`, `UK`, and `US`.
-    Response-Accounts-Domains:
+    Licensed-Apps-Quote-Object:
       type: object
       properties:
-        domains:
-          description: An array of domain objects.
-          type: array
-          items:
-            $ref: '#/components/schemas/Response-Accounts-Domains-Object'
-    Object-Requester:
-      type: object
-      required:
-      - firstname
-      - lastname
-      properties:
-        firstname:
+        sku:
           type: string
-          description: The first name of the customer that requested the quote.
-        lastname:
-          type: string
-          description: The last name of the customer that requested the quote.
-    ErrorResponse:
-      type: object
-      properties:
-        statusCode:
+          example: TIOVM
+          description: The product SKU for the Tenable application you're requesting. You can use the [Get partner details](ref:mssp-partner-details) endpoint to retrieve the list of SKUs that can be requested from the specified partner.
+        assets:
           type: integer
-          description: The HTTP status code of the error.
-        error:
+          description: The number of assets you want to license for the requested Tenable product. This number must fall between the `minQuantity` and `maxQuantity` range for the Tenable application's SKU from the partner. You can retrieve these values from the [Get partner details](ref:mssp-partner-details) endpoint.
+        expiration_date:
           type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    Request-Create-Eval-Account-v1:
-      type: object
-      required:
-      - email
-      - country
-      properties:
-        email:
-          type: string
-          description: The MSSP partner's email address. A valid email address must be in the format `name@domain`.
-        country:
-          type: string
-          description: The primary contact's country in ISO 3166-1 alpha-2 format. Valid country codes are `AU`, `BR`, `CA`, `EU`, `IN`, `JP`, `SG`, `UK`, and `US`.
-    Licensed-Apps:
-      type: array
-      description: 'An array of strings defining the list of licensed Tenable applications For example, `["vm", "was", "lumin"]`. Valid strings include the following: <ul><li>ad—Tenable Identity Exposure</li><li>asm—Tenable Attack Surface Management</li><li>lumin—Tenable Lumin</li><li>one—Tenable One</li><li>vm—Tenable Vulnerability Management</li><li>was—Tenable Web App Scanning</li></ul>'
-      items:
-        type: string
-    ErrorResponse-400:
-      type: object
-      properties:
-        error:
-          type: string
-          description: A brief message about the missing or invalid parameter value(s).
+          description: The date when the account expires. The expiration date must be specified in YYYY-MM-DD format and it must be at least 90 days in the future.
   securitySchemes:
-    Bearer:
+    cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

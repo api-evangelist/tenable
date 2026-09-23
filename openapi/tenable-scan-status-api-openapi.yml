@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Vulnerability Management Scan Status API
   version: 1.0.0
-  title: Downloads About Scan Status API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Scan Status
   x-displayName: Scan Status
@@ -38,7 +11,9 @@ paths:
   /scans/{scan_id}/latest-status:
     get:
       summary: Get latest scan status
-      description: Returns the latest status for a scan. For a list of possible status values, see [Scan Status](doc:scan-status-tio).<div class="perms-callout">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Returns the latest status for a scan. For a list of possible status values, see Scan Status.
+
+        Requires the Scan Operator [24] user role and Can View [16] scan permissions. See Roles and Permissions.'
       operationId: scans-get-latest-status
       tags:
       - Scan Status
@@ -116,7 +91,9 @@ paths:
   /scans/{scan_id}/status:
     put:
       summary: Update scan status
-      description: Changes the status of a scan. For a list of possible status values, see [Scan Status](doc:scan-status-tio).<div class="perms-callout">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Changes the status of a scan. For a list of possible status values, see Scan Status.
+
+        Requires the Scan Operator [24] user role and Can View [16] scan permissions. See Roles and Permissions.'
       operationId: scans-read-status
       tags:
       - Scan Status
@@ -189,7 +166,9 @@ paths:
       description: 'Returns the progress for the specified scan.
 
 
-        **Note:** If you submit a request without query parameters, Tenable Vulnerability Management returns the progress from the latest run of the specified scan. If you submit a request using the `history_id` or `history_uuid` query parameters to specify a historical run of the scan, Tenable Vulnerability Management returns the progress for the specified historical run.<div class="perms-callout">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+        **Note:** If you submit a request without query parameters, Tenable Vulnerability Management returns the progress from the latest run of the specified scan. If you submit a request using the `history_id` or `history_uuid` query parameters to specify a historical run of the scan, Tenable Vulnerability Management returns the progress for the specified historical run.
+
+        Requires the Scan Operator [24] user role and Can View [16] scan permissions. See Roles and Permissions.'
       operationId: io-vm-scans-progress-get
       tags:
       - Scan Status
@@ -300,15 +279,123 @@ components:
           type: string
           description: A brief message about the cause of the error.
   securitySchemes:
-    Bearer:
+    assets_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Asset_Custom_Attributes_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    editor_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Assets_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Compliance_Data_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    file_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    filters_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    folders_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    plugins_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    policies_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Reports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Control_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Exports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_History_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Results_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Status_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Shared_Collections_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Remediation_Scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    workbenches_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings Agents API
   version: 1.0.0
-  title: Downloads About Agents API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Agents
   x-displayName: Agents
@@ -38,7 +11,9 @@ paths:
   /scanners/null/agents:
     get:
       summary: List agents
-      description: Returns a list of agents for the specified scanner.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      description: 'Returns a list of agents for the specified scanner.
+
+        Requires the Scan Manager [40] user role. See Roles.'
       operationId: agents-list
       tags:
       - Agents
@@ -245,7 +220,9 @@ paths:
   /scanners/null/agent-groups/{agent_group_id}/agents:
     get:
       summary: List agents by group
-      description: Returns a list of agents for the specified agent group.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      description: 'Returns a list of agents for the specified agent group.
+
+        Requires the Scan Manager [40] user role. See Roles.'
       operationId: agent-group-list-agents
       tags:
       - Agents
@@ -467,7 +444,15 @@ paths:
   /agents/safe-mode-summary:
     get:
       summary: Get agent safe mode summary
-      description: "Returns a summary of agents in safe mode for your container. The summary includes the total number of agents along with breakdowns by agent version and operating system platform. \n\n**Note:** Agent safe mode is supported by agent version 10.9.0 and later. \n\nFor more information about agent safe mode, see [Agent Safe Mode](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/agent-safe-mode.htm) in the _Tenable Vulnerability Management User Guide_ and [Safe Mode](https://docs.tenable.com/nessus-agent/Content/safe-mode.htm) in the _Tenable Agent User Guide_. <div class=\"perms-callout\">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>"
+      description: 'Returns a summary of agents in safe mode for your container. The summary includes the total number of agents along with breakdowns by agent version and operating system platform.
+
+
+        **Note:** Agent safe mode is supported by agent version 10.9.0 and later.
+
+
+        For more information about agent safe mode, see Agent Safe Mode in the _Tenable Vulnerability Management User Guide_ and Safe Mode in the _Tenable Agent User Guide_.
+
+        Requires the Scan Manager [40] user role. See Roles.'
       operationId: agents-get-safe-mode-summary
       tags:
       - Agents
@@ -530,7 +515,9 @@ paths:
   /scanners/null/agents/{agent_id}:
     get:
       summary: Get agent details
-      description: Returns the specified agent details for the specified scanner.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      description: 'Returns the specified agent details for the specified scanner.
+
+        Requires the Scan Manager [40] user role. See Roles.'
       operationId: agents-get
       tags:
       - Agents
@@ -735,7 +722,9 @@ paths:
       - agents_cloud: []
     patch:
       summary: Rename agent
-      description: Renames an agent. <div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      description: 'Renames an agent.
+
+        Requires the Scan Manager [40] user role. See Roles.'
       operationId: io-agents-rename
       tags:
       - Agents
@@ -943,7 +932,9 @@ paths:
       - agents_cloud: []
     delete:
       summary: Unlink agent
-      description: Unlinks an agent. For more information on unlinked agent data, see [Unlink an Agent](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/UnlinkAnAgent.htm).<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      description: 'Unlinks an agent. For more information on unlinked agent data, see Unlink an Agent.
+
+        Requires the Scan Manager [40] user role. See Roles.'
       operationId: agents-delete
       tags:
       - Agents
@@ -1127,61 +1118,39 @@ components:
         fredi_status:
           type: boolean
           description: Indicates whether the agent is enabled with continuous assessment scanning via an agent profile.
-    agents_object-health_events:
-      description: An array of the agent's previous health statuses.
-      type: array
-      items:
-        type: object
-        properties:
-          identifier:
-            type: integer
-            description: 'The numeric identifier of the agent health event. Numeric events include: <ul><li>100—SYSTEM_DISK_USAGE</li><li>200—PLUGIN_DISK_USAGE</li><li>201—PLUGIN_UPDATE</li><li>202—PLUGIN_INTEGRITY</li><li>203—PLUGIN_COMPILATION</li><li>999—UNKNOWN</li></ul>'
-          state:
-            type: integer
-            description: The numeric representation of the agent health event's status. `0` indicates a `HEALTHY` status, `10` indicates a `WARNING` status, `20` indicates a `CRITICAL` status, `30` indicates a `SAFE MODE` status, and `999` or `NULL` indicates an `UNKNOWN` status.
-          state_time:
-            type: integer
-            format: int64
-            description: A Unix timestamp indicating the date and time when the agent health event was recorded.
-          details:
-            type: string
-            description: The description of the agent health event.
-          previous_details:
-            type: string
-            description: The description of the agent's previous health event.
-          muted:
-            type: boolean
-            description: Indicates whether the agent health event is muted in the user interface.
-          state_name:
-            type: string
-            description: The agent health event's status (`HEALTHY`, `WARNING`, `CRITICAL`, `UNKNOWN`, or `SAFE MODE`).
-          identifier_name:
-            type: string
-            description: The human-readable name for the agent health event.
-          previous_state_name:
-            type: string
-            description: The agent's previous health event status (`HEALTHY`, `WARNING`, `CRITICAL`, `UNKNOWN`, or `SAFE MODE`).
-    agents_PaginationResponse:
-      description: An object containing pagination information for the current result set.
+    agents_safe-mode-summary:
       type: object
       properties:
-        total:
+        container_uuid:
+          type: string
+          description: The unique ID of the container associated with the user's API keys.
+        user_uuid:
+          type: string
+          description: The unique ID of the user that requested the agent summary.
+        site:
+          type: string
+          description: The cloud region in which the container is located.
+        agent_safe_mode_count:
+          type: object
+          description: The number of agents in safe mode by version and operating system platform.
+          properties:
+            total:
+              type: integer
+              description: The total number of agents in safe mode.
+            by_version:
+              type: object
+              description: The number of agents in safe mode, organized by agent version number.
+              additionalProperties:
+                type: integer
+            by_platform:
+              type: object
+              description: The number of agents in safe mode, organized by operating system platform.
+              additionalProperties:
+                type: integer
+        time_stamp:
           type: integer
-          format: int32
-          description: The total number of records matching your search criteria.
-        limit:
-          type: integer
-          format: int32
-          description: The number of records requested (or the default value if omitted from the request).
-        offset:
-          type: integer
-          format: int32
-          description: The starting record you requested (or zero if omitted).
-        sort:
-          description: An array of objects specifying how the current result set is sorted.
-          type: array
-          items:
-            $ref: '#/components/schemas/agents_Response-PaginationSortObject'
+          format: int64
+          description: A Unix timestamp indicating the date and time when the summary was requested.
     agents_object-remote_settings:
       description: An array of the agent's remote settings.
       type: array
@@ -1227,49 +1196,40 @@ components:
           default:
             type: string
             description: The default value of the setting.
-    agents_Response-PaginationSortObject:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
-      type: object
-      properties:
-        name:
-          type: string
-          description: The property used to sort the results.
-        order:
-          type: string
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
-    agents_safe-mode-summary:
-      type: object
-      properties:
-        container_uuid:
-          type: string
-          description: The unique ID of the container associated with the user's API keys.
-        user_uuid:
-          type: string
-          description: The unique ID of the user that requested the agent summary.
-        site:
-          type: string
-          description: The cloud region in which the container is located.
-        agent_safe_mode_count:
-          type: object
-          description: The number of agents in safe mode by version and operating system platform.
-          properties:
-            total:
-              type: integer
-              description: The total number of agents in safe mode.
-            by_version:
-              type: object
-              description: The number of agents in safe mode, organized by agent version number.
-              additionalProperties:
-                type: integer
-            by_platform:
-              type: object
-              description: The number of agents in safe mode, organized by operating system platform.
-              additionalProperties:
-                type: integer
-        time_stamp:
-          type: integer
-          format: int64
-          description: A Unix timestamp indicating the date and time when the summary was requested.
+    agents_object-health_events:
+      description: An array of the agent's previous health statuses.
+      type: array
+      items:
+        type: object
+        properties:
+          identifier:
+            type: integer
+            description: 'The numeric identifier of the agent health event. Numeric events include: <ul><li>100—SYSTEM_DISK_USAGE</li><li>200—PLUGIN_DISK_USAGE</li><li>201—PLUGIN_UPDATE</li><li>202—PLUGIN_INTEGRITY</li><li>203—PLUGIN_COMPILATION</li><li>999—UNKNOWN</li></ul>'
+          state:
+            type: integer
+            description: The numeric representation of the agent health event's status. `0` indicates a `HEALTHY` status, `10` indicates a `WARNING` status, `20` indicates a `CRITICAL` status, `30` indicates a `SAFE MODE` status, and `999` or `NULL` indicates an `UNKNOWN` status.
+          state_time:
+            type: integer
+            format: int64
+            description: A Unix timestamp indicating the date and time when the agent health event was recorded.
+          details:
+            type: string
+            description: The description of the agent health event.
+          previous_details:
+            type: string
+            description: The description of the agent's previous health event.
+          muted:
+            type: boolean
+            description: Indicates whether the agent health event is muted in the user interface.
+          state_name:
+            type: string
+            description: The agent health event's status (`HEALTHY`, `WARNING`, `CRITICAL`, `UNKNOWN`, or `SAFE MODE`).
+          identifier_name:
+            type: string
+            description: The human-readable name for the agent health event.
+          previous_state_name:
+            type: string
+            description: The agent's previous health event status (`HEALTHY`, `WARNING`, `CRITICAL`, `UNKNOWN`, or `SAFE MODE`).
     agents_ErrorResponse:
       type: object
       properties:
@@ -1282,6 +1242,16 @@ components:
         message:
           type: string
           description: A brief message about the cause of the error.
+    agents_Response-PaginationSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
     agents_response-agent-details:
       type: object
       properties:
@@ -1393,16 +1363,175 @@ components:
         nessus_scanning_health:
           type: integer
           description: Indicates the general health of the agent's vulnerability scanning health events.`0` indicates a `HEALTHY` status, `10` indicates a `WARNING` status, `20` indicates a `CRITICAL` status, and `-1` indicates that vulnerability management scanning is not enabled on the agent. For more information, see the agent [Health](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/ViewSensors.htm) status description in the Tenable Vulnerability Management User Guide.
+    agents_PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/agents_Response-PaginationSortObject'
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

@@ -1,43 +1,20 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  version: 1.0.0
-  title: Downloads About AD object API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+  title: Identity Exposure AD object API
+  description: API to interact with Identity Exposure.
+  version: production
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: '{protocol}://customer.tenable.ad'
+  variables:
+    protocol:
+      default: https
 tags:
 - name: AD object
   description: Representation of an Active Directory Object
 paths:
   /api/ad-objects:
     get:
-      summary: Return the last state of every ad-object at the provided timestampBy default, the timestamp is now. Objects out of scope are included
+      summary: Return the last state of every ad-object at the provided timestampBy default…
       description: 'Required license type: ioe, ioaPreview, ioa'
       responses:
         '200':
@@ -128,9 +105,11 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiAdObjects
+      x-operation-id-source: derived
   /api/directories/{directoryId}/ad-objects/{id}:
     get:
-      summary: Get ad-object instance by id.
+      summary: Get ad-object instance by id
       description: 'Required license type: ioe, ioaPreview, ioa'
       responses:
         '200':
@@ -224,9 +203,11 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiDirectoriesByDirectoryIdAdObjectsById
+      x-operation-id-source: derived
   /api/infrastructures/{infrastructureId}/directories/{directoryId}/ad-objects/{id}:
     get:
-      summary: Get ad-object instance by id.
+      summary: Get ad-object instance by id
       description: 'Required license type: ioe, ioaPreview, ioa'
       responses:
         '200':
@@ -328,9 +309,11 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiInfrastructuresByInfrastructureIdDirectoriesByDirectoryIdAdObjectsById
+      x-operation-id-source: derived
   /api/profiles/{profileId}/checkers/{checkerId}/ad-objects/{id}:
     get:
-      summary: Retrieve an AD object by id that have deviances for a specific profile and checker
+      summary: Retrieve an AD object by id that have deviances for a specific profile and…
       description: 'Required license type: ioe'
       responses:
         '200':
@@ -443,6 +426,8 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiProfilesByProfileIdCheckersByCheckerIdAdObjectsById
+      x-operation-id-source: derived
   /api/infrastructures/{infrastructureId}/directories/{directoryId}/events/{eventId}/ad-objects/{id}:
     get:
       summary: Get one ad-object by event and by id
@@ -555,6 +540,8 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiInfrastructuresByInfrastructureIdDirectoriesByDirectoryIdEventsByEventIdAdObjectsById
+      x-operation-id-source: derived
   /api/infrastructures/{infrastructureId}/directories/{directoryId}/events/{eventId}/ad-objects/{id}/changes:
     get:
       summary: Get one ad-object changes between a given event and the event which precedes it
@@ -596,14 +583,17 @@ paths:
                       - before
                       properties:
                         before:
-                          type: string
-                          nullable: true
+                          type:
+                          - string
+                          - 'null'
                         after:
-                          type: string
-                          nullable: true
+                          type:
+                          - string
+                          - 'null'
                         current:
-                          type: string
-                          nullable: true
+                          type:
+                          - string
+                          - 'null'
         '401':
           description: Unauthorized
         '500':
@@ -665,6 +655,8 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiInfrastructuresByInfrastructureIdDirectoriesByDirectoryIdEventsByEventIdAdObjectsByIdChanges
+      x-operation-id-source: derived
   /api/profiles/{profileId}/checkers/{checkerId}/ad-objects/search:
     post:
       summary: Search all AD objects having deviances by profile by checker
@@ -814,30 +806,18 @@ paths:
                   type: string
                   format: date-time
                 showIgnored:
-                  type: boolean
-                  nullable: true
+                  type:
+                  - boolean
+                  - 'null'
+      operationId: postApiProfilesByProfileIdCheckersByCheckerIdAdObjectsSearch
+      x-operation-id-source: derived
 components:
   securitySchemes:
-    Bearer:
-      type: apiKey
+    ApiKey:
+      name: x-api-key
+      description: The user's API key
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      type: apiKey
 x-readme:
-  proxy-enabled: false
   explorer-enabled: true
-  samples-enabled: true
-  samples-languages:
-  - python
-  - curl
-  - node
-  - powershell
-  - ruby
-  - javascript
-  - objectivec
-  - java
-  - php
-  - csharp
-  - go
-  - swift
-  - kotlin
+  proxy-enabled: true

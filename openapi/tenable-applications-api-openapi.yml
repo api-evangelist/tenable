@@ -1,42 +1,20 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
   version: 1.0.0
-  title: Downloads About Applications API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+  title: Web Application Scanning v2 Applications API
+  license:
+    name: Web App Scanning
+  description: The Tenable Web App Scanning v2 API serves as a gateway for you to interact with the Tenable Web App Scanning application and enables users to automate the security management of web applications.
 servers:
-- url: https://www.tenable.com/downloads/api/v2
+- url: https://cloud.tenable.com
 security:
-- Bearer: []
+- cloud: []
 tags:
 - name: Applications
   description: 'With the WAS Applications API, you can create web application assets.
 
 
-    For more information, see the [Targets](https://docs.tenable.com/web-app-scanning/Content/WAS/Scans/BasicSettings.htm#Targets) section on the [Basic Settings](https://docs.tenable.com/web-app-scanning/Content/WAS/Scans/BasicSettings.htm) page in the _Tenable Web App Scanning User Guide_.'
+    For more information, see the Targets section on the Basic Settings page in the _Tenable Web App Scanning User Guide_.'
 paths:
   /api/v2/was/applications:
     post:
@@ -44,7 +22,9 @@ paths:
       description: 'Adds a web application asset. This enables you to manually define application targets with high granularity using a combination of FQDN, port, protocol, and path.
 
 
-        Manually defining assets ensures that cumulative scan data is accurately condensed and attributed to the correct application, providing more precise reporting and analysis. <div class="perms-callout">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. Additionally, requires the Can View [16] scan permission. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+        Manually defining assets ensures that cumulative scan data is accurately condensed and attributed to the correct application, providing more precise reporting and analysis.
+
+        Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. Additionally, requires the Can View [16] scan permission. See Roles and Permissions.'
       operationId: was-v2-add-application
       tags:
       - Applications
@@ -126,29 +106,29 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
-    Add-Application:
+    ErrorResponse:
       type: object
       required:
-      - user_defined_name
-      - url
+      - reasons
+      description: Tenable Web App Scanning error response.
       properties:
-        user_defined_name:
-          type: string
-          description: A unique, user-defined name for the web application asset.
-          example: Marketing Site
-        url:
-          type: string
-          description: The primary URL of the application. This can include the protocol, FQDN, port, and specific path to define the target's scope.
-          example: https://my-site.com:8443/marketing
-        tags:
+        reasons:
           type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
           items:
-            type: string
-            format: uuid
-          description: A list of unique tag identifiers (UUIDs) to associate with the application. Tagging an application enables you to target it specifically when launching or scheduling scans.
-          example:
-          - 37c1e7d7-9e74-4c66-8b5e-79fcc4e725dc
-          - 041f044a-e22e-4bce-a5b3-069d1c5ffabf
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
     InputErrorResponse:
       type: object
       required:
@@ -185,39 +165,37 @@ components:
               value:
                 description: Contains an error message describing the cause of the input validation error.
                 type: object
-    ErrorResponse:
+    Add-Application:
       type: object
       required:
-      - reasons
-      description: Tenable Web App Scanning error response.
+      - user_defined_name
+      - url
       properties:
-        reasons:
+        user_defined_name:
+          type: string
+          description: A unique, user-defined name for the web application asset.
+          example: Marketing Site
+        url:
+          type: string
+          description: The primary URL of the application. This can include the protocol, FQDN, port, and specific path to define the target's scope.
+          example: https://my-site.com:8443/marketing
+        tags:
           type: array
-          description: A list of reasons for the Tenable Web App Scanning error.
           items:
-            type: object
-            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
-            minItems: 1
-            required:
-            - code
-            - reason
-            properties:
-              code:
-                type: string
-                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
-              reason:
-                type: string
-                description: The extended description of the cause of the Tenable Web App Scanning error.
+            type: string
+            format: uuid
+          description: A list of unique tag identifiers (UUIDs) to associate with the application. Tagging an application enables you to target it specifically when launching or scheduling scans.
+          example:
+          - 37c1e7d7-9e74-4c66-8b5e-79fcc4e725dc
+          - 041f044a-e22e-4bce-a5b3-069d1c5ffabf
   securitySchemes:
-    Bearer:
+    cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Vulnerability Management Scan Results API
   version: 1.0.0
-  title: Downloads About Scan Results API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Scan Results
   x-displayName: Scan Results
@@ -38,7 +11,12 @@ paths:
   /scans/{scan_uuid}/hosts/{host_id}:
     get:
       summary: Get host details
-      description: "Returns details for the specified host. \n\n**Note:** This endpoint can only return scan results that are younger than 35 days. For scan results that are older than 35 days, use the [POST /scans/{scan_id}/export](ref:scans-export-request) endpoint instead.<div class=\"perms-callout\">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>"
+      description: 'Returns details for the specified host.
+
+
+        **Note:** This endpoint can only return scan results that are younger than 35 days. For scan results that are older than 35 days, use the POST /scans/{scan_id}/export endpoint instead.
+
+        Requires the Scan Operator [24] user role and Can View [16] scan permissions. See Roles and Permissions.'
       operationId: scans-host-details
       tags:
       - Scan Results
@@ -191,10 +169,12 @@ paths:
       description: 'Returns the output for a specified plugin.
 
 
-        **Caution:** This endpoint is deprecated. Tenable recommends that you use the [Export scan](ref:scans-export-request) endpoint instead. Please update any existing integrations that your organization has since this endpoint will be removed.
+        **Caution:** This endpoint is deprecated. Tenable recommends that you use the Export scan endpoint instead. Please update any existing integrations that your organization has since this endpoint will be removed.
 
 
-        **Note:** This endpoint can only return scan results that are younger than 35 days. For scan results that are older than 35 days, use the [POST /scans/{scan_id}/export](ref:scans-export-request) endpoint instead. Output for an individual plugin is limited to 1,024 KB (1 MB). Additionally, this endpoint has a rate limit of 4 requests per minute. For more information, see [Rate Limiting](doc:rate-limiting).<div class="perms-callout">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+        **Note:** This endpoint can only return scan results that are younger than 35 days. For scan results that are older than 35 days, use the POST /scans/{scan_id}/export endpoint instead. Output for an individual plugin is limited to 1,024 KB (1 MB). Additionally, this endpoint has a rate limit of 4 requests per minute. For more information, see Rate Limiting.
+
+        Requires the Scan Operator [24] user role and Can View [16] scan permissions. See Roles and Permissions.'
       operationId: scans-plugin-output
       deprecated: true
       tags:
@@ -349,7 +329,9 @@ paths:
       description: 'Gets the requested scan attachment file.
 
 
-        **Note:** Scan attachments are not available if the scan results are older than 60 days. To retrieve scan data in `.nessus` and `.csv` format, use the [POST /scans/{scan_id}/export](ref:scans-attachments) endpoint.<div class="perms-callout">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+        **Note:** Scan attachments are not available if the scan results are older than 60 days. To retrieve scan data in `.nessus` and `.csv` format, use the POST /scans/{scan_id}/export endpoint.
+
+        Requires the Scan Operator [24] user role and Can View [16] scan permissions. See Roles and Permissions.'
       operationId: scans-attachments
       tags:
       - Scan Results
@@ -435,6 +417,18 @@ paths:
       - Scan_Results_cloud: []
 components:
   schemas:
+    Scan_Results_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     Scan_Results_host_vulnerability:
       type: object
       properties:
@@ -465,6 +459,27 @@ components:
         severity:
           type: integer
           description: The severity of plugin.
+    Scan_Results_plugin_output:
+      type: object
+      properties:
+        ports:
+          type: object
+          properties: {}
+        has_attachment:
+          type: integer
+          description: If the value is 1, the plugin output contains files that may be exported.
+        custom_description:
+          type: string
+          description: A custom description of the plugin.
+        plugin_output:
+          type: string
+          description: The text of the plugin output.
+        hosts:
+          type: string
+          description: Other hosts with the same output.
+        severity:
+          type: integer
+          description: The severity the output.
     Scan_Results_host_compliance:
       type: object
       properties:
@@ -492,49 +507,124 @@ components:
         severity:
           type: integer
           description: The severity of plugin.
-    Scan_Results_plugin_output:
-      type: object
-      properties:
-        ports:
-          type: object
-          properties: {}
-        has_attachment:
-          type: integer
-          description: If the value is 1, the plugin output contains files that may be exported.
-        custom_description:
-          type: string
-          description: A custom description of the plugin.
-        plugin_output:
-          type: string
-          description: The text of the plugin output.
-        hosts:
-          type: string
-          description: Other hosts with the same output.
-        severity:
-          type: integer
-          description: The severity the output.
-    Scan_Results_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
   securitySchemes:
-    Bearer:
+    assets_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Asset_Custom_Attributes_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    editor_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Assets_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Compliance_Data_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    file_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    filters_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    folders_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    plugins_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    policies_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Reports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Control_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Exports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_History_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Results_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Status_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Shared_Collections_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Remediation_Scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    workbenches_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

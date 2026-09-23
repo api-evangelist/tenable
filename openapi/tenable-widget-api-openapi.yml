@@ -1,36 +1,13 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  version: 1.0.0
-  title: Downloads About Widget API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+  title: Identity Exposure Widget API
+  description: API to interact with Identity Exposure.
+  version: production
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: '{protocol}://customer.tenable.ad'
+  variables:
+    protocol:
+      default: https
 tags:
 - name: Widget
   description: Contains a serie of data
@@ -100,6 +77,8 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiDashboardsByDashboardIdWidgets
+      x-operation-id-source: derived
     post:
       summary: Create a new widget in dashboard by dashboard id
       description: 'Required license type: ioe, ioaPreview, ioa'
@@ -190,9 +169,11 @@ paths:
                   maximum: 2147483647
                 title:
                   type: string
+      operationId: postApiDashboardsByDashboardIdWidgets
+      x-operation-id-source: derived
   /api/dashboards/{dashboardId}/widgets/{id}:
     get:
-      summary: Get widget instance by id.
+      summary: Get widget instance by id
       description: 'Required license type: ioe, ioaPreview, ioa'
       responses:
         '200':
@@ -261,8 +242,10 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiDashboardsByDashboardIdWidgetsById
+      x-operation-id-source: derived
     patch:
-      summary: Update widget instance.
+      summary: Update widget instance
       description: 'Required license type: ioe, ioaPreview, ioa'
       responses:
         '200':
@@ -357,8 +340,10 @@ paths:
                   maximum: 2147483647
                 title:
                   type: string
+      operationId: patchApiDashboardsByDashboardIdWidgetsById
+      x-operation-id-source: derived
     delete:
-      summary: Delete widget instance.
+      summary: Delete widget instance
       description: 'Required license type: ioe, ioaPreview, ioa'
       responses:
         '204':
@@ -367,7 +352,6 @@ paths:
             application/json:
               schema:
                 additionalProperties: false
-                nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -405,6 +389,8 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: deleteApiDashboardsByDashboardIdWidgetsById
+      x-operation-id-source: derived
   /api/dashboards/{dashboardId}/widgets/{id}/options:
     get:
       summary: Get a widget's options by id
@@ -461,15 +447,17 @@ paths:
                                     duration:
                                       type: integer
                                     interval:
-                                      type: string
-                                      nullable: true
+                                      type:
+                                      - string
+                                      - 'null'
                                     directoryIds:
                                       type: array
                                       items:
                                         type: integer
                                     active:
-                                      type: boolean
-                                      nullable: true
+                                      type:
+                                      - boolean
+                                      - 'null'
                               - allOf:
                                 - not:
                                     properties:
@@ -500,8 +488,9 @@ paths:
                                         duration:
                                           type: integer
                                         interval:
-                                          type: string
-                                          nullable: true
+                                          type:
+                                          - string
+                                          - 'null'
                                         profileId:
                                           type: integer
                                         directoryIds:
@@ -565,8 +554,9 @@ paths:
                               additionalProperties: false
                               properties:
                                 label:
-                                  type: string
-                                  nullable: true
+                                  type:
+                                  - string
+                                  - 'null'
                 - allOf:
                   - not:
                       properties:
@@ -619,15 +609,17 @@ paths:
                                         duration:
                                           type: integer
                                         interval:
-                                          type: string
-                                          nullable: true
+                                          type:
+                                          - string
+                                          - 'null'
                                         directoryIds:
                                           type: array
                                           items:
                                             type: integer
                                         active:
-                                          type: boolean
-                                          nullable: true
+                                          type:
+                                          - boolean
+                                          - 'null'
                                   - allOf:
                                     - not:
                                         properties:
@@ -658,8 +650,9 @@ paths:
                                             duration:
                                               type: integer
                                             interval:
-                                              type: string
-                                              nullable: true
+                                              type:
+                                              - string
+                                              - 'null'
                                             profileId:
                                               type: integer
                                             directoryIds:
@@ -723,8 +716,9 @@ paths:
                                   additionalProperties: false
                                   properties:
                                     label:
-                                      type: string
-                                      nullable: true
+                                      type:
+                                      - string
+                                      - 'null'
                     - allOf:
                       - not:
                           properties:
@@ -777,15 +771,17 @@ paths:
                                             duration:
                                               type: integer
                                             interval:
-                                              type: string
-                                              nullable: true
+                                              type:
+                                              - string
+                                              - 'null'
                                             directoryIds:
                                               type: array
                                               items:
                                                 type: integer
                                             active:
-                                              type: boolean
-                                              nullable: true
+                                              type:
+                                              - boolean
+                                              - 'null'
                                       - allOf:
                                         - not:
                                             properties:
@@ -816,8 +812,9 @@ paths:
                                                 duration:
                                                   type: integer
                                                 interval:
-                                                  type: string
-                                                  nullable: true
+                                                  type:
+                                                  - string
+                                                  - 'null'
                                                 profileId:
                                                   type: integer
                                                 directoryIds:
@@ -881,8 +878,9 @@ paths:
                                       additionalProperties: false
                                       properties:
                                         label:
-                                          type: string
-                                          nullable: true
+                                          type:
+                                          - string
+                                          - 'null'
                         - allOf:
                           - not:
                               properties:
@@ -935,15 +933,17 @@ paths:
                                                 duration:
                                                   type: integer
                                                 interval:
-                                                  type: string
-                                                  nullable: true
+                                                  type:
+                                                  - string
+                                                  - 'null'
                                                 directoryIds:
                                                   type: array
                                                   items:
                                                     type: integer
                                                 active:
-                                                  type: boolean
-                                                  nullable: true
+                                                  type:
+                                                  - boolean
+                                                  - 'null'
                                           - allOf:
                                             - not:
                                                 properties:
@@ -974,8 +974,9 @@ paths:
                                                     duration:
                                                       type: integer
                                                     interval:
-                                                      type: string
-                                                      nullable: true
+                                                      type:
+                                                      - string
+                                                      - 'null'
                                                     profileId:
                                                       type: integer
                                                     directoryIds:
@@ -1088,15 +1089,17 @@ paths:
                                                 duration:
                                                   type: integer
                                                 interval:
-                                                  type: string
-                                                  nullable: true
+                                                  type:
+                                                  - string
+                                                  - 'null'
                                                 directoryIds:
                                                   type: array
                                                   items:
                                                     type: integer
                                                 active:
-                                                  type: boolean
-                                                  nullable: true
+                                                  type:
+                                                  - boolean
+                                                  - 'null'
                                           - allOf:
                                             - not:
                                                 properties:
@@ -1127,8 +1130,9 @@ paths:
                                                     duration:
                                                       type: integer
                                                     interval:
-                                                      type: string
-                                                      nullable: true
+                                                      type:
+                                                      - string
+                                                      - 'null'
                                                     profileId:
                                                       type: integer
                                                     directoryIds:
@@ -1192,8 +1196,9 @@ paths:
                                           additionalProperties: false
                                           properties:
                                             label:
-                                              type: string
-                                              nullable: true
+                                              type:
+                                              - string
+                                              - 'null'
         '401':
           description: Unauthorized
         '500':
@@ -1231,6 +1236,8 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiDashboardsByDashboardIdWidgetsByIdOptions
+      x-operation-id-source: derived
     put:
       summary: Define widget's options by id
       description: 'Required license type: ioe, ioaPreview, ioa'
@@ -1241,7 +1248,6 @@ paths:
             application/json:
               schema:
                 additionalProperties: false
-                nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -1330,15 +1336,17 @@ paths:
                                   duration:
                                     type: integer
                                   interval:
-                                    type: string
-                                    nullable: true
+                                    type:
+                                    - string
+                                    - 'null'
                                   directoryIds:
                                     type: array
                                     items:
                                       type: integer
                                   active:
-                                    type: boolean
-                                    nullable: true
+                                    type:
+                                    - boolean
+                                    - 'null'
                             - allOf:
                               - not:
                                   properties:
@@ -1369,8 +1377,9 @@ paths:
                                       duration:
                                         type: integer
                                       interval:
-                                        type: string
-                                        nullable: true
+                                        type:
+                                        - string
+                                        - 'null'
                                       profileId:
                                         type: integer
                                       directoryIds:
@@ -1434,8 +1443,9 @@ paths:
                             additionalProperties: false
                             properties:
                               label:
-                                type: string
-                                nullable: true
+                                type:
+                                - string
+                                - 'null'
               - allOf:
                 - not:
                     properties:
@@ -1488,15 +1498,17 @@ paths:
                                       duration:
                                         type: integer
                                       interval:
-                                        type: string
-                                        nullable: true
+                                        type:
+                                        - string
+                                        - 'null'
                                       directoryIds:
                                         type: array
                                         items:
                                           type: integer
                                       active:
-                                        type: boolean
-                                        nullable: true
+                                        type:
+                                        - boolean
+                                        - 'null'
                                 - allOf:
                                   - not:
                                       properties:
@@ -1527,8 +1539,9 @@ paths:
                                           duration:
                                             type: integer
                                           interval:
-                                            type: string
-                                            nullable: true
+                                            type:
+                                            - string
+                                            - 'null'
                                           profileId:
                                             type: integer
                                           directoryIds:
@@ -1592,8 +1605,9 @@ paths:
                                 additionalProperties: false
                                 properties:
                                   label:
-                                    type: string
-                                    nullable: true
+                                    type:
+                                    - string
+                                    - 'null'
                   - allOf:
                     - not:
                         properties:
@@ -1646,15 +1660,17 @@ paths:
                                           duration:
                                             type: integer
                                           interval:
-                                            type: string
-                                            nullable: true
+                                            type:
+                                            - string
+                                            - 'null'
                                           directoryIds:
                                             type: array
                                             items:
                                               type: integer
                                           active:
-                                            type: boolean
-                                            nullable: true
+                                            type:
+                                            - boolean
+                                            - 'null'
                                     - allOf:
                                       - not:
                                           properties:
@@ -1685,8 +1701,9 @@ paths:
                                               duration:
                                                 type: integer
                                               interval:
-                                                type: string
-                                                nullable: true
+                                                type:
+                                                - string
+                                                - 'null'
                                               profileId:
                                                 type: integer
                                               directoryIds:
@@ -1750,8 +1767,9 @@ paths:
                                     additionalProperties: false
                                     properties:
                                       label:
-                                        type: string
-                                        nullable: true
+                                        type:
+                                        - string
+                                        - 'null'
                       - allOf:
                         - not:
                             properties:
@@ -1804,15 +1822,17 @@ paths:
                                               duration:
                                                 type: integer
                                               interval:
-                                                type: string
-                                                nullable: true
+                                                type:
+                                                - string
+                                                - 'null'
                                               directoryIds:
                                                 type: array
                                                 items:
                                                   type: integer
                                               active:
-                                                type: boolean
-                                                nullable: true
+                                                type:
+                                                - boolean
+                                                - 'null'
                                         - allOf:
                                           - not:
                                               properties:
@@ -1843,8 +1863,9 @@ paths:
                                                   duration:
                                                     type: integer
                                                   interval:
-                                                    type: string
-                                                    nullable: true
+                                                    type:
+                                                    - string
+                                                    - 'null'
                                                   profileId:
                                                     type: integer
                                                   directoryIds:
@@ -1957,15 +1978,17 @@ paths:
                                               duration:
                                                 type: integer
                                               interval:
-                                                type: string
-                                                nullable: true
+                                                type:
+                                                - string
+                                                - 'null'
                                               directoryIds:
                                                 type: array
                                                 items:
                                                   type: integer
                                               active:
-                                                type: boolean
-                                                nullable: true
+                                                type:
+                                                - boolean
+                                                - 'null'
                                         - allOf:
                                           - not:
                                               properties:
@@ -1996,8 +2019,9 @@ paths:
                                                   duration:
                                                     type: integer
                                                   interval:
-                                                    type: string
-                                                    nullable: true
+                                                    type:
+                                                    - string
+                                                    - 'null'
                                                   profileId:
                                                     type: integer
                                                   directoryIds:
@@ -2061,30 +2085,18 @@ paths:
                                         additionalProperties: false
                                         properties:
                                           label:
-                                            type: string
-                                            nullable: true
+                                            type:
+                                            - string
+                                            - 'null'
+      operationId: putApiDashboardsByDashboardIdWidgetsByIdOptions
+      x-operation-id-source: derived
 components:
   securitySchemes:
-    Bearer:
-      type: apiKey
+    ApiKey:
+      name: x-api-key
+      description: The user's API key
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      type: apiKey
 x-readme:
-  proxy-enabled: false
   explorer-enabled: true
-  samples-enabled: true
-  samples-languages:
-  - python
-  - curl
-  - node
-  - powershell
-  - ruby
-  - javascript
-  - objectivec
-  - java
-  - php
-  - csharp
-  - go
-  - swift
-  - kotlin
+  proxy-enabled: true

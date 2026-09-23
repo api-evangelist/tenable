@@ -1,39 +1,15 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Exposure Management Inventory API
   version: 1.0.0
-  title: Downloads About Inventory API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+  license:
+    name: Exposure Management
+  description: The Tenable Inventory API enables users to search for their organization's assets and the software installed on those assets. Additionally, API endpoints are provided to retrieve a list of asset and software properties that can be used as filters on endpoints that support them. For more information, see Inventory in the _Tenable Exposure Management User Guide_.
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Inventory
-  description: The Tenable Inventory API enables users to search for their organization's assets and the software installed on those assets. Additionally, API endpoints are provided to retrieve a list of asset and software properties that can be used as filters on endpoints that support them. For more information, see [Inventory](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/inventory.htm) in the _Tenable Exposure Management User Guide_.
+  description: The Tenable Inventory API enables users to search for their organization's assets and the software installed on those assets. Additionally, API endpoints are provided to retrieve a list of asset and software properties that can be used as filters on endpoints that support them. For more information, see Inventory in the _Tenable Exposure Management User Guide_.
   x-displayName: Inventory
 paths:
   /api/v1/t1/inventory/assets/search:
@@ -43,7 +19,9 @@ paths:
       description: 'Returns a list of assets in your organization that match the specified search criteria.
 
 
-        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>'
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model.
+
+        Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See Roles.'
       tags:
       - Inventory
       parameters:
@@ -267,7 +245,9 @@ paths:
       description: 'Returns a list of findings in your organization that match the specified search criteria.
 
 
-        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>'
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model.
+
+        Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See Roles.'
       tags:
       - Inventory
       parameters:
@@ -435,7 +415,9 @@ paths:
       description: 'Returns a list of software installed on your assets that match the specified search criteria.
 
 
-        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class="perms-callout">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>'
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model.
+
+        Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See Roles.'
       tags:
       - Inventory
       parameters:
@@ -632,7 +614,15 @@ paths:
   /api/v1/t1/inventory/assets/properties:
     get:
       summary: List asset properties
-      description: "Returns a list of asset properties that can be used as filters on endpoints that support them. For example, the properties that are returned by this endpoint can be used as filters for the [Search assets](ref:inventory-assets-search) or [Export assets](ref:inventory-export-assets) endpoints.\n\n In addition to the asset properties, the results list includes the logical operators you can use with the asset properties along with the supported values.\n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class=\"perms-callout\">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>"
+      description: 'Returns a list of asset properties that can be used as filters on endpoints that support them. For example, the properties that are returned by this endpoint can be used as filters for the Search assets or Export assets endpoints.
+
+
+        In addition to the asset properties, the results list includes the logical operators you can use with the asset properties along with the supported values.
+
+
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model.
+
+        Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See Roles.'
       operationId: inventory-asset-properties-list
       tags:
       - Inventory
@@ -1981,7 +1971,15 @@ paths:
   /api/v1/t1/inventory/findings/properties:
     get:
       summary: List finding properties
-      description: "Returns a list of finding properties that can be used for filters on endpoints that support them. For example, the properties that are returned by this endpoint can be used as filters for the [Export findings](ref:inventory-export-findings) endpoint.\n\n  In addition to the finding properties, the results list includes the logical operators you can use with the finding properties along with the supported values.\n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class=\"perms-callout\">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>"
+      description: 'Returns a list of finding properties that can be used for filters on endpoints that support them. For example, the properties that are returned by this endpoint can be used as filters for the Export findings endpoint.
+
+
+        In addition to the finding properties, the results list includes the logical operators you can use with the finding properties along with the supported values.
+
+
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model.
+
+        Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See Roles.'
       operationId: inventory-finding-properties-list
       tags:
       - Inventory
@@ -2606,7 +2604,15 @@ paths:
   /api/v1/t1/inventory/software/properties:
     get:
       summary: List software properties
-      description: "Returns a list of software properties that can be used for filters on endpoints that support them. For example, the properties that are returned by this endpoint can be used as filters for the [Search software](ref:inventory-software-search) endpoint.\n\n  In addition to the software properties, the results list includes the logical operators you can use with the tag properties along with the supported values.\n\n**Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model. <div class=\"perms-callout\">Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See [Roles](doc:roles).</div>"
+      description: 'Returns a list of software properties that can be used for filters on endpoints that support them. For example, the properties that are returned by this endpoint can be used as filters for the Search software endpoint.
+
+
+        In addition to the software properties, the results list includes the logical operators you can use with the tag properties along with the supported values.
+
+
+        **Caution:** This endpoint is available for use but is currently in beta. The response structure is subject to change as we continue to enhance the data model.
+
+        Requires the Basic [16] user role or the `ASSET_INVENTORY.CYBER_ASSET_MANAGEMENT.READ` and `AD.TOGGLE_AD.USE` custom role privileges. See Roles.'
       operationId: inventory-software-properties-list
       tags:
       - Inventory
@@ -3628,6 +3634,46 @@ paths:
       - Inventory_cloud: []
 components:
   schemas:
+    Inventory_ErrorResponse-400:
+      type: object
+      properties:
+        message:
+          type: string
+          description: An error message indicating the invalid parameter or value.
+        status:
+          type: integer
+          description: The HTTP response response status code.
+    Inventory_Response-Search-Assets:
+      description: The asset search results.
+      type: object
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Inventory_Response-Search-Assets-Object'
+          type: array
+        pagination:
+          description: An object containing pagination information for the current result set.
+          properties:
+            total:
+              description: The total number of assets included in the result set of the search.
+              type: integer
+            offset:
+              description: The requested starting record of the result set to retrieve. Offsets are used to paginate through the result set. If this parameter is omitted, Tenable Exposure Management uses the default value of `0`.
+              type: integer
+              format: int32
+            limit:
+              description: The requested number of records to retrieve from the result set. The maximum value is `1000`. If this parameter is omitted, Tenable Exposure Management uses the default value of `1000`.
+              type: integer
+              format: int32
+              default: 1000
+            sort:
+              $ref: '#/components/schemas/Inventory_Public-Sort-Object'
+          required:
+          - limit
+          - offset
+          - total
+          - sort
+          type: object
     Inventory_Request-Search-Assets:
       description: An object containing a query and/or filters for a Tenable Exposure Management asset search.
       type: object
@@ -3694,15 +3740,19 @@ components:
                 type: array
                 items:
                   type: string
-    Inventory_ErrorResponse-400:
+    Inventory_Public-Sort-Object:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
       type: object
       properties:
-        message:
+        name:
+          description: The property used to sort the results.
           type: string
-          description: An error message indicating the invalid parameter or value.
-        status:
-          type: integer
-          description: The HTTP response response status code.
+        order:
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+          type: string
+          enum:
+          - asc
+          - desc
     Inventory_Response-Search-Software:
       description: The software search results.
       type: object
@@ -3734,151 +3784,66 @@ components:
           - total
           - sort
           type: object
-    Inventory_Response-Search-Findings:
-      description: The findings search results.
+    Inventory_Response-Search-Findings-Object:
       type: object
       properties:
-        data:
-          items:
-            $ref: '#/components/schemas/Inventory_Response-Search-Findings-Object'
-          type: array
-        pagination:
-          description: An object containing pagination information for the current result set.
-          properties:
-            total:
-              description: The total number of findings included in the result set of the search.
-              type: integer
-            offset:
-              description: The requested starting record of the result set to retrieve. Offsets are used to paginate through the result set. If this parameter is omitted, Tenable Exposure Management uses the default value of `0`.
-              type: integer
-              format: int32
-            limit:
-              description: The requested number of records to retrieve from the result set. The maximum value is `1000`. If this parameter is omitted, Tenable Exposure Management uses the default value of `1000`.
-              type: integer
-              format: int32
-              default: 1000
-            sort:
-              $ref: '#/components/schemas/Inventory_Public-Sort-Object'
-          required:
-          - limit
-          - offset
-          - total
-          - sort
-          type: object
-    Inventory_Request-Search-Findings:
-      description: An object containing a query and/or filters for a Tenable Exposure Management finding search.
-      type: object
-      properties:
-        query:
-          type: object
-          description: Filter the search results by query. A query consists of search mode and query text.
-          properties:
-            mode:
-              description: The mode to use for the query. Currently, the findings search only supports the `simple` mode.
-              type: string
-              default: simple
-              enum:
-              - simple
-            text:
-              description: 'For simple searches, either a finding name or a finding ID. This parameter value can be left empty to search all software, for example `"text": ""`'
-              type: string
-              example: Microsoft
-          required:
-          - mode
-          - text
-        filters:
-          description: "A set of finding properties used to filter the search results. \n\nUse the [List finding properties](ref:inventory-finding-properties-list) endpoint to view available finding properties that can be used as filters."
-          type: array
-          items:
-            type: object
-            required:
-            - operator
-            - property
-            - value
-            properties:
-              property:
-                description: "The finding property to filter on.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve a list of valid finding properties for filtering. For example, you might filter by `asset_name`, `solution`, or `vpr_score`."
-                type: string
-              operator:
-                type: string
-                description: "The comparison operator to apply to the filter. \n\nFor example: `=`, `!=`, `match`, etc. Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve supported comparison operators for the selected filter."
-                enum:
-                - '='
-                - '!='
-                - <=
-                - between
-                - match
-                - '>='
-                - <
-                - '>'
-                - contains
-                - not contains
-                - exists
-                - not exists
-                - older than
-                - newer than
-                - within last
-              value:
-                description: "The value to use for comparison in the filter.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve the supported values for the selected filter."
-                type: array
-                items:
-                  type: string
-    Inventory_Public-Sort-Object:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
-      type: object
-      properties:
-        name:
-          description: The property used to sort the results.
+        id:
+          description: The unique identifier (UUID) of the finding in Tenable Exposure Management. Use this value as the unique key for the finding.
           type: string
-        order:
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+        name:
+          description: The name of the finding. This typically corresponds with the plugin name that detected the finding.
+          type: string
+        asset_id:
+          description: The unique identifier (UUID) of the asset on which the finding was identified.
+          type: string
+        state:
+          description: 'The current status of the finding.
+
+
+            The state of a finding reflects the current status of a security issue or vulnerability identified within your IT environment. It helps you track the progress of remediation efforts and provides insights into the overall security posture.
+
+
+            The following are the different states for findings in Tenable Exposure Management:
+
+
+            - **ACTIVE** — The finding is new or has not yet been addressed. It requires further investigation and potential remediation.
+
+            - **RESURFACED**—The finding was fixed but got back.
+
+            - **FIXED**—The issue identified in the finding has been successfully resolved.'
           type: string
           enum:
-          - asc
-          - desc
-    Inventory_Response-Search-Assets:
-      description: The asset search results.
-      type: object
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/Inventory_Response-Search-Assets-Object'
-          type: array
-        pagination:
-          description: An object containing pagination information for the current result set.
-          properties:
-            total:
-              description: The total number of assets included in the result set of the search.
-              type: integer
-            offset:
-              description: The requested starting record of the result set to retrieve. Offsets are used to paginate through the result set. If this parameter is omitted, Tenable Exposure Management uses the default value of `0`.
-              type: integer
-              format: int32
-            limit:
-              description: The requested number of records to retrieve from the result set. The maximum value is `1000`. If this parameter is omitted, Tenable Exposure Management uses the default value of `1000`.
-              type: integer
-              format: int32
-              default: 1000
-            sort:
-              $ref: '#/components/schemas/Inventory_Public-Sort-Object'
-          required:
-          - limit
-          - offset
-          - total
-          - sort
-          type: object
-    Inventory_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
+          - ACTIVE
+          - RESURFACED
+          - FIXED
+        severity:
+          description: 'Indicates the level of risk posed to your organization. The severity of a finding, often referred to as vulnerability severity, is a classification that indicates the level of potential risk posed by a security vulnerability. It helps prioritize remediation efforts by highlighting the most critical vulnerabilities that require immediate attention.
+
+
+            Here''s a breakdown of common severity levels and their implications:
+
+
+            - **CRITICAL**—Critically severe vulnerabilities pose an immediate and significant risk to your organization. They often allow for remote code execution, complete system compromise, or data breaches.
+
+            - **HIGH**—High-severity vulnerabilities have a high likelihood of exploitation and could lead to significant damage or disruption.
+
+            - **MEDIUM**—Medium-severity vulnerabilities may not be easily exploitable but still represent a potential security risk. They might require specific conditions or user interaction to be exploited.
+
+            - **LOW**—Low-severity vulnerabilities pose a minimal risk to your organization. They might only result in minor inconveniences or limited impact.
+
+            - **INFO**—Informational findings highlight potential security issues that do not directly pose a threat but could be leveraged in future attacks.'
           type: string
-          description: A brief message about the cause of the error.
+          enum:
+          - CRITICAL
+          - HIGH
+          - MEDIUM
+          - LOW
+          - INFO
+        extra_properties:
+          description: "Additional information about the finding as requested in the `extra_properties` parameter of the search request. \n\nYou can use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve a list of properties that can be used as values for the `extra_properties` parameter. For example, you may want to include `asset_name`, `solution`, and `vpr_score` as extra properties."
+          type: object
+          additionalProperties: true
+          properties: {}
     Inventory_Request-Search-Software:
       description: An object containing a query and/or filters to search for installed software on your assets.
       type: object
@@ -3943,47 +3908,21 @@ components:
                 type: array
                 items:
                   type: string
-    Inventory_Properties-Object:
-      type: object
-      properties:
-        key:
-          description: The unique property that can be used as a filter.
-          type: string
-        readable_name:
-          description: The human-readable property name.
-          type: string
-        control:
-          $ref: '#/components/schemas/Inventory_Control'
-        operators:
-          type: array
-          description: The logical operators that be used for the property filter.
-          items:
-            type: string
-          enum:
-          - '='
-          - '!='
-          - <=
-          - between
-          - match
-          - '>='
-          - <
-          - '>'
-          - contains
-          - not contains
-          - exists
-          - not exists
-          - older than
-          - newer than
-          - within last
-        sortable:
-          description: Indicates whether or not the property is sortable.
-          type: boolean
-        filterable:
-          description: Indicates whether or not the property is filterable.
-          type: boolean
-        description:
-          description: An AI-generated description of the property.
-          type: string
+    Inventory_AssetClasses:
+      enum:
+      - ACCOUNT
+      - APPLICATION
+      - CONTAINER
+      - DEVICE
+      - GENERAL
+      - GROUP
+      - IAC
+      - IDENTITY
+      - RESOURCE
+      - ROLE
+      - STORAGE
+      - UNKNOWN
+      type: string
     Inventory_Control:
       type: object
       properties:
@@ -4027,90 +3966,6 @@ components:
             expression:
               description: Defines a regular expression matching the property's possible values.
               type: string
-    Inventory_Response-Search-Findings-Object:
-      type: object
-      properties:
-        id:
-          description: The unique identifier (UUID) of the finding in Tenable Exposure Management. Use this value as the unique key for the finding.
-          type: string
-        name:
-          description: The name of the finding. This typically corresponds with the plugin name that detected the finding.
-          type: string
-        asset_id:
-          description: The unique identifier (UUID) of the asset on which the finding was identified.
-          type: string
-        state:
-          description: 'The current status of the finding.
-
-
-            The state of a finding reflects the current status of a security issue or vulnerability identified within your IT environment. It helps you track the progress of remediation efforts and provides insights into the overall security posture.
-
-
-            The following are the different states for findings in Tenable Exposure Management:
-
-
-            - **ACTIVE** — The finding is new or has not yet been addressed. It requires further investigation and potential remediation.
-
-            - **RESURFACED**—The finding was fixed but got back.
-
-            - **FIXED**—The issue identified in the finding has been successfully resolved.'
-          type: string
-          enum:
-          - ACTIVE
-          - RESURFACED
-          - FIXED
-        severity:
-          description: 'Indicates the level of risk posed to your organization. The severity of a finding, often referred to as vulnerability severity, is a classification that indicates the level of potential risk posed by a security vulnerability. It helps prioritize remediation efforts by highlighting the most critical vulnerabilities that require immediate attention.
-
-
-            Here''s a breakdown of common severity levels and their implications:
-
-
-            - **CRITICAL**—Critically severe vulnerabilities pose an immediate and significant risk to your organization. They often allow for remote code execution, complete system compromise, or data breaches.
-
-            - **HIGH**—High-severity vulnerabilities have a high likelihood of exploitation and could lead to significant damage or disruption.
-
-            - **MEDIUM**—Medium-severity vulnerabilities may not be easily exploitable but still represent a potential security risk. They might require specific conditions or user interaction to be exploited.
-
-            - **LOW**—Low-severity vulnerabilities pose a minimal risk to your organization. They might only result in minor inconveniences or limited impact.
-
-            - **INFO**—Informational findings highlight potential security issues that do not directly pose a threat but could be leveraged in future attacks.'
-          type: string
-          enum:
-          - CRITICAL
-          - HIGH
-          - MEDIUM
-          - LOW
-          - INFO
-        extra_properties:
-          description: "Additional information about the finding as requested in the `extra_properties` parameter of the search request. \n\nYou can use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve a list of properties that can be used as values for the `extra_properties` parameter. For example, you may want to include `asset_name`, `solution`, and `vpr_score` as extra properties."
-          type: object
-          additionalProperties: true
-          properties: {}
-    Inventory_Response-Search-Software-Object:
-      type: object
-      properties:
-        application:
-          description: The most common and recognizable name or title of the installed software product.
-          type: string
-        publisher:
-          description: The company, organization, or person that manufactured or created the installed software product.
-          type: string
-        type:
-          description: The type of software, either application, operating system, or hardware. This value is decoded from CPE string position 2 referred to as "part" in the CPE specification.
-          type: array
-          items:
-            type: string
-            enum:
-            - APPLICATION
-            - OPERATING_SYSTEM
-            - HARDWARE
-        devices_count:
-          description: The number of devices with the software installed.
-          type: integer
-        extra_properties:
-          description: "Additional information about the software as requested in the `extra_properties` parameter of the search request. \n\nYou can use the [List software properties](ref:inventory-software-properties-list) endpoint to retrieve a list of properties that can be used as values for the `extra_properties` parameter. For example, you may want to include `cpe`, `version`, and `file_location` as extra properties."
-          type: object
     Inventory_Response-Search-Assets-Object:
       properties:
         id:
@@ -4154,31 +4009,200 @@ components:
       - tag_count
       - weakness_severity_counts
       type: object
-    Inventory_AssetClasses:
-      enum:
-      - ACCOUNT
-      - APPLICATION
-      - CONTAINER
-      - DEVICE
-      - GENERAL
-      - GROUP
-      - IAC
-      - IDENTITY
-      - RESOURCE
-      - ROLE
-      - STORAGE
-      - UNKNOWN
-      type: string
+    Inventory_Response-Search-Software-Object:
+      type: object
+      properties:
+        application:
+          description: The most common and recognizable name or title of the installed software product.
+          type: string
+        publisher:
+          description: The company, organization, or person that manufactured or created the installed software product.
+          type: string
+        type:
+          description: The type of software, either application, operating system, or hardware. This value is decoded from CPE string position 2 referred to as "part" in the CPE specification.
+          type: array
+          items:
+            type: string
+            enum:
+            - APPLICATION
+            - OPERATING_SYSTEM
+            - HARDWARE
+        devices_count:
+          description: The number of devices with the software installed.
+          type: integer
+        extra_properties:
+          description: "Additional information about the software as requested in the `extra_properties` parameter of the search request. \n\nYou can use the [List software properties](ref:inventory-software-properties-list) endpoint to retrieve a list of properties that can be used as values for the `extra_properties` parameter. For example, you may want to include `cpe`, `version`, and `file_location` as extra properties."
+          type: object
+    Inventory_Request-Search-Findings:
+      description: An object containing a query and/or filters for a Tenable Exposure Management finding search.
+      type: object
+      properties:
+        query:
+          type: object
+          description: Filter the search results by query. A query consists of search mode and query text.
+          properties:
+            mode:
+              description: The mode to use for the query. Currently, the findings search only supports the `simple` mode.
+              type: string
+              default: simple
+              enum:
+              - simple
+            text:
+              description: 'For simple searches, either a finding name or a finding ID. This parameter value can be left empty to search all software, for example `"text": ""`'
+              type: string
+              example: Microsoft
+          required:
+          - mode
+          - text
+        filters:
+          description: "A set of finding properties used to filter the search results. \n\nUse the [List finding properties](ref:inventory-finding-properties-list) endpoint to view available finding properties that can be used as filters."
+          type: array
+          items:
+            type: object
+            required:
+            - operator
+            - property
+            - value
+            properties:
+              property:
+                description: "The finding property to filter on.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve a list of valid finding properties for filtering. For example, you might filter by `asset_name`, `solution`, or `vpr_score`."
+                type: string
+              operator:
+                type: string
+                description: "The comparison operator to apply to the filter. \n\nFor example: `=`, `!=`, `match`, etc. Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve supported comparison operators for the selected filter."
+                enum:
+                - '='
+                - '!='
+                - <=
+                - between
+                - match
+                - '>='
+                - <
+                - '>'
+                - contains
+                - not contains
+                - exists
+                - not exists
+                - older than
+                - newer than
+                - within last
+              value:
+                description: "The value to use for comparison in the filter.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve the supported values for the selected filter."
+                type: array
+                items:
+                  type: string
+    Inventory_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Inventory_Response-Search-Findings:
+      description: The findings search results.
+      type: object
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Inventory_Response-Search-Findings-Object'
+          type: array
+        pagination:
+          description: An object containing pagination information for the current result set.
+          properties:
+            total:
+              description: The total number of findings included in the result set of the search.
+              type: integer
+            offset:
+              description: The requested starting record of the result set to retrieve. Offsets are used to paginate through the result set. If this parameter is omitted, Tenable Exposure Management uses the default value of `0`.
+              type: integer
+              format: int32
+            limit:
+              description: The requested number of records to retrieve from the result set. The maximum value is `1000`. If this parameter is omitted, Tenable Exposure Management uses the default value of `1000`.
+              type: integer
+              format: int32
+              default: 1000
+            sort:
+              $ref: '#/components/schemas/Inventory_Public-Sort-Object'
+          required:
+          - limit
+          - offset
+          - total
+          - sort
+          type: object
+    Inventory_Properties-Object:
+      type: object
+      properties:
+        key:
+          description: The unique property that can be used as a filter.
+          type: string
+        readable_name:
+          description: The human-readable property name.
+          type: string
+        control:
+          $ref: '#/components/schemas/Inventory_Control'
+        operators:
+          type: array
+          description: The logical operators that be used for the property filter.
+          items:
+            type: string
+          enum:
+          - '='
+          - '!='
+          - <=
+          - between
+          - match
+          - '>='
+          - <
+          - '>'
+          - contains
+          - not contains
+          - exists
+          - not exists
+          - older than
+          - newer than
+          - within last
+        sortable:
+          description: Indicates whether or not the property is sortable.
+          type: boolean
+        filterable:
+          description: Indicates whether or not the property is filterable.
+          type: boolean
+        description:
+          description: An AI-generated description of the property.
+          type: string
   securitySchemes:
-    Bearer:
+    Attack_Path_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Attack_Path_Exports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Exposure_View_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Inventory_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Inventory_Exports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

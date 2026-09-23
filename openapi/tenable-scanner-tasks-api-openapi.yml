@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings Scanner Tasks API
   version: 1.0.0
-  title: Downloads About Scanner Tasks API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Scanner Tasks
   x-displayName: Scanner Tasks
@@ -38,7 +11,9 @@ paths:
   /scanners/{scanner_uuid}/directives:
     post:
       summary: Send instructions to scanner
-      description: Create instructions for a single scanner to perform.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      description: 'Create instructions for a single scanner to perform.
+
+        Requires the Scan Manager [40] user role. See Roles.'
       operationId: io-scanners-directive
       tags:
       - Scanner Tasks
@@ -132,7 +107,9 @@ paths:
   /scanners/bulk/directives:
     post:
       summary: Send instructions to multiple scanners
-      description: Create instructions for multiple scanners to perform. <div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      description: 'Create instructions for multiple scanners to perform.
+
+        Requires the Scan Manager [40] user role. See Roles.'
       operationId: io-scanners-directive-bulk
       tags:
       - Scanner Tasks
@@ -226,7 +203,9 @@ paths:
   /scanners/{scanner_id}/scans/{scan_uuid}/control:
     post:
       summary: Allow control of running scans
-      description: Allows control of scans that are currently running on a scanner.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      description: 'Allows control of scans that are currently running on a scanner.
+
+        Requires the Scan Manager [40] user role. See Roles.'
       operationId: scanners-control-scans
       tags:
       - Scanner Tasks
@@ -309,7 +288,9 @@ paths:
   /scanners/{scanner_id}/link:
     put:
       summary: Toggle scanner link state
-      description: Enables or disables the link state of the scanner identified by `scanner_id`.<div class="perms-callout">Requires the Scan Manager [40] user role. See [Roles](doc:roles).</div>
+      description: 'Enables or disables the link state of the scanner identified by `scanner_id`.
+
+        Requires the Scan Manager [40] user role. See Roles.'
       operationId: scanners-toggle-link-state
       tags:
       - Scanner Tasks
@@ -380,106 +361,6 @@ paths:
       - Scanner_Tasks_cloud: []
 components:
   schemas:
-    Scanner_Tasks_response-directive-option:
-      type: object
-      description: The instructions to perform.
-      properties:
-        settings:
-          type: array
-          description: An array of objects where each object is one individual setting or instruction to perform. Each object contains a `setting` property to specify the setting and a `value` property to specify the value for setting. For example, `{"setting":"backend_log_level","value":"debug"}`.
-          items:
-            type: object
-            properties:
-              setting:
-                description: The setting that was sent in the directive to the scanner.
-                type: string
-              value:
-                description: The value of the setting.
-                type: string
-    Scanner_Tasks_response-scanner-directive:
-      type: object
-      properties:
-        container_uuid:
-          type: string
-          format: UUID
-          description: The UUID of the container where the task is operating.
-        uuid:
-          type: string
-          format: UUID
-          description: The UUID of the directive task.
-        sensor_uuid:
-          type: string
-          format: UUID
-          description: The UUID of the scanner (sensor).
-        owner_uuid:
-          type: string
-          format: UUID
-          description: The UUID of the owner.
-        type:
-          type: string
-          description: The type of instruction, either `restart` or `settings`.
-        status:
-          type: string
-          description: The status of the scan task. For a list of scan statuses and their descriptions, see [Scan Status](doc:scan-status-tio).
-          enum:
-          - pending
-          - running
-          - completed
-          - failed
-          - canceled
-        created:
-          type: integer
-          format: int64
-          description: The creation date of the directive in unix time milliseconds.
-        modified:
-          type: integer
-          format: int64
-          description: The date the directive was last modified in unix time milliseconds.
-        results_blob_size:
-          type: integer
-          description: The size of the log that the scanner returns when performing a log directive. This value is always `0` for non-log directives.
-        options:
-          $ref: '#/components/schemas/Scanner_Tasks_response-directive-option'
-        ttl:
-          type: integer
-          description: The time to live for the directive. The status is updated to `failed` if the directive is not executed within the TTL time frame.
-        id:
-          type: string
-          format: UUID
-          description: The UUID of the directive task.
-    Scanner_Tasks_response-bulk-scanner-directive:
-      type: array
-      items:
-        $ref: '#/components/schemas/Scanner_Tasks_response-scanner-directive'
-    Scanner_Tasks_bulk-scanner-directive:
-      type: object
-      properties:
-        all_scanners:
-          type: string
-          description: Indicates whether or not to send the directives to all scanners.
-          enum:
-          - 'true'
-          - 'false'
-        scanners:
-          type: array
-          description: An array of scanner UUIDs to send the directives to.
-          items:
-            type: string
-        directive:
-          type: object
-          description: Specifies the instructions you wish to send to the scanners. The `directive` object is different depending on whether you want to restart the scanners' service or change settings for the scanners.
-          allOf:
-          - type: object
-            required:
-            - type
-            properties:
-              type:
-                type: string
-                description: The type of instruction to perform. To restart the scanner service, choose `restart`. To modify settings, choose `settings`.
-                enum:
-                - restart
-                - settings
-          - $ref: '#/components/schemas/Scanner_Tasks_scanner-directive'
     Scanner_Tasks_ErrorResponse:
       type: object
       properties:
@@ -535,16 +416,254 @@ components:
                       description: The value to use for the specified setting. Choose either a single string value or a single integer value to use for the value.
                       example:
                       - 'no'
+    Scanner_Tasks_response-bulk-scanner-directive:
+      type: array
+      items:
+        $ref: '#/components/schemas/Scanner_Tasks_response-scanner-directive'
+    Scanner_Tasks_bulk-scanner-directive:
+      type: object
+      properties:
+        all_scanners:
+          type: string
+          description: Indicates whether or not to send the directives to all scanners.
+          enum:
+          - 'true'
+          - 'false'
+        scanners:
+          type: array
+          description: An array of scanner UUIDs to send the directives to.
+          items:
+            type: string
+        directive:
+          type: object
+          description: Specifies the instructions you wish to send to the scanners. The `directive` object is different depending on whether you want to restart the scanners' service or change settings for the scanners.
+          allOf:
+          - type: object
+            required:
+            - type
+            properties:
+              type:
+                type: string
+                description: The type of instruction to perform. To restart the scanner service, choose `restart`. To modify settings, choose `settings`.
+                enum:
+                - restart
+                - settings
+          - $ref: '#/components/schemas/Scanner_Tasks_scanner-directive'
+    Scanner_Tasks_response-scanner-directive:
+      type: object
+      properties:
+        container_uuid:
+          type: string
+          format: UUID
+          description: The UUID of the container where the task is operating.
+        uuid:
+          type: string
+          format: UUID
+          description: The UUID of the directive task.
+        sensor_uuid:
+          type: string
+          format: UUID
+          description: The UUID of the scanner (sensor).
+        owner_uuid:
+          type: string
+          format: UUID
+          description: The UUID of the owner.
+        type:
+          type: string
+          description: The type of instruction, either `restart` or `settings`.
+        status:
+          type: string
+          description: The status of the scan task. For a list of scan statuses and their descriptions, see [Scan Status](doc:scan-status-tio).
+          enum:
+          - pending
+          - running
+          - completed
+          - failed
+          - canceled
+        created:
+          type: integer
+          format: int64
+          description: The creation date of the directive in unix time milliseconds.
+        modified:
+          type: integer
+          format: int64
+          description: The date the directive was last modified in unix time milliseconds.
+        results_blob_size:
+          type: integer
+          description: The size of the log that the scanner returns when performing a log directive. This value is always `0` for non-log directives.
+        options:
+          $ref: '#/components/schemas/Scanner_Tasks_response-directive-option'
+        ttl:
+          type: integer
+          description: The time to live for the directive. The status is updated to `failed` if the directive is not executed within the TTL time frame.
+        id:
+          type: string
+          format: UUID
+          description: The UUID of the directive task.
+    Scanner_Tasks_response-directive-option:
+      type: object
+      description: The instructions to perform.
+      properties:
+        settings:
+          type: array
+          description: An array of objects where each object is one individual setting or instruction to perform. Each object contains a `setting` property to specify the setting and a `value` property to specify the value for setting. For example, `{"setting":"backend_log_level","value":"debug"}`.
+          items:
+            type: object
+            properties:
+              setting:
+                description: The setting that was sent in the directive to the scanner.
+                type: string
+              value:
+                description: The value of the setting.
+                type: string
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

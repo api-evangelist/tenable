@@ -1,46 +1,25 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Filters API
   version: 1.0.0
-  title: Downloads About Filters API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+  description: 'Operations tagged Filters across 3 of this provider''s published API definitions: tenable-mssp-openapi.json, tenable-vulnerability-management-openapi.json, tenable-web-app-scanning-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Filters
-  description: "The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Filters endpoints in the Tenable MSSP Portal API enables customers to list the filtering capabilities for the other MSSP endpoints that support filtering. \n\nFor more information about the Tenable MSSP Portal, see the [Tenable MSSP Portal User Guide](https://docs.tenable.com/managed-security-service-provider/Content/Welcome.htm)."
+  description: 'The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Filters endpoints in the Tenable MSSP Portal API enables customers to list the filtering capabilities for the other MSSP endpoints that support filtering.
+
+
+    For more information about the Tenable MSSP Portal, see the Tenable MSSP Portal User Guide.'
 paths:
   /filters/mssp/accounts:
     get:
       tags:
       - Filters
       summary: List account filters
-      description: Lists the filtering capabilities for account endpoints that support filtering. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Lists the filtering capabilities for account endpoints that support filtering.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-mssp-filters-account-list
       responses:
         '200':
@@ -177,10 +156,16 @@ paths:
                     statusCode: 500
                     error: Internal Server Error
                     message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - cloud: []
+    servers:
+    - url: https://cloud.tenable.com
   /filters/scans/agents:
     get:
       summary: List agent filters
-      description: Lists the filtering, sorting, and pagination capabilities available for agent records on endpoints that support them.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Lists the filtering, sorting, and pagination capabilities available for agent records on endpoints that support them.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-filters-agents-list
       tags:
       - Filters
@@ -457,10 +442,14 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
       security:
       - filters_cloud: []
+    servers:
+    - url: https://cloud.tenable.com
   /filters/workbenches/assets:
     get:
       summary: List asset filters
-      description: Lists the filtering, sorting, and pagination capabilities available for assets on endpoints that support them. For more information about these filters, see [Workbench Filters](doc:workbench-filters).<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Lists the filtering, sorting, and pagination capabilities available for assets on endpoints that support them. For more information about these filters, see Workbench Filters.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-filters-assets-list
       tags:
       - Filters
@@ -1351,13 +1340,15 @@ paths:
       - filters_cloud: []
     post:
       summary: List asset filters v2
-      description: 'Lists the filtering, sorting, and pagination capabilities available for assets on endpoints that support them. For more information about these filters, see [Workbench Filters](doc:workbench-filters).
+      description: 'Lists the filtering, sorting, and pagination capabilities available for assets on endpoints that support them. For more information about these filters, see Workbench Filters.
 
 
-        **Caution:** This endpoint is deprecated and is tentatively scheduled for removal on November 5. Tenable recommends using the [List asset filters](ref:io-filters-assets-list) endpoint instead. Please update any existing integrations your organization may have.
+        **Caution:** This endpoint is deprecated and is tentatively scheduled for removal on November 5. Tenable recommends using the List asset filters endpoint instead. Please update any existing integrations your organization may have.
 
 
-        **Note:** This endpoint returns an additional filter (`tag_uuid`), displayed as `Tag (Category: Value)`, that is not returned when using the GET version of this endpoint.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+        **Note:** This endpoint returns an additional filter (`tag_uuid`), displayed as `Tag (Category: Value)`, that is not returned when using the GET version of this endpoint.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-filters-assets-list-v2
       deprecated: true
       tags:
@@ -1492,10 +1483,14 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
       security:
       - filters_cloud: []
+    servers:
+    - url: https://cloud.tenable.com
   /filters/credentials:
     get:
       summary: List credential filters
-      description: Returns the filtering, sorting, and pagination capabilities available for scan credentials on endpoints that support them. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Returns the filtering, sorting, and pagination capabilities available for scan credentials on endpoints that support them.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-filters-credentials-list
       tags:
       - Filters
@@ -1591,10 +1586,14 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
       security:
       - filters_cloud: []
+    servers:
+    - url: https://cloud.tenable.com
   /filters/reports/export:
     get:
       summary: List report filters
-      description: Returns the filters, supported operators, data types, and allowed values for the [POST /reports/export](ref:vm-reports-create) endpoint. For more information about the supported filters, see [Report Export Filters](doc:vm-report-export-filters). <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Returns the filters, supported operators, data types, and allowed values for the POST /reports/export endpoint. For more information about the supported filters, see Report Export Filters.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: vm-filters-reports-list
       tags:
       - Filters
@@ -1740,10 +1739,14 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
       security:
       - filters_cloud: []
+    servers:
+    - url: https://cloud.tenable.com
   /filters/scans/reports:
     get:
       summary: List scan filters
-      description: Lists the filtering, sorting, and pagination capabilities available for scan records on endpoints that support them.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Lists the filtering, sorting, and pagination capabilities available for scan records on endpoints that support them.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-filters-scan-list
       tags:
       - Filters
@@ -1829,10 +1832,14 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
       security:
       - filters_cloud: []
+    servers:
+    - url: https://cloud.tenable.com
   /filters/scans/reports/history:
     get:
       summary: List scan history filters
-      description: Lists the filtering, sorting, and pagination capabilities available for scan history records on endpoints that support them.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Lists the filtering, sorting, and pagination capabilities available for scan history records on endpoints that support them.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-filters-scan-history-list
       tags:
       - Filters
@@ -1926,10 +1933,14 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
       security:
       - filters_cloud: []
+    servers:
+    - url: https://cloud.tenable.com
   /filters/workbenches/vulnerabilities:
     get:
       summary: List vulnerability filters
-      description: Returns the filters available for the Vulnerabilities Workbench. For more information about these filters, see [Workbench Filters](doc:workbench-filters).<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Returns the filters available for the Vulnerabilities Workbench. For more information about these filters, see Workbench Filters.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-filters-vulnerabilities-workbench-list
       tags:
       - Filters
@@ -2022,13 +2033,15 @@ paths:
       - filters_cloud: []
     post:
       summary: List vulnerability filters v2
-      description: 'Returns the filters available for the Vulnerabilities Workbench. For more information about these filters, see [Workbench Filters](doc:workbench-filters).
+      description: 'Returns the filters available for the Vulnerabilities Workbench. For more information about these filters, see Workbench Filters.
 
 
-        **Caution:** This endpoint is deprecated and is tentatively scheduled for removal on November 5. Tenable recommends using the [List vulnerability filters](ref:io-filters-vulnerabilities-workbench-list) endpoint instead. Please update any existing integrations your organization may have.
+        **Caution:** This endpoint is deprecated and is tentatively scheduled for removal on November 5. Tenable recommends using the List vulnerability filters endpoint instead. Please update any existing integrations your organization may have.
 
 
-        **Note:** This endpoint returns an additional filter (`tag_uuid`), displayed as `Tag (Category: Value)`, that is not returned when using the GET version of this endpoint.<div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>'
+        **Note:** This endpoint returns an additional filter (`tag_uuid`), displayed as `Tag (Category: Value)`, that is not returned when using the GET version of this endpoint.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-filters-vulnerabilities-workbench-list-v2
       deprecated: true
       tags:
@@ -2153,10 +2166,14 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
       security:
       - filters_cloud: []
+    servers:
+    - url: https://cloud.tenable.com
   /was/v2/configs/filters:
     get:
       summary: List scan configuration filters
-      description: Lists the filtering capabilities available for scan configurations for endpoints that support scan configuration filtering.<div class="perms-callout">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Lists the filtering capabilities available for scan configurations for endpoints that support scan configuration filtering.
+
+        Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. See Roles and Permissions.'
       operationId: was-v2-filters-scan-configs-list
       tags:
       - Filters
@@ -2331,10 +2348,16 @@ paths:
                     statusCode: 500
                     error: Internal Server Error
                     message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - cloud: []
+    servers:
+    - url: https://cloud.tenable.com
   /was/v2/configs/{config_id}/scans/filters:
     get:
       summary: List scan filters
-      description: Lists the filtering capabilities available for scans for endpoints that support scan filtering. <div class="perms-callout">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Lists the filtering capabilities available for scans for endpoints that support scan filtering.
+
+        Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. See Roles.'
       operationId: was-v2-filters-scans-list
       parameters:
       - in: path
@@ -2431,10 +2454,16 @@ paths:
                     statusCode: 500
                     error: Internal Server Error
                     message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - cloud: []
+    servers:
+    - url: https://cloud.tenable.com
   /was/v2/user-templates/filters:
     get:
       summary: List user-defined template filters
-      description: Lists the filtering capabilities available for user-defined templates for endpoints that support user-defined template filtering. <div class="perms-callout">Requires either the Scan Operator [24] user role, the `WAS.SCAN_WAS.MANAGE` custom role privilege, or the `WAS.SCAN_WAS_USER_TEMPLATE.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Lists the filtering capabilities available for user-defined templates for endpoints that support user-defined template filtering.
+
+        Requires either the Scan Operator [24] user role, the `WAS.SCAN_WAS.MANAGE` custom role privilege, or the `WAS.SCAN_WAS_USER_TEMPLATE.READ` custom role privilege. See Roles.'
       operationId: was-v2-filters-user-templates-list
       tags:
       - Filters
@@ -2537,10 +2566,16 @@ paths:
                     statusCode: 500
                     error: Internal Server Error
                     message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - cloud: []
+    servers:
+    - url: https://cloud.tenable.com
   /was/v2/vulnerabilities/filters:
     get:
       summary: List vulnerability filters
-      description: Lists the filtering capabilities available for vulnerability findings for endpoints that support vulnerability filtering. <div class="perms-callout">Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Lists the filtering capabilities available for vulnerability findings for endpoints that support vulnerability filtering.
+
+        Requires the Basic [16] user role or the `WAS.TOGGLE_WAS.USE` custom role privilege. See Roles.'
       operationId: was-v2-filters-vulns-list
       tags:
       - Filters
@@ -2649,10 +2684,16 @@ paths:
                     statusCode: 500
                     error: Internal Server Error
                     message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - cloud: []
+    servers:
+    - url: https://cloud.tenable.com
   /was/v2/scans/{scan_id}/vulnerabilities/filters:
     get:
       summary: List vulnerability filters for scan
-      description: Lists the filtering capabilities available for vulnerability findings on a given scan for endpoints that support vulnerability filtering. <div class="perms-callout">Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Lists the filtering capabilities available for vulnerability findings on a given scan for endpoints that support vulnerability filtering.
+
+        Requires the Basic [16] user role or the `WAS.SCAN_WAS.READ` custom role privilege. See Roles.'
       operationId: was-v2-filters-vulns-scan-list
       parameters:
       - in: path
@@ -2764,59 +2805,17 @@ paths:
                     statusCode: 500
                     error: Internal Server Error
                     message: An internal server error occurred. Please wait a moment and try your request again.
+      security:
+      - cloud: []
+    servers:
+    - url: https://cloud.tenable.com
 components:
   schemas:
-    Filter:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The field name to be used in request query strings when applying the filter.
-        readable_name:
-          type: string
-          description: The filter's display label.
-        operators:
-          description: Strings which represent the comparison operations which can be used for the filter.
-          type: array
-          items:
-            type: string
-        control:
-          type: object
-          properties:
-            type:
-              type: string
-              description: The type of UI control which represents the filter.
-            regex:
-              type: string
-              description: A regex which can be used by a user interface to validate input.
-            readable_regex:
-              type: string
-              description: Provides a human-readable "hint" which describes what the filter string should look like.
-            max_length:
-              type: integer
-              description: The max length of the filter.
-    filters_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    wildcard_fields:
-      description: Array of strings which represent each field which supports "wildcard" search. Wildcard search is a mechanism where multiple fields of a record are filtered against one specific filter string. If any one of the supported fields' values matches against the filter string, then the record matches the wildcard filter. Note that for a record to be returned, it must pass the wildcard filter (if there is one) AND the set of standard filters.
-      type: array
-      items:
-        type: string
-    Filters:
+    filters:
       type: array
       description: A list of filters available for the record type.
       items:
-        $ref: '#/components/schemas/Filter'
+        $ref: '#/components/schemas/filter'
     ErrorResponse:
       type: object
       properties:
@@ -2829,104 +2828,6 @@ components:
         message:
           type: string
           description: A brief message about the cause of the error.
-    filters_wildcard_fields:
-      description: Array of strings which represent each field which supports "wildcard" search. Wildcard search is a mechanism where multiple fields of a record are filtered against one specific filter string. If any one of the supported fields' values matches against the filter string, then the record matches the wildcard filter. Note that for a record to be returned, it must pass the wildcard filter (if there is one) AND the set of standard filters.
-      type: array
-      items:
-        type: string
-    filters_sort:
-      type: object
-      description: The sorting parameters supported for data returned by the endpoint.
-      properties:
-        max_sort_fields:
-          type: integer
-          description: Maximum number of fields that may be specified for sorting. If this is parameter is not present, any number of fields may be used.
-        sortable_fields:
-          description: Fields by which the returned list of records may be sorted.
-          type: array
-          items:
-            type: string
-    filters_filter:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The field name to be used in request query strings when applying the filter.
-        readable_name:
-          type: string
-          description: The filter's display label.
-        operators:
-          description: The comparison operators that can be applied to the filter.
-          type: array
-          items:
-            type: string
-        control:
-          type: object
-          properties:
-            readable_regex:
-              type: string
-              description: Provides a human-readable "hint" which describes what the filter string should look like.
-            type:
-              type: string
-              description: The type of UI control which represents the filter.
-            regex:
-              type: string
-              description: A regex which can be used by a user interface to validate input.
-        group_name:
-          type: string
-          description: Always set to `NULL`. Legacy attribute associated with deprecated functionality.
-    filters_response-report-filters:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The field name to be used in request query strings when applying the filter.
-        operators:
-          description: The comparison operators that can be applied to the filter.
-          type: array
-          items:
-            type: string
-        type:
-          description: Specifies the datatype of the values that can be used for the filter.
-          type: string
-        allowedValues:
-          description: Some filters only allow a specific set of values. For these filters, the list of supported values is returned in this field.
-          type: array
-          items:
-            type: string
-    filters:
-      type: array
-      description: A list of filters available for the record type.
-      items:
-        $ref: '#/components/schemas/filter'
-    filters_filters:
-      type: array
-      description: A list of filters available for the record type.
-      items:
-        $ref: '#/components/schemas/filters_filter'
-    ErrorResponse_2:
-      type: object
-      required:
-      - reasons
-      description: Tenable Web App Scanning error response.
-      properties:
-        reasons:
-          type: array
-          description: A list of reasons for the Tenable Web App Scanning error.
-          items:
-            type: object
-            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
-            minItems: 1
-            required:
-            - code
-            - reason
-            properties:
-              code:
-                type: string
-                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
-              reason:
-                type: string
-                description: The extended description of the cause of the Tenable Web App Scanning error.
     filter:
       type: object
       properties:
@@ -2959,12 +2860,275 @@ components:
         group_name:
           type: string
           description: Always set to `NULL`. Legacy attribute associated with deprecated functionality.
+    wildcard_fields:
+      description: Array of strings which represent each field which supports "wildcard" search. Wildcard search is a mechanism where multiple fields of a record are filtered against one specific filter string. If any one of the supported fields' values matches against the filter string, then the record matches the wildcard filter. Note that for a record to be returned, it must pass the wildcard filter (if there is one) AND the set of standard filters.
+      type: array
+      items:
+        type: string
+    filters_filter:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The field name to be used in request query strings when applying the filter.
+        readable_name:
+          type: string
+          description: The filter's display label.
+        operators:
+          description: The comparison operators that can be applied to the filter.
+          type: array
+          items:
+            type: string
+        control:
+          type: object
+          properties:
+            readable_regex:
+              type: string
+              description: Provides a human-readable "hint" which describes what the filter string should look like.
+            type:
+              type: string
+              description: The type of UI control which represents the filter.
+            regex:
+              type: string
+              description: A regex which can be used by a user interface to validate input.
+        group_name:
+          type: string
+          description: Always set to `NULL`. Legacy attribute associated with deprecated functionality.
+    filters_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    filters_response-report-filters:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The field name to be used in request query strings when applying the filter.
+        operators:
+          description: The comparison operators that can be applied to the filter.
+          type: array
+          items:
+            type: string
+        type:
+          description: Specifies the datatype of the values that can be used for the filter.
+          type: string
+        allowedValues:
+          description: Some filters only allow a specific set of values. For these filters, the list of supported values is returned in this field.
+          type: array
+          items:
+            type: string
+    filters_filters:
+      type: array
+      description: A list of filters available for the record type.
+      items:
+        $ref: '#/components/schemas/filters_filter'
+    filters_sort:
+      type: object
+      description: The sorting parameters supported for data returned by the endpoint.
+      properties:
+        max_sort_fields:
+          type: integer
+          description: Maximum number of fields that may be specified for sorting. If this is parameter is not present, any number of fields may be used.
+        sortable_fields:
+          description: Fields by which the returned list of records may be sorted.
+          type: array
+          items:
+            type: string
+    filters_wildcard_fields:
+      description: Array of strings which represent each field which supports "wildcard" search. Wildcard search is a mechanism where multiple fields of a record are filtered against one specific filter string. If any one of the supported fields' values matches against the filter string, then the record matches the wildcard filter. Note that for a record to be returned, it must pass the wildcard filter (if there is one) AND the set of standard filters.
+      type: array
+      items:
+        type: string
+    ErrorResponse_2:
+      type: object
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
+      properties:
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
+    Filters:
+      type: array
+      description: A list of filters available for the record type.
+      items:
+        $ref: '#/components/schemas/Filter'
+    Filter:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The field name to be used in request query strings when applying the filter.
+        readable_name:
+          type: string
+          description: The filter's display label.
+        operators:
+          description: Strings which represent the comparison operations which can be used for the filter.
+          type: array
+          items:
+            type: string
+        control:
+          type: object
+          properties:
+            type:
+              type: string
+              description: The type of UI control which represents the filter.
+            regex:
+              type: string
+              description: A regex which can be used by a user interface to validate input.
+            readable_regex:
+              type: string
+              description: Provides a human-readable "hint" which describes what the filter string should look like.
+            max_length:
+              type: integer
+              description: The max length of the filter.
   securitySchemes:
-    Bearer:
+    cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    assets_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Asset_Custom_Attributes_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    editor_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Assets_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Compliance_Data_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    file_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    filters_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    folders_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    plugins_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    policies_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Reports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Control_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Exports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_History_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Results_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Status_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Shared_Collections_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Remediation_Scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    workbenches_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+x-refined-from:
+- tenable-mssp-openapi.json
+- tenable-vulnerability-management-openapi.json
+- tenable-web-app-scanning-openapi.json
 x-readme:
   proxy-enabled: false
   explorer-enabled: true

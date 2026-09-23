@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings Scanners API
   version: 1.0.0
-  title: Downloads About Scanners API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Scanners
   x-displayName: Scanners
@@ -38,7 +11,9 @@ paths:
   /scanners:
     get:
       summary: List scanners
-      description: 'Returns the scanner list.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>'
+      description: 'Returns the scanner list.
+
+        Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See Roles.'
       operationId: scanners-list
       tags:
       - Scanners
@@ -196,7 +171,9 @@ paths:
   /scanners/{scanner_id}:
     get:
       summary: Get scanner details
-      description: 'Returns details for the specified scanner.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>'
+      description: 'Returns details for the specified scanner.
+
+        Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See Roles.'
       operationId: scanners-details
       tags:
       - Scanners
@@ -289,7 +266,12 @@ paths:
       - Scanners_cloud: []
     put:
       summary: Update scanner
-      description: "Updates the specified scanner. \n\nYou cannot use this endpoint to assign the scanner to a network object. Instead, use the [POST /networks/{network_id}/scanners/{scanner_uuid}](ref:networks-assign-scanner) endpoint.<div class=\"perms-callout\">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See [Roles](doc:roles).</div>"
+      description: 'Updates the specified scanner.
+
+
+        You cannot use this endpoint to assign the scanner to a network object. Instead, use the POST /networks/{network_id}/scanners/{scanner_uuid} endpoint.
+
+        Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.EDIT`, `VM.VM_SENSOR.VM_WAS_SCANNER.EDIT`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.EDIT`. See Roles.'
       operationId: scanners-edit
       tags:
       - Scanners
@@ -412,7 +394,9 @@ paths:
       - Scanners_cloud: []
     delete:
       summary: Delete scanner
-      description: 'Deletes and unlinks a scanner from Tenable Vulnerability Management.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.DELETE`, `VM.VM_SENSOR.VM_WAS_SCANNER.DELETE`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.DELETE`. See [Roles](doc:roles).</div>'
+      description: 'Deletes and unlinks a scanner from Tenable Vulnerability Management.
+
+        Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.DELETE`, `VM.VM_SENSOR.VM_WAS_SCANNER.DELETE`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.DELETE`. See Roles.'
       operationId: scanners-delete
       tags:
       - Scanners
@@ -471,7 +455,9 @@ paths:
   /scanners/{scanner_id}/key:
     get:
       summary: Get scanner key
-      description: Retrieves the key of the requested scanner.<div class="perms-callout">Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.LINKING_KEY.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Retrieves the key of the requested scanner.
+
+        Requires the Scan Manager [40] user role or the `VM.VM_SENSOR.LINKING_KEY.READ` custom role privilege. See Roles.'
       operationId: scanners-get-scanner-key
       tags:
       - Scanners
@@ -533,7 +519,9 @@ paths:
   /scanners/{scanner_id}/aws-targets:
     get:
       summary: List AWS scan targets
-      description: 'Lists AWS scan targets if the requested scanner is an Amazon Web Services scanner.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>'
+      description: 'Lists AWS scan targets if the requested scanner is an Amazon Web Services scanner.
+
+        Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See Roles.'
       operationId: scanners-get-aws-targets
       tags:
       - Scanners
@@ -596,7 +584,9 @@ paths:
   /scanners/{scanner_id}/scans:
     get:
       summary: List running scans
-      description: 'Lists scans running on the requested scanner.<div class="perms-callout">Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See [Roles](doc:roles).</div>'
+      description: 'Lists scans running on the requested scanner.
+
+        Requires the Scan Manager [40] user role or one of the following custom role privileges: `VM.VM_SENSOR.VM_SCANNER.READ`, `VM.VM_SENSOR.VM_WAS_SCANNER.READ`, or `VM.VM_SENSOR.VM_NETWORK_MONITOR.READ`. See Roles.'
       operationId: scanners-get-scans
       tags:
       - Scanners
@@ -668,126 +658,6 @@ paths:
       - Scanners_cloud: []
 components:
   schemas:
-    Scanners_scanner-key:
-      type: object
-      properties:
-        scanner_id:
-          type: string
-          description: The linking key, that is, the alpha-numeric sequence of characters you use to link a scanner to Tenable Vulnerability Management. For more information about linking a scanner, see the [Link a Sensor](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/LinkaSensor.htm) in the Tenable Vulnerability Management User Guide.
-    Scanners_scan:
-      type: object
-      properties:
-        scanner_uuid:
-          type: string
-          description: The UUID of the scanner the scan belongs to.
-        name:
-          type: string
-          description: The name of the scan.
-        status:
-          type: string
-          description: The status of the scan. For a list of scan statuses and their descriptions, see [Scan Status](doc:scan-status-tio).
-        id:
-          type: string
-          description: The scan UUID.
-        scan_id:
-          type: integer
-          description: The ID of the scan.
-        user:
-          type: string
-          description: The username of the owner of the scan.
-        last_modification_date:
-          type: integer
-          description: The last time the scan was modified.
-        start_time:
-          type: integer
-          description: When the scan was started.
-        remote:
-          type: boolean
-          description: Indicates whether the scan is running remotely ('true') or not ('false').
-        network_id:
-          type: string
-          description: The ID of the network object associated with the scanner currently running the scan. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
-    Scanners_aws-target:
-      type: object
-      properties:
-        scanner_id:
-          type: integer
-          description: The ID of the scanner.
-        instance_id:
-          type: string
-          description: Unique instance identifier from Amazon.
-        private_ip:
-          type: string
-          description: Private IP address of the AWS instance.
-        public_ip:
-          type: string
-          description: Public IP address of the AWS instance.
-        state:
-          type: string
-          description: 'The state of the instance. Can be one of the following values: `running`, `stopped`, or `terminated`.'
-        zone:
-          type: string
-          description: 'The availability zone for the instance. Example: `us-east-1a`, `us-east-1b`, etc.'
-        type:
-          type: string
-          description: 'The size of the instance. Example: `t2.small`, `t2.medium`, etc.'
-        name:
-          type: string
-          description: The user-defined name of the instance.
-    Scanners_response-list-scanners:
-      type: array
-      items:
-        $ref: '#/components/schemas/Scanners_response-scanner-object'
-    Scanners_update-scanner:
-      type: object
-      properties:
-        owner_uuid:
-          type: string
-          description: The UUID of the owner of the scanner.
-        created:
-          type: integer
-          format: int64
-          description: The Unix timestamp when you linked the scanner to the Tenable Vulnerability Management instance.
-        modified:
-          type: integer
-          format: int64
-          description: The Unix timestamp when the scanner configuration was last modified.
-        container_uuid:
-          type: string
-          description: The UUID of the Tenable Vulnerability Management instance to which the scanner is linked.
-        uuid:
-          type: string
-          description: The UUID of the scanner.
-        id:
-          type: integer
-          description: The unique ID of the scanner.
-        name:
-          type: string
-          description: The user-defined name of the scanner.
-        network_name:
-          type: string
-          description: The name of the network object associated with the scanner. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
-        default_permissions:
-          type: integer
-          description: 'The default permissions value set for the scanner. (Possible values are: 16, 24, 32, 40, and 64)'
-        shared:
-          type: boolean
-          description: Indicates whether anyone other than the scanner owner has explicit access to the scanner (`1`).
-        user_permissions:
-          type: integer
-          description: The permissions you (the current user) have been assigned for the scanner. See [Permissions](doc:permissions).
-        key:
-          type: string
-          description: The linking key, that is, the alpha-numeric sequence of characters you use to link a scanner to Tenable Vulnerability Management. For more information about linking a scanner, see the [Link a Sensor](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/LinkaSensor.htm) in the Tenable Vulnerability Management User Guide.
-        status:
-          type: string
-          description: The status of the scanner (`on` or `off`).
-        profile_uuid:
-          type: string
-          description: The unique ID (UUID) of the scanner profile that the scanner belongs to.
-        profile_name:
-          type: string
-          description: The name of the scanner profile that the scanner belongs to.
     Scanners_response-scanner-object:
       type: object
       properties:
@@ -980,6 +850,99 @@ components:
         profile_name:
           type: string
           description: The name of the scanner profile that the scanner belongs to.
+    Scanners_scan:
+      type: object
+      properties:
+        scanner_uuid:
+          type: string
+          description: The UUID of the scanner the scan belongs to.
+        name:
+          type: string
+          description: The name of the scan.
+        status:
+          type: string
+          description: The status of the scan. For a list of scan statuses and their descriptions, see [Scan Status](doc:scan-status-tio).
+        id:
+          type: string
+          description: The scan UUID.
+        scan_id:
+          type: integer
+          description: The ID of the scan.
+        user:
+          type: string
+          description: The username of the owner of the scan.
+        last_modification_date:
+          type: integer
+          description: The last time the scan was modified.
+        start_time:
+          type: integer
+          description: When the scan was started.
+        remote:
+          type: boolean
+          description: Indicates whether the scan is running remotely ('true') or not ('false').
+        network_id:
+          type: string
+          description: The ID of the network object associated with the scanner currently running the scan. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+    Scanners_update-scanner:
+      type: object
+      properties:
+        owner_uuid:
+          type: string
+          description: The UUID of the owner of the scanner.
+        created:
+          type: integer
+          format: int64
+          description: The Unix timestamp when you linked the scanner to the Tenable Vulnerability Management instance.
+        modified:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the scanner configuration was last modified.
+        container_uuid:
+          type: string
+          description: The UUID of the Tenable Vulnerability Management instance to which the scanner is linked.
+        uuid:
+          type: string
+          description: The UUID of the scanner.
+        id:
+          type: integer
+          description: The unique ID of the scanner.
+        name:
+          type: string
+          description: The user-defined name of the scanner.
+        network_name:
+          type: string
+          description: The name of the network object associated with the scanner. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        default_permissions:
+          type: integer
+          description: 'The default permissions value set for the scanner. (Possible values are: 16, 24, 32, 40, and 64)'
+        shared:
+          type: boolean
+          description: Indicates whether anyone other than the scanner owner has explicit access to the scanner (`1`).
+        user_permissions:
+          type: integer
+          description: The permissions you (the current user) have been assigned for the scanner. See [Permissions](doc:permissions).
+        key:
+          type: string
+          description: The linking key, that is, the alpha-numeric sequence of characters you use to link a scanner to Tenable Vulnerability Management. For more information about linking a scanner, see the [Link a Sensor](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/LinkaSensor.htm) in the Tenable Vulnerability Management User Guide.
+        status:
+          type: string
+          description: The status of the scanner (`on` or `off`).
+        profile_uuid:
+          type: string
+          description: The unique ID (UUID) of the scanner profile that the scanner belongs to.
+        profile_name:
+          type: string
+          description: The name of the scanner profile that the scanner belongs to.
+    Scanners_scanner-key:
+      type: object
+      properties:
+        scanner_id:
+          type: string
+          description: The linking key, that is, the alpha-numeric sequence of characters you use to link a scanner to Tenable Vulnerability Management. For more information about linking a scanner, see the [Link a Sensor](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/LinkaSensor.htm) in the Tenable Vulnerability Management User Guide.
+    Scanners_response-list-scanners:
+      type: array
+      items:
+        $ref: '#/components/schemas/Scanners_response-scanner-object'
     Scanners_ErrorResponse:
       type: object
       properties:
@@ -992,16 +955,181 @@ components:
         message:
           type: string
           description: A brief message about the cause of the error.
+    Scanners_aws-target:
+      type: object
+      properties:
+        scanner_id:
+          type: integer
+          description: The ID of the scanner.
+        instance_id:
+          type: string
+          description: Unique instance identifier from Amazon.
+        private_ip:
+          type: string
+          description: Private IP address of the AWS instance.
+        public_ip:
+          type: string
+          description: Public IP address of the AWS instance.
+        state:
+          type: string
+          description: 'The state of the instance. Can be one of the following values: `running`, `stopped`, or `terminated`.'
+        zone:
+          type: string
+          description: 'The availability zone for the instance. Example: `us-east-1a`, `us-east-1b`, etc.'
+        type:
+          type: string
+          description: 'The size of the instance. Example: `t2.small`, `t2.medium`, etc.'
+        name:
+          type: string
+          description: The user-defined name of the instance.
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

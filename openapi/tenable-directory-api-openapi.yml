@@ -1,43 +1,20 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  version: 1.0.0
-  title: Downloads About Directory API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+  title: Identity Exposure Directory API
+  description: API to interact with Identity Exposure.
+  version: production
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: '{protocol}://customer.tenable.ad'
+  variables:
+    protocol:
+      default: https
 tags:
 - name: Directory
   description: Represents an Active directory
 paths:
   /api/directories:
     get:
-      summary: Retrieve all directory instances.
+      summary: Retrieve all directory instances
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '200':
@@ -107,17 +84,13 @@ paths:
                       description: Name of the infrastructure to which the directory belongs
                     ldapInitialized:
                       oneOf:
-                      - not:
-                          nullable: true
+                      - not: {}
                         format: int64
-                        nullable: true
                       description: Identifier of the event at which the last LDAP crawling ended
                     sysvolInitialized:
                       oneOf:
-                      - not:
-                          nullable: true
+                      - not: {}
                         format: int64
-                        nullable: true
                       description: Identifier of the event at which the last SYSVOL crawling ended
                     ldapCrawlingStatus:
                       description: LDAP crawling status
@@ -136,13 +109,15 @@ paths:
                       - failure
                       - success
                     honeyAccountAdObjectId:
-                      type: integer
+                      type:
+                      - integer
+                      - 'null'
                       description: Identifier of the AD object configured to be the directory's Honey Account
-                      nullable: true
                     honeyAccountDistinguishedName:
-                      type: string
+                      type:
+                      - string
+                      - 'null'
                       description: Distinguished name of the AD object configured to be the directory's Honey Account
-                      nullable: true
                     honeyAccountConfigurationStatus:
                       type: string
                       enum:
@@ -166,7 +141,9 @@ paths:
                       type: boolean
                     ioaProcedureFailureReason:
                       description: Directory ioa procedure failure reason
-                      type: string
+                      type:
+                      - string
+                      - 'null'
                       enum:
                       - unknown
                       - gpo_not_found
@@ -177,19 +154,21 @@ paths:
                       - evt_listener_not_installed
                       - evt_listener_blocking_errors
                       - null
-                      nullable: true
                     ioaProcedureFailureDescription:
-                      type: string
-                      nullable: true
+                      type:
+                      - string
+                      - 'null'
                     relayId:
                       oneOf:
-                      - type: integer
-                        nullable: true
+                      - type:
+                        - integer
+                        - 'null'
                       description: The relayId
                     relayUuid:
                       oneOf:
-                      - type: string
-                        nullable: true
+                      - type:
+                        - string
+                        - 'null'
                       description: The relayUuid
                     directoryUuid:
                       type: string
@@ -216,8 +195,10 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiDirectories
+      x-operation-id-source: derived
     post:
-      summary: Create directory instance.
+      summary: Create directory instance
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '201':
@@ -288,17 +269,13 @@ paths:
                       description: Name of the infrastructure to which the directory belongs
                     ldapInitialized:
                       oneOf:
-                      - not:
-                          nullable: true
+                      - not: {}
                         format: int64
-                        nullable: true
                       description: Identifier of the event at which the last LDAP crawling ended
                     sysvolInitialized:
                       oneOf:
-                      - not:
-                          nullable: true
+                      - not: {}
                         format: int64
-                        nullable: true
                       description: Identifier of the event at which the last SYSVOL crawling ended
                     ldapCrawlingStatus:
                       description: LDAP crawling status
@@ -317,13 +294,15 @@ paths:
                       - failure
                       - success
                     honeyAccountAdObjectId:
-                      type: integer
+                      type:
+                      - integer
+                      - 'null'
                       description: Identifier of the AD object configured to be the directory's Honey Account
-                      nullable: true
                     honeyAccountDistinguishedName:
-                      type: string
+                      type:
+                      - string
+                      - 'null'
                       description: Distinguished name of the AD object configured to be the directory's Honey Account
-                      nullable: true
                     honeyAccountConfigurationStatus:
                       type: string
                       enum:
@@ -347,7 +326,9 @@ paths:
                       type: boolean
                     ioaProcedureFailureReason:
                       description: Directory ioa procedure failure reason
-                      type: string
+                      type:
+                      - string
+                      - 'null'
                       enum:
                       - unknown
                       - gpo_not_found
@@ -358,19 +339,21 @@ paths:
                       - evt_listener_not_installed
                       - evt_listener_blocking_errors
                       - null
-                      nullable: true
                     ioaProcedureFailureDescription:
-                      type: string
-                      nullable: true
+                      type:
+                      - string
+                      - 'null'
                     relayId:
                       oneOf:
-                      - type: integer
-                        nullable: true
+                      - type:
+                        - integer
+                        - 'null'
                       description: The relayId
                     relayUuid:
                       oneOf:
-                      - type: string
-                        nullable: true
+                      - type:
+                        - string
+                        - 'null'
                       description: The relayUuid
                     directoryUuid:
                       type: string
@@ -438,11 +421,14 @@ paths:
                     type: boolean
                   relayId:
                     oneOf:
-                    - type: integer
-                      nullable: true
+                    - type:
+                      - integer
+                      - 'null'
+      operationId: postApiDirectories
+      x-operation-id-source: derived
   /api/directories/{id}:
     get:
-      summary: Get directory instance by id.
+      summary: Get directory instance by id
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '200':
@@ -509,17 +495,13 @@ paths:
                     description: Name of the infrastructure to which the directory belongs
                   ldapInitialized:
                     oneOf:
-                    - not:
-                        nullable: true
+                    - not: {}
                       format: int64
-                      nullable: true
                     description: Identifier of the event at which the last LDAP crawling ended
                   sysvolInitialized:
                     oneOf:
-                    - not:
-                        nullable: true
+                    - not: {}
                       format: int64
-                      nullable: true
                     description: Identifier of the event at which the last SYSVOL crawling ended
                   ldapCrawlingStatus:
                     description: LDAP crawling status
@@ -538,13 +520,15 @@ paths:
                     - failure
                     - success
                   honeyAccountAdObjectId:
-                    type: integer
+                    type:
+                    - integer
+                    - 'null'
                     description: Identifier of the AD object configured to be the directory's Honey Account
-                    nullable: true
                   honeyAccountDistinguishedName:
-                    type: string
+                    type:
+                    - string
+                    - 'null'
                     description: Distinguished name of the AD object configured to be the directory's Honey Account
-                    nullable: true
                   honeyAccountConfigurationStatus:
                     type: string
                     enum:
@@ -568,7 +552,9 @@ paths:
                     type: boolean
                   ioaProcedureFailureReason:
                     description: Directory ioa procedure failure reason
-                    type: string
+                    type:
+                    - string
+                    - 'null'
                     enum:
                     - unknown
                     - gpo_not_found
@@ -579,19 +565,21 @@ paths:
                     - evt_listener_not_installed
                     - evt_listener_blocking_errors
                     - null
-                    nullable: true
                   ioaProcedureFailureDescription:
-                    type: string
-                    nullable: true
+                    type:
+                    - string
+                    - 'null'
                   relayId:
                     oneOf:
-                    - type: integer
-                      nullable: true
+                    - type:
+                      - integer
+                      - 'null'
                     description: The relayId
                   relayUuid:
                     oneOf:
-                    - type: string
-                      nullable: true
+                    - type:
+                      - string
+                      - 'null'
                     description: The relayUuid
                   directoryUuid:
                     type: string
@@ -626,6 +614,8 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiDirectoriesById
+      x-operation-id-source: derived
   /api/infrastructures/{infrastructureId}/directories:
     get:
       summary: Get all directories for a given infrastructure
@@ -698,17 +688,13 @@ paths:
                       description: Name of the infrastructure to which the directory belongs
                     ldapInitialized:
                       oneOf:
-                      - not:
-                          nullable: true
+                      - not: {}
                         format: int64
-                        nullable: true
                       description: Identifier of the event at which the last LDAP crawling ended
                     sysvolInitialized:
                       oneOf:
-                      - not:
-                          nullable: true
+                      - not: {}
                         format: int64
-                        nullable: true
                       description: Identifier of the event at which the last SYSVOL crawling ended
                     ldapCrawlingStatus:
                       description: LDAP crawling status
@@ -727,13 +713,15 @@ paths:
                       - failure
                       - success
                     honeyAccountAdObjectId:
-                      type: integer
+                      type:
+                      - integer
+                      - 'null'
                       description: Identifier of the AD object configured to be the directory's Honey Account
-                      nullable: true
                     honeyAccountDistinguishedName:
-                      type: string
+                      type:
+                      - string
+                      - 'null'
                       description: Distinguished name of the AD object configured to be the directory's Honey Account
-                      nullable: true
                     honeyAccountConfigurationStatus:
                       type: string
                       enum:
@@ -757,7 +745,9 @@ paths:
                       type: boolean
                     ioaProcedureFailureReason:
                       description: Directory ioa procedure failure reason
-                      type: string
+                      type:
+                      - string
+                      - 'null'
                       enum:
                       - unknown
                       - gpo_not_found
@@ -768,19 +758,21 @@ paths:
                       - evt_listener_not_installed
                       - evt_listener_blocking_errors
                       - null
-                      nullable: true
                     ioaProcedureFailureDescription:
-                      type: string
-                      nullable: true
+                      type:
+                      - string
+                      - 'null'
                     relayId:
                       oneOf:
-                      - type: integer
-                        nullable: true
+                      - type:
+                        - integer
+                        - 'null'
                       description: The relayId
                     relayUuid:
                       oneOf:
-                      - type: string
-                        nullable: true
+                      - type:
+                        - string
+                        - 'null'
                       description: The relayUuid
                     directoryUuid:
                       type: string
@@ -815,9 +807,11 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiInfrastructuresByInfrastructureIdDirectories
+      x-operation-id-source: derived
   /api/infrastructures/{infrastructureId}/directories/{id}:
     get:
-      summary: Get directory instance by id.
+      summary: Get directory instance by id
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '200':
@@ -884,17 +878,13 @@ paths:
                     description: Name of the infrastructure to which the directory belongs
                   ldapInitialized:
                     oneOf:
-                    - not:
-                        nullable: true
+                    - not: {}
                       format: int64
-                      nullable: true
                     description: Identifier of the event at which the last LDAP crawling ended
                   sysvolInitialized:
                     oneOf:
-                    - not:
-                        nullable: true
+                    - not: {}
                       format: int64
-                      nullable: true
                     description: Identifier of the event at which the last SYSVOL crawling ended
                   ldapCrawlingStatus:
                     description: LDAP crawling status
@@ -913,13 +903,15 @@ paths:
                     - failure
                     - success
                   honeyAccountAdObjectId:
-                    type: integer
+                    type:
+                    - integer
+                    - 'null'
                     description: Identifier of the AD object configured to be the directory's Honey Account
-                    nullable: true
                   honeyAccountDistinguishedName:
-                    type: string
+                    type:
+                    - string
+                    - 'null'
                     description: Distinguished name of the AD object configured to be the directory's Honey Account
-                    nullable: true
                   honeyAccountConfigurationStatus:
                     type: string
                     enum:
@@ -943,7 +935,9 @@ paths:
                     type: boolean
                   ioaProcedureFailureReason:
                     description: Directory ioa procedure failure reason
-                    type: string
+                    type:
+                    - string
+                    - 'null'
                     enum:
                     - unknown
                     - gpo_not_found
@@ -954,19 +948,21 @@ paths:
                     - evt_listener_not_installed
                     - evt_listener_blocking_errors
                     - null
-                    nullable: true
                   ioaProcedureFailureDescription:
-                    type: string
-                    nullable: true
+                    type:
+                    - string
+                    - 'null'
                   relayId:
                     oneOf:
-                    - type: integer
-                      nullable: true
+                    - type:
+                      - integer
+                      - 'null'
                     description: The relayId
                   relayUuid:
                     oneOf:
-                    - type: string
-                      nullable: true
+                    - type:
+                      - string
+                      - 'null'
                     description: The relayUuid
                   directoryUuid:
                     type: string
@@ -1009,8 +1005,10 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiInfrastructuresByInfrastructureIdDirectoriesById
+      x-operation-id-source: derived
     patch:
-      summary: Update directory instance.
+      summary: Update directory instance
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '200':
@@ -1077,17 +1075,13 @@ paths:
                     description: Name of the infrastructure to which the directory belongs
                   ldapInitialized:
                     oneOf:
-                    - not:
-                        nullable: true
+                    - not: {}
                       format: int64
-                      nullable: true
                     description: Identifier of the event at which the last LDAP crawling ended
                   sysvolInitialized:
                     oneOf:
-                    - not:
-                        nullable: true
+                    - not: {}
                       format: int64
-                      nullable: true
                     description: Identifier of the event at which the last SYSVOL crawling ended
                   ldapCrawlingStatus:
                     description: LDAP crawling status
@@ -1106,13 +1100,15 @@ paths:
                     - failure
                     - success
                   honeyAccountAdObjectId:
-                    type: integer
+                    type:
+                    - integer
+                    - 'null'
                     description: Identifier of the AD object configured to be the directory's Honey Account
-                    nullable: true
                   honeyAccountDistinguishedName:
-                    type: string
+                    type:
+                    - string
+                    - 'null'
                     description: Distinguished name of the AD object configured to be the directory's Honey Account
-                    nullable: true
                   honeyAccountConfigurationStatus:
                     type: string
                     enum:
@@ -1136,7 +1132,9 @@ paths:
                     type: boolean
                   ioaProcedureFailureReason:
                     description: Directory ioa procedure failure reason
-                    type: string
+                    type:
+                    - string
+                    - 'null'
                     enum:
                     - unknown
                     - gpo_not_found
@@ -1147,19 +1145,21 @@ paths:
                     - evt_listener_not_installed
                     - evt_listener_blocking_errors
                     - null
-                    nullable: true
                   ioaProcedureFailureDescription:
-                    type: string
-                    nullable: true
+                    type:
+                    - string
+                    - 'null'
                   relayId:
                     oneOf:
-                    - type: integer
-                      nullable: true
+                    - type:
+                      - integer
+                      - 'null'
                     description: The relayId
                   relayUuid:
                     oneOf:
-                    - type: string
-                      nullable: true
+                    - type:
+                      - string
+                      - 'null'
                     description: The relayUuid
                   directoryUuid:
                     type: string
@@ -1226,16 +1226,20 @@ paths:
                 smbPort:
                   type: integer
                 dns:
-                  type: string
-                  nullable: true
+                  type:
+                  - string
+                  - 'null'
                 sensitiveDataCollectionIsEnabled:
                   type: boolean
                 relayId:
                   oneOf:
-                  - type: integer
-                    nullable: true
+                  - type:
+                    - integer
+                    - 'null'
+      operationId: patchApiInfrastructuresByInfrastructureIdDirectoriesById
+      x-operation-id-source: derived
     delete:
-      summary: Delete directory instance.
+      summary: Delete directory instance
       description: 'Required license type: ioa, ioaPreview, ioe'
       responses:
         '204':
@@ -1245,7 +1249,6 @@ paths:
               schema:
                 description: Directory
                 additionalProperties: false
-                nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -1283,28 +1286,15 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: deleteApiInfrastructuresByInfrastructureIdDirectoriesById
+      x-operation-id-source: derived
 components:
   securitySchemes:
-    Bearer:
-      type: apiKey
+    ApiKey:
+      name: x-api-key
+      description: The user's API key
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      type: apiKey
 x-readme:
-  proxy-enabled: false
   explorer-enabled: true
-  samples-enabled: true
-  samples-languages:
-  - python
-  - curl
-  - node
-  - powershell
-  - ruby
-  - javascript
-  - objectivec
-  - java
-  - php
-  - csharp
-  - go
-  - swift
-  - kotlin
+  proxy-enabled: true

@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Vulnerability Management Scan History API
   version: 1.0.0
-  title: Downloads About Scan History API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Scan History
   x-displayName: Scan History
@@ -41,7 +14,9 @@ paths:
       description: 'Returns a list of objects, each of which represent an individual run of the specified scan.
 
 
-        **Note:** Scans with `agent_scan_launch_type` set to `triggered` will not have scan history. <div class="perms-callout">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>'
+        **Note:** Scans with `agent_scan_launch_type` set to `triggered` will not have scan history.
+
+        Requires the Scan Operator [24] user role and Can View [16] scan permissions. See Roles and Permissions.'
       operationId: scans-history
       tags:
       - Scan History
@@ -218,7 +193,9 @@ paths:
   /scans/{scan_id}/history/{history_uuid}:
     get:
       summary: Get scan history details
-      description: Returns the details of a previous run of the specified scan. Scan details include information about when and where the scan ran, as well as the scan results for the target hosts.<div class="perms-callout">Requires the Scan Operator [24] user role and Can View [16] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Returns the details of a previous run of the specified scan. Scan details include information about when and where the scan ran, as well as the scan results for the target hosts.
+
+        Requires the Scan Operator [24] user role and Can View [16] scan permissions. See Roles and Permissions.'
       operationId: scans-history-details
       tags:
       - Scan History
@@ -296,7 +273,9 @@ paths:
       - Scan_History_cloud: []
     delete:
       summary: Delete scan history
-      description: Deletes historical results from a scan. Note that rollover scan data is also deleted.<div class="perms-callout">Requires the Scan Operator [24] user role and Can Edit [64] scan permissions. See [Roles](doc:roles) and [Permissions](doc:permissions).</div>
+      description: 'Deletes historical results from a scan. Note that rollover scan data is also deleted.
+
+        Requires the Scan Operator [24] user role and Can Edit [64] scan permissions. See Roles and Permissions.'
       operationId: scans-delete-history
       tags:
       - Scan History
@@ -376,16 +355,6 @@ paths:
       - Scan_History_cloud: []
 components:
   schemas:
-    Scan_History_targets-history-response-object:
-      type: object
-      description: The target parameters used to launch the scan.
-      properties:
-        custom:
-          type: boolean
-          description: If `true`, custom parameters were used to launch the scan.
-        default:
-          type: boolean
-          description: If `true`, default parameters were used to launch the scan.
     Scan_History_PaginationResponseSortObject:
       description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
       type: object
@@ -417,6 +386,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Scan_History_PaginationResponseSortObject'
+    Scan_History_targets-history-response-object:
+      type: object
+      description: The target parameters used to launch the scan.
+      properties:
+        custom:
+          type: boolean
+          description: If `true`, custom parameters were used to launch the scan.
+        default:
+          type: boolean
+          description: If `true`, default parameters were used to launch the scan.
     Scan_History_history_list:
       type: object
       properties:
@@ -448,18 +427,6 @@ components:
           type: integer
           format: int64
           description: The Unix timestamp when the scan started running.
-    Scan_History_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     Scan_History_history-in-history-details-response:
       type: object
       description: A history object containing data about a run of the specified scan.
@@ -518,16 +485,136 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Scan_History_history_list'
+    Scan_History_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
   securitySchemes:
-    Bearer:
+    assets_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Asset_Custom_Attributes_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    editor_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Assets_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Compliance_Data_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Export_Vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    file_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    filters_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    folders_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    plugins_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    policies_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Reports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Control_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Exports_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_History_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Results_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Status_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scan_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Shared_Collections_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Remediation_Scans_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    vulnerabilities_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    workbenches_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

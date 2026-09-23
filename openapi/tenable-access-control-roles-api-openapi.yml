@@ -1,36 +1,9 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: Tenable Platform & Settings Access Control (Roles) API
   version: 1.0.0
-  title: Downloads About Access Control (Roles) API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: https://cloud.tenable.com
 tags:
 - name: Access Control (Roles)
   x-displayName: Access Control (Roles)
@@ -38,7 +11,9 @@ paths:
   /access-control/v1/roles:
     post:
       summary: Create role
-      description: Creates a custom role with the specified permissions.<div class="perms-callout">Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.MANAGE` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Creates a custom role with the specified permissions.
+
+        Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.MANAGE` custom role privilege. See Roles.'
       operationId: access-control-roles-create
       tags:
       - Access Control (Roles)
@@ -161,7 +136,9 @@ paths:
       - Access_Control_Roles_cloud: []
     get:
       summary: List roles
-      description: Lists all roles defined for your Tenable Vulnerability Management instance, including both standard and custom roles.<div class="perms-callout">Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Lists all roles defined for your Tenable Vulnerability Management instance, including both standard and custom roles.
+
+        Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.READ` custom role privilege. See Roles.'
       operationId: access-control-roles-list
       tags:
       - Access Control (Roles)
@@ -235,7 +212,9 @@ paths:
   /access-control/v1/roles/{role_uuid}:
     get:
       summary: Get role details
-      description: Retrieves the details for the specified role.<div class="perms-callout">Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.READ` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Retrieves the details for the specified role.
+
+        Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.READ` custom role privilege. See Roles.'
       operationId: access-control-roles-details
       tags:
       - Access Control (Roles)
@@ -316,7 +295,9 @@ paths:
       - Access_Control_Roles_cloud: []
     put:
       summary: Update role
-      description: Updates the specified custom role.<div class="perms-callout">Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.MANAGE` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Updates the specified custom role.
+
+        Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.MANAGE` custom role privilege. See Roles.'
       operationId: access-control-roles-update
       tags:
       - Access Control (Roles)
@@ -431,7 +412,9 @@ paths:
       - Access_Control_Roles_cloud: []
     delete:
       summary: Delete role
-      description: Deletes the specified custom role.<div class="perms-callout">Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.MANAGE` custom role privilege. See [Roles](doc:roles).</div>
+      description: 'Deletes the specified custom role.
+
+        Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.MANAGE` custom role privilege. See Roles.'
       operationId: access-control-roles-delete
       tags:
       - Access Control (Roles)
@@ -497,7 +480,9 @@ paths:
       description: 'Lists all available role permission strings (custom role privileges) and their metadata, including hierarchical relationships between permissions. Use this endpoint to determine valid values for the `role_permission_strings` property when creating or updating a custom role.
 
 
-        **Note:** Role permission strings are the same as the custom role privileges referenced throughout the Tenable documentation and in the permissions callouts for individual API endpoints.<div class="perms-callout">Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.READ` custom role privilege. See [Roles](doc:roles).</div>'
+        **Note:** Role permission strings are the same as the custom role privileges referenced throughout the Tenable documentation and in the permissions callouts for individual API endpoints.
+
+        Requires the Administrator [64] user role or the `TIO_BACKEND.ACCESS_CONTROL.READ` custom role privilege. See Roles.'
       operationId: access-control-roles-list-permissions
       tags:
       - Access Control (Roles)
@@ -593,46 +578,6 @@ paths:
       - Access_Control_Roles_cloud: []
 components:
   schemas:
-    Access_Control_Roles_ErrorResponse-Error:
-      type: object
-      properties:
-        error:
-          type: string
-          description: A brief description of the error.
-    Access_Control_Roles_role-object:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the role.
-        uuid:
-          type: string
-          format: uuid
-          description: The unique identifier (UUID) of the role.
-        description:
-          type: string
-          description: The description of the role.
-        role_permission_strings:
-          type: array
-          items:
-            type: string
-          description: The role permission strings (custom role privileges) assigned to the role. For more information, see [Roles](doc:roles).
-        type:
-          type: string
-          description: The type of role. Standard roles are Tenable-defined and cannot be modified. Custom roles are user-defined. For more information, see [Roles](doc:roles).
-          enum:
-          - STANDARD
-          - CUSTOM
-        status:
-          type: string
-          description: The status of the role.
-          enum:
-          - ENABLED
-          - DISABLED
-        containerUuid:
-          type: string
-          format: uuid
-          description: The unique identifier (UUID) of the Tenable Vulnerability Management container.
     Access_Control_Roles_role-permission-object:
       type: object
       properties:
@@ -693,16 +638,194 @@ components:
         message:
           type: string
           description: A brief message about the cause of the error.
+    Access_Control_Roles_ErrorResponse-Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A brief description of the error.
+    Access_Control_Roles_role-object:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the role.
+        uuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the role.
+        description:
+          type: string
+          description: The description of the role.
+        role_permission_strings:
+          type: array
+          items:
+            type: string
+          description: The role permission strings (custom role privileges) assigned to the role. For more information, see [Roles](doc:roles).
+        type:
+          type: string
+          description: The type of role. Standard roles are Tenable-defined and cannot be modified. Custom roles are user-defined. For more information, see [Roles](doc:roles).
+          enum:
+          - STANDARD
+          - CUSTOM
+        status:
+          type: string
+          description: The status of the role.
+          enum:
+          - ENABLED
+          - DISABLED
+        containerUuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the Tenable Vulnerability Management container.
   securitySchemes:
-    Bearer:
+    Access_Control_API_cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Roles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Access_Control_Users_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    access-groups_v2_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    activity-log_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agents_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Agent_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    agent-bulk-operations_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Cloud_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    credentials_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    exclusions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    networks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    OT_Connectors_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    permissions_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    recast-rules_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanners_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Config_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Profiles_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    Scanner_Tasks_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    server_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    tags_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
+    target-groups_cloud:
+      type: apiKey
+      in: header
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

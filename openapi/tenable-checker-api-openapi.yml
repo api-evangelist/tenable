@@ -1,43 +1,20 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  version: 1.0.0
-  title: Downloads About Checker API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+  title: Identity Exposure Checker API
+  description: API to interact with Identity Exposure.
+  version: production
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: '{protocol}://customer.tenable.ad'
+  variables:
+    protocol:
+      default: https
 tags:
 - name: Checker
   description: Checkers are the implementations of the state of the art of AD security
 paths:
   /api/checkers:
     get:
-      summary: Retrieve all checker instances.
+      summary: Retrieve all checker instances
       description: 'Required license type: ioe'
       responses:
         '200':
@@ -72,28 +49,32 @@ paths:
                       description: Remediation cost of the checker findings
                       deprecated: true
                     name:
-                      type: string
+                      type:
+                      - string
+                      - 'null'
                       default: null
                       description: Localized name of the checker
-                      nullable: true
                     description:
-                      type: string
+                      type:
+                      - string
+                      - 'null'
                       default: null
                       description: Localized description of the checker
-                      nullable: true
                     execSummary:
-                      type: string
+                      type:
+                      - string
+                      - 'null'
                       default: null
                       description: Localized executive summary of the checker findings
-                      nullable: true
                     vulnerabilityDetail:
                       type: object
                       default: {}
                       properties:
                         detail:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           default: null
-                          nullable: true
                       description: Localized technical explanations on the checks performed by the checker
                     attackerKnownTools:
                       type: array
@@ -102,17 +83,20 @@ paths:
                         type: object
                         properties:
                           name:
-                            type: string
+                            type:
+                            - string
+                            - 'null'
                             default: null
-                            nullable: true
                           url:
-                            type: string
+                            type:
+                            - string
+                            - 'null'
                             default: null
-                            nullable: true
                           author:
-                            type: string
+                            type:
+                            - string
+                            - 'null'
                             default: null
-                            nullable: true
                       description: Known attacker tools that can exploit the vulnerabilities the checker looks for
                     resources:
                       type: array
@@ -121,55 +105,65 @@ paths:
                         type: object
                         properties:
                           name:
-                            type: string
+                            type:
+                            - string
+                            - 'null'
                             default: null
-                            nullable: true
                           url:
-                            type: string
+                            type:
+                            - string
+                            - 'null'
                             default: null
-                            nullable: true
                           type:
-                            type: string
+                            type:
+                            - string
+                            - 'null'
                             default: null
-                            nullable: true
                       description: Resources helping understand the vulnerabilities the checker looks for
                     recommendation:
                       type: object
                       default: {}
                       properties:
                         name:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           default: null
-                          nullable: true
                         description:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           default: null
-                          nullable: true
                         execSummary:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           default: null
-                          nullable: true
                         detail:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           default: null
-                          nullable: true
                         resources:
                           type: array
                           items:
                             type: object
                             properties:
                               name:
-                                type: string
+                                type:
+                                - string
+                                - 'null'
                                 default: null
-                                nullable: true
                               url:
-                                type: string
+                                type:
+                                - string
+                                - 'null'
                                 default: null
-                                nullable: true
                               type:
-                                type: string
+                                type:
+                                - string
+                                - 'null'
                                 default: null
-                                nullable: true
                       description: Recommendations on how to remediate the issues identified by the checker
         '401':
           description: Unauthorized
@@ -190,9 +184,11 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiCheckers
+      x-operation-id-source: derived
   /api/checkers/{id}:
     get:
-      summary: Get checker instance by id.
+      summary: Get checker instance by id
       description: 'Required license type: ioe'
       responses:
         '200':
@@ -219,25 +215,29 @@ paths:
                   remediationCost:
                     type: integer
                   name:
-                    type: string
+                    type:
+                    - string
+                    - 'null'
                     default: null
-                    nullable: true
                   description:
-                    type: string
+                    type:
+                    - string
+                    - 'null'
                     default: null
-                    nullable: true
                   execSummary:
-                    type: string
+                    type:
+                    - string
+                    - 'null'
                     default: null
-                    nullable: true
                   vulnerabilityDetail:
                     type: object
                     default: {}
                     properties:
                       detail:
-                        type: string
+                        type:
+                        - string
+                        - 'null'
                         default: null
-                        nullable: true
                   attackerKnownTools:
                     type: array
                     default: []
@@ -245,17 +245,20 @@ paths:
                       type: object
                       properties:
                         name:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           default: null
-                          nullable: true
                         url:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           default: null
-                          nullable: true
                         author:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           default: null
-                          nullable: true
                   resources:
                     type: array
                     default: []
@@ -263,54 +266,64 @@ paths:
                       type: object
                       properties:
                         name:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           default: null
-                          nullable: true
                         url:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           default: null
-                          nullable: true
                         type:
-                          type: string
+                          type:
+                          - string
+                          - 'null'
                           default: null
-                          nullable: true
                   recommendation:
                     type: object
                     default: {}
                     properties:
                       name:
-                        type: string
+                        type:
+                        - string
+                        - 'null'
                         default: null
-                        nullable: true
                       description:
-                        type: string
+                        type:
+                        - string
+                        - 'null'
                         default: null
-                        nullable: true
                       execSummary:
-                        type: string
+                        type:
+                        - string
+                        - 'null'
                         default: null
-                        nullable: true
                       detail:
-                        type: string
+                        type:
+                        - string
+                        - 'null'
                         default: null
-                        nullable: true
                       resources:
                         type: array
                         items:
                           type: object
                           properties:
                             name:
-                              type: string
+                              type:
+                              - string
+                              - 'null'
                               default: null
-                              nullable: true
                             url:
-                              type: string
+                              type:
+                              - string
+                              - 'null'
                               default: null
-                              nullable: true
                             type:
-                              type: string
+                              type:
+                              - string
+                              - 'null'
                               default: null
-                              nullable: true
         '401':
           description: Unauthorized
         '500':
@@ -338,28 +351,15 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiCheckersById
+      x-operation-id-source: derived
 components:
   securitySchemes:
-    Bearer:
-      type: apiKey
+    ApiKey:
+      name: x-api-key
+      description: The user's API key
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      type: apiKey
 x-readme:
-  proxy-enabled: false
   explorer-enabled: true
-  samples-enabled: true
-  samples-languages:
-  - python
-  - curl
-  - node
-  - powershell
-  - ruby
-  - javascript
-  - objectivec
-  - java
-  - php
-  - csharp
-  - go
-  - swift
-  - kotlin
+  proxy-enabled: true

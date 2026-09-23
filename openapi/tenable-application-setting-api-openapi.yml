@@ -1,36 +1,13 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  version: 1.0.0
-  title: Downloads About Application setting API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
+  title: Identity Exposure Application setting API
+  description: API to interact with Identity Exposure.
+  version: production
 servers:
-- url: https://www.tenable.com/downloads/api/v2
-security:
-- Bearer: []
+- url: '{protocol}://customer.tenable.ad'
+  variables:
+    protocol:
+      default: https
 tags:
 - name: Application setting
   description: Tenable.ad global configuration
@@ -81,23 +58,28 @@ paths:
                     - 5
                     - 6
                   smtpServerAddress:
-                    type: string
-                    nullable: true
+                    type:
+                    - string
+                    - 'null'
                   smtpServerPort:
-                    type: number
-                    nullable: true
+                    type:
+                    - number
+                    - 'null'
                   smtpAccount:
-                    type: string
-                    nullable: true
+                    type:
+                    - string
+                    - 'null'
                   smtpAccountPassword:
-                    type: string
-                    nullable: true
+                    type:
+                    - string
+                    - 'null'
                     x-secret: true
                   smtpUseStartTLS:
                     type: boolean
                   smtpRelayId:
-                    type: number
-                    nullable: true
+                    type:
+                    - number
+                    - 'null'
                   tls:
                     type: boolean
                   emailSender:
@@ -109,8 +91,9 @@ paths:
                   defaultProfileId:
                     type: integer
                   internalCertificate:
-                    type: string
-                    nullable: true
+                    type:
+                    - string
+                    - 'null'
                   telemetryEnabled:
                     type: boolean
                   ioaAutomaticConfiguration:
@@ -140,6 +123,8 @@ paths:
         deprecated: false
       security:
       - ApiKey: []
+      operationId: getApiApplicationSettings
+      x-operation-id-source: derived
     patch:
       summary: Update the application settings
       description: 'Required license type: ioa, ioaPreview, ioe'
@@ -185,23 +170,28 @@ paths:
                     - 5
                     - 6
                   smtpServerAddress:
-                    type: string
-                    nullable: true
+                    type:
+                    - string
+                    - 'null'
                   smtpServerPort:
-                    type: number
-                    nullable: true
+                    type:
+                    - number
+                    - 'null'
                   smtpAccount:
-                    type: string
-                    nullable: true
+                    type:
+                    - string
+                    - 'null'
                   smtpAccountPassword:
-                    type: string
-                    nullable: true
+                    type:
+                    - string
+                    - 'null'
                     x-secret: true
                   smtpUseStartTLS:
                     type: boolean
                   smtpRelayId:
-                    type: number
-                    nullable: true
+                    type:
+                    - number
+                    - 'null'
                   tls:
                     type: boolean
                   emailSender:
@@ -213,8 +203,9 @@ paths:
                   defaultProfileId:
                     type: integer
                   internalCertificate:
-                    type: string
-                    nullable: true
+                    type:
+                    - string
+                    - 'null'
                   telemetryEnabled:
                     type: boolean
                   ioaAutomaticConfiguration:
@@ -258,7 +249,9 @@ paths:
                 activityLogsIsActive:
                   type: boolean
                 activityLogsRetentionDurationInMonth:
-                  type: integer
+                  type:
+                  - integer
+                  - 'null'
                   enum:
                   - 1
                   - 2
@@ -266,25 +259,29 @@ paths:
                   - 4
                   - 5
                   - 6
-                  nullable: true
                 smtpServerAddress:
-                  type: string
-                  nullable: true
+                  type:
+                  - string
+                  - 'null'
                 smtpServerPort:
-                  type: integer
-                  nullable: true
+                  type:
+                  - integer
+                  - 'null'
                 smtpAccount:
-                  type: string
-                  nullable: true
+                  type:
+                  - string
+                  - 'null'
                 smtpAccountPassword:
-                  type: string
-                  nullable: true
+                  type:
+                  - string
+                  - 'null'
                   x-secret: true
                 smtpUseStartTLS:
                   type: boolean
                 smtpRelayId:
-                  type: number
-                  nullable: true
+                  type:
+                  - number
+                  - 'null'
                 tls:
                   type: boolean
                 emailSender:
@@ -296,8 +293,9 @@ paths:
                 defaultProfileId:
                   type: integer
                 internalCertificate:
-                  type: string
-                  nullable: true
+                  type:
+                  - string
+                  - 'null'
                 telemetryEnabled:
                   type: boolean
                 ioaAutomaticConfiguration:
@@ -306,28 +304,15 @@ paths:
                   type: boolean
                 healthCheckGlobalStatusDisplayEnabled:
                   type: boolean
+      operationId: patchApiApplicationSettings
+      x-operation-id-source: derived
 components:
   securitySchemes:
-    Bearer:
-      type: apiKey
+    ApiKey:
+      name: x-api-key
+      description: The user's API key
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      type: apiKey
 x-readme:
-  proxy-enabled: false
   explorer-enabled: true
-  samples-enabled: true
-  samples-languages:
-  - python
-  - curl
-  - node
-  - powershell
-  - ruby
-  - javascript
-  - objectivec
-  - java
-  - php
-  - csharp
-  - go
-  - swift
-  - kotlin
+  proxy-enabled: true

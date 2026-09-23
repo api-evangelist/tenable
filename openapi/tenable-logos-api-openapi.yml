@@ -1,46 +1,27 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: MSSP Portal Logos API
+  description: 'The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Endpoints in the Tenable MSSP Portal API enables customers to view and manage your MSSP customer accounts.
+
+
+    For more information about the Tenable MSSP Portal, see the Tenable MSSP Portal User Guide.'
   version: 1.0.0
-  title: Downloads About Logos API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
+- url: https://cloud.tenable.com
 security:
-- Bearer: []
+- cloud: []
 tags:
 - name: Logos
-  description: "The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage the logos of their customer's instances. By default, the Tenable logo appears in the header of your customer's instances. The logo endpoints enables customers to replace the Tenable logo with a logo appropriate to a customer's business context. Use these endpoints to add, assign, and delete logos. \n\nFor background information about logos in the Tenable MSSP Portal, see [Logos](https://docs.tenable.com/managed-security-service-provider/Content/Logos.htm) in Tenable MSSP Portal User Guide."
+  description: The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage the logos of their customer's instances.
 paths:
   /mssp/logos:
     post:
       tags:
       - Logos
       summary: Add logo
-      description: Adds a logo to the Tenable MSSP Portal. After you add a logo to the Tenable MSSP Portal, use the [PUT /mssp/accounts/logos](ref:io-mssp-logos-assign) endpoint to assign the logo to a customer account.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Adds a logo to the Tenable MSSP Portal. After you add a logo to the Tenable MSSP Portal, use the PUT /mssp/accounts/logos endpoint to assign the logo to a customer account.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-mssp-logos-create
       requestBody:
         required: true
@@ -115,7 +96,9 @@ paths:
       tags:
       - Logos
       summary: List logos
-      description: Returns a list of logos you have uploaded to the Tenable MSSP Portal. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Returns a list of logos you have uploaded to the Tenable MSSP Portal.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-mssp-logos-list
       parameters: []
       responses:
@@ -201,7 +184,9 @@ paths:
       tags:
       - Logos
       summary: Get logo details
-      description: Returns details for the specified logo in the Tenable MSSP Portal. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Returns details for the specified logo in the Tenable MSSP Portal.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-mssp-logos-details
       parameters:
       - name: logo_uuid
@@ -269,7 +254,9 @@ paths:
       tags:
       - Logos
       summary: Update logo
-      description: Updates a logo in the Tenable MSSP Portal. This update overwrites the existing logo.<div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Updates a logo in the Tenable MSSP Portal. This update overwrites the existing logo.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-mssp-logos-update
       parameters:
       - name: logo_uuid
@@ -362,7 +349,9 @@ paths:
       tags:
       - Logos
       summary: Delete logo
-      description: Deletes the specified logo in the Tenable MSSP Portal. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Deletes the specified logo in the Tenable MSSP Portal.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-mssp-logos-delete
       parameters:
       - name: logo_uuid
@@ -425,7 +414,9 @@ paths:
       tags:
       - Logos
       summary: Assign logo
-      description: Assigns a logo to one or more customer accounts in the Tenable MSSP Portal. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Assigns a logo to one or more customer accounts in the Tenable MSSP Portal.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-mssp-logos-assign
       requestBody:
         content:
@@ -486,7 +477,9 @@ paths:
       tags:
       - Logos
       summary: Download logo (PNG)
-      description: Returns a logo file in PNG format. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Returns a logo file in PNG format.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-mssp-logos-png-download
       parameters:
       - name: logo_uuid
@@ -540,7 +533,9 @@ paths:
       tags:
       - Logos
       summary: Download logo (Base64)
-      description: Returns a logo file in Base64 format. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Returns a logo file in Base64 format.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-mssp-logos-base64-download
       parameters:
       - name: logo_uuid
@@ -594,6 +589,27 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    LogoListResponse:
+      type: object
+      properties:
+        logos:
+          description: An array of logo objects.
+          type: array
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/LogoObject'
     LogoObject:
       type: object
       properties:
@@ -609,6 +625,12 @@ components:
         filename:
           type: string
           description: The filename of the logo.
+    ErrorResponse-404:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A brief message about the object that could not be found.
     LogoAssignmentBulk:
       type: object
       required:
@@ -623,27 +645,12 @@ components:
           description: An array of customer account UUIDs in the Tenable MSSP Portal.
           items:
             type: string
-    LogoListResponse:
+    ErrorResponse-400:
       type: object
       properties:
-        logos:
-          description: An array of logo objects.
-          type: array
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/LogoObject'
-    ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
         error:
           type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
+          description: A brief message about the missing or invalid parameter value(s).
     LogoUuidResponse:
       type: object
       required:
@@ -652,28 +659,14 @@ components:
         uuid:
           type: string
           description: The UUID of the logo.
-    ErrorResponse-400:
-      type: object
-      properties:
-        error:
-          type: string
-          description: A brief message about the missing or invalid parameter value(s).
-    ErrorResponse-404:
-      type: object
-      properties:
-        error:
-          type: string
-          description: A brief message about the object that could not be found.
   securitySchemes:
-    Bearer:
+    cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl

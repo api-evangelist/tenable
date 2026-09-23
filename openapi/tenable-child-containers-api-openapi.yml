@@ -1,46 +1,30 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
+  title: MSSP Portal Child Containers API
+  description: 'The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Endpoints in the Tenable MSSP Portal API enables customers to view and manage your MSSP customer accounts.
+
+
+    For more information about the Tenable MSSP Portal, see the Tenable MSSP Portal User Guide.'
   version: 1.0.0
-  title: Downloads About Child Containers API
-  description: 'The Downloads API enables customers to access and download installation and update files for available Tenable products. You can use the API endpoints to list product pages, list downloads available for a specific product, and to download a file. The endpoints can also be used to determine and download the latest version of a file to facilitate the automation of an installation.
-
-
-    **Note:** The Tenable Downloads API uses a different server URL than the Tenable Vulnerability Management API:
-
-
-    `https://www.tenable.com/downloads/api/v2/pages`.
-
-
-    ### Authentication
-
-
-    Like the Downloads website, certain files require authentication to download. When files have a `"requires_auth": true` attribute on the product list page, the Downloads API uses bearer token authentication and requires a valid token in the Authorization header to download the file:
-
-    ```
-
-    Authorization: Bearer AbCdEf123456
-
-    ```
-
-
-    To access or reset your authentication token, navigate to the [Authentication Token](https://www.tenable.com/downloads/api-docs) page.
-
-
-    Examples of product downloads that **do not** require authentication include Nessus and Nessus Agents.'
 servers:
-- url: https://www.tenable.com/downloads/api/v2
+- url: https://cloud.tenable.com
 security:
-- Bearer: []
+- cloud: []
 tags:
 - name: Child Containers
-  description: "The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Child Containers endpoints in the Tenable MSSP Portal API enables customers to view and manage your child accounts. \n\nFor more information about the Tenable MSSP Portal, see the [Tenable MSSP Portal User Guide](https://docs.tenable.com/managed-security-service-provider/Content/Welcome.htm)."
+  description: 'The Tenable Managed Security Service Provider (MSSP) Portal API provides a secure and accessible way for MSSP administrators to manage and maintain multiple customer instances of Tenable products. Child Containers endpoints in the Tenable MSSP Portal API enables customers to view and manage your child accounts.
+
+
+    For more information about the Tenable MSSP Portal, see the Tenable MSSP Portal User Guide.'
 paths:
   /mssp/accounts/mssp-child-keys:
     post:
       tags:
       - Child Containers
       summary: Generate auth keys for child container
-      description: Generates authorization keys for the specified child container. An `access_key` and a `secret_key` is included in the response. <div class="perms-callout">Requires the Administrator [64] user role. See [Roles](doc:roles).</div>
+      description: 'Generates authorization keys for the specified child container. An `access_key` and a `secret_key` is included in the response.
+
+        Requires the Administrator [64] user role. See Roles.'
       operationId: io-mssp-child-containers-generate-keys
       requestBody:
         required: true
@@ -150,7 +134,9 @@ paths:
       tags:
       - Child Containers
       summary: List child containers
-      description: Returns a list of child containers associated with the specified user. You can retrieve a list of users with the [GET /users](ref:users-list) endpoint. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Returns a list of child containers associated with the specified user. You can retrieve a list of users with the GET /users endpoint.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-mssp-child-containers-list
       parameters:
       - name: user_uuid
@@ -217,7 +203,9 @@ paths:
       tags:
       - Child Containers
       summary: Get child container history
-      description: Returns the history for child containers associated with the specified parent account UUID. <div class="perms-callout">Requires the Basic [16] user role. See [Roles](doc:roles).</div>
+      description: 'Returns the history for child containers associated with the specified parent account UUID.
+
+        Requires the Basic [16] user role. See Roles.'
       operationId: io-mssp-child-containers-history
       parameters:
       - name: account_uuid
@@ -286,6 +274,40 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
+    Response-Child-Accounts-History:
+      type: object
+      required:
+      - history
+      properties:
+        history:
+          description: An array of child container history objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/Response-Child-Accounts-History-Object'
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Response-Child-Accounts:
+      type: object
+      properties:
+        parent_uuid:
+          description: The UUID of the parent account.
+          type: string
+          format: uuid
+        account_uuids:
+          type: array
+          description: An array of child account UUIDs that you want to link with the parent account.
+          items:
+            type: string
     Response-Child-Accounts-History-Object:
       type: object
       properties:
@@ -311,50 +333,14 @@ components:
         created:
           type: string
           description: An ISO timestamp indicating the date and time on which the change was made; for example, `2021-01-16T12:00:00Z`.
-    Response-Child-Accounts-History:
-      type: object
-      required:
-      - history
-      properties:
-        history:
-          description: An array of child container history objects.
-          type: array
-          items:
-            $ref: '#/components/schemas/Response-Child-Accounts-History-Object'
-    Response-Child-Accounts:
-      type: object
-      properties:
-        parent_uuid:
-          description: The UUID of the parent account.
-          type: string
-          format: uuid
-        account_uuids:
-          type: array
-          description: An array of child account UUIDs that you want to link with the parent account.
-          items:
-            type: string
-    ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
   securitySchemes:
-    Bearer:
+    cloud:
       type: apiKey
       in: header
-      name: Authorization
-      description: 'Example: Bearer {{token}}'
+      name: X-ApiKeys
+      description: Format - accessKey=ACCESS_KEY;secretKey=SECRET_KEY
 x-readme:
   proxy-enabled: false
-  explorer-enabled: true
-  samples-enabled: true
   samples-languages:
   - python
   - curl
