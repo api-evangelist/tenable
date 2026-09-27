@@ -853,6 +853,72 @@ paths:
       - assets_cloud: []
 components:
   schemas:
+    assets_query:
+      oneOf:
+      - title: Single Query Filter
+        type: object
+        description: The query filter for selecting the assets to delete. A filter must include an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint.
+        properties:
+          field:
+            type: string
+            description: The name of the asset attribute to match. Asset attributes can include tags, for example, `tag.city`.
+          operator:
+            type: string
+            description: The operator to apply to the matched value, for example, `eq` (equals), `neq` (does not equal), or `match` (contains).
+          value:
+            type: string
+            description: "The asset attribute value to match.\n\n **Note:** The value is case sensitive when used with the `match` (contains) or `nmatch` (does not contain) operators."
+      - title: Multiple Query Filters
+        type: object
+        description: 'The query filters for selecting the assets to delete. Must include one or more filters. A filter must include an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint. Sets of multiple filters must be specified inside `and` or `or` arrays.
+
+
+          **Note:** You can also nest conditions, for example, specify a set of `or` sub-conditions for a condition inside the `and` array. Tenable Vulnerability Management supports up to 1,000 conditions (filters) within the query object.'
+        properties:
+          and:
+            type: array
+            description: To select assets that match all of multiple conditions, specify the conditions inside the `and` array.
+            items:
+              $ref: '#/components/schemas/assets_subquery'
+          or:
+            type: array
+            description: To select assets that match any of multiple conditions, specify the conditions inside the `or` array.
+            items:
+              $ref: '#/components/schemas/assets_subquery'
+    assets_tags:
+      type: object
+      properties:
+        tag_uuid:
+          type: string
+          description: The unique identifier of the tag.
+        tag_key:
+          type: string
+          description: The tag key, representing the category portion of a category:value tag pair.
+        tag_value:
+          type: string
+          description: The tag value, representing the value portion of a category:value tag pair.
+        added_by:
+          type: string
+          description: The unique identifier of the user who assigned the tag to the asset.
+        added_at:
+          type: string
+          description: A timestamp in ISO 8601 format indicating the date and time the tag was assigned to the asset.
+    assets_AcrDriversObject:
+      type: object
+      description: Asset characteristic that factored into the Asset Criticality Rating (ACR) calculation. For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+      properties:
+        driver_name:
+          type: string
+          description: The ACR key driver. ACR key drivers reflect the global threat landscape associated with the asset's characteristics.
+          enum:
+          - device_type
+          - device_capability
+          - internet_exposure
+        driver_value:
+          type: array
+          description: 'The ACR key driver''s value. For example, for the `device_type` key driver, values can include `hypervisor`, `printer`, etc. '
+          items:
+            type: string
     assets_Response-Asset-Import-Job:
       type: object
       properties:
@@ -894,95 +960,33 @@ components:
         status_message:
           type: string
           description: The description of why a job failed.
-    assets_sources:
-      description: An object containing source information.
+    assets_AssetIdentifierObject:
       type: object
+      description: Each object can contain a single instance of the properties described below. You can combine multiple instances of this object, each containing a different single property.
       properties:
-        name:
+        id:
           type: string
-          description: The name of the entity that reported the asset details. Sources can include Tenable sensors, third-party data connectors, cloud platforms, or API imports. Your organization can customize source names—for example, by specifying a name when importing asset records. If not customized, the system-generated default source names are listed below.
-          enum:
-          - ACUNETIX_360
-          - ACUNETIX_PREMIUM
-          - AQUA_CSPM
-          - AQUA_CWPP
-          - ARMIS
-          - ASM
-          - AWS
-          - AWS_CONFIG
-          - AWS_EC2
-          - AWS_INSPECTOR_CLASSIC
-          - AWS_INSPECTOR_V2
-          - AWS_SECURITY_HUB
-          - AXONIUS
-          - AZURE
-          - AZURE_FA
-          - BIT_SIGHT
-          - BURPSUITE
-          - CARBON_BLACK
-          - CLONE_SYSTEMS
-          - CLOUD
-          - CONSEC
-          - CORE_CLOUDRESOURCE
-          - CORTEX_XDR
-          - CROWDSTRIKE
-          - CROWDSTRIKE_ENTERPRISE
-          - CYCOGNITO
-          - DETECTIFY
-          - FORTIFY_DAST
-          - GCP
-          - HACKER_ONE
-          - INTUNE
-          - JAMF
-          - MICROSOFT_AZURE
-          - MICROSOFT_DEFENDER
-          - MICROSOFT_DEFENDER_CLOUD
-          - MICROSOFT_TVM
-          - NESSUS_AGENT
-          - NESSUS_SCAN
-          - NETSPARKER
-          - NODE_ZERO
-          - ORCA
-          - OUTPOST24
-          - PRISMACLOUD
-          - PRISMACLOUD_CSPM
-          - PURPLEMET
-          - PVS
-          - QUALYS
-          - QUALYS_WAS
-          - RAPID7_INSIGHT_APP_SEC
-          - RAPID7_INSIGHTVM
-          - RAPID7_INSIGHTVM_CLOUD
-          - RAPID_7
-          - RED_HAT_INSIGHTS
-          - RISK_RECON
-          - SECURITY_CENTER
-          - SECURITY_SCORE_CARD
-          - SENTINEL_ONE
-          - SERVICE_NOW
-          - SSM
-          - T.CS
-          - T.IO
-          - T.OT
-          - TANIUM
-          - TIE AD
-          - TIE MEID
-          - TIE
-          - UNCLASSIFIED
-          - VERACODE_DAST
-          - WAS
-          - WHITEHAT
-          - WIZ_CONFIGURATION
-          - WIZ_ISSUES
-          - WIZ_VULNERABILITY_MANAGEMENT
-        first_seen:
-          type: string
-          format: date-time
-          description: A timestamp in ISO 8601 format indicating the date and time the source first reported the asset.
-        last_seen:
-          type: string
-          format: date-time
-          description: A timestamp in ISO 8601 format indicating the date and time the source last reported the asset.
+          description: The unique identifier for a specific asset. Use this value as the unique key for the asset.
+        fqdn:
+          type: array
+          description: A list of fully-qualified domain names (FQDNs) associated with the asset or assets.
+          items:
+            type: string
+        mac_address:
+          type: array
+          description: A list of MAC addresses associated with the asset or assets.
+          items:
+            type: string
+        netbios_name:
+          type: array
+          description: A list of NetBIOS names associated with the asset or assets.
+          items:
+            type: string
+        ipv4:
+          type: array
+          description: A list of IPv4 addresses associated with the asset or assets.
+          items:
+            type: string
     assets_Request-Import-Asset:
       type: object
       properties:
@@ -1122,26 +1126,6 @@ components:
           items:
             type: string
           description: The unique identifiers of the asset in HCL BigFix. For more information, see the HCL BigFix documentation.
-    assets_assetsBulkMoveRequest:
-      type: object
-      required:
-      - source
-      - destination
-      - targets
-      description: The parameters for moving assets from one network to another.
-      properties:
-        source:
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-          description: The unique identifier of the network currently associated with the assets. Use the [GET /networks](ref:networks-list) endpoint with the name attribute as filter to find the UUID of the network.
-        destination:
-          type: string
-          description: The unique identifier of the network to associate with the specified assets. Use the [GET /networks](ref:networks-list) endpoint with the name filter to find the UUID of the network.
-          example: 4dee97b4-592b-4b5b-a8a9-d7a605a3723a
-        targets:
-          type: string
-          description: The IPv4 addresses of the assets to move. The addresses can be represented as a comma-separated list, a range, or CIDR, for example `1.1.1.1, 2.2.2.2-2.2.2.200, 3.3.3.0/24`.
-          example: 192.0.2.57-192.0.2.69
     assets_AcrScanFrequencyObject:
       type: object
       description: The interval, frequency, and licensing information for the scans of the asset.
@@ -1155,38 +1139,6 @@ components:
         licensed:
           type: boolean
           description: Indicates whether the asset was licensed at the time of the scans.
-    assets_query:
-      oneOf:
-      - title: Single Query Filter
-        type: object
-        description: The query filter for selecting the assets to delete. A filter must include an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint.
-        properties:
-          field:
-            type: string
-            description: The name of the asset attribute to match. Asset attributes can include tags, for example, `tag.city`.
-          operator:
-            type: string
-            description: The operator to apply to the matched value, for example, `eq` (equals), `neq` (does not equal), or `match` (contains).
-          value:
-            type: string
-            description: "The asset attribute value to match.\n\n **Note:** The value is case sensitive when used with the `match` (contains) or `nmatch` (does not contain) operators."
-      - title: Multiple Query Filters
-        type: object
-        description: 'The query filters for selecting the assets to delete. Must include one or more filters. A filter must include an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint. Sets of multiple filters must be specified inside `and` or `or` arrays.
-
-
-          **Note:** You can also nest conditions, for example, specify a set of `or` sub-conditions for a condition inside the `and` array. Tenable Vulnerability Management supports up to 1,000 conditions (filters) within the query object.'
-        properties:
-          and:
-            type: array
-            description: To select assets that match all of multiple conditions, specify the conditions inside the `and` array.
-            items:
-              $ref: '#/components/schemas/assets_subquery'
-          or:
-            type: array
-            description: To select assets that match any of multiple conditions, specify the conditions inside the `or` array.
-            items:
-              $ref: '#/components/schemas/assets_subquery'
     assets_Response-Asset-Details:
       type: object
       properties:
@@ -1609,6 +1561,26 @@ components:
         exposure_confidence_value:
           type: integer
           description: The exposure confidence value associated with the asset.
+    assets_assetsBulkMoveRequest:
+      type: object
+      required:
+      - source
+      - destination
+      - targets
+      description: The parameters for moving assets from one network to another.
+      properties:
+        source:
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+          description: The unique identifier of the network currently associated with the assets. Use the [GET /networks](ref:networks-list) endpoint with the name attribute as filter to find the UUID of the network.
+        destination:
+          type: string
+          description: The unique identifier of the network to associate with the specified assets. Use the [GET /networks](ref:networks-list) endpoint with the name filter to find the UUID of the network.
+          example: 4dee97b4-592b-4b5b-a8a9-d7a605a3723a
+        targets:
+          type: string
+          description: The IPv4 addresses of the assets to move. The addresses can be represented as a comma-separated list, a range, or CIDR, for example `1.1.1.1, 2.2.2.2-2.2.2.200, 3.3.3.0/24`.
+          example: 192.0.2.57-192.0.2.69
     assets_data:
       type: object
       description: Bulk operations results. Contains the number of assets affected by the operation (moved or deleted).
@@ -1616,6 +1588,107 @@ components:
         asset_count:
           type: integer
           description: The number of assets affected by the operation.
+    assets_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    assets_sources:
+      description: An object containing source information.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the entity that reported the asset details. Sources can include Tenable sensors, third-party data connectors, cloud platforms, or API imports. Your organization can customize source names—for example, by specifying a name when importing asset records. If not customized, the system-generated default source names are listed below.
+          enum:
+          - ACUNETIX_360
+          - ACUNETIX_PREMIUM
+          - AQUA_CSPM
+          - AQUA_CWPP
+          - ARMIS
+          - ASM
+          - AWS
+          - AWS_CONFIG
+          - AWS_EC2
+          - AWS_INSPECTOR_CLASSIC
+          - AWS_INSPECTOR_V2
+          - AWS_SECURITY_HUB
+          - AXONIUS
+          - AZURE
+          - AZURE_FA
+          - BIT_SIGHT
+          - BURPSUITE
+          - CARBON_BLACK
+          - CLONE_SYSTEMS
+          - CLOUD
+          - CONSEC
+          - CORE_CLOUDRESOURCE
+          - CORTEX_XDR
+          - CROWDSTRIKE
+          - CROWDSTRIKE_ENTERPRISE
+          - CYCOGNITO
+          - DETECTIFY
+          - FORTIFY_DAST
+          - GCP
+          - HACKER_ONE
+          - INTUNE
+          - JAMF
+          - MICROSOFT_AZURE
+          - MICROSOFT_DEFENDER
+          - MICROSOFT_DEFENDER_CLOUD
+          - MICROSOFT_TVM
+          - NESSUS_AGENT
+          - NESSUS_SCAN
+          - NETSPARKER
+          - NODE_ZERO
+          - ORCA
+          - OUTPOST24
+          - PRISMACLOUD
+          - PRISMACLOUD_CSPM
+          - PURPLEMET
+          - PVS
+          - QUALYS
+          - QUALYS_WAS
+          - RAPID7_INSIGHT_APP_SEC
+          - RAPID7_INSIGHTVM
+          - RAPID7_INSIGHTVM_CLOUD
+          - RAPID_7
+          - RED_HAT_INSIGHTS
+          - RISK_RECON
+          - SECURITY_CENTER
+          - SECURITY_SCORE_CARD
+          - SENTINEL_ONE
+          - SERVICE_NOW
+          - SSM
+          - T.CS
+          - T.IO
+          - T.OT
+          - TANIUM
+          - TIE AD
+          - TIE MEID
+          - TIE
+          - UNCLASSIFIED
+          - VERACODE_DAST
+          - WAS
+          - WHITEHAT
+          - WIZ_CONFIGURATION
+          - WIZ_ISSUES
+          - WIZ_VULNERABILITY_MANAGEMENT
+        first_seen:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time the source first reported the asset.
+        last_seen:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time the source last reported the asset.
     assets_subquery:
       type: object
       description: The query for selecting the assets to delete. Includes an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint.
@@ -1629,45 +1702,6 @@ components:
         value:
           type: string
           description: "The asset attribute value to match.\n\n **Note:** The value is case sensitive when used with the `match` (contains) or `nmatch` (does not contain) operators."
-    assets_AssetIdentifierObject:
-      type: object
-      description: Each object can contain a single instance of the properties described below. You can combine multiple instances of this object, each containing a different single property.
-      properties:
-        id:
-          type: string
-          description: The unique identifier for a specific asset. Use this value as the unique key for the asset.
-        fqdn:
-          type: array
-          description: A list of fully-qualified domain names (FQDNs) associated with the asset or assets.
-          items:
-            type: string
-        mac_address:
-          type: array
-          description: A list of MAC addresses associated with the asset or assets.
-          items:
-            type: string
-        netbios_name:
-          type: array
-          description: A list of NetBIOS names associated with the asset or assets.
-          items:
-            type: string
-        ipv4:
-          type: array
-          description: A list of IPv4 addresses associated with the asset or assets.
-          items:
-            type: string
-    assets_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     assets_assetsBulkUpdateAcrObject:
       type: object
       required:
@@ -1698,40 +1732,6 @@ components:
           description: The identifiers of the assets to update to the specified ACR. At least one asset object is required in this array.
           items:
             $ref: '#/components/schemas/assets_AssetIdentifierObject'
-    assets_AcrDriversObject:
-      type: object
-      description: Asset characteristic that factored into the Asset Criticality Rating (ACR) calculation. For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
-      properties:
-        driver_name:
-          type: string
-          description: The ACR key driver. ACR key drivers reflect the global threat landscape associated with the asset's characteristics.
-          enum:
-          - device_type
-          - device_capability
-          - internet_exposure
-        driver_value:
-          type: array
-          description: 'The ACR key driver''s value. For example, for the `device_type` key driver, values can include `hypervisor`, `printer`, etc. '
-          items:
-            type: string
-    assets_tags:
-      type: object
-      properties:
-        tag_uuid:
-          type: string
-          description: The unique identifier of the tag.
-        tag_key:
-          type: string
-          description: The tag key, representing the category portion of a category:value tag pair.
-        tag_value:
-          type: string
-          description: The tag value, representing the value portion of a category:value tag pair.
-        added_by:
-          type: string
-          description: The unique identifier of the user who assigned the tag to the asset.
-        added_at:
-          type: string
-          description: A timestamp in ISO 8601 format indicating the date and time the tag was assigned to the asset.
   securitySchemes:
     assets_cloud:
       type: apiKey

@@ -460,14 +460,6 @@ paths:
       - OT_Connectors_cloud: []
 components:
   parameters:
-    OT_Connectors_id-path-param:
-      description: The OT connector's unique identifier.
-      required: true
-      name: id
-      in: path
-      schema:
-        type: string
-        format: uuid
     OT_Connectors_x-linking-key-header:
       description: The linking key for the OT connector. You can generate the required linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
       required: true
@@ -475,14 +467,6 @@ components:
       in: header
       schema:
         type: string
-    OT_Connectors_x-target-site-header:
-      description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
-      required: true
-      name: x-target-site
-      in: header
-      schema:
-        type: string
-        example: us-2b
     OT_Connectors_type-path-param:
       description: The type of connector or sensor. This value is always `ot` for OT connectors.
       required: true
@@ -493,6 +477,22 @@ components:
         type: string
         enum:
         - ot
+    OT_Connectors_x-target-site-header:
+      description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+      required: true
+      name: x-target-site
+      in: header
+      schema:
+        type: string
+        example: us-2b
+    OT_Connectors_id-path-param:
+      description: The OT connector's unique identifier.
+      required: true
+      name: id
+      in: path
+      schema:
+        type: string
+        format: uuid
   schemas:
     OT_Connectors_sensor-linking-key-create-response:
       type: object
@@ -505,27 +505,6 @@ components:
           type: string
           description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
           example: us-2b
-    OT_Connectors_sensor-create-request-body:
-      type: object
-      required:
-      - name
-      - subType
-      - enabled
-      properties:
-        name:
-          type: string
-          description: The name of the OT connector. The maximum character length is 64 chars.
-          maxLength: 64
-          example: My-Sensor
-        subType:
-          type: string
-          description: The type of OT connector. There are two types of OT connectors, Industrial Core Platform (ICP) and Enterprise Manager (EM).
-          enum:
-          - icp
-          - em
-        enabled:
-          type: boolean
-          description: Indicates whether or not the OT connector is enabled.
     OT_Connectors_ErrorResponse:
       type: object
       properties:
@@ -644,6 +623,27 @@ components:
           example: true
     OT_Connectors_sensor-update-request-body:
       type: object
+      properties:
+        name:
+          type: string
+          description: The name of the OT connector. The maximum character length is 64 chars.
+          maxLength: 64
+          example: My-Sensor
+        subType:
+          type: string
+          description: The type of OT connector. There are two types of OT connectors, Industrial Core Platform (ICP) and Enterprise Manager (EM).
+          enum:
+          - icp
+          - em
+        enabled:
+          type: boolean
+          description: Indicates whether or not the OT connector is enabled.
+    OT_Connectors_sensor-create-request-body:
+      type: object
+      required:
+      - name
+      - subType
+      - enabled
       properties:
         name:
           type: string

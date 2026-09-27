@@ -964,6 +964,54 @@ paths:
       - Shared_Collections_cloud: []
 components:
   schemas:
+    Shared_Collections_PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+    Shared_Collections_request-update-acl-object:
+      type: object
+      description: The access control list (ACL) object that defines the access to a shared collection for a given user or group.
+      required:
+      - permission
+      - uuid
+      - type
+      properties:
+        permission:
+          type: string
+          description: "The level of access a user or group has to the shared collection. Use the `REMOVE_USER` value to remove the specified user or group from the shared collection. The `OWNER` permission can only be assigned to the `USER` type. \n\nNote that users (or a user in a group) that are assigned the `CAN_EDIT` or `OWNER` permissions must have at at least the Scan Operator [24] user role role or the `IO.SHARED_COLLECTIONS.MANAGE` custom role privilege. See [Roles](doc:roles)."
+          enum:
+          - OWNER
+          - CAN_VIEW
+          - CAN_EDIT
+          - REMOVE_USER
+          example: OWNER
+        uuid:
+          type: string
+          description: The unique ID for the user or group you want to grant permission to for the shared collection.
+          example: d72d3138-364b-4d67-a290-a3362a4d18af
+        type:
+          type: string
+          description: Indicates whether or not the permission applies to a user or a group.
+          enum:
+          - USER
+          - GROUP
+          example: USER
+        name:
+          type: string
+          description: A name for the user or group.
+          example: developer@example.com
     Shared_Collections_scan-object-list:
       type: object
       properties:
@@ -1046,55 +1094,12 @@ components:
         total_targets:
           type: integer
           description: The total number of targets in the scan.
-    Shared_Collections_request-update-shared-collection:
-      type: object
-      required:
-      - name
-      - acl
-      properties:
-        name:
-          type: string
-          description: A name for the shared collection. Names cannot exceed 100 characters.
-          example: Office scans
-        description:
-          type: string
-          description: A description for shared collection. Descriptions cannot exceed 1,000 characters.
-          example: Shared scan configurations for the office.
-        acl:
-          type: array
-          items:
-            $ref: '#/components/schemas/Shared_Collections_request-update-acl-object'
     Shared_Collections_settings-rrules:
       type: string
       description: 'The interval at which the scan repeats. The interval is formatted as a string of three values delimited by semi-colons. These values are: the frequency (FREQ=ONETIME or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). For a scan that runs every three weeks on Monday Wednesday and Friday, the string would be `FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR`. If the scan is not scheduled to recur, this attribute is `null`. For more information, see [rrules Format](doc:example-assessment-scan-recurring#rrules-format).
 
 
         **Note:** To set the `rrules` parameter for an agent scan, the request must also include the following body parameters:<ul><li>The `uuid` parameter must specify an agent scan template. For more information, see [Tenable-Provided Agent Templates](https://docs.tenable.com/vulnerability-management/Content/Scans/AgentTemplates.htm) and the [List templates](ref:editor-list-templates) endpoint.</li><li>The `agent_group_id` parameter must specify an agent group. For more information, see [Agent Groups](ref:agent-groups).</li></ul>For an example request body for an agent scan, see [Example Agent Scan: Recurring](doc:example-agent-scan-recurring).'
-    Shared_Collections_shared-collection-object:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the shared collection.
-          example: Account 24 shared scans
-        description:
-          type: string
-          description: The description of the shared collection.
-          example: Shared scan configurations for account 24
-        uuid:
-          type: string
-          format: uuid
-          description: The unique ID for the shared collection.
-          example: e956769e-76fc-4949-8a5a-135cbb72fff6
-        acl:
-          type: array
-          items:
-            $ref: '#/components/schemas/Shared_Collections_acl-object'
-      required:
-      - name
-      - description
-      - uuid
-      - acl
     Shared_Collections_async-api-response-body:
       type: object
       properties:
@@ -1106,66 +1111,6 @@ components:
           type: string
           description: 'The unique ID for tracking the status of the requested asynchronous job. You can query the status of the job with the [Get job status](ref:shared-collections-create) endpoint. '
           example: e3d24812682ee9a312ef178b8a0deb8a
-    Shared_Collections_PaginationResponse:
-      description: An object containing pagination information for the current result set.
-      type: object
-      properties:
-        total:
-          type: integer
-          format: int32
-          description: The total number of records matching your search criteria.
-        limit:
-          type: integer
-          format: int32
-          description: The number of records requested (or the default value if omitted from the request).
-        offset:
-          type: integer
-          format: int32
-          description: The starting record you requested (or zero if omitted).
-    Shared_Collections_request-update-acl-object:
-      type: object
-      description: The access control list (ACL) object that defines the access to a shared collection for a given user or group.
-      required:
-      - permission
-      - uuid
-      - type
-      properties:
-        permission:
-          type: string
-          description: "The level of access a user or group has to the shared collection. Use the `REMOVE_USER` value to remove the specified user or group from the shared collection. The `OWNER` permission can only be assigned to the `USER` type. \n\nNote that users (or a user in a group) that are assigned the `CAN_EDIT` or `OWNER` permissions must have at at least the Scan Operator [24] user role role or the `IO.SHARED_COLLECTIONS.MANAGE` custom role privilege. See [Roles](doc:roles)."
-          enum:
-          - OWNER
-          - CAN_VIEW
-          - CAN_EDIT
-          - REMOVE_USER
-          example: OWNER
-        uuid:
-          type: string
-          description: The unique ID for the user or group you want to grant permission to for the shared collection.
-          example: d72d3138-364b-4d67-a290-a3362a4d18af
-        type:
-          type: string
-          description: Indicates whether or not the permission applies to a user or a group.
-          enum:
-          - USER
-          - GROUP
-          example: USER
-        name:
-          type: string
-          description: A name for the user or group.
-          example: developer@example.com
-    Shared_Collections_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     Shared_Collections_request-create-shared-collection:
       type: object
       required:
@@ -1184,6 +1129,39 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Shared_Collections_request-create-acl-object'
+    Shared_Collections_acl-object:
+      type: object
+      description: The access control list (ACL) object that defines the permissions for a shared collection for a given user or group.
+      required:
+      - permission
+      - uuid
+      - type
+      properties:
+        permission:
+          type: string
+          description: "The level of access a user or group has to the shared collection. \n\nNote: `REMOVE_USER` is only used in update requests to remove a user from the shared collection."
+          enum:
+          - OWNER
+          - CAN_VIEW
+          - CAN_EDIT
+          - REMOVE_USER
+          example: OWNER
+        uuid:
+          type: string
+          format: uuid
+          description: The unique ID for the user or group.
+          example: d72d3138-364b-4d67-a290-a3362a4d18af
+        name:
+          type: string
+          description: The user or group name.
+          example: developer@example.com
+        type:
+          type: string
+          description: The type of permission. Either `USER` or `GROUP`.
+          enum:
+          - USER
+          - GROUP
+          example: USER
     Shared_Collections_request-status-response-body:
       type: object
       properties:
@@ -1242,39 +1220,61 @@ components:
           type: string
           description: A name for the user or group.
           example: developer@example.com
-    Shared_Collections_acl-object:
+    Shared_Collections_request-update-shared-collection:
       type: object
-      description: The access control list (ACL) object that defines the permissions for a shared collection for a given user or group.
       required:
-      - permission
-      - uuid
-      - type
+      - name
+      - acl
       properties:
-        permission:
+        name:
           type: string
-          description: "The level of access a user or group has to the shared collection. \n\nNote: `REMOVE_USER` is only used in update requests to remove a user from the shared collection."
-          enum:
-          - OWNER
-          - CAN_VIEW
-          - CAN_EDIT
-          - REMOVE_USER
-          example: OWNER
+          description: A name for the shared collection. Names cannot exceed 100 characters.
+          example: Office scans
+        description:
+          type: string
+          description: A description for shared collection. Descriptions cannot exceed 1,000 characters.
+          example: Shared scan configurations for the office.
+        acl:
+          type: array
+          items:
+            $ref: '#/components/schemas/Shared_Collections_request-update-acl-object'
+    Shared_Collections_shared-collection-object:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the shared collection.
+          example: Account 24 shared scans
+        description:
+          type: string
+          description: The description of the shared collection.
+          example: Shared scan configurations for account 24
         uuid:
           type: string
           format: uuid
-          description: The unique ID for the user or group.
-          example: d72d3138-364b-4d67-a290-a3362a4d18af
-        name:
+          description: The unique ID for the shared collection.
+          example: e956769e-76fc-4949-8a5a-135cbb72fff6
+        acl:
+          type: array
+          items:
+            $ref: '#/components/schemas/Shared_Collections_acl-object'
+      required:
+      - name
+      - description
+      - uuid
+      - acl
+    Shared_Collections_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
           type: string
-          description: The user or group name.
-          example: developer@example.com
-        type:
+          description: The standard HTTP error name.
+        message:
           type: string
-          description: The type of permission. Either `USER` or `GROUP`.
-          enum:
-          - USER
-          - GROUP
-          example: USER
+          description: A brief message about the cause of the error.
   securitySchemes:
     assets_cloud:
       type: apiKey

@@ -417,18 +417,27 @@ paths:
       - Scan_Results_cloud: []
 components:
   schemas:
-    Scan_Results_ErrorResponse:
+    Scan_Results_plugin_output:
       type: object
       properties:
-        statusCode:
+        ports:
+          type: object
+          properties: {}
+        has_attachment:
           type: integer
-          description: The HTTP status code of the error.
-        error:
+          description: If the value is 1, the plugin output contains files that may be exported.
+        custom_description:
           type: string
-          description: The standard HTTP error name.
-        message:
+          description: A custom description of the plugin.
+        plugin_output:
           type: string
-          description: A brief message about the cause of the error.
+          description: The text of the plugin output.
+        hosts:
+          type: string
+          description: Other hosts with the same output.
+        severity:
+          type: integer
+          description: The severity the output.
     Scan_Results_host_vulnerability:
       type: object
       properties:
@@ -459,27 +468,6 @@ components:
         severity:
           type: integer
           description: The severity of plugin.
-    Scan_Results_plugin_output:
-      type: object
-      properties:
-        ports:
-          type: object
-          properties: {}
-        has_attachment:
-          type: integer
-          description: If the value is 1, the plugin output contains files that may be exported.
-        custom_description:
-          type: string
-          description: A custom description of the plugin.
-        plugin_output:
-          type: string
-          description: The text of the plugin output.
-        hosts:
-          type: string
-          description: Other hosts with the same output.
-        severity:
-          type: integer
-          description: The severity the output.
     Scan_Results_host_compliance:
       type: object
       properties:
@@ -507,6 +495,18 @@ components:
         severity:
           type: integer
           description: The severity of plugin.
+    Scan_Results_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
   securitySchemes:
     assets_cloud:
       type: apiKey

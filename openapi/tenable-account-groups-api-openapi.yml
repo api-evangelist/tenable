@@ -390,6 +390,33 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
+    Response-Account-Groups:
+      type: object
+      properties:
+        accountGroupUuid:
+          type: string
+          format: uuid
+          description: The UUID of the account group.
+        parentContainerUuid:
+          type: string
+          format: uuid
+          description: The UUID of the account group's parent container.
+        name:
+          type: string
+          description: The name of the account group.
+        lastModified:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the account group was last modified. For example, `1710256733`.
+        count:
+          type: integer
+          description: The number of accounts contained in the account group.
+        accountUuids:
+          description: An array of account UUIDs that belong to the account group.
+          type: array
+          items:
+            type: string
+            format: uuid
     Request-Create-Account-Group:
       type: object
       required:
@@ -419,33 +446,6 @@ components:
         message:
           type: string
           description: A brief message about the cause of the error.
-    Response-Account-Groups:
-      type: object
-      properties:
-        accountGroupUuid:
-          type: string
-          format: uuid
-          description: The UUID of the account group.
-        parentContainerUuid:
-          type: string
-          format: uuid
-          description: The UUID of the account group's parent container.
-        name:
-          type: string
-          description: The name of the account group.
-        lastModified:
-          type: integer
-          format: int64
-          description: A Unix timestamp indicating the date and time when the account group was last modified. For example, `1710256733`.
-        count:
-          type: integer
-          description: The number of accounts contained in the account group.
-        accountUuids:
-          description: An array of account UUIDs that belong to the account group.
-          type: array
-          items:
-            type: string
-            format: uuid
   securitySchemes:
     cloud:
       type: apiKey

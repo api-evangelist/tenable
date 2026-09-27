@@ -516,10 +516,23 @@ paths:
       - target-groups_cloud: []
 components:
   schemas:
-    target-groups_target_groups:
-      type: array
-      items:
-        $ref: '#/components/schemas/target-groups_group'
+    target-groups_ACL_Request:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of permission (default, user, group).
+          enum:
+          - default
+          - user
+          - group
+        id:
+          type: integer
+          description: The unique ID of the user or group.
+        permissions:
+          type: integer
+          description: The permission value to grant access as described in [Permissions](doc:permissions).
+          format: int32
     target-groups_group:
       type: object
       properties:
@@ -558,23 +571,18 @@ components:
         user_permissions:
           type: integer
           description: The current user permissions for the group.
-    target-groups_ACL_Request:
+    target-groups_ErrorResponse:
       type: object
       properties:
-        type:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
           type: string
-          description: The type of permission (default, user, group).
-          enum:
-          - default
-          - user
-          - group
-        id:
-          type: integer
-          description: The unique ID of the user or group.
-        permissions:
-          type: integer
-          description: The permission value to grant access as described in [Permissions](doc:permissions).
-          format: int32
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     target-groups_ACL_Response:
       type: object
       properties:
@@ -604,18 +612,10 @@ components:
         owner:
           type: integer
           description: The ID of the owner of the object.
-    target-groups_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
+    target-groups_target_groups:
+      type: array
+      items:
+        $ref: '#/components/schemas/target-groups_group'
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey

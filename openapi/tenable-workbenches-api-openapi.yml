@@ -2339,6 +2339,268 @@ paths:
       - workbenches_cloud: []
 components:
   schemas:
+    workbenches_exploit_framework:
+      type: object
+      description: Information about the vulnerability in a specific exploit framework.
+      properties:
+        name:
+          type: string
+          description: The name of the exploit framework.
+        exploits:
+          type: array
+          description: A list of exploits associated with the vulnerability in the specified exploit framework.
+          items:
+            $ref: '#/components/schemas/workbenches_exploit'
+    workbenches_workbenches-source-object:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "The name of the entity that reported the asset details. Sources can include sensors, connectors, and API imports. Source names can be customized by your organization (for example, you specify a name when you import asset records). If your organization does not customize source names, system-generated names include:\n - AWS—You obtained the asset data from an Amazon Web Services connector.\n - NESSUS_AGENT—You obtained the asset data obtained from a Nessus agent scan.\n - PVS—You obtained the asset data from a Nessus Network Monitor (NNM) scan.\n - NESSUS_SCAN—You obtained the asset data from a Nessus scan.\n - WAS—You obtained the asset data from a  Tenable Web App Scanning scan."
+        first_seen:
+          type: string
+          description: The ISO timestamp when the source first reported the asset.
+        last_seen:
+          type: string
+          description: The ISO timestamp when the source last reported the asset.
+    workbenches_workbenches-plugin-outputs:
+      type: array
+      description: A list of vulnerabilities discovered by the plugin.
+      items:
+        type: object
+        properties:
+          plugin_output:
+            type: string
+            description: The plugin's output about the vulnerability. May be an empty string.
+          states:
+            type: array
+            description: Vulnerability state items.
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The current state of the reported plugin (Active, Fixed, New, etc.)
+                results:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      application_protocol:
+                        type: string
+                        description: The application protocol where this vulnerability was found.
+                      port:
+                        type: integer
+                        description: The port number where this vulnerability was found.
+                      transport_protocol:
+                        type: string
+                        description: The transportation protocol (TCP or UDP) where this vulnerability was found.
+                      assets:
+                        type: array
+                        description: A list of assets where this output was found.
+                        items:
+                          type: object
+                          properties:
+                            hostname:
+                              type: string
+                              description: The host name of the asset.
+                            id:
+                              type: string
+                              description: The ID of the asset.
+                            uuid:
+                              type: string
+                              description: The unique identifier of the asset. Use this value as the unique key for the asset.
+                            netbios_name:
+                              type: string
+                              description: The NetBios name of the asset.
+                            fqdn:
+                              type: string
+                              description: The FQDN of the asset.
+                            ipv4:
+                              type: string
+                              description: The IPV4 of the asset.
+                            first_seen:
+                              type: string
+                              format: date-time
+                              description: Indicates when the asset was discovered by a scan.
+                            last_seen:
+                              type: string
+                              format: date-time
+                              description: Indicates when the asset was last observed by a scan.
+                      severity:
+                        type: integer
+                        description: Integer [0-4] indicating how severe the vulnerability is, where 0 is info only.
+    workbenches_workbenches-vulnerability-info:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+          description: A count of the vulnerability occurrences.
+        vuln_count:
+          type: integer
+          format: int32
+          description: ''
+        description:
+          type: string
+          description: The description of the vulnerability.
+        synopsis:
+          type: string
+          description: A brief summary of the vulnerability.
+        solution:
+          type: string
+          description: Information on how to fix the vulnerability.
+        discovery:
+          type: object
+          properties:
+            seen_first:
+              type: string
+              description: The Unix timestamp of the scan that first detected the vulnerability on an asset.
+            seen_last:
+              type: string
+              description: The Unix timestamp of the scan that most recently detected the vulnerability on an asset.
+        severity:
+          type: integer
+          description: The severity level of the vulnerability.
+        plugin_details:
+          type: object
+          properties:
+            family:
+              type: string
+              description: The plugin family.
+            modification_date:
+              type: string
+              description: The ISO timestamp when Tenable last updated the plugin definition.
+            name:
+              type: string
+              description: The name of the plugin.
+            publication_date:
+              type: string
+              description: The ISO timestamp when Tenable first published the plugin definition.
+            type:
+              type: string
+              description: The type of scan that uses the plugin, either a network scan (`remote`) or a credentialed scan (`local`).
+            version:
+              type: string
+              description: The plugin version.
+            severity:
+              type: integer
+              format: int32
+              description: The severity level of the plugin.
+        reference_information:
+          type: array
+          description: ''
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "The source of the reference information about the vulnerability. Possible values include:\n - bid—Bugtraq (Symantec Connect)\n - cert—CERT/CC Vulnerability Notes Database\n - cve—NIST National Vulnerability Database (NVD)\n - edb-id—The Exploit Database\n - iava—information assurance vulnerability alert\n - osvdb—Open Sourced Vulnerability Database"
+              url:
+                type: string
+                description: The URL of the source site, if available.
+              values:
+                type: array
+                description: The unique identifier(s) for the vulnerability at the source.
+                items:
+                  type: string
+        risk_information:
+          type: object
+          properties:
+            risk_factor:
+              type: string
+              description: 'The risk factor of the vulnerability associated with the plugin. The risk factor is determined based on the calculation of the CVSS score, possible values are: <ul><li>`Low`—The vulnerability has a CVSS score between 0.1 and 3.9</li><li>`Medium`—The vulnerability has a CVSS score between 4.0 and 6.9</li><li>`High`—The vulnerability has a CVSS score between 7.0 and 9.9</li><li>`Critical`—The vulnerability has a CVSS score of 10.0</li></ul>.'
+            cvss_vector:
+              type: string
+              description: The raw CVSSv2 metrics for the vulnerability. For more information, see CVSSv2 documentation.
+            cvss_base_score:
+              type: string
+              description: The CVSSv2 base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
+            cvss_temporal_vector:
+              type: string
+              description: The raw CVSSv2 temporal metrics for the vulnerability.
+            cvss_temporal_score:
+              type: string
+              description: The CVSSv2 temporal score (characteristics of a vulnerability that change over time but not among user environments).
+            cvss3_vector:
+              type: string
+              description: The raw CVSSv3 metrics for the vulnerability. For more information, see CVSSv3 documentation.
+            cvss3_base_score:
+              type: string
+              description: The CVSSv3 base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
+            cvss3_temporal_vector:
+              type: string
+              description: CVSSv3 temporal metrics for the vulnerability.
+            cvss3_temporal_score:
+              type: string
+              description: The CVSSv3 temporal score (characteristics of a vulnerability that change over time but not among user environments).
+            stig_severity:
+              type: string
+              description: Security Technical Implementation Guide (STIG) severity code for the vulnerability.
+        see_also:
+          type: array
+          description: Links to external websites that contain helpful information about the vulnerability.
+          items:
+            type: string
+        vulnerability_information:
+          type: object
+          properties:
+            vulnerability_publication_date:
+              type: string
+              description: The ISO timestamp for the first publication date of the plugin.
+            exploited_by_malware:
+              type: boolean
+              description: The vulnerability discovered by this plugin is known to be exploited by malware.
+            patch_publication_date:
+              type: string
+              description: The ISO timestamp for date on which the vendor published a patch for the vulnerability.
+            exploit_available:
+              type: boolean
+              description: A value specifying whether a public exploit exists for the vulnerability.
+            exploitability_ease:
+              type: string
+              description: Description of how easy it is to exploit the issue.
+            asset_inventory:
+              type: string
+              description: ''
+            default_account:
+              type: string
+              description: ''
+            exploited_by_nessus:
+              type: boolean
+              description: A value specifying whether Nessus exploited the vulnerability during the process of identification.
+            in_the_news:
+              type: boolean
+              description: A value specifying whether this plugin has received media attention (for example, ShellShock, Meltdown).
+            malware:
+              type: string
+              description: ''
+            unsupported_by_vendor:
+              type: boolean
+              description: Software found by this plugin is unsupported by the software's vendor (for example, Windows 95 or Firefox 3).
+            cpe:
+              type: string
+              description: The Common Platform Enumeration (CPE) number for the plugin.
+            exploit_frameworks:
+              type: array
+              description: A list of exploit frameworks that have identified the vulnerability.
+              items:
+                $ref: '#/components/schemas/workbenches_exploit_framework'
+        vpr:
+          type: object
+          description: Information about the Vulnerability Priority Rating (VPR) for the vulnerability.
+          properties:
+            score:
+              type: number
+              format: float
+              description: The Vulnerability Priority Rating (VPR) for the vulnerability. If a plugin is designed to detect multiple vulnerabilities, the VPR represents the highest value calculated for a vulnerability associated with the plugin. For more information, see <a href="https://docs.tenable.com/vulnerability-management/Content/Analysis/RiskMetrics.htm" target="_blank">Severity vs. VPR</a> in the <i>Tenable Vulnerability Management User Guide</i>.
+            drivers:
+              type: object
+              description: The key drivers Tenable uses to calculate a vulnerability's VPR. For more information, see <[Vulnerability Priority Rating Drivers](doc:vpr-drivers-tio).
+              properties: {}
+            updated:
+              type: string
+              description: The ISO timestamp when Tenable Vulnerability Management last imported the VPR for this vulnerability. Tenable Vulnerability Management imports a VPR value the first time you scan a vulnerability on your network. Then, Tenable Vulnerability Management automatically re-imports new and updated VPR values daily.
     workbenches_exploit:
       type: object
       properties:
@@ -2348,6 +2610,370 @@ components:
         url:
           type: string
           description: The URL for the exploit in the framework.
+    workbenches_AcrDriversObject:
+      type: object
+      description: Asset characteristic that factored into the Asset Criticality Rating (ACR) calculation. For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+      properties:
+        driver_name:
+          type: string
+          description: The ACR key driver. ACR key drivers reflect the global threat landscape associated with the asset's characteristics.
+          enum:
+          - device_type
+          - device_capability
+          - internet_exposure
+        driver_value:
+          type: array
+          description: 'The ACR key driver''s value. For example, for the `device_type` key driver, values can include `hypervisor`, `printer`, etc. '
+          items:
+            type: string
+    workbenches_workbenches-assets:
+      type: array
+      description: An array of asset objects.
+      items:
+        $ref: '#/components/schemas/workbenches_workbenches-asset'
+    workbenches_workbenches-asset:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the asset.
+        has_agent:
+          type: boolean
+          description: A value specifying whether a Nessus agent scan detected the asset (`true`).
+        last_seen:
+          type: string
+          description: The ISO timestamp of the scan that most recently detected the asset.
+        last_scan_target:
+          type: string
+          description: The IPv4 address, IPv6 address, or FQDN that the scanner last used to evaluate the asset.
+        sources:
+          type: array
+          description: A list of sources for the asset record.
+          items:
+            $ref: '#/components/schemas/workbenches_workbenches-source-object'
+        acr_score:
+          type: integer
+          description: 'The Asset Criticality Rating (ACR) assigned to the asset. Tenable assigns an ACR to each asset on your network to represent the asset''s relative risk as an integer from 1 to 10. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+        acr_drivers:
+          type: array
+          description: "The key drivers Tenable used to calculate the asset's Tenable-provided Asset Criticality Rating (ACR). For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*. \n\nNote: This attribute is available only with a Tenable Lumin license."
+          items:
+            $ref: '#/components/schemas/workbenches_AcrDriversObject'
+        exposure_score:
+          type: integer
+          description: 'The Asset Exposure Score (AES) assigned to the asset. Tenable assigns an AES to each asset on your network to represent the asset''s relative exposure as an integer between 0 and 1000. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+        scan_frequency:
+          type: array
+          description: 'Information about how often scans were run against the asset during specified time intervals. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+          items:
+            $ref: '#/components/schemas/workbenches_AcrScanFrequencyObject'
+        ipv4:
+          description: A list of IPv4 addresses associated with the asset.
+          type: array
+          items:
+            type: string
+        ipv6:
+          description: A list of IPv6 addresses associated with the asset.
+          type: array
+          items:
+            type: string
+        fqdn:
+          description: A list of fully qualified domain names (FQDNs) associated with the asset.
+          type: array
+          items:
+            type: string
+        netbios_name:
+          type: array
+          description: The NetBIOS name for the asset.
+          items:
+            type: string
+        operating_system:
+          type: array
+          description: A list of operating systems associated with the asset.
+          items:
+            type: string
+        agent_name:
+          type: array
+          description: A list of Tenable agents that scanned and identified the asset.
+          items:
+            type: string
+        aws_ec2_name:
+          type: array
+          description: A list of virtual machine instance names in AWS EC2 associated with the asset.
+          items:
+            type: string
+        mac_address:
+          type: array
+          description: A list of MAC addresses associated with the asset.
+          items:
+            type: string
+        bigfix_asset_id:
+          type: array
+          items:
+            type: string
+          description: The unique identifier of the asset in HCL BigFix. For more information, see the HCL BigFix documentation.
+    workbenches_workbenches-activity-source:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "The name of the entity that reported the asset details. Sources can include sensors, connectors, and API imports. Source names can be customized by your organization (for example, you specify a name when you import asset records). If your organization does not customize source names, system-generated names include:\n - AWS—You obtained the asset data from an Amazon Web Services connector.\n - NESSUS_AGENT—You obtained the asset data obtained from a Nessus agent scan.\n - PVS—You obtained the asset data from a Nessus Network Monitor (NNM) scan.\n - NESSUS_SCAN—You obtained the asset data from a Nessus scan.\n - WAS—You obtained the asset data from a  Tenable Web App Scanning scan."
+        firstSeen:
+          type: string
+          description: The ISO timestamp when the source first reported the asset.
+        lastSeen:
+          type: string
+          description: The ISO timestamp when the source last reported the asset.
+    workbenches_AcrScanFrequencyObject:
+      type: object
+      description: The interval, frequency, and licensing information for the scans of the asset.
+      properties:
+        interval:
+          type: integer
+          description: The number of days in the interval during which Tenable checks for scans involving the asset.
+        frequency:
+          type: integer
+          description: The number of times a scan was run against the asset during the specified interval.
+        licensed:
+          type: boolean
+          description: Indicates whether the asset was licensed at the time of the scans.
+    workbenches_workbenches-tag-object:
+      type: object
+      properties:
+        tag_uuid:
+          type: string
+          description: The unique identifier of the tag.
+        tag_key:
+          type: string
+          description: The tag key, representing the category portion of a category:value tag pair.
+        tag_value:
+          type: string
+          description: The tag value, representing the value portion of a category:value tag pair.
+        added_by:
+          type: string
+          description: The unique identifier of the user who assigned the tag to the asset.
+        added_at:
+          type: string
+          description: A timestamp in ISO 8601 format indicating the date and time the tag was assigned to the asset.
+        source:
+          type: string
+          description: "Indicates the tag type. Tag types include:\n - static—A user manually applied the tag to an asset. You can use the Tenable Vulnerability Management API to create and assign static tags to assets.\n - dynamic—Tenable Vulnerability Management automatically applies the tag based on asset attribute rules. \n\nFor more information, see [Apply Dynamic Tags](doc:apply-dynamic-tags)."
+    workbenches_workbenches-asset-activity:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "Event type:\n - discovered—Asset created (for example, by a network scan or import).\n - seen—Asset observed by a network scan without any changes to its attributes.\n - tagging—Tag added to or removed from asset.\n - attribute_change—A scan identified new or changed attributes for the asset (for example, new software applications installed on the asset).\n - updated—Asset updated either manually by a user or automatically by a new scan."
+        timestamp:
+          type: integer
+          description: The timestamp of the event. The timestamp is reported in ISO 8601 format in UTC time.
+        scan_id:
+          type: string
+          description: The unique identifier of the scan that logged the event.
+        schedule_id:
+          type: string
+          description: The ID of the scheduled scan associated with the event.
+        source:
+          type: string
+          description: The entity that logged the event, for example, NESSUS_AGENT, NESSUS_AGENT, PVS, or WAS.
+        details:
+          type: object
+          properties:
+            assetId:
+              type: string
+              description: The unique identifier of the asset.
+            containerId:
+              type: string
+              description: The unique identifier of your Tenable Vulnerability Management instance.
+            createdAt:
+              type: integer
+              description: The timestamp of the asset creation. The timestamp is reported in ISO 8601 format in UTC time.
+            updatedAt:
+              type: integer
+              description: The timestamp of the asset update time. The timestamp is reported in ISO 8601 format in UTC time.
+            hasAgent:
+              type: boolean
+              description: Specifies whether the asset has an agent installed.
+            hasPluginResults:
+              type: boolean
+              description: Specifies whether or not any plugin results match this asset.
+            firstScanTime:
+              type: integer
+              description: The timestamp of the completion of the scan that discovered or observed the asset for the first time. The timestamp is reported in ISO 8601 format in UTC time.
+            lastScanTime:
+              type: integer
+              description: The timestamp of the completion of the last asset scan. The timestamp is reported in ISO 8601 format in UTC time.
+            lastAuthenticatedScanTime:
+              type: integer
+              description: The timestamp of the completion of the last authenticated scan of the asset. The timestamp is reported in ISO 8601 format in UTC time.
+            lastLicensedScanTime:
+              type: integer
+              description: The timestamp of the scan completion time when asset was last scanned and matched license v1 requirements. The timestamp is reported in ISO 8601 format in UTC time.
+            lastLicensedScanTimeV2:
+              type: integer
+              description: The timestamp of the scan completion time when asset was last scanned and matched license v2 requirements. The timestamp is reported in ISO 8601 format in UTC time.
+            sources:
+              description: An array of source objects representing the entity that logged the event.
+              type: array
+              items:
+                $ref: '#/components/schemas/workbenches_workbenches-activity-source'
+            terminatedAt:
+              type: integer
+              description: If terminated, the timestamp of asset termination. The timestamp is reported in ISO 8601 format in UTC time.
+            terminatedBy:
+              type: string
+              description: The unique identifier of the user that terminated the asset.
+            deletedAt:
+              type: integer
+              description: If deleted, the timestamp of asset deletion. The timestamp is reported in ISO 8601 format in UTC time.
+            deletedBy:
+              type: string
+              description: The unique identifier of the user that deleted the asset.
+            properties:
+              type: object
+              description: Additional asset attributes. For attribute definitions, see [Common Asset Attributes](doc:common-asset-attributes).
+              properties: {}
+        updates:
+          type: array
+          description: (attribute_change entries only) A list of updates to the asset's attributes.
+          items:
+            type: object
+            properties:
+              method:
+                type: string
+                description: "The update method. Possible values include: \n - add—A scan identified a new software application installed on the asset.\n - remove—Tenable Vulnerability Management identified the specified application as expired and removed it from the installed_software attribute of the asset. Tenable Vulnerability Management considers an application detection expired if no scan detects the application within 30 days of the scan that originally detected the application."
+              property:
+                type: string
+                description: The name of the updated attribute.
+              value:
+                type: string
+                description: The updated value of the attribute.
+    workbenches_Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Standard HTTP error name, or a brief message about the cause of the error.
+    workbenches_workbenches-vulnerability:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The number of times that a scan detected the vulnerability on an asset.
+        plugin_family:
+          type: string
+          description: The plugin's family.
+        plugin_id:
+          type: integer
+          description: The unique plugin ID.
+        plugin_name:
+          type: string
+          description: The name of the plugin that detected the vulnerability.
+        vulnerability_state:
+          type: string
+          description: "The current state of the reported plugin. Possible states include:\n - Active—The vulnerability is currently present on an asset.\n - New—The vulnerability is active on an asset, and was first detected within the last 14 days.\n - Fixed—A subsequent scan detected that the formerly-active vulnerability is no longer present on an asset.\n - Resurfaced—The vulnerability was previously marked as fixed on an asset, but a subsequent scan detected the vulnerability on the asset again."
+        vpr_score:
+          type: number
+          format: float
+          description: The Vulnerability Priority Rating (VPR) for the vulnerability. If a plugin is designed to detect multiple vulnerabilities, the VPR represents the highest value calculated for a vulnerability associated with the plugin. For more information, see <a href="https://docs.tenable.com/vulnerability-management/Content/Analysis/RiskMetrics.htm" target="_blank">Severity vs. VPR</a> in the <i>Tenable Vulnerability Management User Guide</i>.
+        severity:
+          type: integer
+          description: "The severity level of the vulnerability, as defined using the Common Vulnerability Scoring System (CVSS) base score. Possible values include: \n - 0—The vulnerability has a CVSS score of 0, which corresponds to the \"info\" severity level.\n - 1—The vulnerability has a CVSS score between 0.1 and 3.9, which corresponds to the \"low\" severity level.\n - 2—The vulnerability has a CVSS score between 4.0 and 6.9, which corresponds to the \"medium\" severity level.\n - 3—The vulnerability has a CVSS score between 7.0 and 9.9, which corresponds to the \"high\" severity level.\n - 4—The vulnerability has a CVSS score of 10.0, which corresponds to the \"critical\" severity level."
+          format: int32
+        accepted_count:
+          type: integer
+          description: The number of times that a user in the user interface created an accept rule for this vulnerability. For more information, see <a href="https://docs.tenable.com/vulnerability-management/Content/Settings/Recast/AboutRecastRules.htm" target="_blank">Recast Rules</a> in the <i>Tenable Vulnerability Management User Guide</i>.
+          format: int32
+        recasted_count:
+          type: integer
+          description: The number of times that a user in the user interface created a recast rule for this vulnerability. For more information, see <a href="https://docs.tenable.com/vulnerability-management/Content/Settings/Recast/AboutRecastRules.htm" target="_blank">Recast Rules</a> in the <i>Tenable Vulnerability Management User Guide</i>.
+          format: int32
+        counts by severity:
+          type: array
+          description: The number of times that a scan detected the vulnerability on an asset, grouped by severity level.
+          items:
+            type: object
+            properties:
+              count:
+                type: integer
+                description: The number of times that a scan detected the vulnerability on an asset while the vulnerability was assigned the specified severity level.
+                format: int32
+              value:
+                type: integer
+                description: The severity level of the vulnerabilities in the group.
+        cvss_base_score:
+          type: number
+          format: float
+          description: The vulnerability's base CVSS v2.0 score. A vulnerability's base score is determined when the vulnerability is initially discovered and does not change over time.
+        cvss3_base_score:
+          type: number
+          format: float
+          description: The vulnerability's base CVSS v3.0 score. A vulnerability's base score is determined when the vulnerability is initially discovered and does not change over time.
+    workbenches_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    workbenches_workbenches-assets-with-vulns:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            description: The unique identifier of the asset.
+          severities:
+            type: array
+            description: A count of vulnerabilities by severity.
+            items:
+              $ref: '#/components/schemas/workbenches_workbenches-severity-object'
+          total:
+            type: integer
+            description: The total number of vulnerabilities detected on the asset.
+          fqdn:
+            description: A list of fully qualified domain names (FQDNs) associated with the asset.
+            type: array
+            items:
+              type: string
+          ipv4:
+            description: A list of IPv4 addresses associated with the asset.
+            type: array
+            items:
+              type: string
+          ipv6:
+            description: A list of IPv6 addresses associated with the asset.
+            type: array
+            items:
+              type: string
+          last_seen:
+            type: string
+            description: The ISO timestamp of the scan that most recently detected the asset.
+          netbios_name:
+            type: array
+            description: A list of NetBIOS names associated with the asset.
+            items:
+              type: string
+          agent_name:
+            type: array
+            description: A list of Tenable agents that scanned and identified the asset.
+            items:
+              type: string
     workbenches_workbenches-asset-details:
       type: object
       properties:
@@ -2624,73 +3250,6 @@ components:
             **Note:** If no scan detects an application within 30 days of the scan that originally detected the application, Tenable Vulnerability Management considers the detection of that application expired. As a result, the next time a scan evaluates the asset, Tenable Vulnerability Management removes the expired application from the installed_software attribute. This activity is logged as a `remove` type of `attribute_change` update in the asset activity log.'
           items:
             type: string
-    workbenches_workbenches-source-object:
-      type: object
-      properties:
-        name:
-          type: string
-          description: "The name of the entity that reported the asset details. Sources can include sensors, connectors, and API imports. Source names can be customized by your organization (for example, you specify a name when you import asset records). If your organization does not customize source names, system-generated names include:\n - AWS—You obtained the asset data from an Amazon Web Services connector.\n - NESSUS_AGENT—You obtained the asset data obtained from a Nessus agent scan.\n - PVS—You obtained the asset data from a Nessus Network Monitor (NNM) scan.\n - NESSUS_SCAN—You obtained the asset data from a Nessus scan.\n - WAS—You obtained the asset data from a  Tenable Web App Scanning scan."
-        first_seen:
-          type: string
-          description: The ISO timestamp when the source first reported the asset.
-        last_seen:
-          type: string
-          description: The ISO timestamp when the source last reported the asset.
-    workbenches_workbenches-vulnerability:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: The number of times that a scan detected the vulnerability on an asset.
-        plugin_family:
-          type: string
-          description: The plugin's family.
-        plugin_id:
-          type: integer
-          description: The unique plugin ID.
-        plugin_name:
-          type: string
-          description: The name of the plugin that detected the vulnerability.
-        vulnerability_state:
-          type: string
-          description: "The current state of the reported plugin. Possible states include:\n - Active—The vulnerability is currently present on an asset.\n - New—The vulnerability is active on an asset, and was first detected within the last 14 days.\n - Fixed—A subsequent scan detected that the formerly-active vulnerability is no longer present on an asset.\n - Resurfaced—The vulnerability was previously marked as fixed on an asset, but a subsequent scan detected the vulnerability on the asset again."
-        vpr_score:
-          type: number
-          format: float
-          description: The Vulnerability Priority Rating (VPR) for the vulnerability. If a plugin is designed to detect multiple vulnerabilities, the VPR represents the highest value calculated for a vulnerability associated with the plugin. For more information, see <a href="https://docs.tenable.com/vulnerability-management/Content/Analysis/RiskMetrics.htm" target="_blank">Severity vs. VPR</a> in the <i>Tenable Vulnerability Management User Guide</i>.
-        severity:
-          type: integer
-          description: "The severity level of the vulnerability, as defined using the Common Vulnerability Scoring System (CVSS) base score. Possible values include: \n - 0—The vulnerability has a CVSS score of 0, which corresponds to the \"info\" severity level.\n - 1—The vulnerability has a CVSS score between 0.1 and 3.9, which corresponds to the \"low\" severity level.\n - 2—The vulnerability has a CVSS score between 4.0 and 6.9, which corresponds to the \"medium\" severity level.\n - 3—The vulnerability has a CVSS score between 7.0 and 9.9, which corresponds to the \"high\" severity level.\n - 4—The vulnerability has a CVSS score of 10.0, which corresponds to the \"critical\" severity level."
-          format: int32
-        accepted_count:
-          type: integer
-          description: The number of times that a user in the user interface created an accept rule for this vulnerability. For more information, see <a href="https://docs.tenable.com/vulnerability-management/Content/Settings/Recast/AboutRecastRules.htm" target="_blank">Recast Rules</a> in the <i>Tenable Vulnerability Management User Guide</i>.
-          format: int32
-        recasted_count:
-          type: integer
-          description: The number of times that a user in the user interface created a recast rule for this vulnerability. For more information, see <a href="https://docs.tenable.com/vulnerability-management/Content/Settings/Recast/AboutRecastRules.htm" target="_blank">Recast Rules</a> in the <i>Tenable Vulnerability Management User Guide</i>.
-          format: int32
-        counts by severity:
-          type: array
-          description: The number of times that a scan detected the vulnerability on an asset, grouped by severity level.
-          items:
-            type: object
-            properties:
-              count:
-                type: integer
-                description: The number of times that a scan detected the vulnerability on an asset while the vulnerability was assigned the specified severity level.
-                format: int32
-              value:
-                type: integer
-                description: The severity level of the vulnerabilities in the group.
-        cvss_base_score:
-          type: number
-          format: float
-          description: The vulnerability's base CVSS v2.0 score. A vulnerability's base score is determined when the vulnerability is initially discovered and does not change over time.
-        cvss3_base_score:
-          type: number
-          format: float
-          description: The vulnerability's base CVSS v3.0 score. A vulnerability's base score is determined when the vulnerability is initially discovered and does not change over time.
     workbenches_workbenches-severity-object:
       type: object
       properties:
@@ -2703,565 +3262,6 @@ components:
         name:
           type: string
           description: The severity of the vulnerability as defined using the Common Vulnerability Scoring System (CVSS) base score. Possible values include `info` (CVSS score of 0), `low` (CVSS score between 0.1 and 3.9), `medium` (CVSS score between 4.0 and 6.9), `high` (CVSS score between 7.0 and 9.9), and `critical` (CVSS score of 10.0).
-    workbenches_workbenches-asset-activity:
-      type: object
-      properties:
-        type:
-          type: string
-          description: "Event type:\n - discovered—Asset created (for example, by a network scan or import).\n - seen—Asset observed by a network scan without any changes to its attributes.\n - tagging—Tag added to or removed from asset.\n - attribute_change—A scan identified new or changed attributes for the asset (for example, new software applications installed on the asset).\n - updated—Asset updated either manually by a user or automatically by a new scan."
-        timestamp:
-          type: integer
-          description: The timestamp of the event. The timestamp is reported in ISO 8601 format in UTC time.
-        scan_id:
-          type: string
-          description: The unique identifier of the scan that logged the event.
-        schedule_id:
-          type: string
-          description: The ID of the scheduled scan associated with the event.
-        source:
-          type: string
-          description: The entity that logged the event, for example, NESSUS_AGENT, NESSUS_AGENT, PVS, or WAS.
-        details:
-          type: object
-          properties:
-            assetId:
-              type: string
-              description: The unique identifier of the asset.
-            containerId:
-              type: string
-              description: The unique identifier of your Tenable Vulnerability Management instance.
-            createdAt:
-              type: integer
-              description: The timestamp of the asset creation. The timestamp is reported in ISO 8601 format in UTC time.
-            updatedAt:
-              type: integer
-              description: The timestamp of the asset update time. The timestamp is reported in ISO 8601 format in UTC time.
-            hasAgent:
-              type: boolean
-              description: Specifies whether the asset has an agent installed.
-            hasPluginResults:
-              type: boolean
-              description: Specifies whether or not any plugin results match this asset.
-            firstScanTime:
-              type: integer
-              description: The timestamp of the completion of the scan that discovered or observed the asset for the first time. The timestamp is reported in ISO 8601 format in UTC time.
-            lastScanTime:
-              type: integer
-              description: The timestamp of the completion of the last asset scan. The timestamp is reported in ISO 8601 format in UTC time.
-            lastAuthenticatedScanTime:
-              type: integer
-              description: The timestamp of the completion of the last authenticated scan of the asset. The timestamp is reported in ISO 8601 format in UTC time.
-            lastLicensedScanTime:
-              type: integer
-              description: The timestamp of the scan completion time when asset was last scanned and matched license v1 requirements. The timestamp is reported in ISO 8601 format in UTC time.
-            lastLicensedScanTimeV2:
-              type: integer
-              description: The timestamp of the scan completion time when asset was last scanned and matched license v2 requirements. The timestamp is reported in ISO 8601 format in UTC time.
-            sources:
-              description: An array of source objects representing the entity that logged the event.
-              type: array
-              items:
-                $ref: '#/components/schemas/workbenches_workbenches-activity-source'
-            terminatedAt:
-              type: integer
-              description: If terminated, the timestamp of asset termination. The timestamp is reported in ISO 8601 format in UTC time.
-            terminatedBy:
-              type: string
-              description: The unique identifier of the user that terminated the asset.
-            deletedAt:
-              type: integer
-              description: If deleted, the timestamp of asset deletion. The timestamp is reported in ISO 8601 format in UTC time.
-            deletedBy:
-              type: string
-              description: The unique identifier of the user that deleted the asset.
-            properties:
-              type: object
-              description: Additional asset attributes. For attribute definitions, see [Common Asset Attributes](doc:common-asset-attributes).
-              properties: {}
-        updates:
-          type: array
-          description: (attribute_change entries only) A list of updates to the asset's attributes.
-          items:
-            type: object
-            properties:
-              method:
-                type: string
-                description: "The update method. Possible values include: \n - add—A scan identified a new software application installed on the asset.\n - remove—Tenable Vulnerability Management identified the specified application as expired and removed it from the installed_software attribute of the asset. Tenable Vulnerability Management considers an application detection expired if no scan detects the application within 30 days of the scan that originally detected the application."
-              property:
-                type: string
-                description: The name of the updated attribute.
-              value:
-                type: string
-                description: The updated value of the attribute.
-    workbenches_workbenches-activity-source:
-      type: object
-      properties:
-        name:
-          type: string
-          description: "The name of the entity that reported the asset details. Sources can include sensors, connectors, and API imports. Source names can be customized by your organization (for example, you specify a name when you import asset records). If your organization does not customize source names, system-generated names include:\n - AWS—You obtained the asset data from an Amazon Web Services connector.\n - NESSUS_AGENT—You obtained the asset data obtained from a Nessus agent scan.\n - PVS—You obtained the asset data from a Nessus Network Monitor (NNM) scan.\n - NESSUS_SCAN—You obtained the asset data from a Nessus scan.\n - WAS—You obtained the asset data from a  Tenable Web App Scanning scan."
-        firstSeen:
-          type: string
-          description: The ISO timestamp when the source first reported the asset.
-        lastSeen:
-          type: string
-          description: The ISO timestamp when the source last reported the asset.
-    workbenches_AcrDriversObject:
-      type: object
-      description: Asset characteristic that factored into the Asset Criticality Rating (ACR) calculation. For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
-      properties:
-        driver_name:
-          type: string
-          description: The ACR key driver. ACR key drivers reflect the global threat landscape associated with the asset's characteristics.
-          enum:
-          - device_type
-          - device_capability
-          - internet_exposure
-        driver_value:
-          type: array
-          description: 'The ACR key driver''s value. For example, for the `device_type` key driver, values can include `hypervisor`, `printer`, etc. '
-          items:
-            type: string
-    workbenches_workbenches-asset:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The unique identifier of the asset.
-        has_agent:
-          type: boolean
-          description: A value specifying whether a Nessus agent scan detected the asset (`true`).
-        last_seen:
-          type: string
-          description: The ISO timestamp of the scan that most recently detected the asset.
-        last_scan_target:
-          type: string
-          description: The IPv4 address, IPv6 address, or FQDN that the scanner last used to evaluate the asset.
-        sources:
-          type: array
-          description: A list of sources for the asset record.
-          items:
-            $ref: '#/components/schemas/workbenches_workbenches-source-object'
-        acr_score:
-          type: integer
-          description: 'The Asset Criticality Rating (ACR) assigned to the asset. Tenable assigns an ACR to each asset on your network to represent the asset''s relative risk as an integer from 1 to 10. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
-
-
-            Note: This attribute is available only with a Tenable Lumin license.'
-        acr_drivers:
-          type: array
-          description: "The key drivers Tenable used to calculate the asset's Tenable-provided Asset Criticality Rating (ACR). For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*. \n\nNote: This attribute is available only with a Tenable Lumin license."
-          items:
-            $ref: '#/components/schemas/workbenches_AcrDriversObject'
-        exposure_score:
-          type: integer
-          description: 'The Asset Exposure Score (AES) assigned to the asset. Tenable assigns an AES to each asset on your network to represent the asset''s relative exposure as an integer between 0 and 1000. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
-
-
-            Note: This attribute is available only with a Tenable Lumin license.'
-        scan_frequency:
-          type: array
-          description: 'Information about how often scans were run against the asset during specified time intervals. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
-
-
-            Note: This attribute is available only with a Tenable Lumin license.'
-          items:
-            $ref: '#/components/schemas/workbenches_AcrScanFrequencyObject'
-        ipv4:
-          description: A list of IPv4 addresses associated with the asset.
-          type: array
-          items:
-            type: string
-        ipv6:
-          description: A list of IPv6 addresses associated with the asset.
-          type: array
-          items:
-            type: string
-        fqdn:
-          description: A list of fully qualified domain names (FQDNs) associated with the asset.
-          type: array
-          items:
-            type: string
-        netbios_name:
-          type: array
-          description: The NetBIOS name for the asset.
-          items:
-            type: string
-        operating_system:
-          type: array
-          description: A list of operating systems associated with the asset.
-          items:
-            type: string
-        agent_name:
-          type: array
-          description: A list of Tenable agents that scanned and identified the asset.
-          items:
-            type: string
-        aws_ec2_name:
-          type: array
-          description: A list of virtual machine instance names in AWS EC2 associated with the asset.
-          items:
-            type: string
-        mac_address:
-          type: array
-          description: A list of MAC addresses associated with the asset.
-          items:
-            type: string
-        bigfix_asset_id:
-          type: array
-          items:
-            type: string
-          description: The unique identifier of the asset in HCL BigFix. For more information, see the HCL BigFix documentation.
-    workbenches_workbenches-assets-with-vulns:
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            type: string
-            description: The unique identifier of the asset.
-          severities:
-            type: array
-            description: A count of vulnerabilities by severity.
-            items:
-              $ref: '#/components/schemas/workbenches_workbenches-severity-object'
-          total:
-            type: integer
-            description: The total number of vulnerabilities detected on the asset.
-          fqdn:
-            description: A list of fully qualified domain names (FQDNs) associated with the asset.
-            type: array
-            items:
-              type: string
-          ipv4:
-            description: A list of IPv4 addresses associated with the asset.
-            type: array
-            items:
-              type: string
-          ipv6:
-            description: A list of IPv6 addresses associated with the asset.
-            type: array
-            items:
-              type: string
-          last_seen:
-            type: string
-            description: The ISO timestamp of the scan that most recently detected the asset.
-          netbios_name:
-            type: array
-            description: A list of NetBIOS names associated with the asset.
-            items:
-              type: string
-          agent_name:
-            type: array
-            description: A list of Tenable agents that scanned and identified the asset.
-            items:
-              type: string
-    workbenches_workbenches-vulnerability-info:
-      type: object
-      properties:
-        count:
-          type: integer
-          format: int32
-          description: A count of the vulnerability occurrences.
-        vuln_count:
-          type: integer
-          format: int32
-          description: ''
-        description:
-          type: string
-          description: The description of the vulnerability.
-        synopsis:
-          type: string
-          description: A brief summary of the vulnerability.
-        solution:
-          type: string
-          description: Information on how to fix the vulnerability.
-        discovery:
-          type: object
-          properties:
-            seen_first:
-              type: string
-              description: The Unix timestamp of the scan that first detected the vulnerability on an asset.
-            seen_last:
-              type: string
-              description: The Unix timestamp of the scan that most recently detected the vulnerability on an asset.
-        severity:
-          type: integer
-          description: The severity level of the vulnerability.
-        plugin_details:
-          type: object
-          properties:
-            family:
-              type: string
-              description: The plugin family.
-            modification_date:
-              type: string
-              description: The ISO timestamp when Tenable last updated the plugin definition.
-            name:
-              type: string
-              description: The name of the plugin.
-            publication_date:
-              type: string
-              description: The ISO timestamp when Tenable first published the plugin definition.
-            type:
-              type: string
-              description: The type of scan that uses the plugin, either a network scan (`remote`) or a credentialed scan (`local`).
-            version:
-              type: string
-              description: The plugin version.
-            severity:
-              type: integer
-              format: int32
-              description: The severity level of the plugin.
-        reference_information:
-          type: array
-          description: ''
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-                description: "The source of the reference information about the vulnerability. Possible values include:\n - bid—Bugtraq (Symantec Connect)\n - cert—CERT/CC Vulnerability Notes Database\n - cve—NIST National Vulnerability Database (NVD)\n - edb-id—The Exploit Database\n - iava—information assurance vulnerability alert\n - osvdb—Open Sourced Vulnerability Database"
-              url:
-                type: string
-                description: The URL of the source site, if available.
-              values:
-                type: array
-                description: The unique identifier(s) for the vulnerability at the source.
-                items:
-                  type: string
-        risk_information:
-          type: object
-          properties:
-            risk_factor:
-              type: string
-              description: 'The risk factor of the vulnerability associated with the plugin. The risk factor is determined based on the calculation of the CVSS score, possible values are: <ul><li>`Low`—The vulnerability has a CVSS score between 0.1 and 3.9</li><li>`Medium`—The vulnerability has a CVSS score between 4.0 and 6.9</li><li>`High`—The vulnerability has a CVSS score between 7.0 and 9.9</li><li>`Critical`—The vulnerability has a CVSS score of 10.0</li></ul>.'
-            cvss_vector:
-              type: string
-              description: The raw CVSSv2 metrics for the vulnerability. For more information, see CVSSv2 documentation.
-            cvss_base_score:
-              type: string
-              description: The CVSSv2 base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
-            cvss_temporal_vector:
-              type: string
-              description: The raw CVSSv2 temporal metrics for the vulnerability.
-            cvss_temporal_score:
-              type: string
-              description: The CVSSv2 temporal score (characteristics of a vulnerability that change over time but not among user environments).
-            cvss3_vector:
-              type: string
-              description: The raw CVSSv3 metrics for the vulnerability. For more information, see CVSSv3 documentation.
-            cvss3_base_score:
-              type: string
-              description: The CVSSv3 base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
-            cvss3_temporal_vector:
-              type: string
-              description: CVSSv3 temporal metrics for the vulnerability.
-            cvss3_temporal_score:
-              type: string
-              description: The CVSSv3 temporal score (characteristics of a vulnerability that change over time but not among user environments).
-            stig_severity:
-              type: string
-              description: Security Technical Implementation Guide (STIG) severity code for the vulnerability.
-        see_also:
-          type: array
-          description: Links to external websites that contain helpful information about the vulnerability.
-          items:
-            type: string
-        vulnerability_information:
-          type: object
-          properties:
-            vulnerability_publication_date:
-              type: string
-              description: The ISO timestamp for the first publication date of the plugin.
-            exploited_by_malware:
-              type: boolean
-              description: The vulnerability discovered by this plugin is known to be exploited by malware.
-            patch_publication_date:
-              type: string
-              description: The ISO timestamp for date on which the vendor published a patch for the vulnerability.
-            exploit_available:
-              type: boolean
-              description: A value specifying whether a public exploit exists for the vulnerability.
-            exploitability_ease:
-              type: string
-              description: Description of how easy it is to exploit the issue.
-            asset_inventory:
-              type: string
-              description: ''
-            default_account:
-              type: string
-              description: ''
-            exploited_by_nessus:
-              type: boolean
-              description: A value specifying whether Nessus exploited the vulnerability during the process of identification.
-            in_the_news:
-              type: boolean
-              description: A value specifying whether this plugin has received media attention (for example, ShellShock, Meltdown).
-            malware:
-              type: string
-              description: ''
-            unsupported_by_vendor:
-              type: boolean
-              description: Software found by this plugin is unsupported by the software's vendor (for example, Windows 95 or Firefox 3).
-            cpe:
-              type: string
-              description: The Common Platform Enumeration (CPE) number for the plugin.
-            exploit_frameworks:
-              type: array
-              description: A list of exploit frameworks that have identified the vulnerability.
-              items:
-                $ref: '#/components/schemas/workbenches_exploit_framework'
-        vpr:
-          type: object
-          description: Information about the Vulnerability Priority Rating (VPR) for the vulnerability.
-          properties:
-            score:
-              type: number
-              format: float
-              description: The Vulnerability Priority Rating (VPR) for the vulnerability. If a plugin is designed to detect multiple vulnerabilities, the VPR represents the highest value calculated for a vulnerability associated with the plugin. For more information, see <a href="https://docs.tenable.com/vulnerability-management/Content/Analysis/RiskMetrics.htm" target="_blank">Severity vs. VPR</a> in the <i>Tenable Vulnerability Management User Guide</i>.
-            drivers:
-              type: object
-              description: The key drivers Tenable uses to calculate a vulnerability's VPR. For more information, see <[Vulnerability Priority Rating Drivers](doc:vpr-drivers-tio).
-              properties: {}
-            updated:
-              type: string
-              description: The ISO timestamp when Tenable Vulnerability Management last imported the VPR for this vulnerability. Tenable Vulnerability Management imports a VPR value the first time you scan a vulnerability on your network. Then, Tenable Vulnerability Management automatically re-imports new and updated VPR values daily.
-    workbenches_workbenches-plugin-outputs:
-      type: array
-      description: A list of vulnerabilities discovered by the plugin.
-      items:
-        type: object
-        properties:
-          plugin_output:
-            type: string
-            description: The plugin's output about the vulnerability. May be an empty string.
-          states:
-            type: array
-            description: Vulnerability state items.
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: The current state of the reported plugin (Active, Fixed, New, etc.)
-                results:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      application_protocol:
-                        type: string
-                        description: The application protocol where this vulnerability was found.
-                      port:
-                        type: integer
-                        description: The port number where this vulnerability was found.
-                      transport_protocol:
-                        type: string
-                        description: The transportation protocol (TCP or UDP) where this vulnerability was found.
-                      assets:
-                        type: array
-                        description: A list of assets where this output was found.
-                        items:
-                          type: object
-                          properties:
-                            hostname:
-                              type: string
-                              description: The host name of the asset.
-                            id:
-                              type: string
-                              description: The ID of the asset.
-                            uuid:
-                              type: string
-                              description: The unique identifier of the asset. Use this value as the unique key for the asset.
-                            netbios_name:
-                              type: string
-                              description: The NetBios name of the asset.
-                            fqdn:
-                              type: string
-                              description: The FQDN of the asset.
-                            ipv4:
-                              type: string
-                              description: The IPV4 of the asset.
-                            first_seen:
-                              type: string
-                              format: date-time
-                              description: Indicates when the asset was discovered by a scan.
-                            last_seen:
-                              type: string
-                              format: date-time
-                              description: Indicates when the asset was last observed by a scan.
-                      severity:
-                        type: integer
-                        description: Integer [0-4] indicating how severe the vulnerability is, where 0 is info only.
-    workbenches_Error:
-      type: object
-      properties:
-        error:
-          type: string
-          description: Standard HTTP error name, or a brief message about the cause of the error.
-    workbenches_exploit_framework:
-      type: object
-      description: Information about the vulnerability in a specific exploit framework.
-      properties:
-        name:
-          type: string
-          description: The name of the exploit framework.
-        exploits:
-          type: array
-          description: A list of exploits associated with the vulnerability in the specified exploit framework.
-          items:
-            $ref: '#/components/schemas/workbenches_exploit'
-    workbenches_AcrScanFrequencyObject:
-      type: object
-      description: The interval, frequency, and licensing information for the scans of the asset.
-      properties:
-        interval:
-          type: integer
-          description: The number of days in the interval during which Tenable checks for scans involving the asset.
-        frequency:
-          type: integer
-          description: The number of times a scan was run against the asset during the specified interval.
-        licensed:
-          type: boolean
-          description: Indicates whether the asset was licensed at the time of the scans.
-    workbenches_workbenches-assets:
-      type: array
-      description: An array of asset objects.
-      items:
-        $ref: '#/components/schemas/workbenches_workbenches-asset'
-    workbenches_workbenches-tag-object:
-      type: object
-      properties:
-        tag_uuid:
-          type: string
-          description: The unique identifier of the tag.
-        tag_key:
-          type: string
-          description: The tag key, representing the category portion of a category:value tag pair.
-        tag_value:
-          type: string
-          description: The tag value, representing the value portion of a category:value tag pair.
-        added_by:
-          type: string
-          description: The unique identifier of the user who assigned the tag to the asset.
-        added_at:
-          type: string
-          description: A timestamp in ISO 8601 format indicating the date and time the tag was assigned to the asset.
-        source:
-          type: string
-          description: "Indicates the tag type. Tag types include:\n - static—A user manually applied the tag to an asset. You can use the Tenable Vulnerability Management API to create and assign static tags to assets.\n - dynamic—Tenable Vulnerability Management automatically applies the tag based on asset attribute rules. \n\nFor more information, see [Apply Dynamic Tags](doc:apply-dynamic-tags)."
-    workbenches_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
   securitySchemes:
     assets_cloud:
       type: apiKey

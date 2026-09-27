@@ -979,6 +979,76 @@ components:
       - VM
       - CLOUD
       - OT
+    Exposure_View_SLASeverityLevel:
+      enum:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      - OVERALL
+      type: string
+    Exposure_View_DataCategory:
+      enum:
+      - GLOBAL
+      - WEB_APPLICATIONS
+      - COMPUTING_RESOURCES
+      - IDENTITIES
+      - CLOUD_RESOURCES
+      - OPERATIONAL_TECH
+      type: string
+    Exposure_View_Score-Benchmark:
+      description: Data indicating how your Cyber Exposure Score (CES) compares to your industry and total population.
+      type: object
+      properties:
+        industry_benchmark:
+          description: Data indicating how your Cyber Exposure Score (CES) compares to your industry.
+          type: object
+          properties:
+            industry_id:
+              description: The numerical ID of the industry.
+              format: int32
+              type: integer
+            ces_score:
+              $ref: '#/components/schemas/Exposure_View_CESScore'
+        population_benchmark:
+          $ref: '#/components/schemas/Exposure_View_CESScore'
+    Exposure_View_Tag:
+      description: Information about the tag associated with the exposure view card.
+      type: object
+      properties:
+        id:
+          description: The unique ID of the tag.
+          type: string
+        name:
+          description: The name of the tag.
+          type: string
+        origin:
+          description: The origin product of the tag.
+          type: string
+          enum:
+          - TENABLE_IO
+          - TENABLE_AD
+          - TENABLE_AI
+          - TENABLE_WAS
+          - TENABLE_CS
+          - TENABLE_APA
+        category_id:
+          description: The unique ID of the tag category to which the tag value belongs.
+          type: string
+        category_name:
+          description: The name of the tag category to which the tag value belongs.
+          type: string
+        dynamic:
+          description: Indicates whether or not the tag is dynamic. Dynamic tags are tags that are automatically applied to assets based on defined tag rules.
+          type: boolean
+        asset_count:
+          description: The number of assets associated with the tag.
+          type: integer
+        asset_query:
+          $ref: '#/components/schemas/Exposure_View_AssetQueryV2'
+        avg_ces_score:
+          description: The average Cyber Exposure Score (CES) for assets associated with the tag. CES is an integer between 0 and 1000. For more information about CES and how it's calculated, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the _Tenable Vulnerability Management User Guide_.
+          type: integer
     Exposure_View_AssetSource:
       description: The sources that supply data for the card.
       type: array
@@ -1058,224 +1128,6 @@ components:
       - WIZ_CONFIGURATION
       - WIZ_ISSUES
       - WIZ_VULNERABILITY_MANAGEMENT
-    Exposure_View_BusinessContextExposureClassDistribution:
-      type: object
-      properties:
-        exposure_class:
-          $ref: '#/components/schemas/Exposure_View_ExposureClass'
-        contribution_percentage:
-          format: double
-          type: number
-    Exposure_View_Tag:
-      description: Information about the tag associated with the exposure view card.
-      type: object
-      properties:
-        id:
-          description: The unique ID of the tag.
-          type: string
-        name:
-          description: The name of the tag.
-          type: string
-        origin:
-          description: The origin product of the tag.
-          type: string
-          enum:
-          - TENABLE_IO
-          - TENABLE_AD
-          - TENABLE_AI
-          - TENABLE_WAS
-          - TENABLE_CS
-          - TENABLE_APA
-        category_id:
-          description: The unique ID of the tag category to which the tag value belongs.
-          type: string
-        category_name:
-          description: The name of the tag category to which the tag value belongs.
-          type: string
-        dynamic:
-          description: Indicates whether or not the tag is dynamic. Dynamic tags are tags that are automatically applied to assets based on defined tag rules.
-          type: boolean
-        asset_count:
-          description: The number of assets associated with the tag.
-          type: integer
-        asset_query:
-          $ref: '#/components/schemas/Exposure_View_AssetQueryV2'
-        avg_ces_score:
-          description: The average Cyber Exposure Score (CES) for assets associated with the tag. CES is an integer between 0 and 1000. For more information about CES and how it's calculated, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the _Tenable Vulnerability Management User Guide_.
-          type: integer
-    Exposure_View_SeveritySummaryStat:
-      type: object
-      properties:
-        sla_severity_level:
-          $ref: '#/components/schemas/Exposure_View_SLASeverityLevel'
-        sla_inside_count:
-          format: int32
-          type: integer
-        sla_total_count:
-          format: int32
-          type: integer
-        sla_efficiency:
-          format: double
-          type: number
-        sla_efficiency_target:
-          format: double
-          type: number
-    Exposure_View_Asset-Risk-Breakdown:
-      description: The percentage of assets in each risk severity level.
-      type: object
-      properties:
-        critical:
-          description: The percentage of your assets associated with vulnerabilities of critical severity.
-          format: double
-          type: number
-        high:
-          description: The percentage of your assets associated with vulnerabilities of high severity.
-          format: double
-          type: number
-        medium_low:
-          description: The percentage of your assets associated with vulnerabilities of medium or low severity.
-          format: double
-          type: number
-    Exposure_View_Response-Card-Details:
-      type: object
-      properties:
-        id:
-          description: The unique ID of the exposure view card.
-          type: string
-        name:
-          description: The name of the exposure view card.
-          type: string
-        card_type:
-          $ref: '#/components/schemas/Exposure_View_CardType'
-        is_global_card:
-          description: Indicates whether or not the exposure view card is a Tenable-provided global card (`true`) or a user-created custom card (`false`).
-          type: boolean
-        ces_scores:
-          $ref: '#/components/schemas/Exposure_View_CESScores'
-        ces_trend:
-          description: An array of Cyber Exposure Score (CES) values along with their timestamps.
-          type: array
-          items:
-            $ref: '#/components/schemas/Exposure_View_CESTrendDataPoint'
-        created_at:
-          description: A timestamp in ISO 8601 format indicating the date and time when the exposure view card was created.
-          type: string
-          format: date-time
-        updated_at:
-          description: A timestamp in ISO 8601 format indicating the date and time when the exposure view card was last updated.
-          type: string
-          format: date-time
-        tag_count:
-          description: The number of tags associated with the exposure view card.
-          type: integer
-        exposures:
-          $ref: '#/components/schemas/Exposure_View_ExposureClassArray'
-        sources:
-          $ref: '#/components/schemas/Exposure_View_AssetSource'
-        last_data_update_date:
-          description: A timestamp in ISO 8601 format indicating the date and time when the data for the exposure view card was last updated.
-          type: string
-          format: date-time
-        exposure_classes_details:
-          description: Metrics, breakdowns, and efficiency data for each exposure class. Exposure classes include `VM`, `WAS`, `CLOUD`, `OT`, `IDENTITY`, and `ALL`. For each exposure class, score benchmarks, asset risk breakdowns, score trend metrics, SLA efficiency, and SLA breakdowns are included.
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              score_benchmark:
-                $ref: '#/components/schemas/Exposure_View_Score-Benchmark'
-              asset_risk_breakdown:
-                $ref: '#/components/schemas/Exposure_View_Asset-Risk-Breakdown'
-              score_trend_metric:
-                $ref: '#/components/schemas/Exposure_View_Score-Trend-Metric'
-              sla_efficiency:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Exposure_View_SeveritySummaryStat'
-              sla_breakdown:
-                $ref: '#/components/schemas/Exposure_View_SLA-Breakdown'
-    Exposure_View_SLA-Breakdown:
-      type: object
-      properties:
-        risk_distribution:
-          $ref: '#/components/schemas/Exposure_View_SLAOverallRiskBreakdown'
-        risk_distribution_in_days:
-          type: object
-          properties:
-            inside_sla:
-              type: integer
-            outside_sla:
-              type: integer
-        exposure_category_breakdown:
-          items:
-            $ref: '#/components/schemas/Exposure_View_BusinessContextExposureClassDistribution'
-          type: array
-        top_affecting_tags:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-              name:
-                type: string
-    Exposure_View_CESTrendDataPoint:
-      type: object
-      properties:
-        date:
-          description: A timestamp in ISO 8601 format indicating the date of the Cyber Exposure Score (CES).
-          format: date-time
-          type: string
-        ces_score:
-          description: An integer between 0 and 1000 indicating the Cyber Exposure Score (CES). For more information about CES and how it's calculated, see the Cyber Exposure Score (CES) section on the [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) page in the _Tenable Vulnerability Management User Guide_.
-          type: integer
-    Exposure_View_RiskBreakdownCategory:
-      type: object
-      properties:
-        number_of_risks:
-          type: integer
-        percentage_of_total:
-          format: double
-          type: number
-        business_context:
-          $ref: '#/components/schemas/Exposure_View_BusinessContextDrivers'
-    Exposure_View_Score-Benchmark:
-      description: Data indicating how your Cyber Exposure Score (CES) compares to your industry and total population.
-      type: object
-      properties:
-        industry_benchmark:
-          description: Data indicating how your Cyber Exposure Score (CES) compares to your industry.
-          type: object
-          properties:
-            industry_id:
-              description: The numerical ID of the industry.
-              format: int32
-              type: integer
-            ces_score:
-              $ref: '#/components/schemas/Exposure_View_CESScore'
-        population_benchmark:
-          $ref: '#/components/schemas/Exposure_View_CESScore'
-    Exposure_View_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    Exposure_View_Response-Search-Cards:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Exposure_View_Response-Search-Cards-Object'
-        pagination:
-          $ref: '#/components/schemas/Exposure_View_PaginationResponseData'
     Exposure_View_CESGrade:
       type: string
       description: The Cyber Exposure Score (CES) grade as it compares to your industry and total population. For more information about CES grades, see [Exposure View](https://docs.tenable.com/exposure-management/Content/exposure-management/exposure-view/exposure-view.htm) in the _Tenable Exposure Management User Guide_.
@@ -1286,212 +1138,6 @@ components:
       - D
       - F
       - None
-    Exposure_View_Response-Search-Cards-Object:
-      type: object
-      properties:
-        id:
-          description: The unique ID of the exposure view card.
-          type: string
-        name:
-          description: The name of the exposure view card.
-          type: string
-        card_type:
-          $ref: '#/components/schemas/Exposure_View_CardType'
-        is_global_card:
-          description: Indicates whether or not the exposure view card is a Tenable-provided global card (`true`) or a user-created custom card (`false`).
-          type: boolean
-        tag_count:
-          description: The number of tags associated with the exposure view card.
-          type: integer
-        created_at:
-          description: A timestamp in ISO 8601 format indicating the date and time when the exposure view card was created.
-          type: string
-          format: date-time
-        updated_at:
-          description: A timestamp in ISO 8601 format indicating the date and time when the exposure view card was last updated.
-          type: string
-          format: date-time
-        ces_score:
-          $ref: '#/components/schemas/Exposure_View_CESScore'
-        sla_percentage:
-          description: The overall Service Level Agreement (SLA) percentage. SLA represents the acceptable time frame between when a finding is discovered and when it fixed or remediated. For information about how an SLA percentage is calculated, see the Remediation SLA section on the [Exposure View](https://docs.tenable.com/exposure-management/Content/exposure-management/exposure-view/exposure-view.htm) page in the _Tenable Exposure Management User Guide_.
-          format: double
-          type: number
-        ces_trend:
-          description: An array of Cyber Exposure Score (CES) values along with their timestamps.
-          type: array
-          items:
-            $ref: '#/components/schemas/Exposure_View_CESTrendDataPoint'
-        exposure_class:
-          $ref: '#/components/schemas/Exposure_View_ExposureClassArray'
-        last_data_update_date:
-          description: A timestamp in ISO 8601 format indicating the date and time when the data for the exposure view card was last updated.
-          type: string
-          format: date-time
-        sources:
-          $ref: '#/components/schemas/Exposure_View_AssetSource'
-    Exposure_View_BusinessContextCategoryDistribution:
-      type: object
-      properties:
-        data_category:
-          $ref: '#/components/schemas/Exposure_View_DataCategory'
-        contribution_percentage:
-          format: double
-          type: number
-    Exposure_View_SLAOverallRiskBreakdown:
-      type: object
-      properties:
-        risks_inside_sla:
-          $ref: '#/components/schemas/Exposure_View_RiskBreakdownCategory'
-        risks_outside_sla:
-          $ref: '#/components/schemas/Exposure_View_RiskBreakdownCategory'
-    Exposure_View_SLASeverityLevel:
-      enum:
-      - LOW
-      - MEDIUM
-      - HIGH
-      - CRITICAL
-      - OVERALL
-      type: string
-    Exposure_View_CESScores:
-      description: An object containing Cyber Exposure Scores (CES) per exposure, per tag, and total.
-      type: object
-      properties:
-        per_exposure:
-          description: An array of Cyber Exposure Scores (CES) per exposure. Both the exposure class and its associated score are indicated.
-          type: array
-          items:
-            type: object
-            properties:
-              exposure_class:
-                $ref: '#/components/schemas/Exposure_View_ExposureClass'
-              ces_score:
-                $ref: '#/components/schemas/Exposure_View_CESScore'
-        per_tag:
-          description: An array of Cyber Exposure Scores (CES) per tag. Both the tag and it's associated score are indicated.
-          type: array
-          items:
-            type: object
-            properties:
-              tag:
-                $ref: '#/components/schemas/Exposure_View_Tag'
-              ces_score:
-                $ref: '#/components/schemas/Exposure_View_CESScore'
-        total:
-          $ref: '#/components/schemas/Exposure_View_CESScore'
-    Exposure_View_CESScore:
-      description: The numerical Cyber Exposure Score (CES) and its grade.
-      type: object
-      properties:
-        score:
-          type: integer
-          description: An integer between 0 and 1000 indicating the Cyber Exposure Score (CES). For more information about CES and how it's calculated, see the Cyber Exposure Score (CES) section on the [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) page in the _Tenable Vulnerability Management User Guide_.
-        grade:
-          $ref: '#/components/schemas/Exposure_View_CESGrade'
-    Exposure_View_ExposureClassArray:
-      description: The exposure class is determined by the sensor that assessed the asset or detected the finding. For more information about exposure classes, see [Scoring (Beta)](https://docs.tenable.com/tenableone/scoring-explained/Content/ScoringExplained/new-scoring.htm).
-      items:
-        type: string
-      enum:
-      - ALL
-      - IDENTITY
-      - WAS
-      - VM
-      - CLOUD
-      - OT
-    Exposure_View_ErrorResponse-404:
-      type: object
-      properties:
-        status:
-          type: integer
-          description: The HTTP status code of the error.
-        message:
-          type: string
-          description: The standard HTTP error name.
-        error:
-          type: array
-          items:
-            type: object
-            properties:
-              code:
-                description: The error code. For example, `UNEXPECTED_ERROR`.
-                type: string
-              message:
-                description: A brief message about the cause of the specific error.
-                type: string
-    Exposure_View_AssetQueryV2:
-      description: For dynamic tags, the filters applied to define the tag rule.
-      type: object
-      properties:
-        filters_expression:
-          description: Indicates the tag filters and whether a logical `and` or `or` is applied.
-          type: object
-          properties:
-            logical_operator:
-              description: The logical operators applied to the tag filters, either `and` or `or`.
-              type: string
-              enum:
-              - and
-              - or
-            operands:
-              description: The tag filters applied to define the tag rule.
-              type: array
-              items:
-                description: The property to filter on for the tag rule, the comparison operator used for the filter, and the value used for the comparison.
-                type: object
-                properties:
-                  property:
-                    description: The property that was filtered on.
-                    type: string
-                  operator:
-                    description: The comparison operator to applied to the filter.
-                    type: string
-                    enum:
-                    - eq
-                    - neq
-                    - lte
-                    - gte
-                    - lt
-                    - gt
-                    - wc
-                    - nwc
-                    - between
-                    - '>'
-                    - '>='
-                    - '='
-                    - '!='
-                    - exists
-                    - nexists
-                  value:
-                    description: The values used for comparison in the filtering operation.
-                    type: array
-                    items:
-                      type: string
-        text_query:
-          description: Text search on asset names
-          type: string
-        mode:
-          type: string
-          enum:
-          - advanced
-          - simple
-    Exposure_View_CardType:
-      type: string
-      description: The type of exposure view card. Global cards are Tenable-provided cards. Custom cards are user-created cards.
-      enum:
-      - GLOBAL
-      - CATEGORY
-      - EXPOSURE
-      - CUSTOM
-    Exposure_View_DataCategory:
-      enum:
-      - GLOBAL
-      - WEB_APPLICATIONS
-      - COMPUTING_RESOURCES
-      - IDENTITIES
-      - CLOUD_RESOURCES
-      - OPERATIONAL_TECH
-      type: string
     Exposure_View_Score-Trend-Metric:
       description: An object containing Cyber Exposure Score (CES) trends over time, target scores, and events.
       type: object
@@ -1560,6 +1206,78 @@ components:
               executive_summary:
                 description: A summary of the event.
                 type: string
+    Exposure_View_CESTrendDataPoint:
+      type: object
+      properties:
+        date:
+          description: A timestamp in ISO 8601 format indicating the date of the Cyber Exposure Score (CES).
+          format: date-time
+          type: string
+        ces_score:
+          description: An integer between 0 and 1000 indicating the Cyber Exposure Score (CES). For more information about CES and how it's calculated, see the Cyber Exposure Score (CES) section on the [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) page in the _Tenable Vulnerability Management User Guide_.
+          type: integer
+    Exposure_View_SeveritySummaryStat:
+      type: object
+      properties:
+        sla_severity_level:
+          $ref: '#/components/schemas/Exposure_View_SLASeverityLevel'
+        sla_inside_count:
+          format: int32
+          type: integer
+        sla_total_count:
+          format: int32
+          type: integer
+        sla_efficiency:
+          format: double
+          type: number
+        sla_efficiency_target:
+          format: double
+          type: number
+    Exposure_View_Response-Search-Cards:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exposure_View_Response-Search-Cards-Object'
+        pagination:
+          $ref: '#/components/schemas/Exposure_View_PaginationResponseData'
+    Exposure_View_CESScores:
+      description: An object containing Cyber Exposure Scores (CES) per exposure, per tag, and total.
+      type: object
+      properties:
+        per_exposure:
+          description: An array of Cyber Exposure Scores (CES) per exposure. Both the exposure class and its associated score are indicated.
+          type: array
+          items:
+            type: object
+            properties:
+              exposure_class:
+                $ref: '#/components/schemas/Exposure_View_ExposureClass'
+              ces_score:
+                $ref: '#/components/schemas/Exposure_View_CESScore'
+        per_tag:
+          description: An array of Cyber Exposure Scores (CES) per tag. Both the tag and it's associated score are indicated.
+          type: array
+          items:
+            type: object
+            properties:
+              tag:
+                $ref: '#/components/schemas/Exposure_View_Tag'
+              ces_score:
+                $ref: '#/components/schemas/Exposure_View_CESScore'
+        total:
+          $ref: '#/components/schemas/Exposure_View_CESScore'
+    Exposure_View_RiskBreakdownCategory:
+      type: object
+      properties:
+        number_of_risks:
+          type: integer
+        percentage_of_total:
+          format: double
+          type: number
+        business_context:
+          $ref: '#/components/schemas/Exposure_View_BusinessContextDrivers'
     Exposure_View_BusinessContextDrivers:
       type: object
       properties:
@@ -1575,6 +1293,191 @@ components:
           items:
             $ref: '#/components/schemas/Exposure_View_BusinessContextExposureClassDistribution'
           type: array
+    Exposure_View_SLAOverallRiskBreakdown:
+      type: object
+      properties:
+        risks_inside_sla:
+          $ref: '#/components/schemas/Exposure_View_RiskBreakdownCategory'
+        risks_outside_sla:
+          $ref: '#/components/schemas/Exposure_View_RiskBreakdownCategory'
+    Exposure_View_AssetQueryV2:
+      description: For dynamic tags, the filters applied to define the tag rule.
+      type: object
+      properties:
+        filters_expression:
+          description: Indicates the tag filters and whether a logical `and` or `or` is applied.
+          type: object
+          properties:
+            logical_operator:
+              description: The logical operators applied to the tag filters, either `and` or `or`.
+              type: string
+              enum:
+              - and
+              - or
+            operands:
+              description: The tag filters applied to define the tag rule.
+              type: array
+              items:
+                description: The property to filter on for the tag rule, the comparison operator used for the filter, and the value used for the comparison.
+                type: object
+                properties:
+                  property:
+                    description: The property that was filtered on.
+                    type: string
+                  operator:
+                    description: The comparison operator to applied to the filter.
+                    type: string
+                    enum:
+                    - eq
+                    - neq
+                    - lte
+                    - gte
+                    - lt
+                    - gt
+                    - wc
+                    - nwc
+                    - between
+                    - '>'
+                    - '>='
+                    - '='
+                    - '!='
+                    - exists
+                    - nexists
+                  value:
+                    description: The values used for comparison in the filtering operation.
+                    type: array
+                    items:
+                      type: string
+        text_query:
+          description: Text search on asset names
+          type: string
+        mode:
+          type: string
+          enum:
+          - advanced
+          - simple
+    Exposure_View_Asset-Risk-Breakdown:
+      description: The percentage of assets in each risk severity level.
+      type: object
+      properties:
+        critical:
+          description: The percentage of your assets associated with vulnerabilities of critical severity.
+          format: double
+          type: number
+        high:
+          description: The percentage of your assets associated with vulnerabilities of high severity.
+          format: double
+          type: number
+        medium_low:
+          description: The percentage of your assets associated with vulnerabilities of medium or low severity.
+          format: double
+          type: number
+    Exposure_View_Response-Search-Cards-Object:
+      type: object
+      properties:
+        id:
+          description: The unique ID of the exposure view card.
+          type: string
+        name:
+          description: The name of the exposure view card.
+          type: string
+        card_type:
+          $ref: '#/components/schemas/Exposure_View_CardType'
+        is_global_card:
+          description: Indicates whether or not the exposure view card is a Tenable-provided global card (`true`) or a user-created custom card (`false`).
+          type: boolean
+        tag_count:
+          description: The number of tags associated with the exposure view card.
+          type: integer
+        created_at:
+          description: A timestamp in ISO 8601 format indicating the date and time when the exposure view card was created.
+          type: string
+          format: date-time
+        updated_at:
+          description: A timestamp in ISO 8601 format indicating the date and time when the exposure view card was last updated.
+          type: string
+          format: date-time
+        ces_score:
+          $ref: '#/components/schemas/Exposure_View_CESScore'
+        sla_percentage:
+          description: The overall Service Level Agreement (SLA) percentage. SLA represents the acceptable time frame between when a finding is discovered and when it fixed or remediated. For information about how an SLA percentage is calculated, see the Remediation SLA section on the [Exposure View](https://docs.tenable.com/exposure-management/Content/exposure-management/exposure-view/exposure-view.htm) page in the _Tenable Exposure Management User Guide_.
+          format: double
+          type: number
+        ces_trend:
+          description: An array of Cyber Exposure Score (CES) values along with their timestamps.
+          type: array
+          items:
+            $ref: '#/components/schemas/Exposure_View_CESTrendDataPoint'
+        exposure_class:
+          $ref: '#/components/schemas/Exposure_View_ExposureClassArray'
+        last_data_update_date:
+          description: A timestamp in ISO 8601 format indicating the date and time when the data for the exposure view card was last updated.
+          type: string
+          format: date-time
+        sources:
+          $ref: '#/components/schemas/Exposure_View_AssetSource'
+    Exposure_View_CESScore:
+      description: The numerical Cyber Exposure Score (CES) and its grade.
+      type: object
+      properties:
+        score:
+          type: integer
+          description: An integer between 0 and 1000 indicating the Cyber Exposure Score (CES). For more information about CES and how it's calculated, see the Cyber Exposure Score (CES) section on the [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) page in the _Tenable Vulnerability Management User Guide_.
+        grade:
+          $ref: '#/components/schemas/Exposure_View_CESGrade'
+    Exposure_View_BusinessContextCategoryDistribution:
+      type: object
+      properties:
+        data_category:
+          $ref: '#/components/schemas/Exposure_View_DataCategory'
+        contribution_percentage:
+          format: double
+          type: number
+    Exposure_View_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Exposure_View_BusinessContextExposureClassDistribution:
+      type: object
+      properties:
+        exposure_class:
+          $ref: '#/components/schemas/Exposure_View_ExposureClass'
+        contribution_percentage:
+          format: double
+          type: number
+    Exposure_View_SLA-Breakdown:
+      type: object
+      properties:
+        risk_distribution:
+          $ref: '#/components/schemas/Exposure_View_SLAOverallRiskBreakdown'
+        risk_distribution_in_days:
+          type: object
+          properties:
+            inside_sla:
+              type: integer
+            outside_sla:
+              type: integer
+        exposure_category_breakdown:
+          items:
+            $ref: '#/components/schemas/Exposure_View_BusinessContextExposureClassDistribution'
+          type: array
+        top_affecting_tags:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
     Exposure_View_PaginationResponseData:
       properties:
         offset:
@@ -1586,6 +1489,103 @@ components:
         total_record_count:
           description: The total number of exposure view card records included in the result set of the search.
           type: integer
+    Exposure_View_ErrorResponse-404:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: The HTTP status code of the error.
+        message:
+          type: string
+          description: The standard HTTP error name.
+        error:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                description: The error code. For example, `UNEXPECTED_ERROR`.
+                type: string
+              message:
+                description: A brief message about the cause of the specific error.
+                type: string
+    Exposure_View_ExposureClassArray:
+      description: The exposure class is determined by the sensor that assessed the asset or detected the finding. For more information about exposure classes, see [Scoring (Beta)](https://docs.tenable.com/tenableone/scoring-explained/Content/ScoringExplained/new-scoring.htm).
+      items:
+        type: string
+      enum:
+      - ALL
+      - IDENTITY
+      - WAS
+      - VM
+      - CLOUD
+      - OT
+    Exposure_View_CardType:
+      type: string
+      description: The type of exposure view card. Global cards are Tenable-provided cards. Custom cards are user-created cards.
+      enum:
+      - GLOBAL
+      - CATEGORY
+      - EXPOSURE
+      - CUSTOM
+    Exposure_View_Response-Card-Details:
+      type: object
+      properties:
+        id:
+          description: The unique ID of the exposure view card.
+          type: string
+        name:
+          description: The name of the exposure view card.
+          type: string
+        card_type:
+          $ref: '#/components/schemas/Exposure_View_CardType'
+        is_global_card:
+          description: Indicates whether or not the exposure view card is a Tenable-provided global card (`true`) or a user-created custom card (`false`).
+          type: boolean
+        ces_scores:
+          $ref: '#/components/schemas/Exposure_View_CESScores'
+        ces_trend:
+          description: An array of Cyber Exposure Score (CES) values along with their timestamps.
+          type: array
+          items:
+            $ref: '#/components/schemas/Exposure_View_CESTrendDataPoint'
+        created_at:
+          description: A timestamp in ISO 8601 format indicating the date and time when the exposure view card was created.
+          type: string
+          format: date-time
+        updated_at:
+          description: A timestamp in ISO 8601 format indicating the date and time when the exposure view card was last updated.
+          type: string
+          format: date-time
+        tag_count:
+          description: The number of tags associated with the exposure view card.
+          type: integer
+        exposures:
+          $ref: '#/components/schemas/Exposure_View_ExposureClassArray'
+        sources:
+          $ref: '#/components/schemas/Exposure_View_AssetSource'
+        last_data_update_date:
+          description: A timestamp in ISO 8601 format indicating the date and time when the data for the exposure view card was last updated.
+          type: string
+          format: date-time
+        exposure_classes_details:
+          description: Metrics, breakdowns, and efficiency data for each exposure class. Exposure classes include `VM`, `WAS`, `CLOUD`, `OT`, `IDENTITY`, and `ALL`. For each exposure class, score benchmarks, asset risk breakdowns, score trend metrics, SLA efficiency, and SLA breakdowns are included.
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              score_benchmark:
+                $ref: '#/components/schemas/Exposure_View_Score-Benchmark'
+              asset_risk_breakdown:
+                $ref: '#/components/schemas/Exposure_View_Asset-Risk-Breakdown'
+              score_trend_metric:
+                $ref: '#/components/schemas/Exposure_View_Score-Trend-Metric'
+              sla_efficiency:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Exposure_View_SeveritySummaryStat'
+              sla_breakdown:
+                $ref: '#/components/schemas/Exposure_View_SLA-Breakdown'
   securitySchemes:
     Attack_Path_cloud:
       type: apiKey

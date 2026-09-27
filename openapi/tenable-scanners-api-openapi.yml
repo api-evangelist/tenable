@@ -658,6 +658,55 @@ paths:
       - Scanners_cloud: []
 components:
   schemas:
+    Scanners_response-list-scanners:
+      type: array
+      items:
+        $ref: '#/components/schemas/Scanners_response-scanner-object'
+    Scanners_scanner-key:
+      type: object
+      properties:
+        scanner_id:
+          type: string
+          description: The linking key, that is, the alpha-numeric sequence of characters you use to link a scanner to Tenable Vulnerability Management. For more information about linking a scanner, see the [Link a Sensor](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/LinkaSensor.htm) in the Tenable Vulnerability Management User Guide.
+    Scanners_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Scanners_aws-target:
+      type: object
+      properties:
+        scanner_id:
+          type: integer
+          description: The ID of the scanner.
+        instance_id:
+          type: string
+          description: Unique instance identifier from Amazon.
+        private_ip:
+          type: string
+          description: Private IP address of the AWS instance.
+        public_ip:
+          type: string
+          description: Public IP address of the AWS instance.
+        state:
+          type: string
+          description: 'The state of the instance. Can be one of the following values: `running`, `stopped`, or `terminated`.'
+        zone:
+          type: string
+          description: 'The availability zone for the instance. Example: `us-east-1a`, `us-east-1b`, etc.'
+        type:
+          type: string
+          description: 'The size of the instance. Example: `t2.small`, `t2.medium`, etc.'
+        name:
+          type: string
+          description: The user-defined name of the instance.
     Scanners_response-scanner-object:
       type: object
       properties:
@@ -850,39 +899,6 @@ components:
         profile_name:
           type: string
           description: The name of the scanner profile that the scanner belongs to.
-    Scanners_scan:
-      type: object
-      properties:
-        scanner_uuid:
-          type: string
-          description: The UUID of the scanner the scan belongs to.
-        name:
-          type: string
-          description: The name of the scan.
-        status:
-          type: string
-          description: The status of the scan. For a list of scan statuses and their descriptions, see [Scan Status](doc:scan-status-tio).
-        id:
-          type: string
-          description: The scan UUID.
-        scan_id:
-          type: integer
-          description: The ID of the scan.
-        user:
-          type: string
-          description: The username of the owner of the scan.
-        last_modification_date:
-          type: integer
-          description: The last time the scan was modified.
-        start_time:
-          type: integer
-          description: When the scan was started.
-        remote:
-          type: boolean
-          description: Indicates whether the scan is running remotely ('true') or not ('false').
-        network_id:
-          type: string
-          description: The ID of the network object associated with the scanner currently running the scan. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
     Scanners_update-scanner:
       type: object
       properties:
@@ -933,55 +949,39 @@ components:
         profile_name:
           type: string
           description: The name of the scanner profile that the scanner belongs to.
-    Scanners_scanner-key:
+    Scanners_scan:
       type: object
       properties:
-        scanner_id:
+        scanner_uuid:
           type: string
-          description: The linking key, that is, the alpha-numeric sequence of characters you use to link a scanner to Tenable Vulnerability Management. For more information about linking a scanner, see the [Link a Sensor](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/LinkaSensor.htm) in the Tenable Vulnerability Management User Guide.
-    Scanners_response-list-scanners:
-      type: array
-      items:
-        $ref: '#/components/schemas/Scanners_response-scanner-object'
-    Scanners_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    Scanners_aws-target:
-      type: object
-      properties:
-        scanner_id:
-          type: integer
-          description: The ID of the scanner.
-        instance_id:
-          type: string
-          description: Unique instance identifier from Amazon.
-        private_ip:
-          type: string
-          description: Private IP address of the AWS instance.
-        public_ip:
-          type: string
-          description: Public IP address of the AWS instance.
-        state:
-          type: string
-          description: 'The state of the instance. Can be one of the following values: `running`, `stopped`, or `terminated`.'
-        zone:
-          type: string
-          description: 'The availability zone for the instance. Example: `us-east-1a`, `us-east-1b`, etc.'
-        type:
-          type: string
-          description: 'The size of the instance. Example: `t2.small`, `t2.medium`, etc.'
+          description: The UUID of the scanner the scan belongs to.
         name:
           type: string
-          description: The user-defined name of the instance.
+          description: The name of the scan.
+        status:
+          type: string
+          description: The status of the scan. For a list of scan statuses and their descriptions, see [Scan Status](doc:scan-status-tio).
+        id:
+          type: string
+          description: The scan UUID.
+        scan_id:
+          type: integer
+          description: The ID of the scan.
+        user:
+          type: string
+          description: The username of the owner of the scan.
+        last_modification_date:
+          type: integer
+          description: The last time the scan was modified.
+        start_time:
+          type: integer
+          description: When the scan was started.
+        remote:
+          type: boolean
+          description: Indicates whether the scan is running remotely ('true') or not ('false').
+        network_id:
+          type: string
+          description: The ID of the network object associated with the scanner currently running the scan. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey

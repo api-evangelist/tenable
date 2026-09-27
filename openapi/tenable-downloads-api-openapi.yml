@@ -263,25 +263,33 @@ components:
           type: boolean
           description: Indicates whether or not the file requires a bearer authentication token to download.
           example: false
-    Page:
+    SigningKey:
       type: object
       properties:
-        title:
+        file:
           type: string
-          description: The name of the product.
-          example: Nessus
-        page_slug:
+          description: The name of the file.
+          example: Tenable GPG Key - 2048 bit
+        size:
+          type: integer
+          description: The size of the file in bytes.
+          example: 1764
+        md5:
           type: string
-          description: Product page slug, for example, `nessus`.
-          example: nessus
-        description:
+          description: The MD5 hash of the file.
+          example: 098f6bcd4621d373cade4e832627b4f6
+        sha256:
           type: string
-          description: The description of a product.
-          example: Binary download files for Nessus Professional, Nessus Manager, and connecting Nessus Scanners to Tenable Vulnerability Management & Tenable Security Center.
-        files_index_url:
+          description: The SHA256 hash of the file.
+          example: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
+        file_url:
           type: string
-          description: The URL to list the product files available for download.
-          example: https://www.tenable.com/downloads/api/v2/pages/nessus
+          description: The URL to download the file.
+          example: https://www.tenable.com/downloads/api/v2/pages/nessus/files/tenable-2048.gpg
+        requires_auth:
+          type: boolean
+          description: Indicates whether or not the file requires a bearer authentication token to download.
+          example: false
     InternalServerError:
       type: object
       properties:
@@ -316,33 +324,13 @@ components:
               type: string
               description: The ray ID of the request.
               example: 5623bad2367aa43d-IAD
-    SigningKey:
+    Unauthorized:
       type: object
       properties:
-        file:
+        message:
           type: string
-          description: The name of the file.
-          example: Tenable GPG Key - 2048 bit
-        size:
-          type: integer
-          description: The size of the file in bytes.
-          example: 1764
-        md5:
-          type: string
-          description: The MD5 hash of the file.
-          example: 098f6bcd4621d373cade4e832627b4f6
-        sha256:
-          type: string
-          description: The SHA256 hash of the file.
-          example: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
-        file_url:
-          type: string
-          description: The URL to download the file.
-          example: https://www.tenable.com/downloads/api/v2/pages/nessus/files/tenable-2048.gpg
-        requires_auth:
-          type: boolean
-          description: Indicates whether or not the file requires a bearer authentication token to download.
-          example: false
+          description: Unauthorized
+          example: Unauthorized
     Download:
       type: object
       properties:
@@ -382,19 +370,6 @@ components:
           type: boolean
           description: Indicates whether or not the file requires a bearer authentication token to download.
           example: false
-    Releases:
-      type: object
-      properties:
-        latest:
-          properties:
-            Product Name - X.X.X:
-              type: array
-              items:
-                $ref: '#/components/schemas/LatestDownload'
-        Product Name - X.X.X:
-          type: array
-          items:
-            $ref: '#/components/schemas/Download'
     NotFound:
       type: object
       properties:
@@ -429,13 +404,38 @@ components:
               type: string
               description: The ray ID of the request.
               example: 5623bad2367aa43d-IAD
-    Unauthorized:
+    Page:
       type: object
       properties:
-        message:
+        title:
           type: string
-          description: Unauthorized
-          example: Unauthorized
+          description: The name of the product.
+          example: Nessus
+        page_slug:
+          type: string
+          description: Product page slug, for example, `nessus`.
+          example: nessus
+        description:
+          type: string
+          description: The description of a product.
+          example: Binary download files for Nessus Professional, Nessus Manager, and connecting Nessus Scanners to Tenable Vulnerability Management & Tenable Security Center.
+        files_index_url:
+          type: string
+          description: The URL to list the product files available for download.
+          example: https://www.tenable.com/downloads/api/v2/pages/nessus
+    Releases:
+      type: object
+      properties:
+        latest:
+          properties:
+            Product Name - X.X.X:
+              type: array
+              items:
+                $ref: '#/components/schemas/LatestDownload'
+        Product Name - X.X.X:
+          type: array
+          items:
+            $ref: '#/components/schemas/Download'
   securitySchemes:
     Bearer:
       type: apiKey

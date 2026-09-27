@@ -3113,19 +3113,59 @@ paths:
     - url: https://cloud.tenable.com
 components:
   schemas:
-    Inventory_Public-Sort-Object:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+    Inventory_Properties-Object:
       type: object
       properties:
-        name:
-          description: The property used to sort the results.
+        key:
+          description: The unique property that can be used as a filter.
           type: string
-        order:
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+        readable_name:
+          description: The human-readable property name.
           type: string
+        control:
+          $ref: '#/components/schemas/Inventory_Control'
+        operators:
+          type: array
+          description: The logical operators that be used for the property filter.
+          items:
+            type: string
           enum:
-          - asc
-          - desc
+          - '='
+          - '!='
+          - <=
+          - between
+          - match
+          - '>='
+          - <
+          - '>'
+          - contains
+          - not contains
+          - exists
+          - not exists
+          - older than
+          - newer than
+          - within last
+        sortable:
+          description: Indicates whether or not the property is sortable.
+          type: boolean
+        filterable:
+          description: Indicates whether or not the property is filterable.
+          type: boolean
+        description:
+          description: An AI-generated description of the property.
+          type: string
+    Inventory_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     Inventory_Control:
       type: object
       properties:
@@ -3258,18 +3298,6 @@ components:
                 type: array
                 items:
                   type: string
-    Inventory_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     Inventory_Response-Search-Tags-Object:
       type: object
       properties:
@@ -3328,83 +3356,24 @@ components:
         extra_properties:
           description: "Additional information about the software as requested in the `extra_properties` parameter of the search request. \n\nYou can use the [List tag properties](ref:inventory-tag-properties-list) endpoint to retrieve a list of properties that can be used as values for the `extra_properties` parameter. For example, you may want to include `tag_data_source`, `last_updated`, and `tag_created_by_id` as extra properties."
           type: object
-    Inventory_Properties-Object:
+    Inventory_Public-Sort-Object:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
       type: object
       properties:
-        key:
-          description: The unique property that can be used as a filter.
+        name:
+          description: The property used to sort the results.
           type: string
-        readable_name:
-          description: The human-readable property name.
+        order:
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
           type: string
-        control:
-          $ref: '#/components/schemas/Inventory_Control'
-        operators:
-          type: array
-          description: The logical operators that be used for the property filter.
-          items:
-            type: string
           enum:
-          - '='
-          - '!='
-          - <=
-          - between
-          - match
-          - '>='
-          - <
-          - '>'
-          - contains
-          - not contains
-          - exists
-          - not exists
-          - older than
-          - newer than
-          - within last
-        sortable:
-          description: Indicates whether or not the property is sortable.
-          type: boolean
-        filterable:
-          description: Indicates whether or not the property is filterable.
-          type: boolean
-        description:
-          description: An AI-generated description of the property.
-          type: string
-    tags_orConditions:
+          - asc
+          - desc
+    tags_filters:
       type: array
-      description: 'To apply the tag to assets that match any of the rules, specify the rules inside the `or` object.
-
-
-        **Note:** The value you specify for the rule attribute is not case sensitive. For example, if you type the hostname "hostx," the rule matches to assets with hostname "HOSTX" and "hostx."'
+      description: A list of available filters that you can use to define the rules for applying tags to assets.
       items:
-        $ref: '#/components/schemas/tags_rule'
-    tags_Response-List-Tag-Exclusions:
-      type: object
-      properties:
-        value_uuid:
-          description: 'The unique identifier (UUID) of the tag value.
-
-
-            **Note:** A tag UUID is technically assigned to the tag value only (the second half of the category:value pair), but the API commands use this value to represent the whole `category:value` pair.'
-          type: string
-          format: uuid
-        container_uuid:
-          type: string
-          format: uuid
-          description: The unique identifier (UUID) of the customer container.
-        asset_uuid:
-          type: string
-          format: uuid
-          description: The unique identifier (UUID) of the asset for which the dynamic tag is excluded.
-        ipv4:
-          description: A list of IPv4 addresses associated with the asset.
-          type: array
-          items:
-            type: string
-        sources:
-          type: array
-          description: A list of sources that identified the asset.
-          items:
-            type: string
+        $ref: '#/components/schemas/tags_filter'
     tags_Response-List-Tags-for-Asset:
       type: object
       properties:
@@ -3445,6 +3414,51 @@ components:
           description: The unique identifier (UUID) of the tag category. Use this value to create future tags in the same category.
           type: string
           format: uuid
+    tags_ValueListResponse:
+      type: object
+      properties:
+        values:
+          description: An array of tag value objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/tags_ListValueDetails'
+        pagination:
+          $ref: '#/components/schemas/tags_PaginationResponse'
+    tags_orConditions:
+      type: array
+      description: 'To apply the tag to assets that match any of the rules, specify the rules inside the `or` object.
+
+
+        **Note:** The value you specify for the rule attribute is not case sensitive. For example, if you type the hostname "hostx," the rule matches to assets with hostname "HOSTX" and "hostx."'
+      items:
+        $ref: '#/components/schemas/tags_rule'
+    tags_filter:
+      type: object
+      description: A filter definition. Includes the field to be matched, the operators that you can use with the filter, and the rules for matching the values (`control` field), for example, a list of valid values.
+      properties:
+        name:
+          type: string
+          description: The name of the asset attribute or tag.
+        readable_name:
+          type: string
+          description: The asset attribute name displayed in the user interface.
+        control:
+          type: object
+          properties:
+            readable_regex:
+              type: string
+              description: Provides a human-readable "hint" to guide users creating tag rules in the user interface.
+            type:
+              type: string
+              description: The type of UI control that represents the filter in the user interface.
+            regex:
+              type: string
+              description: A regular expression that Tenable Vulnerability Management user interface uses to validate input.
+        operators:
+          description: The comparison operators that can be used for the filter. To find supported operators, use the [GET /tags/assets/filters](ref:tags-list-asset-filters) endpoint.
+          type: array
+          items:
+            type: string
     tags_ListValueDetails:
       type: object
       properties:
@@ -3484,60 +3498,6 @@ components:
           description: The description of the category associated with the tag value.
         access_control:
           $ref: '#/components/schemas/tags_AccessControl'
-    tags_filter:
-      type: object
-      description: A filter definition. Includes the field to be matched, the operators that you can use with the filter, and the rules for matching the values (`control` field), for example, a list of valid values.
-      properties:
-        name:
-          type: string
-          description: The name of the asset attribute or tag.
-        readable_name:
-          type: string
-          description: The asset attribute name displayed in the user interface.
-        control:
-          type: object
-          properties:
-            readable_regex:
-              type: string
-              description: Provides a human-readable "hint" to guide users creating tag rules in the user interface.
-            type:
-              type: string
-              description: The type of UI control that represents the filter in the user interface.
-            regex:
-              type: string
-              description: A regular expression that Tenable Vulnerability Management user interface uses to validate input.
-        operators:
-          description: The comparison operators that can be used for the filter. To find supported operators, use the [GET /tags/assets/filters](ref:tags-list-asset-filters) endpoint.
-          type: array
-          items:
-            type: string
-    tags_andConditions:
-      type: array
-      description: 'To apply the tag to assets that match all of the rules, specify the rules inside the `and` object.
-
-
-        **Note:** The value you specify for the rule attribute is not case sensitive. For example, if you type the hostname "hostx," the rule matches to assets with hostname "HOSTX" and "hostx."'
-      items:
-        $ref: '#/components/schemas/tags_rule'
-    tags_rule:
-      type: object
-      description: A rule for applying the tag to assets by matching asset properties or other tags. Includes a field or tag name, an operator, and a value.
-      properties:
-        property:
-          type: string
-          description: The asset attribute or tag to match. To find supported asset attributes, use the [List asset tag filters](ref:tags-list-asset-filters) endpoint.
-        operator:
-          type: string
-          description: The operator to apply to the matched value, for example, equals, does not equal, or contains. To find supported operators for the associated asset attribute, use the [List asset tag filters](ref:tags-list-asset-filters) endpoint.
-        value:
-          description: "The asset attribute value or tag to match. For example, `192.0.2.57`. \n\nSelect **single string value** when you have a single input value, for example, a single IP address. Select **multiple string values** to use an array of strings when you have multiple input values, for example, when you have multiple IP addresses."
-          oneOf:
-          - title: Single String Value
-            type: string
-          - title: Multiple String Values
-            type: array
-            items:
-              type: string
     tags_AccessControl:
       type: object
       description: 'Determines what the user can do with the tag value.
@@ -3581,6 +3541,38 @@ components:
           type: integer
           description: Optional, user-defined value. This value must be incremented each time the permissions are updated. Set to `1` by default.
           format: int64
+    tags_PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    tags_DomainPermission:
+      type: object
+      properties:
+        id:
+          description: The unique identifier (UUID) of a user or group.
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: The name of the user or group.
+        type:
+          type: string
+          description: The type of permission.
+          enum:
+          - USER
+          - GROUP
+          - ROLE
+        permissions:
+          type: array
+          description: The permissions associated with the user or group.
+          items:
+            type: string
     tags_PaginationResponseShort:
       description: An object containing pagination information for the current result set.
       type: object
@@ -3607,6 +3599,61 @@ components:
             $ref: '#/components/schemas/tags_Category'
         pagination:
           $ref: '#/components/schemas/tags_PaginationResponse'
+    tags_rule:
+      type: object
+      description: A rule for applying the tag to assets by matching asset properties or other tags. Includes a field or tag name, an operator, and a value.
+      properties:
+        property:
+          type: string
+          description: The asset attribute or tag to match. To find supported asset attributes, use the [List asset tag filters](ref:tags-list-asset-filters) endpoint.
+        operator:
+          type: string
+          description: The operator to apply to the matched value, for example, equals, does not equal, or contains. To find supported operators for the associated asset attribute, use the [List asset tag filters](ref:tags-list-asset-filters) endpoint.
+        value:
+          description: "The asset attribute value or tag to match. For example, `192.0.2.57`. \n\nSelect **single string value** when you have a single input value, for example, a single IP address. Select **multiple string values** to use an array of strings when you have multiple input values, for example, when you have multiple IP addresses."
+          oneOf:
+          - title: Single String Value
+            type: string
+          - title: Multiple String Values
+            type: array
+            items:
+              type: string
+    tags_Response-List-Tag-Exclusions:
+      type: object
+      properties:
+        value_uuid:
+          description: 'The unique identifier (UUID) of the tag value.
+
+
+            **Note:** A tag UUID is technically assigned to the tag value only (the second half of the category:value pair), but the API commands use this value to represent the whole `category:value` pair.'
+          type: string
+          format: uuid
+        container_uuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the customer container.
+        asset_uuid:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the asset for which the dynamic tag is excluded.
+        ipv4:
+          description: A list of IPv4 addresses associated with the asset.
+          type: array
+          items:
+            type: string
+        sources:
+          type: array
+          description: A list of sources that identified the asset.
+          items:
+            type: string
+    tags_andConditions:
+      type: array
+      description: 'To apply the tag to assets that match all of the rules, specify the rules inside the `and` object.
+
+
+        **Note:** The value you specify for the rule attribute is not case sensitive. For example, if you type the hostname "hostx," the rule matches to assets with hostname "HOSTX" and "hostx."'
+      items:
+        $ref: '#/components/schemas/tags_rule'
     tags_PaginationResponse:
       description: An object containing pagination information for the current result set.
       type: object
@@ -3628,6 +3675,33 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/tags_PaginationResponseSortObject'
+    tags_Category:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: The unique identifier (UUID) of the category.
+        name:
+          type: string
+          description: The name of the category. The name must be unique within a Tenable Vulnerability Management instance.
+        description:
+          type: string
+          description: The description of the category.
+        created_at:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the category was created, for example, `2018-12-31T13:51:17.243Z`.
+        created_by:
+          type: string
+          description: The name of the user who created the category.
+        updated_at:
+          type: string
+          description: An ISO timestamp indicating the date and time on which the category was last updated, for example, `2018-12-31T13:51:17.243Z`.
+        updated_by:
+          type: string
+          description: The name of the user who last updated the category.
+        reserved:
+          type: boolean
+          description: Indicates whether the tags in this category are reserved (cannot be updated). This is a read-only field set by the system.
     tags_ValueDetails:
       type: object
       properties:
@@ -3674,55 +3748,6 @@ components:
             asset:
               type: string
               description: Tag rule definitions represented as a JSON-formatted string.
-    tags_Category:
-      type: object
-      properties:
-        uuid:
-          type: string
-          description: The unique identifier (UUID) of the category.
-        name:
-          type: string
-          description: The name of the category. The name must be unique within a Tenable Vulnerability Management instance.
-        description:
-          type: string
-          description: The description of the category.
-        created_at:
-          type: string
-          description: An ISO timestamp indicating the date and time on which the category was created, for example, `2018-12-31T13:51:17.243Z`.
-        created_by:
-          type: string
-          description: The name of the user who created the category.
-        updated_at:
-          type: string
-          description: An ISO timestamp indicating the date and time on which the category was last updated, for example, `2018-12-31T13:51:17.243Z`.
-        updated_by:
-          type: string
-          description: The name of the user who last updated the category.
-        reserved:
-          type: boolean
-          description: Indicates whether the tags in this category are reserved (cannot be updated). This is a read-only field set by the system.
-    tags_DomainPermission:
-      type: object
-      properties:
-        id:
-          description: The unique identifier (UUID) of a user or group.
-          type: string
-          format: uuid
-        name:
-          type: string
-          description: The name of the user or group.
-        type:
-          type: string
-          description: The type of permission.
-          enum:
-          - USER
-          - GROUP
-          - ROLE
-        permissions:
-          type: array
-          description: The permissions associated with the user or group.
-          items:
-            type: string
     tags_ErrorResponse:
       type: object
       properties:
@@ -3735,31 +3760,6 @@ components:
         message:
           type: string
           description: A brief message about the cause of the error.
-    tags_filters:
-      type: array
-      description: A list of available filters that you can use to define the rules for applying tags to assets.
-      items:
-        $ref: '#/components/schemas/tags_filter'
-    tags_ValueListResponse:
-      type: object
-      properties:
-        values:
-          description: An array of tag value objects.
-          type: array
-          items:
-            $ref: '#/components/schemas/tags_ListValueDetails'
-        pagination:
-          $ref: '#/components/schemas/tags_PaginationResponse'
-    tags_PaginationResponseSortObject:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
-      type: object
-      properties:
-        name:
-          type: string
-          description: The property used to sort the results.
-        order:
-          type: string
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
   responses:
     tags_400ListErrorResponse:
       description: "Returned if your request specifies invalid or malformed query parameters. Tenable Vulnerability Management can encounter the following error conditions:\n - `invalidvalue`—The query parameter format is incorrect, for example, uses an invalid operator as in this example: `f=name:invalid_operator:some_value`.\n- `unknownproperty`—The query parameter format is correct, but it references a field that does not exist, for example `sort=non_existing_property:desc`."

@@ -389,63 +389,23 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
-    Request-Domains-Verify:
+    Response-Domains-Details-List-Object:
       type: object
-      required:
-      - container_uuid
-      - domain_name
-      - host_name
       properties:
-        container_uuid:
-          type: string
-          format: uuid
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-          description: The UUID of the container to add the new domain to.
         domain_name:
           type: string
-          description: The domain you want to add to the container.
-        host_name:
+          example: example.com
+          description: The name of the domain.
+        status:
           type: string
-          description: The host name associated with the domain name. Typically this is the first part of the email address of the user you want to send the verification to. For example, for user@example.com, `user` would be the host name.
-        is_resend:
-          type: boolean
-          description: Indicates whether or not to resend the verification code.
-    ErrorResponse:
-      type: object
-      properties:
-        statusCode:
+          description: The status of the domain. For example, `ACTIVE`, ACTIVATION_PENDING`, or `DISABLED`.
+        type:
+          type: string
+          description: The type of domain. For example, `PRIMARY` or `SECONDARY`.
+        date_added:
           type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    Response-Domains-Details-List:
-      type: object
-      properties:
-        domains:
-          description: An array of domain objects.
-          type: array
-          items:
-            $ref: '#/components/schemas/Response-Domains-Details-List-Object'
-    Response-Domains-List-Object:
-      type: object
-      properties:
-        container_uuid:
-          type: string
-          format: uuid
-          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
-          description: The UUID of the child container in the Tenable MSSP Portal.
-        domains:
-          type: array
-          description: An array of domains associated with the container.
-          items:
-            type: string
-        message:
-          type: string
-          description: A short status message about the operation.
+          description: The Unix timestamp when the domain was added.
+          format: int64
     Response-Domains-List:
       type: object
       properties:
@@ -472,23 +432,63 @@ components:
         activation_code:
           type: string
           description: The required activation code to add the domain to the specified container.
-    Response-Domains-Details-List-Object:
+    Response-Domains-List-Object:
       type: object
       properties:
+        container_uuid:
+          type: string
+          format: uuid
+          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
+          description: The UUID of the child container in the Tenable MSSP Portal.
+        domains:
+          type: array
+          description: An array of domains associated with the container.
+          items:
+            type: string
+        message:
+          type: string
+          description: A short status message about the operation.
+    Response-Domains-Details-List:
+      type: object
+      properties:
+        domains:
+          description: An array of domain objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/Response-Domains-Details-List-Object'
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Request-Domains-Verify:
+      type: object
+      required:
+      - container_uuid
+      - domain_name
+      - host_name
+      properties:
+        container_uuid:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          description: The UUID of the container to add the new domain to.
         domain_name:
           type: string
-          example: example.com
-          description: The name of the domain.
-        status:
+          description: The domain you want to add to the container.
+        host_name:
           type: string
-          description: The status of the domain. For example, `ACTIVE`, ACTIVATION_PENDING`, or `DISABLED`.
-        type:
-          type: string
-          description: The type of domain. For example, `PRIMARY` or `SECONDARY`.
-        date_added:
-          type: integer
-          description: The Unix timestamp when the domain was added.
-          format: int64
+          description: The host name associated with the domain name. Typically this is the first part of the email address of the user you want to send the verification to. For example, for user@example.com, `user` would be the host name.
+        is_resend:
+          type: boolean
+          description: Indicates whether or not to resend the verification code.
   securitySchemes:
     cloud:
       type: apiKey

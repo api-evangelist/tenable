@@ -844,6 +844,15 @@ paths:
       - Inventory_Exports_cloud: []
 components:
   schemas:
+    Inventory_Exports_ErrorResponseStatus-400:
+      type: object
+      properties:
+        error:
+          type: integer
+          description: The HTTP response response status.
+        message:
+          type: string
+          description: An error message indicating the invalid parameter or value.
     Inventory_Exports_Response-Export-Job:
       type: object
       properties:
@@ -885,34 +894,44 @@ components:
         message:
           type: string
           description: A brief message about the cause of the error.
-    Inventory_Exports_Response-Export-Status:
+    Inventory_Exports_Assets-Property-Filter:
       type: object
+      required:
+      - operator
+      - property
+      - value
       properties:
-        export_id:
-          description: The unique identifier (UUID) of the export request.
+        property:
+          description: 'The asset property to filter on.
+
+
+            Use the [List asset properties](ref:inventory-asset-properties-list) endpoint to retrieve a list of valid asset properties for filtering. For example, you might filter by `created_at`, `sources`, or `fqdns`.'
           type: string
-          format: uuid
-        submitted_at:
-          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
-          format: date-time
+        operator:
           type: string
-        last_refreshed_at:
-          description: A timestamp in ISO 8601 format indicating the date and time the export request was last checked for completion.
-          format: date-time
-          type: string
-        status:
-          description: "The status of the export request. Possible values include\n\n * `QUEUED`—Tenable Exposure Management has queued the export request until earlier requests have completed.\n * `PROCESSING`—Tenable Exposure Management is currently processing the export request. \n * `FINISHED`—Tenable Exposure Management has completed processing the export request. All chunks are available.\n * `ERROR`—An error occurred while processing the export request. Retry the request. If the error persists, contact Tenable Support."
-          type: string
+          description: "The comparison operator to apply to the filter. \n\nFor example: `=`, `!=`, `match`, etc. Use the [List asset properties](ref:inventory-asset-properties-list) endpoint to retrieve supported comparison operators for the selected filter."
           enum:
-          - QUEUED
-          - PROCESSING
-          - FINISHED
-          - ERROR
-        chunks_available:
+          - ''
+          - '='
+          - '!='
+          - <=
+          - between
+          - match
+          - '>='
+          - <
+          - '>'
+          - contains
+          - not contains
+          - exists
+          - not exists
+          - older than
+          - newer than
+          - within last
+        value:
+          description: "The value to use for comparison in the filter. \n\nUse the [List asset properties](ref:inventory-asset-properties-list) endpoint to retrieve the supported values for the selected filter."
           type: array
-          description: A list of completed chunk numbers available for download. Each integer represents a chunk file that can be downloaded. If no chunks are available, the list will be empty.
           items:
-            type: integer
+            type: string
     Inventory_Exports_Response-Findings-Chunk-JSON:
       type: object
       additionalProperties: true
@@ -969,6 +988,15 @@ components:
           - ACTIVE
           - RESURFACED
           - FIXED
+    Inventory_Exports_ErrorResponseStatus:
+      type: object
+      properties:
+        message:
+          type: string
+          description: An error message indicating the invalid parameter or value.
+        status:
+          type: integer
+          description: The HTTP response response status code.
     Inventory_Exports_Findings-Property-Filter:
       type: object
       required:
@@ -1046,62 +1074,34 @@ components:
       - CSV
       - JSON
       type: string
-    Inventory_Exports_ErrorResponseStatus-400:
+    Inventory_Exports_Response-Export-Status:
       type: object
       properties:
-        error:
-          type: integer
-          description: The HTTP response response status.
-        message:
+        export_id:
+          description: The unique identifier (UUID) of the export request.
           type: string
-          description: An error message indicating the invalid parameter or value.
-    Inventory_Exports_Assets-Property-Filter:
-      type: object
-      required:
-      - operator
-      - property
-      - value
-      properties:
-        property:
-          description: 'The asset property to filter on.
-
-
-            Use the [List asset properties](ref:inventory-asset-properties-list) endpoint to retrieve a list of valid asset properties for filtering. For example, you might filter by `created_at`, `sources`, or `fqdns`.'
+          format: uuid
+        submitted_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
+          format: date-time
           type: string
-        operator:
+        last_refreshed_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was last checked for completion.
+          format: date-time
           type: string
-          description: "The comparison operator to apply to the filter. \n\nFor example: `=`, `!=`, `match`, etc. Use the [List asset properties](ref:inventory-asset-properties-list) endpoint to retrieve supported comparison operators for the selected filter."
-          enum:
-          - ''
-          - '='
-          - '!='
-          - <=
-          - between
-          - match
-          - '>='
-          - <
-          - '>'
-          - contains
-          - not contains
-          - exists
-          - not exists
-          - older than
-          - newer than
-          - within last
-        value:
-          description: "The value to use for comparison in the filter. \n\nUse the [List asset properties](ref:inventory-asset-properties-list) endpoint to retrieve the supported values for the selected filter."
-          type: array
-          items:
-            type: string
-    Inventory_Exports_ErrorResponseStatus:
-      type: object
-      properties:
-        message:
-          type: string
-          description: An error message indicating the invalid parameter or value.
         status:
-          type: integer
-          description: The HTTP response response status code.
+          description: "The status of the export request. Possible values include\n\n * `QUEUED`—Tenable Exposure Management has queued the export request until earlier requests have completed.\n * `PROCESSING`—Tenable Exposure Management is currently processing the export request. \n * `FINISHED`—Tenable Exposure Management has completed processing the export request. All chunks are available.\n * `ERROR`—An error occurred while processing the export request. Retry the request. If the error persists, contact Tenable Support."
+          type: string
+          enum:
+          - QUEUED
+          - PROCESSING
+          - FINISHED
+          - ERROR
+        chunks_available:
+          type: array
+          description: A list of completed chunk numbers available for download. Each integer represents a chunk file that can be downloaded. If no chunks are available, the list will be empty.
+          items:
+            type: integer
   parameters:
     Inventory_Exports_limit-query-param:
       description: 'The maximum number of export jobs to return from the last 3 days.

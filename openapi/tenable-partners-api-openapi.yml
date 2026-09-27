@@ -188,18 +188,6 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
-    ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     Response-Partner-Details:
       type: object
       properties:
@@ -215,6 +203,14 @@ components:
           description: A list of the partner's available products.
           items:
             $ref: '#/components/schemas/Response-Partner-Details-Products'
+    Response-Partner:
+      allOf:
+      - $ref: '#/components/schemas/Object-Partner'
+      - type: object
+        properties:
+          contact_email:
+            type: string
+            description: The email address used for contacting the partner.
     Object-Distributor:
       type: object
       required:
@@ -232,23 +228,16 @@ components:
         lms_customer_id:
           type: string
           description: The distributor's licensing management system customer ID.
-    Response-Partner-Details-Products:
-      type: object
-      properties:
-        name:
-          type: string
-          example: Tenable Vulnerability Management
-          description: The name of the product that the partner is licensed to distribute.
-        sku:
-          type: string
-          example: TIOVM
-          description: The SKU of the Tenable product that the partner is licensed for.
-        minQuantity:
-          type: integer
-          description: The minimum number of assets that can be requested when creating a quote with the [Create quote](ref:mssp-accounts-quote) endpoint.
-        maxQuantity:
-          type: integer
-          description: The maximum number of assets that can be requested when creating a quote with the [Create quote](ref:mssp-accounts-quote) endpoint.
+    Response-Partner-Details-Distributor:
+      allOf:
+      - $ref: '#/components/schemas/Object-Distributor'
+      - type: object
+        properties:
+          countries:
+            type: array
+            description: An array of strings defining the list of countries where the partner is allowed to operate.
+            items:
+              type: string
     Object-Partner:
       type: object
       required:
@@ -266,24 +255,35 @@ components:
         lms_customer_id:
           type: string
           description: The partner's licensing management system customer ID.
-    Response-Partner:
-      allOf:
-      - $ref: '#/components/schemas/Object-Partner'
-      - type: object
-        properties:
-          contact_email:
-            type: string
-            description: The email address used for contacting the partner.
-    Response-Partner-Details-Distributor:
-      allOf:
-      - $ref: '#/components/schemas/Object-Distributor'
-      - type: object
-        properties:
-          countries:
-            type: array
-            description: An array of strings defining the list of countries where the partner is allowed to operate.
-            items:
-              type: string
+    Response-Partner-Details-Products:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Tenable Vulnerability Management
+          description: The name of the product that the partner is licensed to distribute.
+        sku:
+          type: string
+          example: TIOVM
+          description: The SKU of the Tenable product that the partner is licensed for.
+        minQuantity:
+          type: integer
+          description: The minimum number of assets that can be requested when creating a quote with the [Create quote](ref:mssp-accounts-quote) endpoint.
+        maxQuantity:
+          type: integer
+          description: The maximum number of assets that can be requested when creating a quote with the [Create quote](ref:mssp-accounts-quote) endpoint.
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
   securitySchemes:
     cloud:
       type: apiKey

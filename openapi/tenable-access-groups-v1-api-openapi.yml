@@ -695,30 +695,6 @@ paths:
       - access-groups_cloud: []
 components:
   schemas:
-    access-groups_AssetRule:
-      type: object
-      properties:
-        type:
-          type: string
-          description: The type of asset rule. The asset rule type corresponds to the type of data you can specify in the `terms` parameter. For a complete list of supported rule types, use the [GET /access-groups/filters](ref:io-v1-access-groups-list-filters) endpoint.
-        operator:
-          type: string
-          description: "The operator that specifies how Tenable Vulnerability Management matches the terms value to asset data. \n\nPossible operators include: \n - eq—Tenable Vulnerability Management matches the rule to assets based on an exact match of the specified term. Note: Tenable Vulnerability Management interprets the operator as `equals` for ipv4 rules that specify a single IP address, but interprets the operator as `contains` for ipv4 rules that specify an IP range or CIDR range.\n - match—Tenable Vulnerability Management matches the rule to assets based a partial match of the specified term.\n - starts—Tenable Vulnerability Management matches the rule to assets that start with the specified term.\n - ends—Tenable Vulnerability Management matches the rule to assets that end with the specified term.\n - set-has—Tenable Vulnerability Management matches the rule to assets based on an exact match of the specified `tag_uuid`.\n\nFor a complete list of operators by rule type, use the [GET /access-groups/rules/filters](ref:io-v1-access-groups-list-rule-filters) endpoint."
-        terms:
-          description: "The values that Tenable Vulnerability Management uses to match an asset to the rule. A term must correspond to the rule type.\n\nFor example:\n - If the rule type is `aws_account`, the term is an AWS account ID.\n - If the rule type is `fqdn`, the term is a hostname or a fully-qualified domain name (FQDN).\n - If the rule type is `ipv4`, the term is an individual IPv4 address, a range of IPv4 addresses (for example, 192.0.2.57-192.0.2.60), or a CIDR range (for example, 192.0.2.57/24). \n\nFor a complete list of supported values by rule type, use the [GET /access-groups/rules/filters](ref:io-v1-access-groups-list-rule-filters) endpoint.  \n\nIf you specify multiple terms values, Tenable Vulnerability Management includes an asset in the access group if the asset's attributes match any of the terms in the rule.\n<br >You can specify up to 100,000 terms per asset rule."
-          type: array
-          items:
-            type: string
-    access-groups_Response-PaginationSortObject:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
-      type: object
-      properties:
-        name:
-          type: string
-          description: The property used to sort the results.
-        order:
-          type: string
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
     access-groups_AccessGroupFilters:
       type: object
       properties:
@@ -737,66 +713,18 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/access-groups_AccessGroupFilterSort'
-    access-groups_AccessGroupFilter:
+    access-groups_ErrorResponse:
       type: object
       properties:
-        operators:
-          description: Corresponds to the operator component of the `f` parameter.
-          type: array
-          items:
-            type: string
-        control:
-          description: Indicates how the parameter appears in the Tenable Vulnerability Management user interface.
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
           type: string
-        name:
-          description: Corresponds to the field component of the `f` parameter.
+          description: The standard HTTP error name.
+        message:
           type: string
-        readable_name:
-          description: The name of the parameter as it appears in the Tenable Vulnerability Management user interface.
-          type: string
-    access-groups_AssetRulePrincipal:
-      type: object
-      properties:
-        type:
-          type: string
-          description: "(Required) The type of principal. Valid values include:\n - user—Grants access to the user you specify.\n - group—Grants access to all users assigned to the user group you specify."
-        principal_id:
-          type: string
-          description: The UUID of a user or user group. This parameter is required if the request omits the `principal_name` parameter.
-        principal_name:
-          type: string
-          description: The name of the user or user group. This parameter is required if the request omits the `principal_id` parameter. If a request includes both `principal_id` and `principal_name`, Tenable Vulnerability Management assigns the user or user group to the access group based on the `principal_id` parameter, and ignores the `principal_name` parameter in the request.
-    access-groups_AssetRuleFilter:
-      type: object
-      properties:
-        operators:
-          description: "The operator that specifies how Tenable Vulnerability Management matches the terms value to asset data. Corresponds to the operator component of the rules parameter. Possible operators include:  \n* eq—Tenable Vulnerability Management matches the rule to assets based on an exact match of the specified term. Note: Tenable Vulnerability Management interprets the operator as `equals` for ipv4 rules that specify a single IP address, but interprets the operator as `contains` for ipv4 rules that specify an IP range or CIDR range.  \n* match—Tenable Vulnerability Management matches the rule to assets based a partial match of the specified term.  \n* starts—Tenable Vulnerability Management matches the rule to assets that start with the specified term.  \n* ends—Tenable Vulnerability Management matches the rule to assets that end with the specified term.\n * set-has—Tenable Vulnerability Management matches the rule to assets based on an exact match of the specified `tag_uuid`.\n\nFor a complete list of operators by rule type, use the [GET /access-groups/filters](ref:io-v1-access-groups-list-filters) endpoint."
-          type: array
-          items:
-            type: string
-        control:
-          description: Indicates how the field appears in the Tenable Vulnerability Management user interface.
-          type: string
-        name:
-          description: The name of the filter parameter. Corresponds to the asset rule type.
-          type: string
-        readable_name:
-          description: The name of the field as it appears in the Tenable Vulnerability Management user interface.
-          type: string
-    access-groups_AccessGroupFilterSort:
-      type: object
-      properties:
-        sortable_fields:
-          description: The names of the fields you can use when constructing `sort` parameter values for the [GET /access-groups](ref:io-v1-access-groups-list) endpoint.
-          type: string
-    access-groups_AssetRuleFilters:
-      type: object
-      properties:
-        filters:
-          description: An array specifying values to use when constructing an asset rule for the [POST /access-groups](ref:io-v1-access-groups-create) and [PUT /access-groups/{id}](ref:io-v1-access-groups-edit) methods.
-          type: array
-          items:
-            $ref: '#/components/schemas/access-groups_AssetRuleFilter'
+          description: A brief message about the cause of the error.
     access-groups_PaginationResponse:
       description: An object containing pagination information for the current result set.
       type: object
@@ -870,6 +798,76 @@ components:
         processing_percent_complete:
           type: integer
           description: The percentage of assets that Tenable Vulnerability Management has evaluated against the asset rules for the access group.
+    access-groups_Response-PaginationSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    access-groups_AccessGroupFilter:
+      type: object
+      properties:
+        operators:
+          description: Corresponds to the operator component of the `f` parameter.
+          type: array
+          items:
+            type: string
+        control:
+          description: Indicates how the parameter appears in the Tenable Vulnerability Management user interface.
+          type: string
+        name:
+          description: Corresponds to the field component of the `f` parameter.
+          type: string
+        readable_name:
+          description: The name of the parameter as it appears in the Tenable Vulnerability Management user interface.
+          type: string
+    access-groups_AssetRule:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of asset rule. The asset rule type corresponds to the type of data you can specify in the `terms` parameter. For a complete list of supported rule types, use the [GET /access-groups/filters](ref:io-v1-access-groups-list-filters) endpoint.
+        operator:
+          type: string
+          description: "The operator that specifies how Tenable Vulnerability Management matches the terms value to asset data. \n\nPossible operators include: \n - eq—Tenable Vulnerability Management matches the rule to assets based on an exact match of the specified term. Note: Tenable Vulnerability Management interprets the operator as `equals` for ipv4 rules that specify a single IP address, but interprets the operator as `contains` for ipv4 rules that specify an IP range or CIDR range.\n - match—Tenable Vulnerability Management matches the rule to assets based a partial match of the specified term.\n - starts—Tenable Vulnerability Management matches the rule to assets that start with the specified term.\n - ends—Tenable Vulnerability Management matches the rule to assets that end with the specified term.\n - set-has—Tenable Vulnerability Management matches the rule to assets based on an exact match of the specified `tag_uuid`.\n\nFor a complete list of operators by rule type, use the [GET /access-groups/rules/filters](ref:io-v1-access-groups-list-rule-filters) endpoint."
+        terms:
+          description: "The values that Tenable Vulnerability Management uses to match an asset to the rule. A term must correspond to the rule type.\n\nFor example:\n - If the rule type is `aws_account`, the term is an AWS account ID.\n - If the rule type is `fqdn`, the term is a hostname or a fully-qualified domain name (FQDN).\n - If the rule type is `ipv4`, the term is an individual IPv4 address, a range of IPv4 addresses (for example, 192.0.2.57-192.0.2.60), or a CIDR range (for example, 192.0.2.57/24). \n\nFor a complete list of supported values by rule type, use the [GET /access-groups/rules/filters](ref:io-v1-access-groups-list-rule-filters) endpoint.  \n\nIf you specify multiple terms values, Tenable Vulnerability Management includes an asset in the access group if the asset's attributes match any of the terms in the rule.\n<br >You can specify up to 100,000 terms per asset rule."
+          type: array
+          items:
+            type: string
+    access-groups_AssetRulePrincipal:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "(Required) The type of principal. Valid values include:\n - user—Grants access to the user you specify.\n - group—Grants access to all users assigned to the user group you specify."
+        principal_id:
+          type: string
+          description: The UUID of a user or user group. This parameter is required if the request omits the `principal_name` parameter.
+        principal_name:
+          type: string
+          description: The name of the user or user group. This parameter is required if the request omits the `principal_id` parameter. If a request includes both `principal_id` and `principal_name`, Tenable Vulnerability Management assigns the user or user group to the access group based on the `principal_id` parameter, and ignores the `principal_name` parameter in the request.
+    access-groups_AssetRuleFilter:
+      type: object
+      properties:
+        operators:
+          description: "The operator that specifies how Tenable Vulnerability Management matches the terms value to asset data. Corresponds to the operator component of the rules parameter. Possible operators include:  \n* eq—Tenable Vulnerability Management matches the rule to assets based on an exact match of the specified term. Note: Tenable Vulnerability Management interprets the operator as `equals` for ipv4 rules that specify a single IP address, but interprets the operator as `contains` for ipv4 rules that specify an IP range or CIDR range.  \n* match—Tenable Vulnerability Management matches the rule to assets based a partial match of the specified term.  \n* starts—Tenable Vulnerability Management matches the rule to assets that start with the specified term.  \n* ends—Tenable Vulnerability Management matches the rule to assets that end with the specified term.\n * set-has—Tenable Vulnerability Management matches the rule to assets based on an exact match of the specified `tag_uuid`.\n\nFor a complete list of operators by rule type, use the [GET /access-groups/filters](ref:io-v1-access-groups-list-filters) endpoint."
+          type: array
+          items:
+            type: string
+        control:
+          description: Indicates how the field appears in the Tenable Vulnerability Management user interface.
+          type: string
+        name:
+          description: The name of the filter parameter. Corresponds to the asset rule type.
+          type: string
+        readable_name:
+          description: The name of the field as it appears in the Tenable Vulnerability Management user interface.
+          type: string
     access-groups_AccessGroup:
       type: object
       properties:
@@ -912,18 +910,20 @@ components:
         processing_percent_complete:
           type: integer
           description: The percentage of assets that Tenable Vulnerability Management has evaluated against the asset rules for the access group.
-    access-groups_ErrorResponse:
+    access-groups_AssetRuleFilters:
       type: object
       properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
+        filters:
+          description: An array specifying values to use when constructing an asset rule for the [POST /access-groups](ref:io-v1-access-groups-create) and [PUT /access-groups/{id}](ref:io-v1-access-groups-edit) methods.
+          type: array
+          items:
+            $ref: '#/components/schemas/access-groups_AssetRuleFilter'
+    access-groups_AccessGroupFilterSort:
+      type: object
+      properties:
+        sortable_fields:
+          description: The names of the fields you can use when constructing `sort` parameter values for the [GET /access-groups](ref:io-v1-access-groups-list) endpoint.
           type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey

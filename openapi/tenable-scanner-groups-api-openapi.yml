@@ -941,10 +941,47 @@ paths:
       - Scanner_Groups_cloud: []
 components:
   schemas:
-    Scanner_Groups_route_objects:
-      type: array
-      items:
-        $ref: '#/components/schemas/Scanner_Groups_route'
+    Scanner_Groups_response-create-scanner_group:
+      type: object
+      properties:
+        creation_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the scanner group was created.
+        last_modification_date:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the scanner group was last modified.
+        owner_id:
+          type: integer
+          description: The unique ID of the owner of the scanner group.
+        owner:
+          type: string
+          description: The username of the owner of the scanner group.
+        owner_uuid:
+          type: integer
+          description: The UUID of the owner of the scanner group.
+        default_permissions:
+          type: integer
+          description: The access permissions for the Default group.
+        scan_count:
+          type: integer
+          description: The number of scans currently tasked to the scanner group.
+        uuid:
+          type: string
+          description: The UUID of the scanner group.
+        type:
+          type: string
+          description: The type of scanner group. This is set to "load_balancing" by default.
+        name:
+          type: string
+          description: The name of the scanner group.
+        id:
+          type: integer
+          description: The unique ID of the scanner group.
+        owner_name:
+          type: string
+          description: The username of the owner of the scanner group.
     Scanner_Groups_response-update-scanner_group:
       type: object
       properties:
@@ -999,81 +1036,6 @@ components:
         modified_in_seconds:
           type: integer
           description: A Unix timestamp (seconds precision) indicating the date and time when the scanner group was last modified.
-    Scanner_Groups_object-scanner_group:
-      type: object
-      properties:
-        creation_date:
-          type: integer
-          format: int64
-          description: A Unix timestamp indicating the date and time when the scanner group was created.
-        last_modification_date:
-          type: integer
-          format: int64
-          description: A Unix timestamp indicating the date and time when the scanner group was last modified.
-        owner_id:
-          type: integer
-          description: The unique ID of the owner of the scanner group.
-        owner:
-          type: string
-          description: The username of the owner of the scanner group.
-        default_permissions:
-          type: integer
-          description: The access permissions for the Default group.
-        user_permissions:
-          type: integer
-          description: The sharing permissions for the scanner group.
-        shared:
-          type: integer
-          description: Indicates whether or not the scanner group is shared.
-        scan_count:
-          type: integer
-          description: The number of scans currently tasked to the scanner group.
-        scanner_count:
-          type: string
-          description: The number of scanners associated with this scanner group.
-        uuid:
-          type: string
-          description: The UUID of the scanner group.
-        token:
-          type: string
-          description: The unique token for a scanner group.
-        flag:
-          type: string
-          description: The flag indicating what type of scanner group.
-        type:
-          type: string
-          description: The type of scanner group. This is set to "load_balancing" by default.
-        name:
-          type: string
-          description: The name of the scanner group.
-        network_name:
-          type: string
-          description: The name of the network object associated with the scanner group. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
-        id:
-          type: integer
-          description: The unique ID of the scanner group.
-        supports_webapp:
-          type: boolean
-          description: Indicates whether or not the scanner group supports Tenable Web App Scanning scanners.
-        scanner_id:
-          type: integer
-          description: The unique scanner ID of the scanner group.
-        scanner_uuid:
-          type: string
-          description: The UUID of the scanner group.
-        owner_name:
-          type: string
-          description: The username of the owner of the scanner group.
-    Scanner_Groups_routes:
-      type: object
-      properties:
-        routes:
-          type: array
-          items:
-            type: string
-          description: A list of zero or more hostnames, hostname wildcards, IP addresses, CIDR addresses, or IP ranges. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats).
-      required:
-      - routes
     Scanner_Groups_ErrorResponse:
       type: object
       properties:
@@ -1278,7 +1240,17 @@ components:
         profile_name:
           type: string
           description: The name of the scanner profile that the scanner belongs to.
-    Scanner_Groups_response-create-scanner_group:
+    Scanner_Groups_routes:
+      type: object
+      properties:
+        routes:
+          type: array
+          items:
+            type: string
+          description: A list of zero or more hostnames, hostname wildcards, IP addresses, CIDR addresses, or IP ranges. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats).
+      required:
+      - routes
+    Scanner_Groups_object-scanner_group:
       type: object
       properties:
         creation_date:
@@ -1295,30 +1267,58 @@ components:
         owner:
           type: string
           description: The username of the owner of the scanner group.
-        owner_uuid:
-          type: integer
-          description: The UUID of the owner of the scanner group.
         default_permissions:
           type: integer
           description: The access permissions for the Default group.
+        user_permissions:
+          type: integer
+          description: The sharing permissions for the scanner group.
+        shared:
+          type: integer
+          description: Indicates whether or not the scanner group is shared.
         scan_count:
           type: integer
           description: The number of scans currently tasked to the scanner group.
+        scanner_count:
+          type: string
+          description: The number of scanners associated with this scanner group.
         uuid:
           type: string
           description: The UUID of the scanner group.
+        token:
+          type: string
+          description: The unique token for a scanner group.
+        flag:
+          type: string
+          description: The flag indicating what type of scanner group.
         type:
           type: string
           description: The type of scanner group. This is set to "load_balancing" by default.
         name:
           type: string
           description: The name of the scanner group.
+        network_name:
+          type: string
+          description: The name of the network object associated with the scanner group. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
         id:
           type: integer
           description: The unique ID of the scanner group.
+        supports_webapp:
+          type: boolean
+          description: Indicates whether or not the scanner group supports Tenable Web App Scanning scanners.
+        scanner_id:
+          type: integer
+          description: The unique scanner ID of the scanner group.
+        scanner_uuid:
+          type: string
+          description: The UUID of the scanner group.
         owner_name:
           type: string
           description: The username of the owner of the scanner group.
+    Scanner_Groups_route_objects:
+      type: array
+      items:
+        $ref: '#/components/schemas/Scanner_Groups_route'
     Scanner_Groups_route:
       type: object
       properties:

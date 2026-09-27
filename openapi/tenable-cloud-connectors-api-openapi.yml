@@ -1579,231 +1579,6 @@ paths:
       - Cloud_Connectors_cloud: []
 components:
   schemas:
-    Cloud_Connectors_Request_Update_GCP_Keyless_Connector:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
-        network_uuid:
-          type: string
-          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
-
-
-            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
-          format: UUID
-          default: 00000000-0000-0000-0000-000000000000
-        params:
-          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestGCPKeyless'
-        schedule:
-          $ref: '#/components/schemas/Cloud_Connectors_schedule'
-      required:
-      - name
-      - type
-      - params
-    Cloud_Connectors_ParamsRequestGCPKeyless:
-      type: object
-      properties:
-        credentials_config:
-          type: string
-          description: "A Base64-encoded string value of the credential configuration. \n\nFor more information, see <a href=\"https://docs.tenable.com/vulnerability-management/Content/Settings/cloud-connectors/GCP/CreateWorkloadIdentityPool.htm\" target=\"_blank\">Create a GCP Workload Identity Pool and Download the Configuration File</a> in the _Tenable Vulnerability Management User Guide_ or <a href=\"https://cloud.google.com/iam/docs/workload-identity-federation-with-other-providers#download-cred-config\" target=\"_blank\">Download a credential configuration</a> in the GCP documentation.\n\nNote: The `credentials_config` value must include only the literal encoded string. Do not include the `data:application/json;base64` prefix."
-      required:
-      - credentials_config
-    Cloud_Connectors_Request-Update_Azure_FA_Connector:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
-        network_uuid:
-          type: string
-          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
-
-
-            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
-          format: UUID
-          default: 00000000-0000-0000-0000-000000000000
-        params:
-          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAzureFA'
-      required:
-      - name
-      - type
-      - params
-    Cloud_Connectors_Response-PaginationSortObject:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
-      type: object
-      properties:
-        name:
-          type: string
-          description: The property used to sort the results.
-        order:
-          type: string
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
-    Cloud_Connectors_ParamsRequestAWSKeyless:
-      required:
-      - sub_accounts
-      type: object
-      properties:
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/Cloud_Connectors_tags'
-        auto_discovery:
-          description: Specifies whether Auto Discovery is enabled or not. If Auto Discovery is enabled, the connector will automatically discover linked accounts and CloudTrails.
-          type: boolean
-        sub_accounts:
-          description: A list of AWS accounts associated with the connector.
-          type: array
-          items:
-            $ref: '#/components/schemas/Cloud_Connectors_aws_sub_account'
-        trails:
-          description: A list of AWS cloudtrails associated with the connector. The trails must be available to be used by the connector. Use the [POST /settings/connectors/aws/cloudtrails](ref:io-connectors-get-aws-cloudtrails) endpoint to check the `availability` property of cloudtrail objects.
-          type: array
-          items:
-            $ref: '#/components/schemas/Cloud_Connectors_trail'
-    Cloud_Connectors_region:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The AWS region code, for example, `us-east-1`. The value of `All` indicates that the cloudtrail is associated with all AWS available regions.
-        friendly_name:
-          description: The AWS region name, for example, `US East (N. Virginia)`. The value of `All` indicates that the cloudtrail is associated with all AWS available regions.
-          type: string
-    Cloud_Connectors_Request-Create_Azure_Connector:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
-        type:
-          type: string
-          description: The type of cloud connector. For Azure connectors, the type is `azure`.
-          default: azure
-          enum:
-          - azure
-        network_uuid:
-          type: string
-          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
-
-
-            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
-          format: UUID
-          default: 00000000-0000-0000-0000-000000000000
-        params:
-          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAzure'
-        schedule:
-          $ref: '#/components/schemas/Cloud_Connectors_schedule'
-      required:
-      - name
-      - type
-      - params
-    Cloud_Connectors_azure_status:
-      type: object
-      properties:
-        last_event_seen:
-          type: string
-          description: An ISO timestamp indicating the last time the connector found new or changed records and successfully imported them.
-        release_timestamp:
-          description: An ISO timestamp indicating the last time the connector successfully completed an import (regardless of whether it found any changes).
-          type: string
-        message:
-          type: string
-          description: The extended import status message.
-    Cloud_Connectors_Request-Create_AWS_FA_Connector:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
-        type:
-          type: string
-          description: The type of cloud connector. For AWS with Frictionless Assessment connectors, the type is `aws_fa`.
-          default: aws_fa
-          enum:
-          - aws_fa
-        network_uuid:
-          type: string
-          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
-
-
-            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
-          format: UUID
-          default: 00000000-0000-0000-0000-000000000000
-        params:
-          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAWS_FA'
-        schedule:
-          $ref: '#/components/schemas/Cloud_Connectors_schedule'
-      required:
-      - name
-      - type
-      - params
-    Cloud_Connectors_tags:
-      description: "The AWS tag associated with the hosts you want to assess. \n\n**Note:** You can no longer use Frictionless Assessment tags to create an AWS keyless (`aws_keyless`) connector with Frictionless Assessment. To create an AWS with Frictionless Assessment connector, use the `aws_fa` connector type when creating the connector."
-      type: object
-      properties:
-        key:
-          description: The AWS tag associated with the hosts you want to assess.
-          type: string
-        value:
-          description: The value of the AWS tag associated with the hosts you want to assess.
-          type: string
-    Cloud_Connectors_Request-Create_GCP_Keyless_Connector:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
-        type:
-          type: string
-          description: The type of cloud connector. For GCP Workload Identity Federation connectors, the type is `gcp_keyless`.
-          default: gcp_keyless
-          enum:
-          - gcp_keyless
-        network_uuid:
-          type: string
-          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
-
-
-            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
-          format: UUID
-          default: 00000000-0000-0000-0000-000000000000
-        params:
-          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestGCPKeyless'
-        schedule:
-          $ref: '#/components/schemas/Cloud_Connectors_schedule'
-      required:
-      - name
-      - type
-      - params
-    Cloud_Connectors_Request-Create_AWS_Keyed_Connector:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
-        type:
-          type: string
-          description: The type of cloud connector. For AWS keyed connectors, the type is `aws`.
-          default: aws
-          enum:
-          - aws
-        network_uuid:
-          type: string
-          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
-
-
-            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
-          format: UUID
-          default: 00000000-0000-0000-0000-000000000000
-        params:
-          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAWSKeyed'
-        schedule:
-          $ref: '#/components/schemas/Cloud_Connectors_schedule'
-      required:
-      - name
-      - type
-      - params
     Cloud_Connectors_Request-UpdateConnector:
       oneOf:
       - title: Amazon Web Services (Keyed)
@@ -1854,6 +1629,577 @@ components:
         properties:
           connector:
             $ref: '#/components/schemas/Cloud_Connectors_Request_Update_GCP_Keyless_Connector'
+    Cloud_Connectors_Request-Create_Azure_ConnectorFA:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        type:
+          type: string
+          description: The type of cloud connector. For Azure with Frictionless Assessment connectors, the type is `azure_fa`.
+          default: azure_fa
+          enum:
+          - azure_fa
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAzureFA'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_response_params:
+      type: object
+      description: The connector parameters. Note that only the `params` object for AWS keyed connectors is shown below. The `param` object for other connector types is not used in the example.
+      properties:
+        access_key:
+          description: 'For AWS connectors, the AWS access key.
+
+
+            <b>Note: </b>The `access_key` is not included in the keyless AWS connector parameters.'
+          type: string
+        sub_accounts:
+          description: For AWS connectors, a list of AWS accounts associated with the connector.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_aws_sub_account'
+        status:
+          description: For Azure connectors, a list of import status records.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_azure_status'
+        targets:
+          description: For Azure Frictionless Assessment connectors, the resource group and tag information.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_TargetsAzureFA'
+        application_id:
+          description: For Azure connectors, the Azure application ID.
+          type: string
+        tenant_id:
+          type: string
+          description: For Azure connectors, the Azure tenant ID (directory ID).
+        subscription_id:
+          type: string
+          description: For Azure connectors, the Azure subscription ID. If you do not provide subscription IDs, Tenable Vulnerability Management automatically discovers them.
+        auto_discovery:
+          description: Specifies whether Auto Discovery is enabled or not for AWS keyless connectors. If Auto Discovery is enabled, the connector will automatically discover linked accounts and CloudTrails.
+          type: boolean
+        service:
+          description: The service targeted by the connector. Values include `aws`, `aws_keyless`, `aws_fa`, `azure`, `azure_fa`, and `gcp`.
+          type: string
+    Cloud_Connectors_Request-Create_Azure_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        type:
+          type: string
+          description: The type of cloud connector. For Azure connectors, the type is `azure`.
+          default: azure
+          enum:
+          - azure
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAzure'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_Request_Update_Azure_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAzure'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_Request-ConnectorCreate:
+      oneOf:
+      - title: Amazon Web Services (Keyed)
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Amazon Web Services (AWS) keyed connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_AWS_Keyed_Connector'
+      - title: Amazon Web Services (Keyless)
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Amazon Web Services (AWS) keyless connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_AWS_Keyless_Connector'
+      - title: Amazon Web Services with Frictionless Assessment
+        type: object
+        description: 'There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Amazon Web Services (AWS) with Frictionless Assessment connector.
+
+
+          **Note:** Frictionless Assessment has reached the End-of-Provisioning phase of its product lifecycle. For more information, see [Frictionless Assessment End-of-Provisioning](https://developer.tenable.com/changelog/tenableio-frictionless-assessment-end-of-provisioning).'
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_AWS_FA_Connector'
+      - title: Microsoft Azure
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Microsoft Azure connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_Azure_Connector'
+      - title: Microsoft Azure with Frictionless Assessment
+        type: object
+        description: 'There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Microsoft Azure with Frictionless Assessment connector.
+
+
+          **Note:** Frictionless Assessment has reached the End-of-Provisioning phase of its product lifecycle. For more information, see [Frictionless Assessment End-of-Provisioning](https://developer.tenable.com/changelog/tenableio-frictionless-assessment-end-of-provisioning).'
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_Azure_ConnectorFA'
+      - title: Google Cloud Platform (Keyed)
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Google Cloud Platform (GCP) keyed connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_GCP_Keyed_Connector'
+      - title: Google Cloud Platform Workload Identity Federation
+        type: object
+        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Google Cloud Platform (GCP) Workload Identity Federation connector.
+        properties:
+          connector:
+            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_GCP_Keyless_Connector'
+    Cloud_Connectors_TargetsAzureFA:
+      type: object
+      properties:
+        resource_group:
+          description: "The name of the resource group that Azure Frictionless Assessment scans VMs in. \n\n**Note:** You can use the wildcard `*` to select all resource groups in the Azure subscription."
+          type: string
+        tag_key:
+          type: string
+          description: "The tag name in Microsoft Azure. \n\n**Note:** You can use the wildcard `*` to select all tag names in Azure for Frictionless Assessment."
+        tag_value:
+          type: string
+          description: "The tag value in Microsoft Azure. \n\n**Note:** You can use the wildcard `*` to select all tag values in Azure for Frictionless Assessment."
+      required:
+      - application_id
+      - tenant_id
+      - client_secret
+    Cloud_Connectors_Request-Create_GCP_Keyed_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        type:
+          type: string
+          description: The type of cloud connector. For GCP keyed connectors, the type is `gcp`.
+          default: gcp
+          enum:
+          - gcp
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestGCP'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_Request_Update_GCP_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestGCP'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_tags:
+      description: "The AWS tag associated with the hosts you want to assess. \n\n**Note:** You can no longer use Frictionless Assessment tags to create an AWS keyless (`aws_keyless`) connector with Frictionless Assessment. To create an AWS with Frictionless Assessment connector, use the `aws_fa` connector type when creating the connector."
+      type: object
+      properties:
+        key:
+          description: The AWS tag associated with the hosts you want to assess.
+          type: string
+        value:
+          description: The value of the AWS tag associated with the hosts you want to assess.
+          type: string
+    Cloud_Connectors_Request-Create_GCP_Keyless_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        type:
+          type: string
+          description: The type of cloud connector. For GCP Workload Identity Federation connectors, the type is `gcp_keyless`.
+          default: gcp_keyless
+          enum:
+          - gcp_keyless
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestGCPKeyless'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_region:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The AWS region code, for example, `us-east-1`. The value of `All` indicates that the cloudtrail is associated with all AWS available regions.
+        friendly_name:
+          description: The AWS region name, for example, `US East (N. Virginia)`. The value of `All` indicates that the cloudtrail is associated with all AWS available regions.
+          type: string
+    Cloud_Connectors_ParamsRequestAzureFA:
+      type: object
+      properties:
+        targets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_TargetsAzureFA'
+        scan_all:
+          type: boolean
+          description: Indicates whether or not to override the `resource_group`, `tag_key`, and `tag_value` properties and scan all VMs in the current subscription. Setting `scan_all` to `true` is equivalent to using `*` for `resource_group`, `tag_key`, and `tag_value`.
+          example: false
+      required:
+      - application_id
+      - tenant_id
+      - client_secret
+    Cloud_Connectors_ParamsRequestGCPKeyless:
+      type: object
+      properties:
+        credentials_config:
+          type: string
+          description: "A Base64-encoded string value of the credential configuration. \n\nFor more information, see <a href=\"https://docs.tenable.com/vulnerability-management/Content/Settings/cloud-connectors/GCP/CreateWorkloadIdentityPool.htm\" target=\"_blank\">Create a GCP Workload Identity Pool and Download the Configuration File</a> in the _Tenable Vulnerability Management User Guide_ or <a href=\"https://cloud.google.com/iam/docs/workload-identity-federation-with-other-providers#download-cred-config\" target=\"_blank\">Download a credential configuration</a> in the GCP documentation.\n\nNote: The `credentials_config` value must include only the literal encoded string. Do not include the `data:application/json;base64` prefix."
+      required:
+      - credentials_config
+    Cloud_Connectors_Request-Update_AWS_Keyed_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAWSKeyed'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_Request-Create_AWS_Keyed_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        type:
+          type: string
+          description: The type of cloud connector. For AWS keyed connectors, the type is `aws`.
+          default: aws
+          enum:
+          - aws
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAWSKeyed'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_aws_sub_account:
+      required:
+      - account_id
+      - role_arn
+      - external_id
+      - trails
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: The AWS account ID.
+        role_arn:
+          type: string
+          description: The Amazon Resource Name (ARN) of the role generated based on the associated account ID.
+        external_id:
+          description: The UUID of your Tenable Vulnerability Management instance used by AWS to identify it as a client application. You can obtain the UUID of your Tenable Vulnerability Management account using the [GET /users/{user_id}](ref:users-details) endpoint. The UUID corresponds to the `container_uuid` attribute of the response message for that endpoint.
+          type: string
+        trails:
+          description: A list of AWS cloudtrails associated with the account.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_trail'
+        incremental_mode:
+          type: boolean
+          description: Indicates whether a connector has completed the initial full import successfully. If the value is `true`, then the connector is in incremental mode where it imports assets based on events instead of enumerating all assets in the account every single time.
+    Cloud_Connectors_AWSCredentials:
+      type: object
+      description: The credentials that the Tenable Vulnerability Management connector uses to communicate with the AWS API, including `access_key` and `secret_key`.
+      properties:
+        access_key:
+          type: string
+          description: The AWS access key.
+        secret_key:
+          type: string
+          description: The AWS secret key.
+    Cloud_Connectors_trail:
+      required:
+      - arn
+      type: object
+      properties:
+        arn:
+          type: string
+          description: The Amazon Resource Name (ARN) of the cloudtrail.
+        name:
+          type: string
+          description: The name of the cloudtrail.
+        region:
+          $ref: '#/components/schemas/Cloud_Connectors_region'
+        availability:
+          description: "Indicates whether a cloudtrail is available to be used by a connector (logging is turned on in AWS, or it has at least one EventSelector with IncludeManagementEvents). Values include:\n - `success`—The cloudtrail is available.\n - `error`—The cloudtrail is not available."
+          type: string
+          enum:
+          - success
+          - error
+    Cloud_Connectors_Request-Create_AWS_FA_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        type:
+          type: string
+          description: The type of cloud connector. For AWS with Frictionless Assessment connectors, the type is `aws_fa`.
+          default: aws_fa
+          enum:
+          - aws_fa
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAWS_FA'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_Response-Pagination:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_Response-PaginationSortObject'
+    Cloud_Connectors_ParamsRequestAWSKeyed:
+      type: object
+      properties:
+        access_key:
+          description: The AWS access key.
+          type: string
+        secret_key:
+          description: The AWS secret key.
+          type: string
+        trails:
+          description: A list of AWS cloudtrails associated with the connector. The trails must be available to be used by the connector. Use the [POST /settings/connectors/aws/cloudtrails](ref:io-connectors-get-aws-cloudtrails) endpoint to check the `availability` property of cloudtrail objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_trail'
+      required:
+      - access_key
+      - secret_key
+    Cloud_Connectors_Request-Update_Azure_FA_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAzureFA'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_Request_Update_GCP_Keyless_Connector:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
+        network_uuid:
+          type: string
+          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
+
+
+            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
+          format: UUID
+          default: 00000000-0000-0000-0000-000000000000
+        params:
+          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestGCPKeyless'
+        schedule:
+          $ref: '#/components/schemas/Cloud_Connectors_schedule'
+      required:
+      - name
+      - type
+      - params
+    Cloud_Connectors_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Cloud_Connectors_ParamsRequestGCP:
+      type: object
+      properties:
+        service_account_key:
+          type: string
+          description: 'A Base64-encoded string value of the service account key JSON file. For more information, see <a href="https://cloud.google.com/iam/docs/creating-managing-service-account-keys" target="_blank">Create and delete service account keys</a> in the GCP documentation.
+
+
+            Note: The `service_account_key` value must include only the literal encoded string. Do not include the `data:application/json;base64` prefix.'
+      required:
+      - service_account_key
+    Cloud_Connectors_Response-PaginationSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    Cloud_Connectors_azure_status:
+      type: object
+      properties:
+        last_event_seen:
+          type: string
+          description: An ISO timestamp indicating the last time the connector found new or changed records and successfully imported them.
+        release_timestamp:
+          description: An ISO timestamp indicating the last time the connector successfully completed an import (regardless of whether it found any changes).
+          type: string
+        message:
+          type: string
+          description: The extended import status message.
+    Cloud_Connectors_ParamsRequestAWS_FA:
+      type: object
+      properties:
+        tag:
+          $ref: '#/components/schemas/Cloud_Connectors_tags'
+        account:
+          description: The AWS account associated with the connector.
+          type: object
+          properties:
+            account_id:
+              type: string
+              description: The AWS account ID.
     Cloud_Connectors_ParamsRequestAzure:
       type: object
       properties:
@@ -1926,131 +2272,6 @@ components:
           type: string
           format: UUID
           description: The UUID of the [network](doc:manage-networks-tio) associated with the connector.
-    Cloud_Connectors_Request_Update_GCP_Connector:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
-        network_uuid:
-          type: string
-          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
-
-
-            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
-          format: UUID
-          default: 00000000-0000-0000-0000-000000000000
-        params:
-          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestGCP'
-        schedule:
-          $ref: '#/components/schemas/Cloud_Connectors_schedule'
-      required:
-      - name
-      - type
-      - params
-    Cloud_Connectors_Request-Create_GCP_Keyed_Connector:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
-        type:
-          type: string
-          description: The type of cloud connector. For GCP keyed connectors, the type is `gcp`.
-          default: gcp
-          enum:
-          - gcp
-        network_uuid:
-          type: string
-          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
-
-
-            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
-          format: UUID
-          default: 00000000-0000-0000-0000-000000000000
-        params:
-          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestGCP'
-        schedule:
-          $ref: '#/components/schemas/Cloud_Connectors_schedule'
-      required:
-      - name
-      - type
-      - params
-    Cloud_Connectors_Request-ConnectorCreate:
-      oneOf:
-      - title: Amazon Web Services (Keyed)
-        type: object
-        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Amazon Web Services (AWS) keyed connector.
-        properties:
-          connector:
-            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_AWS_Keyed_Connector'
-      - title: Amazon Web Services (Keyless)
-        type: object
-        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Amazon Web Services (AWS) keyless connector.
-        properties:
-          connector:
-            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_AWS_Keyless_Connector'
-      - title: Amazon Web Services with Frictionless Assessment
-        type: object
-        description: 'There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Amazon Web Services (AWS) with Frictionless Assessment connector.
-
-
-          **Note:** Frictionless Assessment has reached the End-of-Provisioning phase of its product lifecycle. For more information, see [Frictionless Assessment End-of-Provisioning](https://developer.tenable.com/changelog/tenableio-frictionless-assessment-end-of-provisioning).'
-        properties:
-          connector:
-            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_AWS_FA_Connector'
-      - title: Microsoft Azure
-        type: object
-        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Microsoft Azure connector.
-        properties:
-          connector:
-            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_Azure_Connector'
-      - title: Microsoft Azure with Frictionless Assessment
-        type: object
-        description: 'There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Microsoft Azure with Frictionless Assessment connector.
-
-
-          **Note:** Frictionless Assessment has reached the End-of-Provisioning phase of its product lifecycle. For more information, see [Frictionless Assessment End-of-Provisioning](https://developer.tenable.com/changelog/tenableio-frictionless-assessment-end-of-provisioning).'
-        properties:
-          connector:
-            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_Azure_ConnectorFA'
-      - title: Google Cloud Platform (Keyed)
-        type: object
-        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Google Cloud Platform (GCP) keyed connector.
-        properties:
-          connector:
-            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_GCP_Keyed_Connector'
-      - title: Google Cloud Platform Workload Identity Federation
-        type: object
-        description: There are several types of cloud connectors. Each cloud connector type requires different parameters. This option displays only the parameters for the Google Cloud Platform (GCP) Workload Identity Federation connector.
-        properties:
-          connector:
-            $ref: '#/components/schemas/Cloud_Connectors_Request-Create_GCP_Keyless_Connector'
-    Cloud_Connectors_aws_sub_account:
-      required:
-      - account_id
-      - role_arn
-      - external_id
-      - trails
-      type: object
-      properties:
-        account_id:
-          type: string
-          description: The AWS account ID.
-        role_arn:
-          type: string
-          description: The Amazon Resource Name (ARN) of the role generated based on the associated account ID.
-        external_id:
-          description: The UUID of your Tenable Vulnerability Management instance used by AWS to identify it as a client application. You can obtain the UUID of your Tenable Vulnerability Management account using the [GET /users/{user_id}](ref:users-details) endpoint. The UUID corresponds to the `container_uuid` attribute of the response message for that endpoint.
-          type: string
-        trails:
-          description: A list of AWS cloudtrails associated with the account.
-          type: array
-          items:
-            $ref: '#/components/schemas/Cloud_Connectors_trail'
-        incremental_mode:
-          type: boolean
-          description: Indicates whether a connector has completed the initial full import successfully. If the value is `true`, then the connector is in incremental mode where it imports assets based on events instead of enumerating all assets in the account every single time.
     Cloud_Connectors_schedule:
       type: object
       description: The data import schedule.
@@ -2061,28 +2282,6 @@ components:
         value:
           type: integer
           description: The number of units between import intervals.
-    Cloud_Connectors_Request_Update_Azure_Connector:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
-        network_uuid:
-          type: string
-          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
-
-
-            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
-          format: UUID
-          default: 00000000-0000-0000-0000-000000000000
-        params:
-          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAzure'
-        schedule:
-          $ref: '#/components/schemas/Cloud_Connectors_schedule'
-      required:
-      - name
-      - type
-      - params
     Cloud_Connectors_Request-Create_AWS_Keyless_Connector:
       type: object
       properties:
@@ -2111,82 +2310,6 @@ components:
       - name
       - type
       - params
-    Cloud_Connectors_ParamsRequestAzureFA:
-      type: object
-      properties:
-        targets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Cloud_Connectors_TargetsAzureFA'
-        scan_all:
-          type: boolean
-          description: Indicates whether or not to override the `resource_group`, `tag_key`, and `tag_value` properties and scan all VMs in the current subscription. Setting `scan_all` to `true` is equivalent to using `*` for `resource_group`, `tag_key`, and `tag_value`.
-          example: false
-      required:
-      - application_id
-      - tenant_id
-      - client_secret
-    Cloud_Connectors_Request-Update_AWS_Keyed_Connector:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
-        network_uuid:
-          type: string
-          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
-
-
-            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
-          format: UUID
-          default: 00000000-0000-0000-0000-000000000000
-        params:
-          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAWSKeyed'
-        schedule:
-          $ref: '#/components/schemas/Cloud_Connectors_schedule'
-      required:
-      - name
-      - type
-      - params
-    Cloud_Connectors_ParamsRequestAWSKeyed:
-      type: object
-      properties:
-        access_key:
-          description: The AWS access key.
-          type: string
-        secret_key:
-          description: The AWS secret key.
-          type: string
-        trails:
-          description: A list of AWS cloudtrails associated with the connector. The trails must be available to be used by the connector. Use the [POST /settings/connectors/aws/cloudtrails](ref:io-connectors-get-aws-cloudtrails) endpoint to check the `availability` property of cloudtrail objects.
-          type: array
-          items:
-            $ref: '#/components/schemas/Cloud_Connectors_trail'
-      required:
-      - access_key
-      - secret_key
-    Cloud_Connectors_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    Cloud_Connectors_AWSCredentials:
-      type: object
-      description: The credentials that the Tenable Vulnerability Management connector uses to communicate with the AWS API, including `access_key` and `secret_key`.
-      properties:
-        access_key:
-          type: string
-          description: The AWS access key.
-        secret_key:
-          type: string
-          description: The AWS secret key.
     Cloud_Connectors_Request-Update_AWS_Keyless_Connector:
       type: object
       properties:
@@ -2209,151 +2332,28 @@ components:
       - name
       - type
       - params
-    Cloud_Connectors_ParamsRequestGCP:
-      type: object
-      properties:
-        service_account_key:
-          type: string
-          description: 'A Base64-encoded string value of the service account key JSON file. For more information, see <a href="https://cloud.google.com/iam/docs/creating-managing-service-account-keys" target="_blank">Create and delete service account keys</a> in the GCP documentation.
-
-
-            Note: The `service_account_key` value must include only the literal encoded string. Do not include the `data:application/json;base64` prefix.'
+    Cloud_Connectors_ParamsRequestAWSKeyless:
       required:
-      - service_account_key
-    Cloud_Connectors_trail:
-      required:
-      - arn
+      - sub_accounts
       type: object
       properties:
-        arn:
-          type: string
-          description: The Amazon Resource Name (ARN) of the cloudtrail.
-        name:
-          type: string
-          description: The name of the cloudtrail.
-        region:
-          $ref: '#/components/schemas/Cloud_Connectors_region'
-        availability:
-          description: "Indicates whether a cloudtrail is available to be used by a connector (logging is turned on in AWS, or it has at least one EventSelector with IncludeManagementEvents). Values include:\n - `success`—The cloudtrail is available.\n - `error`—The cloudtrail is not available."
-          type: string
-          enum:
-          - success
-          - error
-    Cloud_Connectors_response_params:
-      type: object
-      description: The connector parameters. Note that only the `params` object for AWS keyed connectors is shown below. The `param` object for other connector types is not used in the example.
-      properties:
-        access_key:
-          description: 'For AWS connectors, the AWS access key.
-
-
-            <b>Note: </b>The `access_key` is not included in the keyless AWS connector parameters.'
-          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cloud_Connectors_tags'
+        auto_discovery:
+          description: Specifies whether Auto Discovery is enabled or not. If Auto Discovery is enabled, the connector will automatically discover linked accounts and CloudTrails.
+          type: boolean
         sub_accounts:
-          description: For AWS connectors, a list of AWS accounts associated with the connector.
+          description: A list of AWS accounts associated with the connector.
           type: array
           items:
             $ref: '#/components/schemas/Cloud_Connectors_aws_sub_account'
-        status:
-          description: For Azure connectors, a list of import status records.
+        trails:
+          description: A list of AWS cloudtrails associated with the connector. The trails must be available to be used by the connector. Use the [POST /settings/connectors/aws/cloudtrails](ref:io-connectors-get-aws-cloudtrails) endpoint to check the `availability` property of cloudtrail objects.
           type: array
           items:
-            $ref: '#/components/schemas/Cloud_Connectors_azure_status'
-        targets:
-          description: For Azure Frictionless Assessment connectors, the resource group and tag information.
-          type: array
-          items:
-            $ref: '#/components/schemas/Cloud_Connectors_TargetsAzureFA'
-        application_id:
-          description: For Azure connectors, the Azure application ID.
-          type: string
-        tenant_id:
-          type: string
-          description: For Azure connectors, the Azure tenant ID (directory ID).
-        subscription_id:
-          type: string
-          description: For Azure connectors, the Azure subscription ID. If you do not provide subscription IDs, Tenable Vulnerability Management automatically discovers them.
-        auto_discovery:
-          description: Specifies whether Auto Discovery is enabled or not for AWS keyless connectors. If Auto Discovery is enabled, the connector will automatically discover linked accounts and CloudTrails.
-          type: boolean
-        service:
-          description: The service targeted by the connector. Values include `aws`, `aws_keyless`, `aws_fa`, `azure`, `azure_fa`, and `gcp`.
-          type: string
-    Cloud_Connectors_Request-Create_Azure_ConnectorFA:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the cloud connector. The name can contain only alphanumeric characters, commas, periods, dashes, at signs, and underscores.
-        type:
-          type: string
-          description: The type of cloud connector. For Azure with Frictionless Assessment connectors, the type is `azure_fa`.
-          default: azure_fa
-          enum:
-          - azure_fa
-        network_uuid:
-          type: string
-          description: 'The UUID of the [network](doc:manage-networks-tio) to associate with the cloud connector. You can find the UUID using the [GET /networks](ref:networks-list) endpoint. If you do not specify a network, Tenable Vulnerability Management automatically associates the connector with the default network (UUID `00000000-0000-0000-0000-000000000000`).
-
-
-            Note: Tenable recommends creating a network for each connector type in use to prevent asset records in different cloud environments from overwriting each other. For more information, see [Managing Networks](doc:manage-networks-tio).'
-          format: UUID
-          default: 00000000-0000-0000-0000-000000000000
-        params:
-          $ref: '#/components/schemas/Cloud_Connectors_ParamsRequestAzureFA'
-      required:
-      - name
-      - type
-      - params
-    Cloud_Connectors_TargetsAzureFA:
-      type: object
-      properties:
-        resource_group:
-          description: "The name of the resource group that Azure Frictionless Assessment scans VMs in. \n\n**Note:** You can use the wildcard `*` to select all resource groups in the Azure subscription."
-          type: string
-        tag_key:
-          type: string
-          description: "The tag name in Microsoft Azure. \n\n**Note:** You can use the wildcard `*` to select all tag names in Azure for Frictionless Assessment."
-        tag_value:
-          type: string
-          description: "The tag value in Microsoft Azure. \n\n**Note:** You can use the wildcard `*` to select all tag values in Azure for Frictionless Assessment."
-      required:
-      - application_id
-      - tenant_id
-      - client_secret
-    Cloud_Connectors_Response-Pagination:
-      description: An object containing pagination information for the current result set.
-      type: object
-      properties:
-        total:
-          type: integer
-          format: int32
-          description: The total number of records matching your search criteria.
-        limit:
-          type: integer
-          format: int32
-          description: The number of records requested (or the default value if omitted from the request).
-        offset:
-          type: integer
-          format: int32
-          description: The starting record you requested (or zero if omitted).
-        sort:
-          description: An array of objects specifying how the current result set is sorted.
-          type: array
-          items:
-            $ref: '#/components/schemas/Cloud_Connectors_Response-PaginationSortObject'
-    Cloud_Connectors_ParamsRequestAWS_FA:
-      type: object
-      properties:
-        tag:
-          $ref: '#/components/schemas/Cloud_Connectors_tags'
-        account:
-          description: The AWS account associated with the connector.
-          type: object
-          properties:
-            account_id:
-              type: string
-              description: The AWS account ID.
+            $ref: '#/components/schemas/Cloud_Connectors_trail'
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey

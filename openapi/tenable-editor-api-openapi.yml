@@ -2112,10 +2112,18 @@ paths:
       - editor_cloud: []
 components:
   schemas:
-    editor_compliance:
-      description: Plugins options enables you to select security checks by Plugin Family or individual plugins checks.
+    editor_ErrorResponse:
       type: object
-      properties: {}
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     editor_template:
       type: object
       description: Templates are used to create scans or policies with predefined parameters.
@@ -2150,10 +2158,25 @@ components:
         name:
           type: string
           description: The short name of the template.
-    editor_plugins:
-      description: The settings for compliance audit checks.
+    editor_plugindescription:
+      description: The detailed information for a Tenable Vulnerability Management plugin.
       type: object
-      properties: {}
+      properties:
+        severity:
+          type: string
+          description: The severity level of the vulnerabilities targeted by the plugin
+        pluginname:
+          type: string
+          description: The name of the plugin.
+        pluginattributes:
+          type: object
+          description: The attributes of the plugin, including synopsis, description, solution, and risk information.
+        pluginfamily:
+          type: string
+          description: The name of the plugin family.
+        pluginid:
+          type: integer
+          description: The ID of the plugin.
     editor_settings:
       description: Scan or policy settings organized into the Basic, Discovery, Assessment, Report, and Advanced configuration categories.
       type: object
@@ -2170,22 +2193,10 @@ components:
         advanced:
           type: object
           description: The Advanced settings provide increased control over scan efficiency and the operations of a scan, as well as the ability to enabled plugin debugging.
-    editor_credentials:
-      description: Credentials that grant the scanner access to the target system without requiring an agent. Credentialed scans can perform a wider variety of checks than non-credentialed scans, which can result in more accurate scan results. This facilitates scanning of a very large network to determine local exposures or compliance violations. You can configure credentials for Cloud Services, Database, Host, Miscellaneous, Mobile Device Management, and Plaintext Authentication.
+    editor_plugins:
+      description: The settings for compliance audit checks.
       type: object
       properties: {}
-    editor_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     editor_filter:
       type: object
       properties:
@@ -2217,30 +2228,19 @@ components:
               type: array
               items:
                 type: object
+    editor_compliance:
+      description: Plugins options enables you to select security checks by Plugin Family or individual plugins checks.
+      type: object
+      properties: {}
     editor_templates:
       type: array
       description: The list of available templates.
       items:
         $ref: '#/components/schemas/editor_template'
-    editor_plugindescription:
-      description: The detailed information for a Tenable Vulnerability Management plugin.
+    editor_credentials:
+      description: Credentials that grant the scanner access to the target system without requiring an agent. Credentialed scans can perform a wider variety of checks than non-credentialed scans, which can result in more accurate scan results. This facilitates scanning of a very large network to determine local exposures or compliance violations. You can configure credentials for Cloud Services, Database, Host, Miscellaneous, Mobile Device Management, and Plaintext Authentication.
       type: object
-      properties:
-        severity:
-          type: string
-          description: The severity level of the vulnerabilities targeted by the plugin
-        pluginname:
-          type: string
-          description: The name of the plugin.
-        pluginattributes:
-          type: object
-          description: The attributes of the plugin, including synopsis, description, solution, and risk information.
-        pluginfamily:
-          type: string
-          description: The name of the plugin family.
-        pluginid:
-          type: integer
-          description: The ID of the plugin.
+      properties: {}
   securitySchemes:
     assets_cloud:
       type: apiKey
