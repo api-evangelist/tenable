@@ -704,6 +704,84 @@ components:
         output:
           type: string
           description: (Required) The text output of the scanner, up to 2,000 maximum characters.
+    vulnerabilities_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    vulnerabilities_checks_ran_object:
+      type: object
+      properties:
+        tenable_plugin_id:
+          type: string
+          description: The Tenable plugin ID.
+        port:
+          type: integer
+          description: The port on the asset where the check ran.
+        protocol:
+          type: string
+          description: The protocol used to communicate with the asset while running the check.
+    vulnerabilities_vuln-import-response:
+      type: object
+      properties:
+        job_uuid:
+          type: string
+          description: This attribute is always empty. An empty value does not indicate an error condition.
+    vulnerabilities_network_interface:
+      type: object
+      properties:
+        ipv4:
+          type: array
+          description: A list of IPv4 address that the scan identified as associated with the network interface.
+          items:
+            type: string
+        ipv6:
+          type: array
+          description: A list of IPv6 addresses that the scan identified as associated with the network interface.
+          items:
+            type: string
+        mac_address:
+          type: string
+          description: The MAC address of the network interface.
+        netbios_name:
+          type: string
+          description: The NETBIOS name of the network interface.
+        fqdn:
+          type: string
+          description: The fully-qualified domain name (FQDN) of the network interface.
+    vulnerabilities_vuln_finding_v2:
+      type: object
+      properties:
+        tenable_plugin_id:
+          type: string
+          description: The ID of the Nessus plugin that identified the vulnerability. This parameter is required if the vulnerability object does not specify a cve value.
+        cve:
+          type: string
+          description: The Common Vulnerability and Exposure (CVE) ID for the vulnerability. This parameter is required if the vulnerability object does not specify a `tenable_plugin_id` value.
+        port:
+          type: integer
+          description: The port the scanner used to communicate with the asset.
+          format: int32
+        protocol:
+          type: string
+          description: The protocol the scanner used to communicate with the asset.
+        authenticated:
+          type: boolean
+          description: A value specifying whether the scan that identified the vulnerability was an authenticated (credentialed) scan.
+        last_found:
+          type: integer
+          description: The date (in Unix time) when a scan last identified the vulnerability on the asset.
+          format: int64
+        output:
+          type: string
+          description: (Required) The text output of the scanner, up to 2,000 maximum characters.
     vulnerabilities_asset:
       type: object
       properties:
@@ -735,46 +813,6 @@ components:
           description: 'A valid vulnerability object must contain at least one of the following parameters: `tenable_plugin_id` or `cve`.'
           items:
             $ref: '#/components/schemas/vulnerabilities_vuln_finding'
-    vulnerabilities_network_interface:
-      type: object
-      properties:
-        ipv4:
-          type: array
-          description: A list of IPv4 address that the scan identified as associated with the network interface.
-          items:
-            type: string
-        ipv6:
-          type: array
-          description: A list of IPv6 addresses that the scan identified as associated with the network interface.
-          items:
-            type: string
-        mac_address:
-          type: string
-          description: The MAC address of the network interface.
-        netbios_name:
-          type: string
-          description: The NETBIOS name of the network interface.
-        fqdn:
-          type: string
-          description: The fully-qualified domain name (FQDN) of the network interface.
-    vulnerabilities_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    vulnerabilities_vuln-import-response:
-      type: object
-      properties:
-        job_uuid:
-          type: string
-          description: This attribute is always empty. An empty value does not indicate an error condition.
     vulnerabilities_asset_v2:
       type: object
       properties:
@@ -815,44 +853,6 @@ components:
           description: 'A valid vulnerability object must contain at least one of the following parameters: `tenable_plugin_id` or `cve`.'
           items:
             $ref: '#/components/schemas/vulnerabilities_vuln_finding_v2'
-    vulnerabilities_vuln_finding_v2:
-      type: object
-      properties:
-        tenable_plugin_id:
-          type: string
-          description: The ID of the Nessus plugin that identified the vulnerability. This parameter is required if the vulnerability object does not specify a cve value.
-        cve:
-          type: string
-          description: The Common Vulnerability and Exposure (CVE) ID for the vulnerability. This parameter is required if the vulnerability object does not specify a `tenable_plugin_id` value.
-        port:
-          type: integer
-          description: The port the scanner used to communicate with the asset.
-          format: int32
-        protocol:
-          type: string
-          description: The protocol the scanner used to communicate with the asset.
-        authenticated:
-          type: boolean
-          description: A value specifying whether the scan that identified the vulnerability was an authenticated (credentialed) scan.
-        last_found:
-          type: integer
-          description: The date (in Unix time) when a scan last identified the vulnerability on the asset.
-          format: int64
-        output:
-          type: string
-          description: (Required) The text output of the scanner, up to 2,000 maximum characters.
-    vulnerabilities_checks_ran_object:
-      type: object
-      properties:
-        tenable_plugin_id:
-          type: string
-          description: The Tenable plugin ID.
-        port:
-          type: integer
-          description: The port on the asset where the check ran.
-        protocol:
-          type: string
-          description: The protocol used to communicate with the asset while running the check.
     Vulnerability:
       type: object
       required:
@@ -891,6 +891,48 @@ components:
         details:
           type: object
           $ref: '#/components/schemas/VulnerabilityDetails'
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+    VulnerabilityWithMetadata:
+      type: object
+      required:
+      - vuln_id
+      - scan_id
+      - plugin_id
+      - created_at
+      - uri
+      - details
+      - attachments
+      properties:
+        vuln_id:
+          type: string
+          format: uuid
+          example: 9ef6f286-f79c-443f-a495-8376142d0e8e
+          description: The UUID of the vulnerability.
+        scan_id:
+          type: string
+          format: uuid
+          example: 16af9226-699a-4cb9-9543-6082617a9cd0
+          description: The UUID of the scan that detected the vulnerability in the web application.
+        plugin_id:
+          type: integer
+          example: 98100
+          description: The ID of the plugin associated with the vulnerability.
+        created_at:
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when Tenable Web App Scanning detected the vulnerability, for example, `2018-12-31T13:51:17.243Z`.
+        uri:
+          type: string
+          format: uri
+          example: http://example.com
+          description: The URI of the web application associated with the vulnerability.
+        details:
+          type: object
+          $ref: '#/components/schemas/VulnerabilityDetailsWithMetadata'
         attachments:
           type: array
           items:
@@ -963,6 +1005,39 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PaginationResponseSortObject'
+    ErrorResponse:
+      type: object
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
+      properties:
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
+    PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
     VulnerabilityDetailsWithMetadata:
       type: object
       description: The details for the vulnerability.
@@ -1059,82 +1134,18 @@ components:
           type: string
           description: The value to compare the given field to using the given operator. You can find valid values for the filter in the `control` attribute of the objects returned by the [GET /was/v2/vulnerabilities/filters](ref:was-v2-filters-vulns-list) endpoint.
           example: My Scans
-    VulnerabilityWithMetadata:
-      type: object
-      required:
-      - vuln_id
-      - scan_id
-      - plugin_id
-      - created_at
-      - uri
-      - details
-      - attachments
-      properties:
-        vuln_id:
-          type: string
-          format: uuid
-          example: 9ef6f286-f79c-443f-a495-8376142d0e8e
-          description: The UUID of the vulnerability.
-        scan_id:
-          type: string
-          format: uuid
-          example: 16af9226-699a-4cb9-9543-6082617a9cd0
-          description: The UUID of the scan that detected the vulnerability in the web application.
-        plugin_id:
-          type: integer
-          example: 98100
-          description: The ID of the plugin associated with the vulnerability.
-        created_at:
-          type: string
-          format: date-time
-          example: '2017-07-21T17:32:28Z'
-          description: An ISO timestamp indicating the date and time when Tenable Web App Scanning detected the vulnerability, for example, `2018-12-31T13:51:17.243Z`.
-        uri:
-          type: string
-          format: uri
-          example: http://example.com
-          description: The URI of the web application associated with the vulnerability.
-        details:
-          type: object
-          $ref: '#/components/schemas/VulnerabilityDetailsWithMetadata'
-        attachments:
-          type: array
-          items:
-            $ref: '#/components/schemas/Attachment'
-    PaginationResponseSortObject:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
-      type: object
-      properties:
-        name:
-          type: string
-          description: The property used to sort the results.
-        order:
-          type: string
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
-    ErrorResponse:
-      type: object
-      required:
-      - reasons
-      description: Tenable Web App Scanning error response.
-      properties:
-        reasons:
-          type: array
-          description: A list of reasons for the Tenable Web App Scanning error.
-          items:
-            type: object
-            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
-            minItems: 1
-            required:
-            - code
-            - reason
-            properties:
-              code:
-                type: string
-                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
-              reason:
-                type: string
-                description: The extended description of the cause of the Tenable Web App Scanning error.
   parameters:
+    limit:
+      description: The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses.
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 200
+        default: 10
     sort:
       description: 'The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.
 
@@ -1156,17 +1167,6 @@ components:
         format: int32
         minimum: 0
         default: 0
-    limit:
-      description: The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses.
-      in: query
-      name: limit
-      required: false
-      schema:
-        type: integer
-        format: int32
-        minimum: 0
-        maximum: 200
-        default: 10
   securitySchemes:
     assets_cloud:
       type: apiKey

@@ -740,40 +740,6 @@ paths:
       - Scan_Tasks_cloud: []
 components:
   schemas:
-    Scan_Tasks_timezones:
-      type: array
-      items:
-        $ref: '#/components/schemas/Scan_Tasks_timezone'
-    Scan_Tasks_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    Scan_Tasks_ManagedCredentialPermissions:
-      type: object
-      properties:
-        grantee_uuid:
-          type: string
-          description: "The UUID of the user or user group granted permissions for managed credentials. \n\nThis parameter is required when assigning CAN USE [32] or CAN EDIT [64] permissions for managed credentials."
-        type:
-          type: string
-          description: "A value specifying whether the grantee is a user (`user`) or a user group (`group`).  \n\nThis parameter is required when assigning CAN USE [32] or CAN EDIT [64] permissions for  managed credentials."
-          enum:
-          - user
-          - group
-        permissions:
-          type: integer
-          description: "A value specifying the permissions granted to the user or user group for the managed credentials. Possible values are:\n - 32—The user can view credentials information and use the credentials in scans. Corresponds to the **Can Use** permission in the user interface.\n - 64—The user can view and edit credential settings, delete the credentials, and use the credentials in scans. Corresponds to the **Can Edit** permission in the user interface.  \n\nThis parameter is required when assigning CAN USE [32] or CAN EDIT [64] permissions for managed credentials."
-        name:
-          type: string
-          description: "The name of the user or user group that you want to grant permissions for the managed credentials.  \n\nThis parameter is optional when assigning CAN USE [32] or CAN EDIT [64] permissions for the managed credentials."
     Scan_Tasks_CredentialSettingsRequestObject:
       description: 'The configuration settings for the credentials. The parameters of this object vary depending on the credentials type. For more information, see [Determine Settings for a Credential Type](doc:determine-settings-for-credential-type).
 
@@ -795,6 +761,35 @@ components:
         password:
           type: string
           description: The user password on the target system.
+    Scan_Tasks_timezones:
+      type: array
+      items:
+        $ref: '#/components/schemas/Scan_Tasks_timezone'
+    Scan_Tasks_settings-rrules:
+      type: string
+      description: 'The interval at which the scan repeats. The interval is formatted as a string of three values delimited by semi-colons. These values are: the frequency (FREQ=ONETIME or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). For a scan that runs every three weeks on Monday Wednesday and Friday, the string would be `FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR`. If the scan is not scheduled to recur, this attribute is `null`. For more information, see [rrules Format](doc:example-assessment-scan-recurring#rrules-format).
+
+
+        **Note:** To set the `rrules` parameter for an agent scan, the request must also include the following body parameters:<ul><li>The `uuid` parameter must specify an agent scan template. For more information, see [Tenable-Provided Agent Templates](https://docs.tenable.com/vulnerability-management/Content/Scans/AgentTemplates.htm) and the [List templates](ref:editor-list-templates) endpoint.</li><li>The `agent_group_id` parameter must specify an agent group. For more information, see [Agent Groups](ref:agent-groups).</li></ul>For an example request body for an agent scan, see [Example Agent Scan: Recurring](doc:example-agent-scan-recurring).'
+    Scan_Tasks_Response-Check-Targets:
+      type: object
+      properties:
+        missed_targets:
+          type: array
+          items:
+            type: string
+          description: The list of targets that did not match a route in any scanner group.
+        total_missed_targets:
+          type: integer
+          description: The total count of missed targets, before being truncated by the optional `limit` parameter.
+        matched_resource_uuids:
+          type: array
+          items:
+            type: string
+          description: A list of UUIDs for scanner groups where configured scan routes matched at least one of the specified targets.
+        total_matched_resource_uuids:
+          type: integer
+          description: The count of matched resource UUIDs, before being truncated by the optional `matched_resource_limit` parameter.
     Scan_Tasks_Response-Scan-Object:
       type: object
       properties:
@@ -853,6 +848,24 @@ components:
         schedule_uuid:
           type: string
           description: The UUID for a specific instance in the scan schedule.
+    Scan_Tasks_ManagedCredentialPermissions:
+      type: object
+      properties:
+        grantee_uuid:
+          type: string
+          description: "The UUID of the user or user group granted permissions for managed credentials. \n\nThis parameter is required when assigning CAN USE [32] or CAN EDIT [64] permissions for managed credentials."
+        type:
+          type: string
+          description: "A value specifying whether the grantee is a user (`user`) or a user group (`group`).  \n\nThis parameter is required when assigning CAN USE [32] or CAN EDIT [64] permissions for  managed credentials."
+          enum:
+          - user
+          - group
+        permissions:
+          type: integer
+          description: "A value specifying the permissions granted to the user or user group for the managed credentials. Possible values are:\n - 32—The user can view credentials information and use the credentials in scans. Corresponds to the **Can Use** permission in the user interface.\n - 64—The user can view and edit credential settings, delete the credentials, and use the credentials in scans. Corresponds to the **Can Edit** permission in the user interface.  \n\nThis parameter is required when assigning CAN USE [32] or CAN EDIT [64] permissions for managed credentials."
+        name:
+          type: string
+          description: "The name of the user or user group that you want to grant permissions for the managed credentials.  \n\nThis parameter is optional when assigning CAN USE [32] or CAN EDIT [64] permissions for the managed credentials."
     Scan_Tasks_timezone:
       type: object
       properties:
@@ -862,31 +875,18 @@ components:
         value:
           type: string
           description: The system value for the timezone.
-    Scan_Tasks_Response-Check-Targets:
+    Scan_Tasks_ErrorResponse:
       type: object
       properties:
-        missed_targets:
-          type: array
-          items:
-            type: string
-          description: The list of targets that did not match a route in any scanner group.
-        total_missed_targets:
+        statusCode:
           type: integer
-          description: The total count of missed targets, before being truncated by the optional `limit` parameter.
-        matched_resource_uuids:
-          type: array
-          items:
-            type: string
-          description: A list of UUIDs for scanner groups where configured scan routes matched at least one of the specified targets.
-        total_matched_resource_uuids:
-          type: integer
-          description: The count of matched resource UUIDs, before being truncated by the optional `matched_resource_limit` parameter.
-    Scan_Tasks_settings-rrules:
-      type: string
-      description: 'The interval at which the scan repeats. The interval is formatted as a string of three values delimited by semi-colons. These values are: the frequency (FREQ=ONETIME or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). For a scan that runs every three weeks on Monday Wednesday and Friday, the string would be `FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR`. If the scan is not scheduled to recur, this attribute is `null`. For more information, see [rrules Format](doc:example-assessment-scan-recurring#rrules-format).
-
-
-        **Note:** To set the `rrules` parameter for an agent scan, the request must also include the following body parameters:<ul><li>The `uuid` parameter must specify an agent scan template. For more information, see [Tenable-Provided Agent Templates](https://docs.tenable.com/vulnerability-management/Content/Scans/AgentTemplates.htm) and the [List templates](ref:editor-list-templates) endpoint.</li><li>The `agent_group_id` parameter must specify an agent group. For more information, see [Agent Groups](ref:agent-groups).</li></ul>For an example request body for an agent scan, see [Example Agent Scan: Recurring](doc:example-agent-scan-recurring).'
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
   securitySchemes:
     assets_cloud:
       type: apiKey

@@ -844,56 +844,6 @@ paths:
       - Inventory_Exports_cloud: []
 components:
   schemas:
-    Inventory_Exports_ErrorResponseStatus-400:
-      type: object
-      properties:
-        error:
-          type: integer
-          description: The HTTP response response status.
-        message:
-          type: string
-          description: An error message indicating the invalid parameter or value.
-    Inventory_Exports_Response-Export-Job:
-      type: object
-      properties:
-        export_id:
-          description: The unique identifier (UUID) of the export request.
-          type: string
-          format: uuid
-        submitted_at:
-          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
-          format: date-time
-          type: string
-        last_refreshed_at:
-          description: A timestamp in ISO 8601 format indicating the date and time the export request was last checked for completion.
-          format: date-time
-          type: string
-        status:
-          description: "The status of the export request. Possible values include\n\n * QUEUED—The request is waiting for earlier requests to complete.\n * PROCESSING—The request is currently being processed. \n * FINISHED—Processing is complete, and all chunks are available.\n * ERROR—An error occurred while processing. Retry the request, and if the issue persists, contact Tenable Support."
-          type: string
-          enum:
-          - QUEUED
-          - PROCESSING
-          - FINISHED
-          - ERROR
-        export_type:
-          description: The type of export request. Possible values are `assets` or `findings`.
-          type: string
-          enum:
-          - assets
-          - findings
-    Inventory_Exports_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     Inventory_Exports_Assets-Property-Filter:
       type: object
       required:
@@ -932,6 +882,170 @@ components:
           type: array
           items:
             type: string
+    Inventory_Exports_ErrorResponseStatus:
+      type: object
+      properties:
+        message:
+          type: string
+          description: An error message indicating the invalid parameter or value.
+        status:
+          type: integer
+          description: The HTTP response response status code.
+    Inventory_Exports_Response-Export-Status:
+      type: object
+      properties:
+        export_id:
+          description: The unique identifier (UUID) of the export request.
+          type: string
+          format: uuid
+        submitted_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
+          format: date-time
+          type: string
+        last_refreshed_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was last checked for completion.
+          format: date-time
+          type: string
+        status:
+          description: "The status of the export request. Possible values include\n\n * `QUEUED`—Tenable Exposure Management has queued the export request until earlier requests have completed.\n * `PROCESSING`—Tenable Exposure Management is currently processing the export request. \n * `FINISHED`—Tenable Exposure Management has completed processing the export request. All chunks are available.\n * `ERROR`—An error occurred while processing the export request. Retry the request. If the error persists, contact Tenable Support."
+          type: string
+          enum:
+          - QUEUED
+          - PROCESSING
+          - FINISHED
+          - ERROR
+        chunks_available:
+          type: array
+          description: A list of completed chunk numbers available for download. Each integer represents a chunk file that can be downloaded. If no chunks are available, the list will be empty.
+          items:
+            type: integer
+    Inventory_Exports_Findings-Property-Filter:
+      type: object
+      required:
+      - operator
+      - property
+      - value
+      properties:
+        property:
+          description: "The finding property to filter on.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve a list of valid finding properties for filtering. For example, you might filter by `asset_name`, `solution`, or `vpr_score`."
+          type: string
+        operator:
+          type: string
+          description: "The comparison operator to apply to the filter. \n\nFor example: `=`, `!=`, `match`, etc. Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve supported comparison operators for the selected filter."
+          enum:
+          - ''
+          - '='
+          - '!='
+          - <=
+          - between
+          - match
+          - '>='
+          - <
+          - '>'
+          - contains
+          - not contains
+          - exists
+          - not exists
+          - older than
+          - newer than
+          - within last
+        value:
+          description: "The value to use for comparison in the filter.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve the supported values for the selected filter."
+          type: array
+          items:
+            type: string
+    Inventory_Exports_Dataset-File-Format:
+      default: JSON
+      enum:
+      - CSV
+      - JSON
+      type: string
+    Inventory_Exports_Response-Export-Job:
+      type: object
+      properties:
+        export_id:
+          description: The unique identifier (UUID) of the export request.
+          type: string
+          format: uuid
+        submitted_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
+          format: date-time
+          type: string
+        last_refreshed_at:
+          description: A timestamp in ISO 8601 format indicating the date and time the export request was last checked for completion.
+          format: date-time
+          type: string
+        status:
+          description: "The status of the export request. Possible values include\n\n * QUEUED—The request is waiting for earlier requests to complete.\n * PROCESSING—The request is currently being processed. \n * FINISHED—Processing is complete, and all chunks are available.\n * ERROR—An error occurred while processing. Retry the request, and if the issue persists, contact Tenable Support."
+          type: string
+          enum:
+          - QUEUED
+          - PROCESSING
+          - FINISHED
+          - ERROR
+        export_type:
+          description: The type of export request. Possible values are `assets` or `findings`.
+          type: string
+          enum:
+          - assets
+          - findings
+    Inventory_Exports_ErrorResponseStatus-400:
+      type: object
+      properties:
+        error:
+          type: integer
+          description: The HTTP response response status.
+        message:
+          type: string
+          description: An error message indicating the invalid parameter or value.
+    Inventory_Exports_Response-Assets-Chunk-JSON:
+      type: object
+      additionalProperties: true
+      properties:
+        aes:
+          description: The Tenable-defined Asset Exposure Score (AES) for the asset. This metric weighs an asset's [Vulnerability Priority Rating (VPR)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Vulnerability-Priority-Rating-(VPR)) and [Asset Criticality Rating (AES)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Exposure-Score-(AES)) and then assigns a number from 1 to 1000, with higher numbers for more exposed assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm) in the _Tenable Exposure Management User Guide_.
+          type: integer
+          maximum: 1000
+          minimum: 0
+        asset_class:
+          description: The class that Tenable Exposure Management has assigned to the asset. Asset classes enable users to easily separate asset data based on its type. For more information about asset classes, see [Asset Classes](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) in the Tenable Exposure Management User Guide.
+          type: string
+          enum:
+          - ACCOUNT
+          - APPLICATION
+          - CONTAINER
+          - DEVICE
+          - GENERAL
+          - GROUP
+          - IAC
+          - IDENTITY
+          - RESOURCE
+          - ROLE
+          - STORAGE
+          - UNKNOWN
+        asset_criticality_rating_(acr):
+          description: The Tenable-defined Asset Criticality Rating (ACR) for the asset. With Lumin, Tenable uses an algorithm based on the [asset class](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) to assign a metric rating the importance of an asset to your organization from 1 to 10, with higher numbers for more critical assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Criticality-Rating-(ACR)) in the _Tenable Exposure Management User Guide_.
+          type: integer
+          maximum: 10
+          minimum: 0
+        asset_id:
+          description: The unique identifier (UUID) of the asset in Tenable Exposure Management. Use this value as the unique key for the asset.
+          type: string
+        asset_name:
+          description: The name of the asset.
+          type: string
+    Inventory_Exports_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     Inventory_Exports_Response-Findings-Chunk-JSON:
       type: object
       additionalProperties: true
@@ -988,121 +1102,21 @@ components:
           - ACTIVE
           - RESURFACED
           - FIXED
-    Inventory_Exports_ErrorResponseStatus:
-      type: object
-      properties:
-        message:
-          type: string
-          description: An error message indicating the invalid parameter or value.
-        status:
-          type: integer
-          description: The HTTP response response status code.
-    Inventory_Exports_Findings-Property-Filter:
-      type: object
-      required:
-      - operator
-      - property
-      - value
-      properties:
-        property:
-          description: "The finding property to filter on.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve a list of valid finding properties for filtering. For example, you might filter by `asset_name`, `solution`, or `vpr_score`."
-          type: string
-        operator:
-          type: string
-          description: "The comparison operator to apply to the filter. \n\nFor example: `=`, `!=`, `match`, etc. Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve supported comparison operators for the selected filter."
-          enum:
-          - ''
-          - '='
-          - '!='
-          - <=
-          - between
-          - match
-          - '>='
-          - <
-          - '>'
-          - contains
-          - not contains
-          - exists
-          - not exists
-          - older than
-          - newer than
-          - within last
-        value:
-          description: "The value to use for comparison in the filter.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve the supported values for the selected filter."
-          type: array
-          items:
-            type: string
-    Inventory_Exports_Response-Assets-Chunk-JSON:
-      type: object
-      additionalProperties: true
-      properties:
-        aes:
-          description: The Tenable-defined Asset Exposure Score (AES) for the asset. This metric weighs an asset's [Vulnerability Priority Rating (VPR)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Vulnerability-Priority-Rating-(VPR)) and [Asset Criticality Rating (AES)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Exposure-Score-(AES)) and then assigns a number from 1 to 1000, with higher numbers for more exposed assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm) in the _Tenable Exposure Management User Guide_.
-          type: integer
-          maximum: 1000
-          minimum: 0
-        asset_class:
-          description: The class that Tenable Exposure Management has assigned to the asset. Asset classes enable users to easily separate asset data based on its type. For more information about asset classes, see [Asset Classes](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) in the Tenable Exposure Management User Guide.
-          type: string
-          enum:
-          - ACCOUNT
-          - APPLICATION
-          - CONTAINER
-          - DEVICE
-          - GENERAL
-          - GROUP
-          - IAC
-          - IDENTITY
-          - RESOURCE
-          - ROLE
-          - STORAGE
-          - UNKNOWN
-        asset_criticality_rating_(acr):
-          description: The Tenable-defined Asset Criticality Rating (ACR) for the asset. With Lumin, Tenable uses an algorithm based on the [asset class](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) to assign a metric rating the importance of an asset to your organization from 1 to 10, with higher numbers for more critical assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Criticality-Rating-(ACR)) in the _Tenable Exposure Management User Guide_.
-          type: integer
-          maximum: 10
-          minimum: 0
-        asset_id:
-          description: The unique identifier (UUID) of the asset in Tenable Exposure Management. Use this value as the unique key for the asset.
-          type: string
-        asset_name:
-          description: The name of the asset.
-          type: string
-    Inventory_Exports_Dataset-File-Format:
-      default: JSON
-      enum:
-      - CSV
-      - JSON
-      type: string
-    Inventory_Exports_Response-Export-Status:
-      type: object
-      properties:
-        export_id:
-          description: The unique identifier (UUID) of the export request.
-          type: string
-          format: uuid
-        submitted_at:
-          description: A timestamp in ISO 8601 format indicating the date and time the export request was submitted.
-          format: date-time
-          type: string
-        last_refreshed_at:
-          description: A timestamp in ISO 8601 format indicating the date and time the export request was last checked for completion.
-          format: date-time
-          type: string
-        status:
-          description: "The status of the export request. Possible values include\n\n * `QUEUED`—Tenable Exposure Management has queued the export request until earlier requests have completed.\n * `PROCESSING`—Tenable Exposure Management is currently processing the export request. \n * `FINISHED`—Tenable Exposure Management has completed processing the export request. All chunks are available.\n * `ERROR`—An error occurred while processing the export request. Retry the request. If the error persists, contact Tenable Support."
-          type: string
-          enum:
-          - QUEUED
-          - PROCESSING
-          - FINISHED
-          - ERROR
-        chunks_available:
-          type: array
-          description: A list of completed chunk numbers available for download. Each integer represents a chunk file that can be downloaded. If no chunks are available, the list will be empty.
-          items:
-            type: integer
   parameters:
+    Inventory_Exports_status-query-param:
+      description: "Filters the results by export job status. \n\nSupported values include:\n\n * `QUEUED`—The request is waiting for earlier requests to complete.\n * `PROCESSING`—The request is currently being processed. \n * `FINISHED`—Processing is complete, and all chunks are available.\n * `ERROR`—An error occurred while processing. Retry the request, and if the issue persists, contact Tenable Support."
+      explode: true
+      in: query
+      name: status
+      required: false
+      schema:
+        type: string
+        enum:
+        - QUEUED
+        - PROCESSING
+        - FINISHED
+        - ERROR
+      style: form
     Inventory_Exports_limit-query-param:
       description: 'The maximum number of export jobs to return from the last 3 days.
 
@@ -1122,20 +1136,6 @@ components:
         maximum: 1000
       style: form
       example: 100
-    Inventory_Exports_status-query-param:
-      description: "Filters the results by export job status. \n\nSupported values include:\n\n * `QUEUED`—The request is waiting for earlier requests to complete.\n * `PROCESSING`—The request is currently being processed. \n * `FINISHED`—Processing is complete, and all chunks are available.\n * `ERROR`—An error occurred while processing. Retry the request, and if the issue persists, contact Tenable Support."
-      explode: true
-      in: query
-      name: status
-      required: false
-      schema:
-        type: string
-        enum:
-        - QUEUED
-        - PROCESSING
-        - FINISHED
-        - ERROR
-      style: form
   securitySchemes:
     Attack_Path_cloud:
       type: apiKey

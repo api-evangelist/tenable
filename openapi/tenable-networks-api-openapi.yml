@@ -991,104 +991,6 @@ paths:
       - networks_cloud: []
 components:
   schemas:
-    networks_PaginationResponse:
-      description: An object containing pagination information for the current result set.
-      type: object
-      properties:
-        total:
-          type: integer
-          description: The total number of records matching your search criteria.
-          format: int32
-        limit:
-          type: integer
-          description: The number of records requested (or the default value if omitted from the request).
-          format: int32
-        offset:
-          type: integer
-          description: The starting record you requested (or zero if omitted).
-          format: int32
-        sort:
-          description: An array of objects specifying how the current result set is sorted.
-          type: array
-          items:
-            $ref: '#/components/schemas/networks_PaginationResponseSortObject'
-    networks_PaginationResponseSortObject:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
-      type: object
-      properties:
-        name:
-          type: string
-          description: The property used to sort the results.
-        order:
-          type: string
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
-    networks_NetworkAssetCount:
-      type: object
-      properties:
-        numAssetsNotSeen:
-          type: integer
-          description: The number of assets in the network not seen since the specified number of days.
-        numAssetstotal:
-          type: integer
-          description: The total number of assets in the network.
-    networks_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    networks_NetworkObject:
-      type: object
-      properties:
-        owner_uuid:
-          type: string
-          description: The UUID of the owner of the network object. The owner of the network object does not have any additional permissions above administrator permissions.
-        created:
-          type: integer
-          description: The date (in Unix milliseconds) when the network object was created.
-        modified:
-          type: integer
-          description: The date (in Unix milliseconds) when the network object was last updated.
-        uuid:
-          type: string
-          description: The UUID of the network object.
-        name:
-          type: string
-          description: The name of the network object.
-        description:
-          type: string
-          description: The description of the network object.
-        is_default:
-          type: boolean
-          description: Indicates whether the network object is the default network object. The default network object is a system-generated object that contains any scanners and scanner groups not yet assigned to a custom network object. You cannot update or delete the default network object.
-        created_by:
-          type: string
-          description: The UUID of the user who created the network object.
-        modified_by:
-          type: string
-          description: The UUID of the user who last updated the network object.
-        deleted:
-          type: integer
-          format: int64
-          description: The date (in Unix time) when the network object was deleted. This attribute is present for deleted network objects only. To view deleted network objects, use the `includeDeleted` parameter on the [GET /networks](ref:networks-list) endpoint.
-        deleted_by:
-          type: string
-          description: The UUID of the user who deleted the network object. This attribute is present for deleted network objects only. To view deleted network objects, use the `includeDeleted` parameter on the [GET /networks](ref:networks-list) endpoint.
-        assets_ttl_days:
-          type: integer
-          description: 'The number of days before assets age out. Assets are permanently deleted if they are not seen on a scan within the specified number of days.<ul><li>Minimum value: 14</li><li>Maximum value: 365</li></ul> Note: If you enable this option, Tenable Vulnerability Management immediately deletes assets in the specified network that have not been seen for the specified number of days. All asset records and associated vulnerabilities are deleted and cannot be recovered. The deleted assets no longer count towards [your license](https://docs.tenable.com/early-access/tenableio/vulnerabilitymanagement/Content/GettingStarted/Licenses.htm)'
-        created_in_seconds:
-          type: integer
-          description: The date (in Unix seconds) when the network object was created.
-        modified_in_seconds:
-          type: integer
-          description: The date (in Unix seconds) when the network object was last updated.
     networks_ScannerObject:
       type: object
       properties:
@@ -1183,6 +1085,104 @@ components:
         supports_remote_logs:
           type: boolean
           description: Indicates whether the scanner supports remote logging.
+    networks_PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          description: The total number of records matching your search criteria.
+          format: int32
+        limit:
+          type: integer
+          description: The number of records requested (or the default value if omitted from the request).
+          format: int32
+        offset:
+          type: integer
+          description: The starting record you requested (or zero if omitted).
+          format: int32
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/networks_PaginationResponseSortObject'
+    networks_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    networks_PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    networks_NetworkObject:
+      type: object
+      properties:
+        owner_uuid:
+          type: string
+          description: The UUID of the owner of the network object. The owner of the network object does not have any additional permissions above administrator permissions.
+        created:
+          type: integer
+          description: The date (in Unix milliseconds) when the network object was created.
+        modified:
+          type: integer
+          description: The date (in Unix milliseconds) when the network object was last updated.
+        uuid:
+          type: string
+          description: The UUID of the network object.
+        name:
+          type: string
+          description: The name of the network object.
+        description:
+          type: string
+          description: The description of the network object.
+        is_default:
+          type: boolean
+          description: Indicates whether the network object is the default network object. The default network object is a system-generated object that contains any scanners and scanner groups not yet assigned to a custom network object. You cannot update or delete the default network object.
+        created_by:
+          type: string
+          description: The UUID of the user who created the network object.
+        modified_by:
+          type: string
+          description: The UUID of the user who last updated the network object.
+        deleted:
+          type: integer
+          format: int64
+          description: The date (in Unix time) when the network object was deleted. This attribute is present for deleted network objects only. To view deleted network objects, use the `includeDeleted` parameter on the [GET /networks](ref:networks-list) endpoint.
+        deleted_by:
+          type: string
+          description: The UUID of the user who deleted the network object. This attribute is present for deleted network objects only. To view deleted network objects, use the `includeDeleted` parameter on the [GET /networks](ref:networks-list) endpoint.
+        assets_ttl_days:
+          type: integer
+          description: 'The number of days before assets age out. Assets are permanently deleted if they are not seen on a scan within the specified number of days.<ul><li>Minimum value: 14</li><li>Maximum value: 365</li></ul> Note: If you enable this option, Tenable Vulnerability Management immediately deletes assets in the specified network that have not been seen for the specified number of days. All asset records and associated vulnerabilities are deleted and cannot be recovered. The deleted assets no longer count towards [your license](https://docs.tenable.com/early-access/tenableio/vulnerabilitymanagement/Content/GettingStarted/Licenses.htm)'
+        created_in_seconds:
+          type: integer
+          description: The date (in Unix seconds) when the network object was created.
+        modified_in_seconds:
+          type: integer
+          description: The date (in Unix seconds) when the network object was last updated.
+    networks_NetworkAssetCount:
+      type: object
+      properties:
+        numAssetsNotSeen:
+          type: integer
+          description: The number of assets in the network not seen since the specified number of days.
+        numAssetstotal:
+          type: integer
+          description: The total number of assets in the network.
     networks_NetworkConflict:
       type: object
       properties:

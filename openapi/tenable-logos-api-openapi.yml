@@ -595,14 +595,38 @@ components:
         error:
           type: string
           description: A brief message about the missing or invalid parameter value(s).
-    LogoUuidResponse:
+    LogoAssignmentBulk:
       type: object
       required:
-      - uuid
+      - logo_uuid
+      - account_uuids
       properties:
-        uuid:
+        logo_uuid:
           type: string
-          description: The UUID of the logo.
+          description: The UUID of a logo in the Tenable MSSP Portal.
+        account_uuids:
+          type: array
+          description: An array of customer account UUIDs in the Tenable MSSP Portal.
+          items:
+            type: string
+    ErrorResponse-404:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A brief message about the object that could not be found.
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     LogoObject:
       type: object
       properties:
@@ -618,12 +642,6 @@ components:
         filename:
           type: string
           description: The filename of the logo.
-    ErrorResponse-404:
-      type: object
-      properties:
-        error:
-          type: string
-          description: A brief message about the object that could not be found.
     LogoListResponse:
       type: object
       properties:
@@ -633,32 +651,14 @@ components:
           readOnly: true
           items:
             $ref: '#/components/schemas/LogoObject'
-    ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    LogoAssignmentBulk:
+    LogoUuidResponse:
       type: object
       required:
-      - logo_uuid
-      - account_uuids
+      - uuid
       properties:
-        logo_uuid:
+        uuid:
           type: string
-          description: The UUID of a logo in the Tenable MSSP Portal.
-        account_uuids:
-          type: array
-          description: An array of customer account UUIDs in the Tenable MSSP Portal.
-          items:
-            type: string
+          description: The UUID of the logo.
   securitySchemes:
     cloud:
       type: apiKey

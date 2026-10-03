@@ -527,69 +527,15 @@ paths:
       security:
       - exclusions_cloud: []
 components:
+  parameters:
+    exclusions_exclusion_id_param:
+      description: The ID of the exclusion. The value can be either the integer ID or the exclusion UUID.
+      required: true
+      name: exclusion_id
+      in: path
+      schema:
+        type: string
   schemas:
-    exclusions_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    exclusions_rrules:
-      type: object
-      description: The recurrence rules for the exclusion.
-      properties:
-        freq:
-          type: string
-          description: The frequency of the rule (`ONETIME`, `DAILY`, `WEEKLY`, `MONTHLY`, `YEARLY`).
-          enum:
-          - ONETIME
-          - DAILY
-          - WEEKLY
-          - MONTHLY
-          - YEARLY
-          example: WEEKLY
-        interval:
-          type: integer
-          description: The interval of the rule. For example, every 4 days, every 2 months, every 3 years, etc.
-          example: 1
-        byweekday:
-          type: string
-          description: A comma-separated string of days to repeat a WEEKLY freq rule on (SU,MO,TU,WE,TH,FR, or SA).
-          example: TU,SU,MO,WE,TH
-        bymonthday:
-          type: integer
-          description: The day of the month to repeat a MONTHLY freq rule on.
-          example: 1
-    exclusions_exclusion-request-body:
-      type: object
-      required:
-      - name
-      - members
-      properties:
-        name:
-          type: string
-          description: The name of the exclusion.
-          example: My-Exclusion
-        description:
-          type: string
-          description: The description of the exclusion.
-          example: My description.
-        members:
-          type: string
-          description: "The targets that you want excluded from scans. Specify multiple targets as a comma-separated string. Targets can be in the following formats:\n - An individual IPv4 address (`192.0.2.1`)\n - A range of IPv4 addresses (`192.0.2.1-192.0.2.255`)\n - CIDR notation (`192.0.2.0/24`)\n - A fully-qualified domain name (FQDN) (`host.domain.com`)"
-          example: host.domain.com, 192.0.2.1, 192.0.2.1-192.0.2.255
-        schedule:
-          $ref: '#/components/schemas/exclusions_schedule'
-        network_id:
-          type: string
-          description: The ID of the network object associated with scanners where Tenable Vulnerability Management applies the exclusion. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
-          example: 00000000-0000-0000-0000-000000000000
     exclusions_pagination:
       type: object
       description: The pagination metadata for the response results.
@@ -610,6 +556,18 @@ components:
           type: string
           description: The property and direction used to sort the results, formatted as `<property>:<direction>`.
           example: last_modification_date:desc
+    exclusions_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     exclusions_schedule:
       type: object
       description: The schedule parameters for the exclusion. When `enabled` is `false` (Always On), only the `enabled` field is returned.
@@ -673,14 +631,56 @@ components:
           type: string
           description: The ID of the network object associated with scanners where Tenable Vulnerability Management applies the exclusion. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
           example: 00000000-0000-0000-0000-000000000000
-  parameters:
-    exclusions_exclusion_id_param:
-      description: The ID of the exclusion. The value can be either the integer ID or the exclusion UUID.
-      required: true
-      name: exclusion_id
-      in: path
-      schema:
-        type: string
+    exclusions_exclusion-request-body:
+      type: object
+      required:
+      - name
+      - members
+      properties:
+        name:
+          type: string
+          description: The name of the exclusion.
+          example: My-Exclusion
+        description:
+          type: string
+          description: The description of the exclusion.
+          example: My description.
+        members:
+          type: string
+          description: "The targets that you want excluded from scans. Specify multiple targets as a comma-separated string. Targets can be in the following formats:\n - An individual IPv4 address (`192.0.2.1`)\n - A range of IPv4 addresses (`192.0.2.1-192.0.2.255`)\n - CIDR notation (`192.0.2.0/24`)\n - A fully-qualified domain name (FQDN) (`host.domain.com`)"
+          example: host.domain.com, 192.0.2.1, 192.0.2.1-192.0.2.255
+        schedule:
+          $ref: '#/components/schemas/exclusions_schedule'
+        network_id:
+          type: string
+          description: The ID of the network object associated with scanners where Tenable Vulnerability Management applies the exclusion. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+          example: 00000000-0000-0000-0000-000000000000
+    exclusions_rrules:
+      type: object
+      description: The recurrence rules for the exclusion.
+      properties:
+        freq:
+          type: string
+          description: The frequency of the rule (`ONETIME`, `DAILY`, `WEEKLY`, `MONTHLY`, `YEARLY`).
+          enum:
+          - ONETIME
+          - DAILY
+          - WEEKLY
+          - MONTHLY
+          - YEARLY
+          example: WEEKLY
+        interval:
+          type: integer
+          description: The interval of the rule. For example, every 4 days, every 2 months, every 3 years, etc.
+          example: 1
+        byweekday:
+          type: string
+          description: A comma-separated string of days to repeat a WEEKLY freq rule on (SU,MO,TU,WE,TH,FR, or SA).
+          example: TU,SU,MO,WE,TH
+        bymonthday:
+          type: integer
+          description: The day of the month to repeat a MONTHLY freq rule on.
+          example: 1
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey

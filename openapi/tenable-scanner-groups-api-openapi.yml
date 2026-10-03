@@ -941,6 +941,16 @@ paths:
       - Scanner_Groups_cloud: []
 components:
   schemas:
+    Scanner_Groups_routes:
+      type: object
+      properties:
+        routes:
+          type: array
+          items:
+            type: string
+          description: A list of zero or more hostnames, hostname wildcards, IP addresses, CIDR addresses, or IP ranges. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats).
+      required:
+      - routes
     Scanner_Groups_response-create-scanner_group:
       type: object
       properties:
@@ -982,60 +992,10 @@ components:
         owner_name:
           type: string
           description: The username of the owner of the scanner group.
-    Scanner_Groups_response-update-scanner_group:
-      type: object
-      properties:
-        owner_uuid:
-          type: integer
-          description: The UUID of the owner of the scanner group.
-        created:
-          type: integer
-          format: int64
-          description: A Unix timestamp (milliseconds precision) indicating the date and time when the scanner group was created.
-        modified:
-          type: integer
-          format: int64
-          description: A Unix timestamp (milliseconds precision) indicating the date and time when the scanner group was last modified.
-        container_uuid:
-          type: string
-          description: The UUID of the container.
-        uuid:
-          type: string
-          description: The UUID of the scanner group.
-        id:
-          type: integer
-          description: The unique ID of the scanner group.
-        name:
-          type: string
-          description: The name of the scanner group.
-        type:
-          type: string
-          description: The type of scanner group. This is set to "load_balancing" by default.
-        distributed:
-          type: boolean
-          description: Indicates whether or not the scanner group is distributed.
-        network_name:
-          type: string
-          description: The name of the network object associated with the scanner group. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
-        default_permissions:
-          type: integer
-          description: The access permissions for the Default group.
-        shared:
-          type: integer
-          description: Indicates whether or not the scanner group is shared.
-        user_permissions:
-          type: integer
-          description: The sharing permissions for the scanner group.
-        supports_webapp:
-          type: boolean
-          description: Indicates whether or not the scanner group supports Tenable Web App Scanning scanners.
-        created_in_seconds:
-          type: integer
-          format: int64
-          description: A Unix timestamp (seconds precision) indicating the date and time when the scanner group was created.
-        modified_in_seconds:
-          type: integer
-          description: A Unix timestamp (seconds precision) indicating the date and time when the scanner group was last modified.
+    Scanner_Groups_route_objects:
+      type: array
+      items:
+        $ref: '#/components/schemas/Scanner_Groups_route'
     Scanner_Groups_ErrorResponse:
       type: object
       properties:
@@ -1240,16 +1200,68 @@ components:
         profile_name:
           type: string
           description: The name of the scanner profile that the scanner belongs to.
-    Scanner_Groups_routes:
+    Scanner_Groups_response-update-scanner_group:
       type: object
       properties:
-        routes:
-          type: array
-          items:
-            type: string
-          description: A list of zero or more hostnames, hostname wildcards, IP addresses, CIDR addresses, or IP ranges. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats).
+        owner_uuid:
+          type: integer
+          description: The UUID of the owner of the scanner group.
+        created:
+          type: integer
+          format: int64
+          description: A Unix timestamp (milliseconds precision) indicating the date and time when the scanner group was created.
+        modified:
+          type: integer
+          format: int64
+          description: A Unix timestamp (milliseconds precision) indicating the date and time when the scanner group was last modified.
+        container_uuid:
+          type: string
+          description: The UUID of the container.
+        uuid:
+          type: string
+          description: The UUID of the scanner group.
+        id:
+          type: integer
+          description: The unique ID of the scanner group.
+        name:
+          type: string
+          description: The name of the scanner group.
+        type:
+          type: string
+          description: The type of scanner group. This is set to "load_balancing" by default.
+        distributed:
+          type: boolean
+          description: Indicates whether or not the scanner group is distributed.
+        network_name:
+          type: string
+          description: The name of the network object associated with the scanner group. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        default_permissions:
+          type: integer
+          description: The access permissions for the Default group.
+        shared:
+          type: integer
+          description: Indicates whether or not the scanner group is shared.
+        user_permissions:
+          type: integer
+          description: The sharing permissions for the scanner group.
+        supports_webapp:
+          type: boolean
+          description: Indicates whether or not the scanner group supports Tenable Web App Scanning scanners.
+        created_in_seconds:
+          type: integer
+          format: int64
+          description: A Unix timestamp (seconds precision) indicating the date and time when the scanner group was created.
+        modified_in_seconds:
+          type: integer
+          description: A Unix timestamp (seconds precision) indicating the date and time when the scanner group was last modified.
+    Scanner_Groups_route:
+      type: object
+      properties:
+        route:
+          type: string
+          description: A hostname, hostname wildcard, IP address, CIDR address, or IP range. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats).
       required:
-      - routes
+      - route
     Scanner_Groups_object-scanner_group:
       type: object
       properties:
@@ -1315,18 +1327,6 @@ components:
         owner_name:
           type: string
           description: The username of the owner of the scanner group.
-    Scanner_Groups_route_objects:
-      type: array
-      items:
-        $ref: '#/components/schemas/Scanner_Groups_route'
-    Scanner_Groups_route:
-      type: object
-      properties:
-        route:
-          type: string
-          description: A hostname, hostname wildcard, IP address, CIDR address, or IP range. For more information about supported route formats, see [Supported Scan Routing Target Formats](doc:manage-scan-routing-tio#section-supported-scan-routing-target-formats).
-      required:
-      - route
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey

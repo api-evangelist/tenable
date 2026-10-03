@@ -203,14 +203,6 @@ components:
           description: A list of the partner's available products.
           items:
             $ref: '#/components/schemas/Response-Partner-Details-Products'
-    Response-Partner:
-      allOf:
-      - $ref: '#/components/schemas/Object-Partner'
-      - type: object
-        properties:
-          contact_email:
-            type: string
-            description: The email address used for contacting the partner.
     Object-Distributor:
       type: object
       required:
@@ -228,6 +220,26 @@ components:
         lms_customer_id:
           type: string
           description: The distributor's licensing management system customer ID.
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Response-Partner:
+      allOf:
+      - $ref: '#/components/schemas/Object-Partner'
+      - type: object
+        properties:
+          contact_email:
+            type: string
+            description: The email address used for contacting the partner.
     Response-Partner-Details-Distributor:
       allOf:
       - $ref: '#/components/schemas/Object-Distributor'
@@ -272,18 +284,6 @@ components:
         maxQuantity:
           type: integer
           description: The maximum number of assets that can be requested when creating a quote with the [Create quote](ref:mssp-accounts-quote) endpoint.
-    ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
   securitySchemes:
     cloud:
       type: apiKey

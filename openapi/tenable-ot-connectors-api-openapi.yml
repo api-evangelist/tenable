@@ -460,13 +460,6 @@ paths:
       - OT_Connectors_cloud: []
 components:
   parameters:
-    OT_Connectors_x-linking-key-header:
-      description: The linking key for the OT connector. You can generate the required linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
-      required: true
-      name: x-linking-key
-      in: header
-      schema:
-        type: string
     OT_Connectors_type-path-param:
       description: The type of connector or sensor. This value is always `ot` for OT connectors.
       required: true
@@ -477,14 +470,6 @@ components:
         type: string
         enum:
         - ot
-    OT_Connectors_x-target-site-header:
-      description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
-      required: true
-      name: x-target-site
-      in: header
-      schema:
-        type: string
-        example: us-2b
     OT_Connectors_id-path-param:
       description: The OT connector's unique identifier.
       required: true
@@ -493,30 +478,85 @@ components:
       schema:
         type: string
         format: uuid
+    OT_Connectors_x-linking-key-header:
+      description: The linking key for the OT connector. You can generate the required linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+      required: true
+      name: x-linking-key
+      in: header
+      schema:
+        type: string
+    OT_Connectors_x-target-site-header:
+      description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+      required: true
+      name: x-target-site
+      in: header
+      schema:
+        type: string
+        example: us-2b
   schemas:
-    OT_Connectors_sensor-linking-key-create-response:
+    OT_Connectors_Sensor-Object:
       type: object
       properties:
-        x-linking-key:
+        containerUuid:
           type: string
-          description: The linking key for the OT connector. You can generate the required linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
-          example: a24a1edc4b1c7737b7830df9c534afba76593247972f02144dc15ba1a7bd1fd0
-        x-target-site:
+          description: The unique ID of your Tenable Vulnerability Management instance.
+          example: 3584b24b-7f26-4684-b644-a2a92103d6c2
+        id:
           type: string
-          description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
-          example: us-2b
-    OT_Connectors_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
+          description: The unique ID of the OT connector.
+          example: 0214f554-1ef2-4752-8363-12b73d3fe57a
+        name:
+          type: string
+          description: The OT connectors name.
+          example: My-Sensor
+        type:
+          type: string
+          description: The sensor type. This value is always `ot` for OT connectors.
+          example: ot
+        subType:
+          type: string
+          description: The OT connector's type. There are two types of OT connectors, Industrial Core Platform (ICP) and Enterprise Manager (EM).
+          example: icp
+        created:
           type: integer
-          description: The HTTP status code of the error.
-        error:
+          format: int64
+          description: The Unix timestamp of when the OT connector was created.
+          example: 1687532223
+        modified:
+          type: integer
+          format: int64
+          description: The Unix timestamp of when the OT connector was last modified.
+          example: 1687532223
+        lastAuth:
+          type: integer
+          format: int64
+          description: The Unix timestamp of when the OT connector was last authenticated.
+          example: 1687532223
+        enabled:
+          type: boolean
+          description: Indicates whether or not the OT connector is enabled.
+          example: true
+    OT_Connectors_sensor-create-request-body:
+      type: object
+      required:
+      - name
+      - subType
+      - enabled
+      properties:
+        name:
           type: string
-          description: The standard HTTP error name.
-        message:
+          description: The name of the OT connector. The maximum character length is 64 chars.
+          maxLength: 64
+          example: My-Sensor
+        subType:
           type: string
-          description: A brief message about the cause of the error.
+          description: The type of OT connector. There are two types of OT connectors, Industrial Core Platform (ICP) and Enterprise Manager (EM).
+          enum:
+          - icp
+          - em
+        enabled:
+          type: boolean
+          description: Indicates whether or not the OT connector is enabled.
     OT_Connectors_sensor-list-response:
       type: object
       properties:
@@ -579,71 +619,31 @@ components:
             modified: 1681330682
             lastAuth: 1681330682
             enabled: true
-    OT_Connectors_Sensor-Object:
+    OT_Connectors_sensor-linking-key-create-response:
       type: object
       properties:
-        containerUuid:
+        x-linking-key:
           type: string
-          description: The unique ID of your Tenable Vulnerability Management instance.
-          example: 3584b24b-7f26-4684-b644-a2a92103d6c2
-        id:
+          description: The linking key for the OT connector. You can generate the required linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+          example: a24a1edc4b1c7737b7830df9c534afba76593247972f02144dc15ba1a7bd1fd0
+        x-target-site:
           type: string
-          description: The unique ID of the OT connector.
-          example: 0214f554-1ef2-4752-8363-12b73d3fe57a
-        name:
-          type: string
-          description: The OT connectors name.
-          example: My-Sensor
-        type:
-          type: string
-          description: The sensor type. This value is always `ot` for OT connectors.
-          example: ot
-        subType:
-          type: string
-          description: The OT connector's type. There are two types of OT connectors, Industrial Core Platform (ICP) and Enterprise Manager (EM).
-          example: icp
-        created:
+          description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+          example: us-2b
+    OT_Connectors_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
           type: integer
-          format: int64
-          description: The Unix timestamp of when the OT connector was created.
-          example: 1687532223
-        modified:
-          type: integer
-          format: int64
-          description: The Unix timestamp of when the OT connector was last modified.
-          example: 1687532223
-        lastAuth:
-          type: integer
-          format: int64
-          description: The Unix timestamp of when the OT connector was last authenticated.
-          example: 1687532223
-        enabled:
-          type: boolean
-          description: Indicates whether or not the OT connector is enabled.
-          example: true
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     OT_Connectors_sensor-update-request-body:
       type: object
-      properties:
-        name:
-          type: string
-          description: The name of the OT connector. The maximum character length is 64 chars.
-          maxLength: 64
-          example: My-Sensor
-        subType:
-          type: string
-          description: The type of OT connector. There are two types of OT connectors, Industrial Core Platform (ICP) and Enterprise Manager (EM).
-          enum:
-          - icp
-          - em
-        enabled:
-          type: boolean
-          description: Indicates whether or not the OT connector is enabled.
-    OT_Connectors_sensor-create-request-body:
-      type: object
-      required:
-      - name
-      - subType
-      - enabled
       properties:
         name:
           type: string

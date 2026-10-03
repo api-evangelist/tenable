@@ -851,6 +851,90 @@ components:
         total_count:
           type: integer
           description: The total number of available plugin records after Tenable Vulnerability Management applies the last_updated filter.
+    plugins_plugin:
+      type: object
+      properties:
+        attributes:
+          type: array
+          description: The plugin attributes.
+          items:
+            $ref: '#/components/schemas/plugins_attributes_short'
+        family_name:
+          type: string
+          description: The name of the plugin family.
+        name:
+          type: string
+          description: The name of the plugin.
+        id:
+          type: integer
+          description: The ID of the plugin.
+    plugins_plugin_list_details:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the plugin.
+        name:
+          type: string
+          description: The name of the plugin.
+        attributes:
+          type: array
+          description: The plugin attributes. For more information, see [Tenable Plugin Attributes](/docs/tenable-plugin-attributes).
+          items:
+            $ref: '#/components/schemas/plugins_attributes_full'
+    plugins_cvss_vector:
+      type: object
+      description: The raw CVSSv2 metrics for the vulnerability. For more information, see CVSSv2 documentation.
+      properties:
+        AccessComplexity:
+          type: string
+          description: The CVSSv2 Access Complexity (AC) metric for the vulnerability the plugin covers. Possible values include:<br />• H—High<br />• M—Medium<br />• L—Low
+        AccessVector:
+          type: string
+          description: 'The CVSSv2 Access Vector (AV) metric for the vulnerability the plugin covers. Possible values include: <br />• L—Local<br />• A—Adjacent Network<br />• N—Network'
+        Authentication:
+          type: string
+          description: 'The CVSSv2 Authentication (Au) metric for the vulnerability the plugin covers. Possible values include: <br />• N—None<br />• S—Single<br />• M—Multiple'
+        Availability-Impact:
+          type: string
+          description: 'The CVSSv2 availability impact metric for the vulnerability the plugin covers. Possible values include: <br />• N—None<br />• P—Partial<br />• C—Complete'
+        Confidentiality-Impact:
+          type: string
+          description: 'The CVSSv2 confidentiality impact metric for the vulnerability the plugin covers. Possible values include: <br />• N—None<br />• P—Partial<br />• C—Complete'
+        Integrity-Impact:
+          type: string
+          description: 'The CVSSv2 integrity impact metric for the vulnerability the plugin covers. Possible values include: <br />• N—None<br />• P—Partial<br />• C—Complete'
+    plugins_ResponsePluginsList:
+      type: object
+      properties:
+        plugins:
+          type: array
+          items:
+            properties:
+              id:
+                type: integer
+                description: The unique ID of the plugin.
+              name:
+                type: string
+                description: The name of the plugin.
+        name:
+          type: string
+          description: The name of the plugin family.
+        id:
+          type: integer
+          description: The unique ID of the plugin family.
+    plugins_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     plugins_attributes_full:
       type: object
       properties:
@@ -974,68 +1058,6 @@ components:
             updated:
               type: string
               description: The ISO timestamp when Tenable Vulnerability Management last imported the VPR for this vulnerability. Vulnerability Management imports updated VPR values every time you run a scan.
-    plugins_plugin_list_details:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The ID of the plugin.
-        name:
-          type: string
-          description: The name of the plugin.
-        attributes:
-          type: array
-          description: The plugin attributes. For more information, see [Tenable Plugin Attributes](/docs/tenable-plugin-attributes).
-          items:
-            $ref: '#/components/schemas/plugins_attributes_full'
-    plugins_ResponsePluginsList:
-      type: object
-      properties:
-        plugins:
-          type: array
-          items:
-            properties:
-              id:
-                type: integer
-                description: The unique ID of the plugin.
-              name:
-                type: string
-                description: The name of the plugin.
-        name:
-          type: string
-          description: The name of the plugin family.
-        id:
-          type: integer
-          description: The unique ID of the plugin family.
-    plugins_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    plugins_plugin:
-      type: object
-      properties:
-        attributes:
-          type: array
-          description: The plugin attributes.
-          items:
-            $ref: '#/components/schemas/plugins_attributes_short'
-        family_name:
-          type: string
-          description: The name of the plugin family.
-        name:
-          type: string
-          description: The name of the plugin.
-        id:
-          type: integer
-          description: The ID of the plugin.
     plugins_attributes_short:
       type: object
       properties:
@@ -1045,28 +1067,24 @@ components:
         attribute_value:
           type: string
           description: The value of the attribute.
-    plugins_cvss_vector:
+    Plugin:
       type: object
-      description: The raw CVSSv2 metrics for the vulnerability. For more information, see CVSSv2 documentation.
+      description: The plugin properties.
+      required:
+      - plugin_id
+      - name
+      - family
       properties:
-        AccessComplexity:
+        plugin_id:
+          description: The ID of the plugin.
+          type: integer
+          example: 98100
+        name:
+          description: The name of the plugin.
           type: string
-          description: The CVSSv2 Access Complexity (AC) metric for the vulnerability the plugin covers. Possible values include:<br />• H—High<br />• M—Medium<br />• L—Low
-        AccessVector:
+        family:
+          description: The name of the plugin family.
           type: string
-          description: 'The CVSSv2 Access Vector (AV) metric for the vulnerability the plugin covers. Possible values include: <br />• L—Local<br />• A—Adjacent Network<br />• N—Network'
-        Authentication:
-          type: string
-          description: 'The CVSSv2 Authentication (Au) metric for the vulnerability the plugin covers. Possible values include: <br />• N—None<br />• S—Single<br />• M—Multiple'
-        Availability-Impact:
-          type: string
-          description: 'The CVSSv2 availability impact metric for the vulnerability the plugin covers. Possible values include: <br />• N—None<br />• P—Partial<br />• C—Complete'
-        Confidentiality-Impact:
-          type: string
-          description: 'The CVSSv2 confidentiality impact metric for the vulnerability the plugin covers. Possible values include: <br />• N—None<br />• P—Partial<br />• C—Complete'
-        Integrity-Impact:
-          type: string
-          description: 'The CVSSv2 integrity impact metric for the vulnerability the plugin covers. Possible values include: <br />• N—None<br />• P—Partial<br />• C—Complete'
     PaginationResponse:
       description: An object containing pagination information for the current result set.
       type: object
@@ -1088,24 +1106,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PaginationResponseSortObject'
-    Plugin:
+    ErrorResponse:
       type: object
-      description: The plugin properties.
       required:
-      - plugin_id
-      - name
-      - family
+      - reasons
+      description: Tenable Web App Scanning error response.
       properties:
-        plugin_id:
-          description: The ID of the plugin.
-          type: integer
-          example: 98100
-        name:
-          description: The name of the plugin.
-          type: string
-        family:
-          description: The name of the plugin family.
-          type: string
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
     PluginWithMetadata:
       type: object
       required:
@@ -1218,40 +1241,7 @@ components:
         order:
           type: string
           description: The sort direction for the results. `asc` for ascending or `desc` for descending.
-    ErrorResponse:
-      type: object
-      required:
-      - reasons
-      description: Tenable Web App Scanning error response.
-      properties:
-        reasons:
-          type: array
-          description: A list of reasons for the Tenable Web App Scanning error.
-          items:
-            type: object
-            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
-            minItems: 1
-            required:
-            - code
-            - reason
-            properties:
-              code:
-                type: string
-                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
-              reason:
-                type: string
-                description: The extended description of the cause of the Tenable Web App Scanning error.
   parameters:
-    offset:
-      description: The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`.
-      in: query
-      name: offset
-      required: false
-      schema:
-        type: integer
-        format: int32
-        minimum: 0
-        default: 0
     limit:
       description: The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses.
       in: query
@@ -1274,6 +1264,16 @@ components:
       required: false
       schema:
         type: string
+    offset:
+      description: The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`.
+      in: query
+      name: offset
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
   securitySchemes:
     assets_cloud:
       type: apiKey

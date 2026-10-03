@@ -855,183 +855,97 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
-    response-was-findings-chunk:
+    vpr_v2_filter:
+      description: "Filters vulnerabilities based on their Vulnerability Priority Rating (VPR) version 2 score. This enhanced version is labeled **VPR (Beta)** in the user interface. You can define score ranges using properties such as `gte` (greater than or equal to) and `lte` (less than or equal to). For example, to match vulnerabilities with VPR scores between 9.0 and 9.9, include `{ \"gte\": 9.0, \"lte\": 9.9 }` in the filter. \n\n**Caution**: The `vpr_v2_score` filter parameter is scheduled for deprecation on July 1, 2026 as part of the transition to VPR v2. To ensure continued functionality, update all integrations to use the `vpr_score` filter parameter. On the deprecation date, the system will update `vpr_score` to support the new VPR model. For more information, see [Vulnerability Priority Rating: Transition to VPR Version 2](changelog:vulnerability-priority-rating-transition-to-version-2). \n\nFor details about VPR, see [Vulnerability Priority Rating](https://docs.tenable.com/vulnerability-management/Content/Explore/Findings/RiskMetrics.htm#Vulnerability-Priority-Rating-) in the _Tenable Vulnerability Management User Guide_. To learn about the enhancements introduced in VPR v2, refer to the whitepaper [Enhancements to Tenable Vulnerability Priority Rating (VPR)](https://www.tenable.com/whitepapers/enhancements-to-tenable-vulnerability-priority-rating-vpr)."
       type: object
-      description: A chunk of WAS findings.
       properties:
-        finding_id:
-          type: string
-          description: The unique identifier of the finding (vulnerability).
-        url:
-          type: string
-          description: The fully-qualified domain name or URL associated with the finding.
-        input_type:
-          type: string
-          description: The type of HTML Form input associated with the finding.
-        input_name:
-          type: string
-          description: The type of page element that's vulnerable. For example, an HTML form.
-          example: form
-        http_method:
-          type: string
-          description: The HTTP method associated with the finding. For example, the GET or POST HTTP method.
-        output:
-          type: string
-          description: The text output from the plugin that detected the finding.
-          example: 'The backup directory detected at URL: http://webscantest.com/rfplaces/somedir1.rar
+        eq:
+          description: Returns vulnerabilities with a VPR exactly equal to the specified score or scores. This property _cannot_ be used in combination with `lt`, `gt`, `lte`, or `gte`.
+          type: array
+          items:
+            type: number
+            format: float
+            minimum: 0.1
+            maximum: 10
+        neq:
+          description: Returns vulnerabilities with a VPR _not_ equal to the specified score or scores. This property can be combined with the `eq` property.
+          type: array
+          items:
+            type: number
+            format: float
+            minimum: 0.1
+            maximum: 10
+        gt:
+          description: Returns vulnerabilities with a VPR _greater than_ the specified score. This property cannot be combined with the `eq` property.
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 10
+        gte:
+          description: Returns vulnerabilities with a VPR _greater than or equal to_ the specified score. This property cannot be combined with the `eq` property.
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 10
+        lt:
+          description: Returns vulnerabilities with a VPR _less than_ the specified score. This property cannot be combined with the `eq` property.
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 10
+        lte:
+          description: Returns vulnerabilities with a VPR _less than or equal to_ the specified score. This property cannot be combined with the `eq` property.
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 10
+    cvss4_filter:
+      description: 'Filters vulnerabilities based on their CVSS version 4 (CVSSv4) base score. You can specify score ranges using the provided comparison properties. For example, to retrieve vulnerabilities with a CVSSv4 score between 7.0 and 9.9, include `{ "gte": 7.0, "lte": 9.9 }` in your filter.
 
-            Identified by converting the original directory name of ''somedir1'' to ''somedir1.rar''.'
-        proof:
-          type: string
-          description: The output from the web application corroborating that the finding is present.
-          example: <xss_9a3511f8-7852-4096-a7c0-6065ff8ebad3/>
-        payload:
-          type: string
-          description: The attack payload used to detect the finding.
-          example: alert('xss')
-        state:
-          type: string
-          description: "The state of the finding as determined by the Tenable Web App Scanning state service. Possible values include:\n - OPEN—The finding is currently present on an asset.\n - REOPENED—The finding was previously marked as fixed on an asset but has returned.\n - FIXED—The finding was present on an asset but is no longer detected.\n\nNote that the API uses different terms for finding states than the user interface. The `new` and `active` states in the user interface map to the `OPEN` state in the API. The `resurfaced` state in the user interface maps to the `REOPENED` state in the API. The `FIXED` state is the same."
-          enum:
-          - OPEN
-          - REOPENED
-          - FIXED
-        severity:
-          type: string
-          description: The severity of the finding as defined using the Common Vulnerability Scoring System (CVSS) base score. Possible values include `info` (CVSS score of 0), `low` (CVSS score between 0.1 and 3.9), `medium` (CVSS score between 4.0 and 6.9), `high` (CVSS score between 7.0 and 9.9), and `critical` (CVSS score of 10.0).
-          enum:
-          - INFO
-          - LOW
-          - MEDIUM
-          - HIGH
-          - CRITICAL
-        severity_id:
-          type: integer
-          format: int32
-          description: "The code for the severity assigned when a user recast the risk associated with the finding. Possible values include: \n - 0—The vulnerability has a CVSS score of 0, which corresponds to the \"info\" severity level.\n - 1—The vulnerability has a CVSS score between 0.1 and 3.9, which corresponds to the \"low\" severity level.\n - 2—The vulnerability has a CVSS score between 4.0 and 6.9, which corresponds to the \"medium\" severity level.\n - 3—The vulnerability has a CVSS score between 7.0 and 9.9, which corresponds to the \"high\" severity level.\n - 4—The vulnerability has a CVSS score of 10.0, which corresponds to the \"critical\" severity level."
-        severity_default_id:
-          type: integer
-          format: int32
-          description: The code for the severity originally assigned to a finding before a user recast the risk associated with the finding. Possible values are the same as for the `severity_id` attribute.
-        recast_reason:
-          type: string
-          description: The text that appears in the Comment field of the recast rule in the Tenable Web App Scanning user interface.
-        recast_rule_uuid:
-          type: string
-          description: The UUID of the recast rule that applies to the plugin.
-        severity_modification_type:
-          type: string
-          description: "The type of modification a user made to the finding's severity. Possible values include: \n - none—No modification has been made.\n - recasted—A user in the Web App Scanning user interface has recast the risk associated with the finding. \n - accepted—A user in the Web App Scanning user interface has accepted the risk associated with the finding. \n\nFor more information about recast and accept rules, see the [Recast/Accept Rules](https://docs.tenable.com/vulnerability-management/Content/Settings/Recast/AboutRecastRules.htm) in the Tenable Vulnerability Management User Guide."
-        first_found:
-          type: string
-          description: An ISO timestamp indicating the date and time when a scan first detected the finding on the asset.
-        last_found:
-          type: string
-          description: An ISO timestamp indicating the date and time when a scan last detected the finding on the asset.
-        last_fixed:
-          type: string
-          description: An ISO timestamp indicating the date and time when a scan no longer detects the previously detected finding on the asset.
-        last_observed:
-          type: string
-          description: An ISO timestamp indicating the date and time when the finding was previously detected/observed on the asset.
-        indexed_at:
-          type: integer
-          format: int64
-          description: An ISO timestamp indicating the date and time when the vulnerability was indexed into Tenable Web App Scanning.
-        plugin:
-          $ref: '#/components/schemas/was_plugin'
-        asset:
-          $ref: '#/components/schemas/response-was-export-chunk-asset'
-        scan:
-          $ref: '#/components/schemas/was-scan-information'
-    exploit_framework:
+
+        For more details about CVSSv4, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).'
       type: object
-      description: Detail of exploit framework
       properties:
-        type:
-          type: string
-          description: Framework type/name. Eg. canvas, metasploit, exploithub, etc.
-        ids:
+        eq:
+          description: Returns vulnerabilities with a CVSSv4 score exactly equal to the specified value(s). Cannot be combined with `lt`, `gt`, `lte`, or `gte`.
           type: array
-          description: framework ids
           items:
-            type: string
-    response-findings-export-jobs:
-      type: object
-      properties:
-        uuid:
-          type: string
-          description: The UUID of the findings export request.
-        status:
-          type: string
-          description: "The status of the findings export request. Possible values include:\n - QUEUED—Tenable Web App Scanning has queued the export request until other requests currently in process are completed.\n - PROCESSING—Tenable Web App Scanning has started processing the export request.\n - FINISHED—Tenable Web App Scanning has completed processing the export request. The list of chunks is complete.\n - CANCELLED—An administrator has cancelled the export request.\n - ERROR—Tenable Web App Scanning encountered an error while processing the export request. Tenable recommends that you retry the request. If the status persists on retry, contact Tenable Support."
-        reason:
-          type: string
-          description: "The reason the export failed or completed with errors. This property is only present when the export status is `ERROR` or `FINISHED` with failed chunks. Possible values include:\n - \"The export request timed out. Try again.\"\n - \"An unexpected error occurred while processing the export. Try again later.\"\n - \"The export could not be completed. If this issue persists, please contact support.\"\n - \"{N} of {M} chunks failed to process. The remaining chunks are available for download.\""
-        total_chunks:
-          type: integer
-          description: The total number of chunks associated with the export job as a whole.
-        chunks_available_count:
-          type: integer
-          description: The total number of completed chunks available for download.
-        empty_chunks_count:
-          type: integer
-          description: The total number of empty chunks.
-        finished_chunks:
-          type: integer
-          description: The number of chunks that have been processed and are available for download.
-        filters:
-          type: object
-          description: The filters used in the findings export job request. For a list of possible filters, see the filters available for the [Export findings](ref:was-export-findings) endpoint.
-          properties: {}
-        num_assets_per_chunk:
-          type: integer
-          description: The number of assets contained in each export chunk.
-        created:
-          type: integer
-          format: int64
-          description: A Unix timestamp indicating the date and time on which the exports job was created.
-    ErrorResponse:
-      type: object
-      required:
-      - reasons
-      description: Tenable Web App Scanning error response.
-      properties:
-        reasons:
+            type: number
+            format: float
+            minimum: 0
+            maximum: 10
+        neq:
+          description: Returns vulnerabilities with a CVSSv4 score _not_ equal to the specified value(s). Can be combined with eq.
           type: array
-          description: A list of reasons for the Tenable Web App Scanning error.
           items:
-            type: object
-            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
-            minItems: 1
-            required:
-            - code
-            - reason
-            properties:
-              code:
-                type: string
-                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
-              reason:
-                type: string
-                description: The extended description of the cause of the Tenable Web App Scanning error.
-    response-was-export-chunk-asset:
-      type: object
-      description: Information about the asset where the scan detected the vulnerability.
-      properties:
-        uuid:
-          type: string
-          description: The UUID of the asset where a scan found the vulnerability.
-        fqdn:
-          type: string
-          description: The fully-qualified domain name of the asset where a scan found the vulnerability.
-        ipv4:
-          type: string
-          description: The IPv4 address of the asset where a scan found the vulnerability.
-        ipv4s:
-          type: array
-          description: The list of IPv4 addresses if the asset has multiple IPv4 addresses.
-          items:
-            type: string
+            type: number
+            format: float
+            minimum: 0
+            maximum: 10
+        gt:
+          description: Returns vulnerabilities with a CVSSv4 score _greater than_ the specified value. Cannot be combined with `eq`.
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+        gte:
+          description: Returns vulnerabilities with a CVSSv4 score _greater than or equal to_ the specified value. Cannot be combined with `eq`.
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+        lt:
+          description: Returns vulnerabilities with a CVSSv4 score _less than_ the specified value. Cannot be combined with `eq`.
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+        lte:
+          description: Returns vulnerabilities with a CVSSv4 score _less than or equal to_ the specified value. Cannot be combined with `eq`.
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
     was_plugin:
       type: object
       description: Information about the plugin that detected the finding.
@@ -1361,53 +1275,270 @@ components:
         has_workaround:
           type: boolean
           description: Indicates if a workaround exists for the vulnerability.
-    cvss4_threat_vector:
+    cvss3_temporal_vector:
       type: object
-      description: 'An object representing the CVSS v4.0 Threat metrics for the vulnerability. These metrics provide context on current, observed threat activity in the wild, such as evidence of exploitation or the presence of available exploit code. Threat metrics can help refine the severity and prioritization of vulnerabilities beyond their intrinsic characteristics. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-
-
-        **Caution:** The `cvss4_threat_vector` object is currently only available for Vulnerability Management exports. It will be added to Web App Scanning findings exports soon.'
+      description: CVSSv3 temporal metrics for the vulnerability.
       properties:
-        threat_score:
-          type: number
-          format: float
-          description: The CVSS v4.0 threat score (CVSS-T), which adjusts the base score by incorporating real-world threat intelligence, such as the presence of active exploitation, exploit code availability, or observed malware activity. This score reflects the current threat landscape for the vulnerability. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-        exploit_maturity:
+        exploitability:
           type: string
-          description: The CVSS v4.0 Exploit Maturity (E) metric, indicating the current development status of exploit techniques or code for the vulnerability. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-          enum:
-          - Not Defined
-          - Attacked
-          - Proof-of-Concept
-          - Unreported
+          description: "The CVSSv3 Exploit Maturity Code (E) for the vulnerability the plugin covers. Possible values include: \n - Unproven—Corresponds to the Unproven (U) value for the E metric\n - Proof-of-concept—Corresponds to the Proof-of-Concept (POC) value for the E metric\n - Functional—Corresponds to the Functional (F) value for the E metric\n - High—Corresponds to the High (H) value for the E metric\n - Not-defined—Corresponds to the Not Defined (ND) value for the E metric"
+        remediation_level:
+          type: string
+          description: "The CVSSv3 Remediation Level (RL) temporal metric for the vulnerability the plugin covers. Possible values include: \n - O—Official Fix\n - T—Temporary Fix\n - W—Workaround\n - U—Unavailable\n - X—Not Defined"
+        report_confidence:
+          type: string
+          description: "The CVSSv3 Report Confidence (RC) temporal metric for the vulnerability the plugin covers. Possible values include: \n - U—Unknown\n - R—Reasonable\n - C—Confirmed\n - X—Not Defined"
         raw:
           type: string
-          description: The complete `cvss4_threat_vector` metrics and their result values for the vulnerability, expressed as a concise, coded string. This threat vector is typically appended to the CVSSv4 Base vector. For example, `CVSS:4.0/E:U`. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-    cvss3_vector:
+          description: The complete `cvss3_temporal_vector` metrics and result values for the vulnerability the plugin covers in a condensed and coded format. For example, `E:U/RL:OF/RC:C`.
+    exploit_framework:
       type: object
-      description: Additional CVSSv3 metrics for the vulnerability.
+      description: Detail of exploit framework
+      properties:
+        type:
+          type: string
+          description: Framework type/name. Eg. canvas, metasploit, exploithub, etc.
+        ids:
+          type: array
+          description: framework ids
+          items:
+            type: string
+    cvss_vector:
+      type: object
+      description: Additional CVSSv2 metrics for the vulnerability.
       properties:
         access_vector:
           type: string
-          description: "The CVSSv2 Attack Vector (AV) metric for the vulnerability the plugin covers. Possible values include:\n - Network—Corresponds to the Network (N) value for the AV metric. \n - Adjacent Network—Corresponds to the Adjacent Network (A) value for the AV metric. \n - Local—Corresponds to the Local (L) value for the AV metric"
+          description: "The CVSSv2 Access Vector (AV) metric for the vulnerability the plugin covers. Possible values include: \n - L—Local\n - A—Adjacent Network\n - N—Network"
         access_complexity:
           type: string
-          description: "The CVSSv3 Access Complexity (AC) metric for the vulnerability the plugin covers. Possible values include: \n - H—High\n - M—Medium\n - L—Low"
+          description: "The CVSSv2 Access Complexity (AC) metric for the vulnerability the plugin covers. Possible values include:\n - H—High\n - M—Medium\n - L—Low"
         authentication:
           type: string
-          description: "The CVSSv2 Authentication (Au) metric for the vulnerability the plugin covers. Possible values include:\n - None required—Corresponds to the None (N) value for the Au metric. \n - Requires-single-instance—Corresponds to the Single (S) value for the Au metric. \n - Requires-multiple-instances—Corresponds to the Multiple (M) value for the Au metric"
+          description: "The CVSSv2 Authentication (Au) metric for the vulnerability the plugin covers. Possible values include: \n - N—None\n - S—Single\n - M—Multiple"
         confidentiality_impact:
           type: string
-          description: "The CVSSv3 confidentiality impact metric of the vulnerability the plugin covers to the vulnerable component. Possible values include: \n - H—High\n - L—Low\n - N—None"
+          description: "The CVSSv2 confidentiality impact metric for the vulnerability the plugin covers. Possible values include: \n - N—None\n - P—Partial\n - C—Complete"
         integrity_impact:
           type: string
-          description: "The CVSSv3 integrity impact metric for the vulnerability the plugin covers. Possible values include:\n - H—High\n - L—Low\n - N—None"
+          description: "The CVSSv2 integrity impact metric for the vulnerability the plugin covers. Possible values include: \n - N—None\n - P—Partial\n - C—Complete"
         availability_impact:
           type: string
-          description: "The CVSSv2 availability impact metric for the vulnerability the plugin covers. Possible values include: \n - H—High\n - L—Low\n - N—None"
+          description: "The CVSSv2 availability impact metric for the vulnerability the plugin covers. Possible values include: \n - N—None\n - P—Partial\n - C—Complete"
         raw:
           type: string
-          description: The complete `cvss3_vector` metrics and result values for the vulnerability the plugin covers in a condensed and coded format. For example, `AV:N/AC:M/Au:N/C:C/I:C/A:C`.
+          description: The complete `cvss_vector` metrics and result values for the vulnerability the plugin covers in a condensed and coded format. For example, `AV:N/AC:M/Au:N/C:C/I:C/A:C`.
+    response-was-findings-chunk:
+      type: object
+      description: A chunk of WAS findings.
+      properties:
+        finding_id:
+          type: string
+          description: The unique identifier of the finding (vulnerability).
+        url:
+          type: string
+          description: The fully-qualified domain name or URL associated with the finding.
+        input_type:
+          type: string
+          description: The type of HTML Form input associated with the finding.
+        input_name:
+          type: string
+          description: The type of page element that's vulnerable. For example, an HTML form.
+          example: form
+        http_method:
+          type: string
+          description: The HTTP method associated with the finding. For example, the GET or POST HTTP method.
+        output:
+          type: string
+          description: The text output from the plugin that detected the finding.
+          example: 'The backup directory detected at URL: http://webscantest.com/rfplaces/somedir1.rar
+
+            Identified by converting the original directory name of ''somedir1'' to ''somedir1.rar''.'
+        proof:
+          type: string
+          description: The output from the web application corroborating that the finding is present.
+          example: <xss_9a3511f8-7852-4096-a7c0-6065ff8ebad3/>
+        payload:
+          type: string
+          description: The attack payload used to detect the finding.
+          example: alert('xss')
+        state:
+          type: string
+          description: "The state of the finding as determined by the Tenable Web App Scanning state service. Possible values include:\n - OPEN—The finding is currently present on an asset.\n - REOPENED—The finding was previously marked as fixed on an asset but has returned.\n - FIXED—The finding was present on an asset but is no longer detected.\n\nNote that the API uses different terms for finding states than the user interface. The `new` and `active` states in the user interface map to the `OPEN` state in the API. The `resurfaced` state in the user interface maps to the `REOPENED` state in the API. The `FIXED` state is the same."
+          enum:
+          - OPEN
+          - REOPENED
+          - FIXED
+        severity:
+          type: string
+          description: The severity of the finding as defined using the Common Vulnerability Scoring System (CVSS) base score. Possible values include `info` (CVSS score of 0), `low` (CVSS score between 0.1 and 3.9), `medium` (CVSS score between 4.0 and 6.9), `high` (CVSS score between 7.0 and 9.9), and `critical` (CVSS score of 10.0).
+          enum:
+          - INFO
+          - LOW
+          - MEDIUM
+          - HIGH
+          - CRITICAL
+        severity_id:
+          type: integer
+          format: int32
+          description: "The code for the severity assigned when a user recast the risk associated with the finding. Possible values include: \n - 0—The vulnerability has a CVSS score of 0, which corresponds to the \"info\" severity level.\n - 1—The vulnerability has a CVSS score between 0.1 and 3.9, which corresponds to the \"low\" severity level.\n - 2—The vulnerability has a CVSS score between 4.0 and 6.9, which corresponds to the \"medium\" severity level.\n - 3—The vulnerability has a CVSS score between 7.0 and 9.9, which corresponds to the \"high\" severity level.\n - 4—The vulnerability has a CVSS score of 10.0, which corresponds to the \"critical\" severity level."
+        severity_default_id:
+          type: integer
+          format: int32
+          description: The code for the severity originally assigned to a finding before a user recast the risk associated with the finding. Possible values are the same as for the `severity_id` attribute.
+        recast_reason:
+          type: string
+          description: The text that appears in the Comment field of the recast rule in the Tenable Web App Scanning user interface.
+        recast_rule_uuid:
+          type: string
+          description: The UUID of the recast rule that applies to the plugin.
+        severity_modification_type:
+          type: string
+          description: "The type of modification a user made to the finding's severity. Possible values include: \n - none—No modification has been made.\n - recasted—A user in the Web App Scanning user interface has recast the risk associated with the finding. \n - accepted—A user in the Web App Scanning user interface has accepted the risk associated with the finding. \n\nFor more information about recast and accept rules, see the [Recast/Accept Rules](https://docs.tenable.com/vulnerability-management/Content/Settings/Recast/AboutRecastRules.htm) in the Tenable Vulnerability Management User Guide."
+        first_found:
+          type: string
+          description: An ISO timestamp indicating the date and time when a scan first detected the finding on the asset.
+        last_found:
+          type: string
+          description: An ISO timestamp indicating the date and time when a scan last detected the finding on the asset.
+        last_fixed:
+          type: string
+          description: An ISO timestamp indicating the date and time when a scan no longer detects the previously detected finding on the asset.
+        last_observed:
+          type: string
+          description: An ISO timestamp indicating the date and time when the finding was previously detected/observed on the asset.
+        indexed_at:
+          type: integer
+          format: int64
+          description: An ISO timestamp indicating the date and time when the vulnerability was indexed into Tenable Web App Scanning.
+        plugin:
+          $ref: '#/components/schemas/was_plugin'
+        asset:
+          $ref: '#/components/schemas/response-was-export-chunk-asset'
+        scan:
+          $ref: '#/components/schemas/was-scan-information'
+    was-scan-information:
+      description: Information about the latest scan that detected the vulnerability.
+      type: object
+      properties:
+        schedule_uuid:
+          type: string
+          description: The schedule UUID for the scan that found the vulnerability.
+        started_at:
+          type: string
+          description: The ISO timestamp when the scan started.
+        completed_at:
+          type: string
+          description: The ISO timestamp when the scan completed.
+        uuid:
+          type: string
+          description: The UUID of the scan that found the vulnerability.
+    ErrorResponse:
+      type: object
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
+      properties:
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
+    cvss4_vector:
+      type: object
+      description: An object representing the full set of CVSS v4.0 base metrics for the vulnerability. These metrics define the intrinsic characteristics of the vulnerability, including how it can be exploited (e.g., attack vector, privileges required) and the potential impacts to both the vulnerable system and subsequent systems (e.g., confidentiality, integrity, availability). For the complete specification, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+      properties:
+        attack_vector:
+          type: string
+          description: The CVSSv4 Attack Vector (AV) metric, which describes the context by which the vulnerability can be exploited. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - Network
+          - Adjacent
+          - Local
+          - Physical
+        attack_complexity:
+          type: string
+          description: The CVSSv4 Attack Complexity (AC) metric, which indicates the conditions beyond the attacker's control that must exist to exploit the vulnerability. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - Low
+          - High
+        attack_requirements:
+          type: string
+          description: The CVSSv4 Attack Requirements (AR) metric specifies prerequisite conditions of the vulnerable component that must be met for an attack to succeed. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - None
+          - Present
+        privileges_required:
+          type: string
+          description: The CVSSv4 Privileges Required (PR) metric indicates the level of privileges an attacker must have to successfully exploit the vulnerability. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - None
+          - Low
+          - High,
+        user_interaction:
+          type: string
+          description: The CVSSv4 User Interaction (UI) metric describes the level of user interaction required for an attack to succeed. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - None
+          - Passive
+          - Active
+        vulnerable_system_confidentiality:
+          type: string
+          description: The CVSSv4 Vulnerable System Confidentiality (VC) metric measures the impact on the confidentiality of information on the vulnerable system. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - High
+          - Low
+          - None
+        vulnerable_system_integrity:
+          type: string
+          description: The CVSSv4 Vulnerable System Integrity (VI) metric measures the impact on the integrity of information on the vulnerable system. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - High
+          - Low
+          - None
+        vulnerable_system_availability:
+          type: string
+          description: The CVSSv4 Vulnerable System Availability (VA) metric measures the impact on the availability of the vulnerable system. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - High
+          - Low
+          - None
+        subsequent_system_confidentiality:
+          type: string
+          description: The CVSSv4 Subsequent System Confidentiality (SC) metric measures the impact on the confidentiality of information on systems _subsequent_ to the vulnerable component. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - High
+          - Low
+          - None
+        subsequent_system_integrity:
+          type: string
+          description: The CVSSv4 Subsequent System Integrity (SI) metric measures the impact on the integrity of information on systems *subsequent* to the vulnerable component. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - High
+          - Low
+          - None
+        subsequent_system_availability:
+          type: string
+          description: The CVSSv4 Subsequent System Availability (SA) metric measures the impact on the availability of systems _subsequent_ to the vulnerable component. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - High
+          - Low
+          - None
+        raw:
+          type: string
+          description: The complete CVSSv4 Base vector string representing all metric values in a compact, standardized format. This includes metrics such as Attack Vector, Attack Complexity, Privileges Required, and others. For example, `AV:N/AC:L/AT:P/PR:H/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:H`. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
     response-findings-export-status:
       description: Information about the specified findings export job.
       type: object
@@ -1506,237 +1637,6 @@ components:
           format: float
           minimum: 0
           maximum: 100
-    cvss4_vector:
-      type: object
-      description: An object representing the full set of CVSS v4.0 base metrics for the vulnerability. These metrics define the intrinsic characteristics of the vulnerability, including how it can be exploited (e.g., attack vector, privileges required) and the potential impacts to both the vulnerable system and subsequent systems (e.g., confidentiality, integrity, availability). For the complete specification, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-      properties:
-        attack_vector:
-          type: string
-          description: The CVSSv4 Attack Vector (AV) metric, which describes the context by which the vulnerability can be exploited. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-          enum:
-          - Network
-          - Adjacent
-          - Local
-          - Physical
-        attack_complexity:
-          type: string
-          description: The CVSSv4 Attack Complexity (AC) metric, which indicates the conditions beyond the attacker's control that must exist to exploit the vulnerability. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-          enum:
-          - Low
-          - High
-        attack_requirements:
-          type: string
-          description: The CVSSv4 Attack Requirements (AR) metric specifies prerequisite conditions of the vulnerable component that must be met for an attack to succeed. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-          enum:
-          - None
-          - Present
-        privileges_required:
-          type: string
-          description: The CVSSv4 Privileges Required (PR) metric indicates the level of privileges an attacker must have to successfully exploit the vulnerability. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-          enum:
-          - None
-          - Low
-          - High,
-        user_interaction:
-          type: string
-          description: The CVSSv4 User Interaction (UI) metric describes the level of user interaction required for an attack to succeed. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-          enum:
-          - None
-          - Passive
-          - Active
-        vulnerable_system_confidentiality:
-          type: string
-          description: The CVSSv4 Vulnerable System Confidentiality (VC) metric measures the impact on the confidentiality of information on the vulnerable system. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-          enum:
-          - High
-          - Low
-          - None
-        vulnerable_system_integrity:
-          type: string
-          description: The CVSSv4 Vulnerable System Integrity (VI) metric measures the impact on the integrity of information on the vulnerable system. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-          enum:
-          - High
-          - Low
-          - None
-        vulnerable_system_availability:
-          type: string
-          description: The CVSSv4 Vulnerable System Availability (VA) metric measures the impact on the availability of the vulnerable system. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-          enum:
-          - High
-          - Low
-          - None
-        subsequent_system_confidentiality:
-          type: string
-          description: The CVSSv4 Subsequent System Confidentiality (SC) metric measures the impact on the confidentiality of information on systems _subsequent_ to the vulnerable component. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-          enum:
-          - High
-          - Low
-          - None
-        subsequent_system_integrity:
-          type: string
-          description: The CVSSv4 Subsequent System Integrity (SI) metric measures the impact on the integrity of information on systems *subsequent* to the vulnerable component. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-          enum:
-          - High
-          - Low
-          - None
-        subsequent_system_availability:
-          type: string
-          description: The CVSSv4 Subsequent System Availability (SA) metric measures the impact on the availability of systems _subsequent_ to the vulnerable component. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-          enum:
-          - High
-          - Low
-          - None
-        raw:
-          type: string
-          description: The complete CVSSv4 Base vector string representing all metric values in a compact, standardized format. This includes metrics such as Attack Vector, Attack Complexity, Privileges Required, and others. For example, `AV:N/AC:L/AT:P/PR:H/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:H`. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
-    was-scan-information:
-      description: Information about the latest scan that detected the vulnerability.
-      type: object
-      properties:
-        schedule_uuid:
-          type: string
-          description: The schedule UUID for the scan that found the vulnerability.
-        started_at:
-          type: string
-          description: The ISO timestamp when the scan started.
-        completed_at:
-          type: string
-          description: The ISO timestamp when the scan completed.
-        uuid:
-          type: string
-          description: The UUID of the scan that found the vulnerability.
-    cvss_vector:
-      type: object
-      description: Additional CVSSv2 metrics for the vulnerability.
-      properties:
-        access_vector:
-          type: string
-          description: "The CVSSv2 Access Vector (AV) metric for the vulnerability the plugin covers. Possible values include: \n - L—Local\n - A—Adjacent Network\n - N—Network"
-        access_complexity:
-          type: string
-          description: "The CVSSv2 Access Complexity (AC) metric for the vulnerability the plugin covers. Possible values include:\n - H—High\n - M—Medium\n - L—Low"
-        authentication:
-          type: string
-          description: "The CVSSv2 Authentication (Au) metric for the vulnerability the plugin covers. Possible values include: \n - N—None\n - S—Single\n - M—Multiple"
-        confidentiality_impact:
-          type: string
-          description: "The CVSSv2 confidentiality impact metric for the vulnerability the plugin covers. Possible values include: \n - N—None\n - P—Partial\n - C—Complete"
-        integrity_impact:
-          type: string
-          description: "The CVSSv2 integrity impact metric for the vulnerability the plugin covers. Possible values include: \n - N—None\n - P—Partial\n - C—Complete"
-        availability_impact:
-          type: string
-          description: "The CVSSv2 availability impact metric for the vulnerability the plugin covers. Possible values include: \n - N—None\n - P—Partial\n - C—Complete"
-        raw:
-          type: string
-          description: The complete `cvss_vector` metrics and result values for the vulnerability the plugin covers in a condensed and coded format. For example, `AV:N/AC:M/Au:N/C:C/I:C/A:C`.
-    cvss4_filter:
-      description: 'Filters vulnerabilities based on their CVSS version 4 (CVSSv4) base score. You can specify score ranges using the provided comparison properties. For example, to retrieve vulnerabilities with a CVSSv4 score between 7.0 and 9.9, include `{ "gte": 7.0, "lte": 9.9 }` in your filter.
-
-
-        For more details about CVSSv4, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).'
-      type: object
-      properties:
-        eq:
-          description: Returns vulnerabilities with a CVSSv4 score exactly equal to the specified value(s). Cannot be combined with `lt`, `gt`, `lte`, or `gte`.
-          type: array
-          items:
-            type: number
-            format: float
-            minimum: 0
-            maximum: 10
-        neq:
-          description: Returns vulnerabilities with a CVSSv4 score _not_ equal to the specified value(s). Can be combined with eq.
-          type: array
-          items:
-            type: number
-            format: float
-            minimum: 0
-            maximum: 10
-        gt:
-          description: Returns vulnerabilities with a CVSSv4 score _greater than_ the specified value. Cannot be combined with `eq`.
-          type: number
-          format: float
-          minimum: 0
-          maximum: 10
-        gte:
-          description: Returns vulnerabilities with a CVSSv4 score _greater than or equal to_ the specified value. Cannot be combined with `eq`.
-          type: number
-          format: float
-          minimum: 0
-          maximum: 10
-        lt:
-          description: Returns vulnerabilities with a CVSSv4 score _less than_ the specified value. Cannot be combined with `eq`.
-          type: number
-          format: float
-          minimum: 0
-          maximum: 10
-        lte:
-          description: Returns vulnerabilities with a CVSSv4 score _less than or equal to_ the specified value. Cannot be combined with `eq`.
-          type: number
-          format: float
-          minimum: 0
-          maximum: 10
-    cvss_temporal_vector:
-      description: CVSSv2 temporal metrics for the vulnerability.
-      type: object
-      properties:
-        exploitability:
-          type: string
-          description: "The CVSSv2 Exploitability (E) temporal metric for the vulnerability the plugin covers. Possible values include:\n - U—Unproven\n - POC—Proof-of-Concept\n - F—Functional\n - H—High\n - ND—Not Defined"
-        remediation_level:
-          type: string
-          description: "The CVSSv2 Remediation Level (RL) temporal metric for the vulnerability the plugin covers. Possible values include: \n - OF—Official Fix\n - TF—Temporary Fix\n - W—Workaround\n - U—Unavailable\n - ND—Not Defined"
-        report_confidence:
-          type: string
-          description: "The CVSSv2 Report Confidence (RC) temporal metric for the vulnerability the plugin covers. Possible values include: \n - UC—Unconfirmed\n - UR—Uncorroborated\n - C—Confirmed\n - ND—Not Defined"
-        raw:
-          type: string
-          description: The complete `cvss_temporal_vector` metrics and result values for the vulnerability the plugin covers in a condensed and coded format. For example, `E:U/RL:OF/RC:C`.
-    vpr_v2_filter:
-      description: "Filters vulnerabilities based on their Vulnerability Priority Rating (VPR) version 2 score. This enhanced version is labeled **VPR (Beta)** in the user interface. You can define score ranges using properties such as `gte` (greater than or equal to) and `lte` (less than or equal to). For example, to match vulnerabilities with VPR scores between 9.0 and 9.9, include `{ \"gte\": 9.0, \"lte\": 9.9 }` in the filter. \n\n**Caution**: The `vpr_v2_score` filter parameter is scheduled for deprecation on July 1, 2026 as part of the transition to VPR v2. To ensure continued functionality, update all integrations to use the `vpr_score` filter parameter. On the deprecation date, the system will update `vpr_score` to support the new VPR model. For more information, see [Vulnerability Priority Rating: Transition to VPR Version 2](changelog:vulnerability-priority-rating-transition-to-version-2). \n\nFor details about VPR, see [Vulnerability Priority Rating](https://docs.tenable.com/vulnerability-management/Content/Explore/Findings/RiskMetrics.htm#Vulnerability-Priority-Rating-) in the _Tenable Vulnerability Management User Guide_. To learn about the enhancements introduced in VPR v2, refer to the whitepaper [Enhancements to Tenable Vulnerability Priority Rating (VPR)](https://www.tenable.com/whitepapers/enhancements-to-tenable-vulnerability-priority-rating-vpr)."
-      type: object
-      properties:
-        eq:
-          description: Returns vulnerabilities with a VPR exactly equal to the specified score or scores. This property _cannot_ be used in combination with `lt`, `gt`, `lte`, or `gte`.
-          type: array
-          items:
-            type: number
-            format: float
-            minimum: 0.1
-            maximum: 10
-        neq:
-          description: Returns vulnerabilities with a VPR _not_ equal to the specified score or scores. This property can be combined with the `eq` property.
-          type: array
-          items:
-            type: number
-            format: float
-            minimum: 0.1
-            maximum: 10
-        gt:
-          description: Returns vulnerabilities with a VPR _greater than_ the specified score. This property cannot be combined with the `eq` property.
-          type: number
-          format: float
-          minimum: 0.1
-          maximum: 10
-        gte:
-          description: Returns vulnerabilities with a VPR _greater than or equal to_ the specified score. This property cannot be combined with the `eq` property.
-          type: number
-          format: float
-          minimum: 0.1
-          maximum: 10
-        lt:
-          description: Returns vulnerabilities with a VPR _less than_ the specified score. This property cannot be combined with the `eq` property.
-          type: number
-          format: float
-          minimum: 0.1
-          maximum: 10
-        lte:
-          description: Returns vulnerabilities with a VPR _less than or equal to_ the specified score. This property cannot be combined with the `eq` property.
-          type: number
-          format: float
-          minimum: 0.1
-          maximum: 10
     vpr_filter:
       description: 'Filters vulnerabilities based on their Vulnerability Priority Rating (VPR) version 1 score. You can define score ranges using properties such as `gte` (greater than or equal to) and `lte` (less than or equal to). For example, to match vulnerabilities with VPR scores between 9.0 and 9.9, include `{ "gte": 9.0, "lte": 9.9 }` in the filter.
 
@@ -1786,22 +1686,122 @@ components:
           format: float
           minimum: 0.1
           maximum: 10
-    cvss3_temporal_vector:
+    response-was-export-chunk-asset:
       type: object
-      description: CVSSv3 temporal metrics for the vulnerability.
+      description: Information about the asset where the scan detected the vulnerability.
+      properties:
+        uuid:
+          type: string
+          description: The UUID of the asset where a scan found the vulnerability.
+        fqdn:
+          type: string
+          description: The fully-qualified domain name of the asset where a scan found the vulnerability.
+        ipv4:
+          type: string
+          description: The IPv4 address of the asset where a scan found the vulnerability.
+        ipv4s:
+          type: array
+          description: The list of IPv4 addresses if the asset has multiple IPv4 addresses.
+          items:
+            type: string
+    cvss3_vector:
+      type: object
+      description: Additional CVSSv3 metrics for the vulnerability.
+      properties:
+        access_vector:
+          type: string
+          description: "The CVSSv2 Attack Vector (AV) metric for the vulnerability the plugin covers. Possible values include:\n - Network—Corresponds to the Network (N) value for the AV metric. \n - Adjacent Network—Corresponds to the Adjacent Network (A) value for the AV metric. \n - Local—Corresponds to the Local (L) value for the AV metric"
+        access_complexity:
+          type: string
+          description: "The CVSSv3 Access Complexity (AC) metric for the vulnerability the plugin covers. Possible values include: \n - H—High\n - M—Medium\n - L—Low"
+        authentication:
+          type: string
+          description: "The CVSSv2 Authentication (Au) metric for the vulnerability the plugin covers. Possible values include:\n - None required—Corresponds to the None (N) value for the Au metric. \n - Requires-single-instance—Corresponds to the Single (S) value for the Au metric. \n - Requires-multiple-instances—Corresponds to the Multiple (M) value for the Au metric"
+        confidentiality_impact:
+          type: string
+          description: "The CVSSv3 confidentiality impact metric of the vulnerability the plugin covers to the vulnerable component. Possible values include: \n - H—High\n - L—Low\n - N—None"
+        integrity_impact:
+          type: string
+          description: "The CVSSv3 integrity impact metric for the vulnerability the plugin covers. Possible values include:\n - H—High\n - L—Low\n - N—None"
+        availability_impact:
+          type: string
+          description: "The CVSSv2 availability impact metric for the vulnerability the plugin covers. Possible values include: \n - H—High\n - L—Low\n - N—None"
+        raw:
+          type: string
+          description: The complete `cvss3_vector` metrics and result values for the vulnerability the plugin covers in a condensed and coded format. For example, `AV:N/AC:M/Au:N/C:C/I:C/A:C`.
+    cvss_temporal_vector:
+      description: CVSSv2 temporal metrics for the vulnerability.
+      type: object
       properties:
         exploitability:
           type: string
-          description: "The CVSSv3 Exploit Maturity Code (E) for the vulnerability the plugin covers. Possible values include: \n - Unproven—Corresponds to the Unproven (U) value for the E metric\n - Proof-of-concept—Corresponds to the Proof-of-Concept (POC) value for the E metric\n - Functional—Corresponds to the Functional (F) value for the E metric\n - High—Corresponds to the High (H) value for the E metric\n - Not-defined—Corresponds to the Not Defined (ND) value for the E metric"
+          description: "The CVSSv2 Exploitability (E) temporal metric for the vulnerability the plugin covers. Possible values include:\n - U—Unproven\n - POC—Proof-of-Concept\n - F—Functional\n - H—High\n - ND—Not Defined"
         remediation_level:
           type: string
-          description: "The CVSSv3 Remediation Level (RL) temporal metric for the vulnerability the plugin covers. Possible values include: \n - O—Official Fix\n - T—Temporary Fix\n - W—Workaround\n - U—Unavailable\n - X—Not Defined"
+          description: "The CVSSv2 Remediation Level (RL) temporal metric for the vulnerability the plugin covers. Possible values include: \n - OF—Official Fix\n - TF—Temporary Fix\n - W—Workaround\n - U—Unavailable\n - ND—Not Defined"
         report_confidence:
           type: string
-          description: "The CVSSv3 Report Confidence (RC) temporal metric for the vulnerability the plugin covers. Possible values include: \n - U—Unknown\n - R—Reasonable\n - C—Confirmed\n - X—Not Defined"
+          description: "The CVSSv2 Report Confidence (RC) temporal metric for the vulnerability the plugin covers. Possible values include: \n - UC—Unconfirmed\n - UR—Uncorroborated\n - C—Confirmed\n - ND—Not Defined"
         raw:
           type: string
-          description: The complete `cvss3_temporal_vector` metrics and result values for the vulnerability the plugin covers in a condensed and coded format. For example, `E:U/RL:OF/RC:C`.
+          description: The complete `cvss_temporal_vector` metrics and result values for the vulnerability the plugin covers in a condensed and coded format. For example, `E:U/RL:OF/RC:C`.
+    cvss4_threat_vector:
+      type: object
+      description: 'An object representing the CVSS v4.0 Threat metrics for the vulnerability. These metrics provide context on current, observed threat activity in the wild, such as evidence of exploitation or the presence of available exploit code. Threat metrics can help refine the severity and prioritization of vulnerabilities beyond their intrinsic characteristics. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+
+
+        **Caution:** The `cvss4_threat_vector` object is currently only available for Vulnerability Management exports. It will be added to Web App Scanning findings exports soon.'
+      properties:
+        threat_score:
+          type: number
+          format: float
+          description: The CVSS v4.0 threat score (CVSS-T), which adjusts the base score by incorporating real-world threat intelligence, such as the presence of active exploitation, exploit code availability, or observed malware activity. This score reflects the current threat landscape for the vulnerability. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+        exploit_maturity:
+          type: string
+          description: The CVSS v4.0 Exploit Maturity (E) metric, indicating the current development status of exploit techniques or code for the vulnerability. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+          enum:
+          - Not Defined
+          - Attacked
+          - Proof-of-Concept
+          - Unreported
+        raw:
+          type: string
+          description: The complete `cvss4_threat_vector` metrics and their result values for the vulnerability, expressed as a concise, coded string. This threat vector is typically appended to the CVSSv4 Base vector. For example, `CVSS:4.0/E:U`. For more details, see the [CVSS v4.0 Specification](https://www.first.org/cvss/v4-0/specification-document).
+    response-findings-export-jobs:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: The UUID of the findings export request.
+        status:
+          type: string
+          description: "The status of the findings export request. Possible values include:\n - QUEUED—Tenable Web App Scanning has queued the export request until other requests currently in process are completed.\n - PROCESSING—Tenable Web App Scanning has started processing the export request.\n - FINISHED—Tenable Web App Scanning has completed processing the export request. The list of chunks is complete.\n - CANCELLED—An administrator has cancelled the export request.\n - ERROR—Tenable Web App Scanning encountered an error while processing the export request. Tenable recommends that you retry the request. If the status persists on retry, contact Tenable Support."
+        reason:
+          type: string
+          description: "The reason the export failed or completed with errors. This property is only present when the export status is `ERROR` or `FINISHED` with failed chunks. Possible values include:\n - \"The export request timed out. Try again.\"\n - \"An unexpected error occurred while processing the export. Try again later.\"\n - \"The export could not be completed. If this issue persists, please contact support.\"\n - \"{N} of {M} chunks failed to process. The remaining chunks are available for download.\""
+        total_chunks:
+          type: integer
+          description: The total number of chunks associated with the export job as a whole.
+        chunks_available_count:
+          type: integer
+          description: The total number of completed chunks available for download.
+        empty_chunks_count:
+          type: integer
+          description: The total number of empty chunks.
+        finished_chunks:
+          type: integer
+          description: The number of chunks that have been processed and are available for download.
+        filters:
+          type: object
+          description: The filters used in the findings export job request. For a list of possible filters, see the filters available for the [Export findings](ref:was-export-findings) endpoint.
+          properties: {}
+        num_assets_per_chunk:
+          type: integer
+          description: The number of assets contained in each export chunk.
+        created:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time on which the exports job was created.
   securitySchemes:
     cloud:
       type: apiKey

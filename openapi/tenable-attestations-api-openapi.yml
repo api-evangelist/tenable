@@ -826,6 +826,61 @@ components:
         order:
           type: string
           description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    Response-AttestationAssetList:
+      type: object
+      properties:
+        excluded:
+          type: boolean
+          description: The number of assets included or excluded
+        undisputed_failure_count:
+          type: integer
+          format: int64
+          description: The number of undisputed failures in the attestation.
+        address:
+          type: string
+          example: 127.0.0.1
+          description: The IP address of the asset.
+        fqdn:
+          type: string
+          format: fqdn
+          example: target.asset.com
+          description: The fully qualified domain name for the asset.
+        attestation_uuid:
+          type: string
+          format: uuid
+          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
+          description: The UUID of the attestation.
+        name:
+          type: string
+          format: Asset Name
+          description: The name of the asset.
+        scan_uuid:
+          type: string
+          format: uuid
+          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
+          description: The UUID of the scan associated with an asset.
+        operating_system:
+          type: string
+          example: Windows
+          description: The operating system installed on the asset.
+        failure_count:
+          type: integer
+          format: int64
+          description: The number of failures for the asset.
+        scan_name:
+          type: string
+          format: Scan Name
+          description: The name of the scan associated with the asset.
+        uuid:
+          type: string
+          format: uuid
+          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
+          description: The UUID of the PCI asset in the Tenable PCI ASV.
+        scan_date:
+          type: string
+          format: date-time
+          example: '2018-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when the scan ended. For example, `2018-12-31T13:51:17.243Z`
     Response-Pagination:
       description: An object containing pagination information for the current result set.
       type: object
@@ -847,6 +902,129 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Response-PaginationSortObject'
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Response-AttestationList:
+      type: object
+      properties:
+        owner:
+          type: string
+          example: example@example.com
+          description: The owner of the attestation.
+        latest_comment:
+          type: string
+          example: None
+          description: The latest comment on the attestation.
+        submitted_at:
+          type: string
+          format: date-time
+          example: '2018-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when the scan was submitted for attestation. For example, `2018-12-31T13:51:17.243Z`.
+        assessor:
+          type: string
+          example: assessor.analyst@tenable.com
+          description: The username or email address of the assessor of the attestation.
+        dispute_count:
+          type: integer
+          format: int64
+          description: The number of disputes for the attestation.
+        customer_uuid:
+          format: int64
+          description: The number of disputes for the attestation.
+        attestation_internal_notes_count:
+          type: string
+          example: assessor.analyst@tenable.com
+          description: The number of internal notes for the attestation.
+        scan_completion_date:
+          type: string
+          format: date-time
+          example: '2018-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when the scan was completed. For example, `2018-12-31T13:51:17.243Z`.
+        created_at:
+          type: string
+          format: date-time
+          example: '2018-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when the attestation was created. For example, `2018-12-31T13:51:17.243Z`.
+        failure_count:
+          type: integer
+          format: int64
+          description: The number of failures in the attestation.
+        created_by:
+          type: string
+          example: example@example.com
+          description: The username or email address of the creator of the attestation.
+        uuid:
+          type: string
+          format: uuid
+          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
+          description: The UUID of the attestation in Tenable PCI ASV.
+        asset_count:
+          type: integer
+          format: int64
+          description: The number of assets in the attestation.
+        passed_dispute_count:
+          type: integer
+          format: int64
+          description: The number of passed disputes in the attestation.
+        undisputed_failure_count:
+          type: integer
+          format: int64
+          description: The number of undisputed failures in the attestation.
+        scan_expiration_date:
+          type: string
+          format: date-time
+          example: '2018-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when the scan will expire. For example, `2018-12-31T13:51:17.243Z`.
+        updated_at:
+          type: string
+          format: date-time
+          example: '2018-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when the attestation was last updated. For example, `2018-12-31T13:51:17.243Z`.
+        contact:
+          $ref: '#/components/schemas/Response-AttestationContact'
+        updated_by:
+          type: string
+          example: example@example.com
+          description: The user that last updated the attestation.
+        name:
+          type: string
+          example: PCI Attestation
+          description: The name of the PCI scan in PCI ASV.
+        failed_dispute_count:
+          type: integer
+          format: int64
+          description: The number of failed disputes in the attestation.
+        cde.uuid:
+          type: string
+          format: uuid
+          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
+          description: The UUID of the PCI scan in Tenable PCI ASV.
+        undetermined_dispute_count:
+          type: integer
+          format: int64
+          description: The number of undetermined disputes in the attestation.
+        company:
+          type: string
+          example: company name
+          description: The name of the company.
+        excluded_asset_count:
+          type: integer
+          format: int64
+          description: The number of excluded assets in the attestation.
+        status:
+          type: string
+          example: needs-work
+          description: The status of the attestation.
     Response-DisputeList:
       type: object
       properties:
@@ -993,184 +1171,6 @@ components:
         address_2:
           type: string
           description: The contact's secondary address.
-    Response-AttestationList:
-      type: object
-      properties:
-        owner:
-          type: string
-          example: example@example.com
-          description: The owner of the attestation.
-        latest_comment:
-          type: string
-          example: None
-          description: The latest comment on the attestation.
-        submitted_at:
-          type: string
-          format: date-time
-          example: '2018-07-21T17:32:28Z'
-          description: An ISO timestamp indicating the date and time when the scan was submitted for attestation. For example, `2018-12-31T13:51:17.243Z`.
-        assessor:
-          type: string
-          example: assessor.analyst@tenable.com
-          description: The username or email address of the assessor of the attestation.
-        dispute_count:
-          type: integer
-          format: int64
-          description: The number of disputes for the attestation.
-        customer_uuid:
-          format: int64
-          description: The number of disputes for the attestation.
-        attestation_internal_notes_count:
-          type: string
-          example: assessor.analyst@tenable.com
-          description: The number of internal notes for the attestation.
-        scan_completion_date:
-          type: string
-          format: date-time
-          example: '2018-07-21T17:32:28Z'
-          description: An ISO timestamp indicating the date and time when the scan was completed. For example, `2018-12-31T13:51:17.243Z`.
-        created_at:
-          type: string
-          format: date-time
-          example: '2018-07-21T17:32:28Z'
-          description: An ISO timestamp indicating the date and time when the attestation was created. For example, `2018-12-31T13:51:17.243Z`.
-        failure_count:
-          type: integer
-          format: int64
-          description: The number of failures in the attestation.
-        created_by:
-          type: string
-          example: example@example.com
-          description: The username or email address of the creator of the attestation.
-        uuid:
-          type: string
-          format: uuid
-          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
-          description: The UUID of the attestation in Tenable PCI ASV.
-        asset_count:
-          type: integer
-          format: int64
-          description: The number of assets in the attestation.
-        passed_dispute_count:
-          type: integer
-          format: int64
-          description: The number of passed disputes in the attestation.
-        undisputed_failure_count:
-          type: integer
-          format: int64
-          description: The number of undisputed failures in the attestation.
-        scan_expiration_date:
-          type: string
-          format: date-time
-          example: '2018-07-21T17:32:28Z'
-          description: An ISO timestamp indicating the date and time when the scan will expire. For example, `2018-12-31T13:51:17.243Z`.
-        updated_at:
-          type: string
-          format: date-time
-          example: '2018-07-21T17:32:28Z'
-          description: An ISO timestamp indicating the date and time when the attestation was last updated. For example, `2018-12-31T13:51:17.243Z`.
-        contact:
-          $ref: '#/components/schemas/Response-AttestationContact'
-        updated_by:
-          type: string
-          example: example@example.com
-          description: The user that last updated the attestation.
-        name:
-          type: string
-          example: PCI Attestation
-          description: The name of the PCI scan in PCI ASV.
-        failed_dispute_count:
-          type: integer
-          format: int64
-          description: The number of failed disputes in the attestation.
-        cde.uuid:
-          type: string
-          format: uuid
-          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
-          description: The UUID of the PCI scan in Tenable PCI ASV.
-        undetermined_dispute_count:
-          type: integer
-          format: int64
-          description: The number of undetermined disputes in the attestation.
-        company:
-          type: string
-          example: company name
-          description: The name of the company.
-        excluded_asset_count:
-          type: integer
-          format: int64
-          description: The number of excluded assets in the attestation.
-        status:
-          type: string
-          example: needs-work
-          description: The status of the attestation.
-    ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    Response-AttestationAssetList:
-      type: object
-      properties:
-        excluded:
-          type: boolean
-          description: The number of assets included or excluded
-        undisputed_failure_count:
-          type: integer
-          format: int64
-          description: The number of undisputed failures in the attestation.
-        address:
-          type: string
-          example: 127.0.0.1
-          description: The IP address of the asset.
-        fqdn:
-          type: string
-          format: fqdn
-          example: target.asset.com
-          description: The fully qualified domain name for the asset.
-        attestation_uuid:
-          type: string
-          format: uuid
-          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
-          description: The UUID of the attestation.
-        name:
-          type: string
-          format: Asset Name
-          description: The name of the asset.
-        scan_uuid:
-          type: string
-          format: uuid
-          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
-          description: The UUID of the scan associated with an asset.
-        operating_system:
-          type: string
-          example: Windows
-          description: The operating system installed on the asset.
-        failure_count:
-          type: integer
-          format: int64
-          description: The number of failures for the asset.
-        scan_name:
-          type: string
-          format: Scan Name
-          description: The name of the scan associated with the asset.
-        uuid:
-          type: string
-          format: uuid
-          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
-          description: The UUID of the PCI asset in the Tenable PCI ASV.
-        scan_date:
-          type: string
-          format: date-time
-          example: '2018-07-21T17:32:28Z'
-          description: An ISO timestamp indicating the date and time when the scan ended. For example, `2018-12-31T13:51:17.243Z`
   securitySchemes:
     cloud:
       type: apiKey

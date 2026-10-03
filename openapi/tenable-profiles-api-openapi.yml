@@ -975,35 +975,11 @@ paths:
       - Profiles_cloud: []
 components:
   schemas:
-    Profiles_request-create-profile:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          description: A name for the profile.
-          type: string
-          example: US-1A Sensors
-        description:
-          description: A short description explaining the purpose or targets of the profile.
-          type: string
-          example: This profile targets sensors for US-1A.
-        config:
-          oneOf:
-          - $ref: '#/components/schemas/Profiles_request-agent-profile-config-object'
-          - $ref: '#/components/schemas/Profiles_request-scanner-profile-config-object'
-    Profiles_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
+    Profiles_response-profiles:
+      description: An array of profile objects.
+      type: array
+      items:
+        $ref: '#/components/schemas/Profiles_response-sensor-type-profile'
     Profiles_response-agent-profile-deletion:
       title: Agent Profile Deletion
       type: object
@@ -1026,16 +1002,6 @@ components:
         message:
           type: string
           description: An informative message about the state of the task.
-    Profiles_response-scanner-profile-deletion:
-      title: Scanner Profile Deletion
-      type: object
-      properties:
-        message:
-          type: string
-          description: A message indicating whether or not the deletion request was successfully received.
-        request_status_id:
-          type: string
-          description: The unique identifier (UUID) of the scanner profile deletion request task. You can check the status of deletion task via the [Get scanner task status](ref:scanner-task-status) endpoint.
     Profiles_request-agent-profile-config-object:
       title: Agent Profile Config
       description: Configuration settings and options to apply to the profile.
@@ -1121,11 +1087,33 @@ components:
               minimum: 1
               maximum: 100
               example: 30
-    Profiles_response-profiles:
-      description: An array of profile objects.
-      type: array
-      items:
-        $ref: '#/components/schemas/Profiles_response-sensor-type-profile'
+    Profiles_response-sensor-type-profile:
+      type: object
+      properties:
+        name:
+          description: The name of the profile.
+          type: string
+          example: US-1A Sensors
+        description:
+          description: A short description explaining the purpose or targets of the profile.
+          type: string
+          example: This profile targets sensors for US-1A.
+        profile_uuid:
+          description: The unique identifier (UUID) of the profile.
+          type: string
+          example: 52cddf58-f10f-49f6-969f-d17f623171f5
+        created:
+          description: An ISO timestamp indicating the date and time when the profile was created.
+          type: string
+          example: '2024-07-19T00:11:47.227483Z'
+        updated:
+          description: An ISO timestamp indicating the date and time when the profile was last updated.
+          type: string
+          example: 52cddf58-f10f-49f6-969f-d17f623171f5
+        config:
+          oneOf:
+          - $ref: '#/components/schemas/Profiles_response-agent-config-object'
+          - $ref: '#/components/schemas/Profiles_response-scanner-config-object'
     Profiles_response-agent-config-object:
       title: Agent Config Object
       description: Configuration settings and options applied to the agent profile.
@@ -1247,6 +1235,23 @@ components:
               minimum: 1
               maximum: 100
               example: 30
+    Profiles_request-create-profile:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          description: A name for the profile.
+          type: string
+          example: US-1A Sensors
+        description:
+          description: A short description explaining the purpose or targets of the profile.
+          type: string
+          example: This profile targets sensors for US-1A.
+        config:
+          oneOf:
+          - $ref: '#/components/schemas/Profiles_request-agent-profile-config-object'
+          - $ref: '#/components/schemas/Profiles_request-scanner-profile-config-object'
     Profiles_response-scanner-config-object:
       title: Scanner Config Object
       description: Configuration settings and options applied to the scanner profile.
@@ -1282,33 +1287,28 @@ components:
         update_disabled:
           description: Indicates whether or not to exclude scanners from software updates. If set to true, all scanners assigned to this profile are prevented from receiving software updates. This setting overrides scheduled freeze windows.
           type: boolean
-    Profiles_response-sensor-type-profile:
+    Profiles_ErrorResponse:
       type: object
       properties:
-        name:
-          description: The name of the profile.
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
           type: string
-          example: US-1A Sensors
-        description:
-          description: A short description explaining the purpose or targets of the profile.
+          description: The standard HTTP error name.
+        message:
           type: string
-          example: This profile targets sensors for US-1A.
-        profile_uuid:
-          description: The unique identifier (UUID) of the profile.
+          description: A brief message about the cause of the error.
+    Profiles_response-scanner-profile-deletion:
+      title: Scanner Profile Deletion
+      type: object
+      properties:
+        message:
           type: string
-          example: 52cddf58-f10f-49f6-969f-d17f623171f5
-        created:
-          description: An ISO timestamp indicating the date and time when the profile was created.
+          description: A message indicating whether or not the deletion request was successfully received.
+        request_status_id:
           type: string
-          example: '2024-07-19T00:11:47.227483Z'
-        updated:
-          description: An ISO timestamp indicating the date and time when the profile was last updated.
-          type: string
-          example: 52cddf58-f10f-49f6-969f-d17f623171f5
-        config:
-          oneOf:
-          - $ref: '#/components/schemas/Profiles_response-agent-config-object'
-          - $ref: '#/components/schemas/Profiles_response-scanner-config-object'
+          description: The unique identifier (UUID) of the scanner profile deletion request task. You can check the status of deletion task via the [Get scanner task status](ref:scanner-task-status) endpoint.
   parameters:
     Profiles_sensor_type-path-param:
       description: The type of sensor. Use `agent` for agent profiles or `scanners` for scanner profiles.

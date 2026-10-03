@@ -1671,123 +1671,6 @@ paths:
       - recast-rules_cloud: []
 components:
   schemas:
-    recast-rules_recastFilterProperty:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the filter property.
-        search_value:
-          type: string
-          description: Property name to be used in the filter as a property name.
-        property_target:
-          type: string
-          description: Type of filter property. FINDINGS if it is an attribute of finding, COMPLIANCE_SCANS if it is a HOST AUDIT finding property, otherwise CUSTOM_TARGETS.
-          enum:
-          - CUSTOM_TARGETS
-          - FINDINGS
-          - COMPLIANCE_SCANS
-        conditions:
-          type: object
-          description: Logical conditions that can be specified with a filter property and it's its values.
-          properties:
-            name:
-              type: string
-              description: Name of a group of logical conditions.
-            required:
-              type: boolean
-              description: If the filter property is required.
-            operators:
-              type: string
-              description: Operator name for a logical condition to be used in a filter.
-            resource_type:
-              type: string
-              description: The type of findings to be targeted by the recast rule to be created.
-              enum:
-              - HOST
-              - HOST_AUDIT
-              - WEBAPP
-        searchOnly:
-          type: boolean
-          description: If the filter can only be used for recast rules search.
-    recast-rules_recastFilter:
-      description: Filter rules based on the targeted vulnerabilities. Use the `and` array to combine multiple conditions that all must be true. Use the `or` array to combine multiple conditions where at least one must be true.
-      oneOf:
-      - title: AND (OPTION 1)
-        type: object
-        description: Filter rules based on the targeted vulnerabilities. Use the `and` array to combine multiple conditions that all must be true.
-        properties:
-          and:
-            type: array
-            items:
-              $ref: '#/components/schemas/recast-rules_filterProperty'
-      - title: OR (OPTION 2)
-        type: object
-        description: Filter rules based on the targeted vulnerabilities. Use the `or` array to combine multiple conditions where at least one must be true.
-        properties:
-          or:
-            type: array
-            items:
-              $ref: '#/components/schemas/recast-rules_filterProperty'
-    recast-rules_filterProperty:
-      type: object
-      properties:
-        property:
-          type: string
-          description: The property of the vulnerability finding to filter by. For a list of supported properties, see the [List recast rule filters](ref:recast-rules-filters-list) endpoint.
-        operator:
-          type: string
-          description: The operator used to compare the property with the specified value.
-        value:
-          description: 'The value to compare the given property to using the specified operator. Example value for an plugin ID: `10114`'
-          oneOf:
-          - title: Single String Value
-            description: A single value to compare with the selected property using the chosen operator.
-            type: string
-          - title: Multiple String Values
-            description: Multiple values to compare with the selected property using the chosen operator.
-            type: array
-            items:
-              type: string
-          example:
-          - property: definition.id
-            operator: eq
-            value: '10114'
-    recast-rules_Response-Recast-Search:
-      type: object
-      properties:
-        rules:
-          type: array
-          items:
-            $ref: '#/components/schemas/recast-rules_Rule-Object'
-        pagination:
-          type: object
-          properties:
-            total:
-              type: integer
-              format: int32
-              description: The total number of recast rule records matching your search criteria.
-            limit:
-              type: integer
-              minimum: 1
-              maximum: 500
-              default: 100
-              description: The limit enforced on the number of records when retrieved.
-            next:
-              type: string
-              description: An encrypted token used for fetching the next iteration of data records.
-    recast-rules_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     recast-rules_Rule-Object:
       type: object
       properties:
@@ -1880,22 +1763,87 @@ components:
           description: Optional date and time indicating when the rule will expire. It has to be an ISO timestamp. If no expiry date is specified, the rule is set to never expire.
         disabled_details:
           $ref: '#/components/schemas/recast-rules_Response-Disabled-Details'
-    recast-rules_Request-Disabled-Details:
+    recast-rules_recastFilterProperty:
       type: object
-      description: Specifies details for disabling the rule.
       properties:
-        disabled:
-          type: boolean
-          description: Indicates whether the rule should be disabled.
-        disabled_reason:
+        name:
           type: string
-          description: An optional explanation for disabling the rule.
+          description: Name of the filter property.
+        search_value:
+          type: string
+          description: Property name to be used in the filter as a property name.
+        property_target:
+          type: string
+          description: Type of filter property. FINDINGS if it is an attribute of finding, COMPLIANCE_SCANS if it is a HOST AUDIT finding property, otherwise CUSTOM_TARGETS.
+          enum:
+          - CUSTOM_TARGETS
+          - FINDINGS
+          - COMPLIANCE_SCANS
+        conditions:
+          type: object
+          description: Logical conditions that can be specified with a filter property and it's its values.
+          properties:
+            name:
+              type: string
+              description: Name of a group of logical conditions.
+            required:
+              type: boolean
+              description: If the filter property is required.
+            operators:
+              type: string
+              description: Operator name for a logical condition to be used in a filter.
+            resource_type:
+              type: string
+              description: The type of findings to be targeted by the recast rule to be created.
+              enum:
+              - HOST
+              - HOST_AUDIT
+              - WEBAPP
+        searchOnly:
+          type: boolean
+          description: If the filter can only be used for recast rules search.
+    recast-rules_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     recast-rules_recastFilterProperties:
       type: array
       description: Recast filter properties for recast rule creation.
       items:
         type: object
         $ref: '#/components/schemas/recast-rules_recastFilterProperty'
+    recast-rules_filterProperty:
+      type: object
+      properties:
+        property:
+          type: string
+          description: The property of the vulnerability finding to filter by. For a list of supported properties, see the [List recast rule filters](ref:recast-rules-filters-list) endpoint.
+        operator:
+          type: string
+          description: The operator used to compare the property with the specified value.
+        value:
+          description: 'The value to compare the given property to using the specified operator. Example value for an plugin ID: `10114`'
+          oneOf:
+          - title: Single String Value
+            description: A single value to compare with the selected property using the chosen operator.
+            type: string
+          - title: Multiple String Values
+            description: Multiple values to compare with the selected property using the chosen operator.
+            type: array
+            items:
+              type: string
+          example:
+          - property: definition.id
+            operator: eq
+            value: '10114'
     recast-rules_Request-Create-Recast-Rule:
       type: object
       required:
@@ -1975,6 +1923,16 @@ components:
           description: The date and time when the rule expires, in ISO 8601 format. If omitted, the rule does not expire.
         disabled_details:
           $ref: '#/components/schemas/recast-rules_Request-Disabled-Details'
+    recast-rules_Request-Disabled-Details:
+      type: object
+      description: Specifies details for disabling the rule.
+      properties:
+        disabled:
+          type: boolean
+          description: Indicates whether the rule should be disabled.
+        disabled_reason:
+          type: string
+          description: An optional explanation for disabling the rule.
     recast-rules_Response-Disabled-Details:
       type: object
       description: Details about a rule when it is disabled.
@@ -2007,6 +1965,48 @@ components:
           - desc
           - asc
           example: desc
+    recast-rules_Response-Recast-Search:
+      type: object
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/recast-rules_Rule-Object'
+        pagination:
+          type: object
+          properties:
+            total:
+              type: integer
+              format: int32
+              description: The total number of recast rule records matching your search criteria.
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 500
+              default: 100
+              description: The limit enforced on the number of records when retrieved.
+            next:
+              type: string
+              description: An encrypted token used for fetching the next iteration of data records.
+    recast-rules_recastFilter:
+      description: Filter rules based on the targeted vulnerabilities. Use the `and` array to combine multiple conditions that all must be true. Use the `or` array to combine multiple conditions where at least one must be true.
+      oneOf:
+      - title: AND (OPTION 1)
+        type: object
+        description: Filter rules based on the targeted vulnerabilities. Use the `and` array to combine multiple conditions that all must be true.
+        properties:
+          and:
+            type: array
+            items:
+              $ref: '#/components/schemas/recast-rules_filterProperty'
+      - title: OR (OPTION 2)
+        type: object
+        description: Filter rules based on the targeted vulnerabilities. Use the `or` array to combine multiple conditions where at least one must be true.
+        properties:
+          or:
+            type: array
+            items:
+              $ref: '#/components/schemas/recast-rules_filterProperty'
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey

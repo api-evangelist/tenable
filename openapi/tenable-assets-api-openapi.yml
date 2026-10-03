@@ -853,113 +853,18 @@ paths:
       - assets_cloud: []
 components:
   schemas:
-    assets_query:
-      oneOf:
-      - title: Single Query Filter
-        type: object
-        description: The query filter for selecting the assets to delete. A filter must include an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint.
-        properties:
-          field:
-            type: string
-            description: The name of the asset attribute to match. Asset attributes can include tags, for example, `tag.city`.
-          operator:
-            type: string
-            description: The operator to apply to the matched value, for example, `eq` (equals), `neq` (does not equal), or `match` (contains).
-          value:
-            type: string
-            description: "The asset attribute value to match.\n\n **Note:** The value is case sensitive when used with the `match` (contains) or `nmatch` (does not contain) operators."
-      - title: Multiple Query Filters
-        type: object
-        description: 'The query filters for selecting the assets to delete. Must include one or more filters. A filter must include an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint. Sets of multiple filters must be specified inside `and` or `or` arrays.
-
-
-          **Note:** You can also nest conditions, for example, specify a set of `or` sub-conditions for a condition inside the `and` array. Tenable Vulnerability Management supports up to 1,000 conditions (filters) within the query object.'
-        properties:
-          and:
-            type: array
-            description: To select assets that match all of multiple conditions, specify the conditions inside the `and` array.
-            items:
-              $ref: '#/components/schemas/assets_subquery'
-          or:
-            type: array
-            description: To select assets that match any of multiple conditions, specify the conditions inside the `or` array.
-            items:
-              $ref: '#/components/schemas/assets_subquery'
-    assets_tags:
+    assets_ErrorResponse:
       type: object
       properties:
-        tag_uuid:
-          type: string
-          description: The unique identifier of the tag.
-        tag_key:
-          type: string
-          description: The tag key, representing the category portion of a category:value tag pair.
-        tag_value:
-          type: string
-          description: The tag value, representing the value portion of a category:value tag pair.
-        added_by:
-          type: string
-          description: The unique identifier of the user who assigned the tag to the asset.
-        added_at:
-          type: string
-          description: A timestamp in ISO 8601 format indicating the date and time the tag was assigned to the asset.
-    assets_AcrDriversObject:
-      type: object
-      description: Asset characteristic that factored into the Asset Criticality Rating (ACR) calculation. For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
-      properties:
-        driver_name:
-          type: string
-          description: The ACR key driver. ACR key drivers reflect the global threat landscape associated with the asset's characteristics.
-          enum:
-          - device_type
-          - device_capability
-          - internet_exposure
-        driver_value:
-          type: array
-          description: 'The ACR key driver''s value. For example, for the `device_type` key driver, values can include `hypervisor`, `printer`, etc. '
-          items:
-            type: string
-    assets_Response-Asset-Import-Job:
-      type: object
-      properties:
-        job_id:
-          type: string
-          description: The unique identifier of the asset import job.
-        container_id:
-          type: string
-          description: The UUID of your Tenable Vulnerability Management container.
-        source:
-          type: string
-          description: A user-defined name for the source of the import containing the asset records. You can specify only one source for each import.
-        batches:
+        statusCode:
           type: integer
-          description: The number of batches in the asset import job.
-          format: int32
-        uploaded_assets:
+          description: The HTTP status code of the error.
+        error:
           type: integer
-          description: The number of assets from the import job that Tenable Vulnerability Management successfully imported.
-          format: int32
-        failed_assets:
-          type: integer
-          description: The number of assets from the import job that Tenable Vulnerability Management failed to import.
-        start_time:
-          type: integer
-          description: The Unix timestamp when Tenable Vulnerability Management started processing the import job.
-          format: int64
-        last_update_time:
-          type: integer
-          description: The Unix timestamp when Tenable Vulnerability Management performed an action on the import job.
-          format: int64
-        end_time:
-          type: integer
-          description: The Unix timestamp when Tenable Vulnerability Management completed processing the import job.
-          format: int64
-        status:
+          description: The standard HTTP error name.
+        message:
           type: string
-          description: 'The status of the import job. Possible values include: COMPLETE, IN_PROGRESS, or ERROR.'
-        status_message:
-          type: string
-          description: The description of why a job failed.
+          description: A brief message about the cause of the error.
     assets_AssetIdentifierObject:
       type: object
       description: Each object can contain a single instance of the properties described below. You can combine multiple instances of this object, each containing a different single property.
@@ -1126,6 +1031,36 @@ components:
           items:
             type: string
           description: The unique identifiers of the asset in HCL BigFix. For more information, see the HCL BigFix documentation.
+    assets_assetsBulkUpdateAcrObject:
+      type: object
+      required:
+      - acr_score
+      - asset
+      description: Parameters to update the ACR for an asset. For a request body example, see "Update ACR for assets" in [Bulk Asset Operations](doc:bulk-asset-operations).
+      properties:
+        acr_score:
+          type: integer
+          description: The ACR score you want to assign to the asset. The ACR must be an integer from 1 to 10.
+        reason:
+          type: array
+          description: "The reasons you are updating the ACR for the assets. Supported values include:\n\n - Business Critical\n - In Scope For Compliance\n - Existing Mitigation Control\n - Dev only \n - Key drivers does not match \n - Other\n\nThis parameter corresponds to the **Overwrite Reasoning** parameter when editing an ACR in the Tenable Vulnerability Management Lumin user interface. For more information, see [Edit an ACR](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminEditACR.htm)."
+          items:
+            type: string
+            enum:
+            - Business Critical
+            - In Scope For Compliance
+            - Existing Mitigation Control
+            - Dev only
+            - Key drivers does not match
+            - Other
+        note:
+          type: string
+          description: 'Any notes you want to add to clarify the circumstances behind the update. This parameter corresponds to the **Note** parameter when editing an ACR in the Tenable Vulnerability Management Lumin user interface. For more information, see [Edit an ACR](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminEditACR.htm).  '
+        asset:
+          type: array
+          description: The identifiers of the assets to update to the specified ACR. At least one asset object is required in this array.
+          items:
+            $ref: '#/components/schemas/assets_AssetIdentifierObject'
     assets_AcrScanFrequencyObject:
       type: object
       description: The interval, frequency, and licensing information for the scans of the asset.
@@ -1139,6 +1074,257 @@ components:
         licensed:
           type: boolean
           description: Indicates whether the asset was licensed at the time of the scans.
+    assets_data:
+      type: object
+      description: Bulk operations results. Contains the number of assets affected by the operation (moved or deleted).
+      properties:
+        asset_count:
+          type: integer
+          description: The number of assets affected by the operation.
+    assets_Response-Asset-Import-Job:
+      type: object
+      properties:
+        job_id:
+          type: string
+          description: The unique identifier of the asset import job.
+        container_id:
+          type: string
+          description: The UUID of your Tenable Vulnerability Management container.
+        source:
+          type: string
+          description: A user-defined name for the source of the import containing the asset records. You can specify only one source for each import.
+        batches:
+          type: integer
+          description: The number of batches in the asset import job.
+          format: int32
+        uploaded_assets:
+          type: integer
+          description: The number of assets from the import job that Tenable Vulnerability Management successfully imported.
+          format: int32
+        failed_assets:
+          type: integer
+          description: The number of assets from the import job that Tenable Vulnerability Management failed to import.
+        start_time:
+          type: integer
+          description: The Unix timestamp when Tenable Vulnerability Management started processing the import job.
+          format: int64
+        last_update_time:
+          type: integer
+          description: The Unix timestamp when Tenable Vulnerability Management performed an action on the import job.
+          format: int64
+        end_time:
+          type: integer
+          description: The Unix timestamp when Tenable Vulnerability Management completed processing the import job.
+          format: int64
+        status:
+          type: string
+          description: 'The status of the import job. Possible values include: COMPLETE, IN_PROGRESS, or ERROR.'
+        status_message:
+          type: string
+          description: The description of why a job failed.
+    assets_AcrDriversObject:
+      type: object
+      description: Asset characteristic that factored into the Asset Criticality Rating (ACR) calculation. For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+      properties:
+        driver_name:
+          type: string
+          description: The ACR key driver. ACR key drivers reflect the global threat landscape associated with the asset's characteristics.
+          enum:
+          - device_type
+          - device_capability
+          - internet_exposure
+        driver_value:
+          type: array
+          description: 'The ACR key driver''s value. For example, for the `device_type` key driver, values can include `hypervisor`, `printer`, etc. '
+          items:
+            type: string
+    assets_subquery:
+      type: object
+      description: The query for selecting the assets to delete. Includes an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint.
+      properties:
+        field:
+          type: string
+          description: The name of the asset attribute to match. Asset attributes can include tags, for example, `tag.city`.
+        operator:
+          type: string
+          description: The operator to apply to the matched value, for example, `eq` (equals), `neq` (does not equal), or `match` (contains).
+        value:
+          type: string
+          description: "The asset attribute value to match.\n\n **Note:** The value is case sensitive when used with the `match` (contains) or `nmatch` (does not contain) operators."
+    assets_tags:
+      type: object
+      properties:
+        tag_uuid:
+          type: string
+          description: The unique identifier of the tag.
+        tag_key:
+          type: string
+          description: The tag key, representing the category portion of a category:value tag pair.
+        tag_value:
+          type: string
+          description: The tag value, representing the value portion of a category:value tag pair.
+        added_by:
+          type: string
+          description: The unique identifier of the user who assigned the tag to the asset.
+        added_at:
+          type: string
+          description: A timestamp in ISO 8601 format indicating the date and time the tag was assigned to the asset.
+    assets_assetsBulkMoveRequest:
+      type: object
+      required:
+      - source
+      - destination
+      - targets
+      description: The parameters for moving assets from one network to another.
+      properties:
+        source:
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+          description: The unique identifier of the network currently associated with the assets. Use the [GET /networks](ref:networks-list) endpoint with the name attribute as filter to find the UUID of the network.
+        destination:
+          type: string
+          description: The unique identifier of the network to associate with the specified assets. Use the [GET /networks](ref:networks-list) endpoint with the name filter to find the UUID of the network.
+          example: 4dee97b4-592b-4b5b-a8a9-d7a605a3723a
+        targets:
+          type: string
+          description: The IPv4 addresses of the assets to move. The addresses can be represented as a comma-separated list, a range, or CIDR, for example `1.1.1.1, 2.2.2.2-2.2.2.200, 3.3.3.0/24`.
+          example: 192.0.2.57-192.0.2.69
+    assets_query:
+      oneOf:
+      - title: Single Query Filter
+        type: object
+        description: The query filter for selecting the assets to delete. A filter must include an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint.
+        properties:
+          field:
+            type: string
+            description: The name of the asset attribute to match. Asset attributes can include tags, for example, `tag.city`.
+          operator:
+            type: string
+            description: The operator to apply to the matched value, for example, `eq` (equals), `neq` (does not equal), or `match` (contains).
+          value:
+            type: string
+            description: "The asset attribute value to match.\n\n **Note:** The value is case sensitive when used with the `match` (contains) or `nmatch` (does not contain) operators."
+      - title: Multiple Query Filters
+        type: object
+        description: 'The query filters for selecting the assets to delete. Must include one or more filters. A filter must include an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint. Sets of multiple filters must be specified inside `and` or `or` arrays.
+
+
+          **Note:** You can also nest conditions, for example, specify a set of `or` sub-conditions for a condition inside the `and` array. Tenable Vulnerability Management supports up to 1,000 conditions (filters) within the query object.'
+        properties:
+          and:
+            type: array
+            description: To select assets that match all of multiple conditions, specify the conditions inside the `and` array.
+            items:
+              $ref: '#/components/schemas/assets_subquery'
+          or:
+            type: array
+            description: To select assets that match any of multiple conditions, specify the conditions inside the `or` array.
+            items:
+              $ref: '#/components/schemas/assets_subquery'
+    assets_Response-List-Assets:
+      description: An object containing information about an asset
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier of the asset. Use this value as the unique key for the asset.
+        has_agent:
+          type: boolean
+          description: Indicates if a Tenable Agent scan detected the asset.
+        last_seen:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time of the scan that most recently detected the asset.
+        last_scan_target:
+          type: string
+          description: The IPv4 address, IPv6 address, or fully qualified domain name (FQDN) last used by the scanner to evaluate the asset.
+        sources:
+          type: array
+          description: A list of sources that identified the asset.
+          items:
+            $ref: '#/components/schemas/assets_sources'
+        acr_score:
+          type: integer
+          description: 'The Asset Criticality Rating (ACR) assigned to the asset. Tenable assigns an ACR to each asset on your network to represent the asset''s relative risk as an integer from 1 to 10. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+        acr_drivers:
+          type: array
+          description: "The key drivers Tenable used to calculate the asset's Tenable-provided Asset Criticality Rating (ACR). For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*. \n\nNote: This attribute is available only with a Tenable Lumin license."
+          items:
+            $ref: '#/components/schemas/assets_AcrDriversObject'
+        exposure_score:
+          type: integer
+          description: 'The Asset Exposure Score (AES) assigned to the asset. Tenable assigns an AES to each asset on your network to represent the asset''s relative exposure as an integer between 0 and 1000. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+        scan_frequency:
+          type: array
+          description: 'Information about how often scans were run against the asset during specified time intervals. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
+
+
+            Note: This attribute is available only with a Tenable Lumin license.'
+          items:
+            $ref: '#/components/schemas/assets_AcrScanFrequencyObject'
+        ipv4:
+          description: A list of IPv4 addresses associated with the asset.
+          type: array
+          items:
+            type: string
+        ipv6:
+          description: A list of IPv6 addresses associated with the asset.
+          type: array
+          items:
+            type: string
+        fqdn:
+          description: A list of fully qualified domain names (FQDNs) associated with the asset.
+          type: array
+          items:
+            type: string
+        mac_address:
+          type: array
+          description: A list of MAC addresses associated with the asset.
+          items:
+            type: string
+        netbios_name:
+          type: array
+          description: A list of NetBIOS names associated with the asset.
+          items:
+            type: string
+        operating_system:
+          type: array
+          description: A list of operating systems associated with the asset.
+          items:
+            type: string
+        hostname:
+          type: array
+          description: A list of host names associated with the asset.
+          items:
+            type: string
+        agent_name:
+          type: array
+          description: A list of Tenable agents that scanned and identified the asset.
+          items:
+            type: string
+        aws_ec2_name:
+          type: array
+          description: A list of virtual machine instance names in AWS EC2 associated with the asset.
+          items:
+            type: string
+        security_protection_level:
+          type: integer
+          description: The security protection level associated with the asset.
+        security_protections:
+          type: array
+          description: A list of security protection mitigations that contributed to the security protection level.
+          items:
+            type: string
+        exposure_confidence_value:
+          type: integer
+          description: The exposure confidence value associated with the asset.
     assets_Response-Asset-Details:
       type: object
       properties:
@@ -1457,149 +1643,6 @@ components:
         exposure_confidence_value:
           type: integer
           description: The exposure confidence value associated with the asset.
-    assets_Response-List-Assets:
-      description: An object containing information about an asset
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The unique identifier of the asset. Use this value as the unique key for the asset.
-        has_agent:
-          type: boolean
-          description: Indicates if a Tenable Agent scan detected the asset.
-        last_seen:
-          type: string
-          format: date-time
-          description: A timestamp in ISO 8601 format indicating the date and time of the scan that most recently detected the asset.
-        last_scan_target:
-          type: string
-          description: The IPv4 address, IPv6 address, or fully qualified domain name (FQDN) last used by the scanner to evaluate the asset.
-        sources:
-          type: array
-          description: A list of sources that identified the asset.
-          items:
-            $ref: '#/components/schemas/assets_sources'
-        acr_score:
-          type: integer
-          description: 'The Asset Criticality Rating (ACR) assigned to the asset. Tenable assigns an ACR to each asset on your network to represent the asset''s relative risk as an integer from 1 to 10. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
-
-
-            Note: This attribute is available only with a Tenable Lumin license.'
-        acr_drivers:
-          type: array
-          description: "The key drivers Tenable used to calculate the asset's Tenable-provided Asset Criticality Rating (ACR). For more details see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*. \n\nNote: This attribute is available only with a Tenable Lumin license."
-          items:
-            $ref: '#/components/schemas/assets_AcrDriversObject'
-        exposure_score:
-          type: integer
-          description: 'The Asset Exposure Score (AES) assigned to the asset. Tenable assigns an AES to each asset on your network to represent the asset''s relative exposure as an integer between 0 and 1000. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
-
-
-            Note: This attribute is available only with a Tenable Lumin license.'
-        scan_frequency:
-          type: array
-          description: 'Information about how often scans were run against the asset during specified time intervals. For more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the *Tenable Vulnerability Management User Guide*.
-
-
-            Note: This attribute is available only with a Tenable Lumin license.'
-          items:
-            $ref: '#/components/schemas/assets_AcrScanFrequencyObject'
-        ipv4:
-          description: A list of IPv4 addresses associated with the asset.
-          type: array
-          items:
-            type: string
-        ipv6:
-          description: A list of IPv6 addresses associated with the asset.
-          type: array
-          items:
-            type: string
-        fqdn:
-          description: A list of fully qualified domain names (FQDNs) associated with the asset.
-          type: array
-          items:
-            type: string
-        mac_address:
-          type: array
-          description: A list of MAC addresses associated with the asset.
-          items:
-            type: string
-        netbios_name:
-          type: array
-          description: A list of NetBIOS names associated with the asset.
-          items:
-            type: string
-        operating_system:
-          type: array
-          description: A list of operating systems associated with the asset.
-          items:
-            type: string
-        hostname:
-          type: array
-          description: A list of host names associated with the asset.
-          items:
-            type: string
-        agent_name:
-          type: array
-          description: A list of Tenable agents that scanned and identified the asset.
-          items:
-            type: string
-        aws_ec2_name:
-          type: array
-          description: A list of virtual machine instance names in AWS EC2 associated with the asset.
-          items:
-            type: string
-        security_protection_level:
-          type: integer
-          description: The security protection level associated with the asset.
-        security_protections:
-          type: array
-          description: A list of security protection mitigations that contributed to the security protection level.
-          items:
-            type: string
-        exposure_confidence_value:
-          type: integer
-          description: The exposure confidence value associated with the asset.
-    assets_assetsBulkMoveRequest:
-      type: object
-      required:
-      - source
-      - destination
-      - targets
-      description: The parameters for moving assets from one network to another.
-      properties:
-        source:
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-          description: The unique identifier of the network currently associated with the assets. Use the [GET /networks](ref:networks-list) endpoint with the name attribute as filter to find the UUID of the network.
-        destination:
-          type: string
-          description: The unique identifier of the network to associate with the specified assets. Use the [GET /networks](ref:networks-list) endpoint with the name filter to find the UUID of the network.
-          example: 4dee97b4-592b-4b5b-a8a9-d7a605a3723a
-        targets:
-          type: string
-          description: The IPv4 addresses of the assets to move. The addresses can be represented as a comma-separated list, a range, or CIDR, for example `1.1.1.1, 2.2.2.2-2.2.2.200, 3.3.3.0/24`.
-          example: 192.0.2.57-192.0.2.69
-    assets_data:
-      type: object
-      description: Bulk operations results. Contains the number of assets affected by the operation (moved or deleted).
-      properties:
-        asset_count:
-          type: integer
-          description: The number of assets affected by the operation.
-    assets_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     assets_sources:
       description: An object containing source information.
       type: object
@@ -1689,49 +1732,6 @@ components:
           type: string
           format: date-time
           description: A timestamp in ISO 8601 format indicating the date and time the source last reported the asset.
-    assets_subquery:
-      type: object
-      description: The query for selecting the assets to delete. Includes an asset attribute, an operator, and a value. To get the list of supported filters, use the [List asset filters](ref:io-filters-assets-list) endpoint.
-      properties:
-        field:
-          type: string
-          description: The name of the asset attribute to match. Asset attributes can include tags, for example, `tag.city`.
-        operator:
-          type: string
-          description: The operator to apply to the matched value, for example, `eq` (equals), `neq` (does not equal), or `match` (contains).
-        value:
-          type: string
-          description: "The asset attribute value to match.\n\n **Note:** The value is case sensitive when used with the `match` (contains) or `nmatch` (does not contain) operators."
-    assets_assetsBulkUpdateAcrObject:
-      type: object
-      required:
-      - acr_score
-      - asset
-      description: Parameters to update the ACR for an asset. For a request body example, see "Update ACR for assets" in [Bulk Asset Operations](doc:bulk-asset-operations).
-      properties:
-        acr_score:
-          type: integer
-          description: The ACR score you want to assign to the asset. The ACR must be an integer from 1 to 10.
-        reason:
-          type: array
-          description: "The reasons you are updating the ACR for the assets. Supported values include:\n\n - Business Critical\n - In Scope For Compliance\n - Existing Mitigation Control\n - Dev only \n - Key drivers does not match \n - Other\n\nThis parameter corresponds to the **Overwrite Reasoning** parameter when editing an ACR in the Tenable Vulnerability Management Lumin user interface. For more information, see [Edit an ACR](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminEditACR.htm)."
-          items:
-            type: string
-            enum:
-            - Business Critical
-            - In Scope For Compliance
-            - Existing Mitigation Control
-            - Dev only
-            - Key drivers does not match
-            - Other
-        note:
-          type: string
-          description: 'Any notes you want to add to clarify the circumstances behind the update. This parameter corresponds to the **Note** parameter when editing an ACR in the Tenable Vulnerability Management Lumin user interface. For more information, see [Edit an ACR](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminEditACR.htm).  '
-        asset:
-          type: array
-          description: The identifiers of the assets to update to the specified ACR. At least one asset object is required in this array.
-          items:
-            $ref: '#/components/schemas/assets_AssetIdentifierObject'
   securitySchemes:
     assets_cloud:
       type: apiKey

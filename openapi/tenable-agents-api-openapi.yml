@@ -1008,27 +1008,6 @@ paths:
       - agents_cloud: []
 components:
   schemas:
-    agents_PaginationResponse:
-      description: An object containing pagination information for the current result set.
-      type: object
-      properties:
-        total:
-          type: integer
-          format: int32
-          description: The total number of records matching your search criteria.
-        limit:
-          type: integer
-          format: int32
-          description: The number of records requested (or the default value if omitted from the request).
-        offset:
-          type: integer
-          format: int32
-          description: The starting record you requested (or zero if omitted).
-        sort:
-          description: An array of objects specifying how the current result set is sorted.
-          type: array
-          items:
-            $ref: '#/components/schemas/agents_Response-PaginationSortObject'
     agents_object-health_events:
       description: An array of the agent's previous health statuses.
       type: array
@@ -1063,6 +1042,105 @@ components:
           previous_state_name:
             type: string
             description: The agent's previous health event status (`HEALTHY`, `WARNING`, `CRITICAL`, `UNKNOWN`, or `SAFE MODE`).
+    agents_PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/agents_Response-PaginationSortObject'
+    agents_object-remote_settings:
+      description: An array of the agent's remote settings.
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            description: 'The human-readable name of the Nessus Agent remote setting. The following are possible remote settings: <ul><li>Nessus Agent Log Level</li><li>Plugin Compilation Performance</li><li>Scan Performance</li><li>Nessus Agent Update Plan</li><li>Automatic Hostname Update</li><li>Offline Agent Scan Trigger Execution Threshold</li><li>Maximum Scans Per Day</li><li>Minimum Health Update Interval</li></ul>'
+          setting:
+            type: string
+            description: 'The Nessus Agent setting as represented by the API. The following are possible settings: <ul><li>backend_log_level</li><li>plugin_load_performance_mode</li><li>scan_performance_mode</li><li>agent_update_channel</li><li>update_hostname</li><li>offline_agent_scan_trigger_execution_threshold_days</li><li>maximum_scans_per_day</li><li>min_agent_health_update_interval</li></ul>'
+          type:
+            type: string
+            description: 'Indicates the type of setting. For example, `select`, `boolean`, or `integer`. '
+          description:
+            type: string
+            description: A short explanation of the Nessus Agent setting.
+          min:
+            type: integer
+            description: The minimum value for settings that support a range of integer values.
+          max:
+            type: integer
+            description: The maximum value for settings that support a range of integer values.
+          backend_reload:
+            type: boolean
+            description: Indicates whether or not a backend reload is required.
+          value:
+            type: string
+            description: The value assigned to the setting.
+          allowable_values:
+            type: array
+            description: A list of all possible values that can be used for the setting.
+            items:
+              type: object
+              properties:
+                value:
+                  type: string
+                  description: One of the possible setting values.
+                label:
+                  type: string
+                  description: If applicable, additional information about the setting value.
+          default:
+            type: string
+            description: The default value of the setting.
+    agents_safe-mode-summary:
+      type: object
+      properties:
+        container_uuid:
+          type: string
+          description: The unique ID of the container associated with the user's API keys.
+        user_uuid:
+          type: string
+          description: The unique ID of the user that requested the agent summary.
+        site:
+          type: string
+          description: The cloud region in which the container is located.
+        agent_safe_mode_count:
+          type: object
+          description: The number of agents in safe mode by version and operating system platform.
+          properties:
+            total:
+              type: integer
+              description: The total number of agents in safe mode.
+            by_version:
+              type: object
+              description: The number of agents in safe mode, organized by agent version number.
+              additionalProperties:
+                type: integer
+            by_platform:
+              type: object
+              description: The number of agents in safe mode, organized by operating system platform.
+              additionalProperties:
+                type: integer
+        time_stamp:
+          type: integer
+          format: int64
+          description: A Unix timestamp indicating the date and time when the summary was requested.
     agents_Response-PaginationSortObject:
       description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
       type: object
@@ -1184,51 +1262,6 @@ components:
         nessus_scanning_health:
           type: integer
           description: Indicates the general health of the agent's vulnerability scanning health events.`0` indicates a `HEALTHY` status, `10` indicates a `WARNING` status, `20` indicates a `CRITICAL` status, and `-1` indicates that vulnerability management scanning is not enabled on the agent. For more information, see the agent [Health](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/ViewSensors.htm) status description in the Tenable Vulnerability Management User Guide.
-    agents_safe-mode-summary:
-      type: object
-      properties:
-        container_uuid:
-          type: string
-          description: The unique ID of the container associated with the user's API keys.
-        user_uuid:
-          type: string
-          description: The unique ID of the user that requested the agent summary.
-        site:
-          type: string
-          description: The cloud region in which the container is located.
-        agent_safe_mode_count:
-          type: object
-          description: The number of agents in safe mode by version and operating system platform.
-          properties:
-            total:
-              type: integer
-              description: The total number of agents in safe mode.
-            by_version:
-              type: object
-              description: The number of agents in safe mode, organized by agent version number.
-              additionalProperties:
-                type: integer
-            by_platform:
-              type: object
-              description: The number of agents in safe mode, organized by operating system platform.
-              additionalProperties:
-                type: integer
-        time_stamp:
-          type: integer
-          format: int64
-          description: A Unix timestamp indicating the date and time when the summary was requested.
-    agents_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     agents_response-list-agents:
       type: object
       properties:
@@ -1339,51 +1372,18 @@ components:
         fredi_status:
           type: boolean
           description: Indicates whether the agent is enabled with continuous assessment scanning via an agent profile.
-    agents_object-remote_settings:
-      description: An array of the agent's remote settings.
-      type: array
-      items:
-        type: object
-        properties:
-          name:
-            type: string
-            description: 'The human-readable name of the Nessus Agent remote setting. The following are possible remote settings: <ul><li>Nessus Agent Log Level</li><li>Plugin Compilation Performance</li><li>Scan Performance</li><li>Nessus Agent Update Plan</li><li>Automatic Hostname Update</li><li>Offline Agent Scan Trigger Execution Threshold</li><li>Maximum Scans Per Day</li><li>Minimum Health Update Interval</li></ul>'
-          setting:
-            type: string
-            description: 'The Nessus Agent setting as represented by the API. The following are possible settings: <ul><li>backend_log_level</li><li>plugin_load_performance_mode</li><li>scan_performance_mode</li><li>agent_update_channel</li><li>update_hostname</li><li>offline_agent_scan_trigger_execution_threshold_days</li><li>maximum_scans_per_day</li><li>min_agent_health_update_interval</li></ul>'
-          type:
-            type: string
-            description: 'Indicates the type of setting. For example, `select`, `boolean`, or `integer`. '
-          description:
-            type: string
-            description: A short explanation of the Nessus Agent setting.
-          min:
-            type: integer
-            description: The minimum value for settings that support a range of integer values.
-          max:
-            type: integer
-            description: The maximum value for settings that support a range of integer values.
-          backend_reload:
-            type: boolean
-            description: Indicates whether or not a backend reload is required.
-          value:
-            type: string
-            description: The value assigned to the setting.
-          allowable_values:
-            type: array
-            description: A list of all possible values that can be used for the setting.
-            items:
-              type: object
-              properties:
-                value:
-                  type: string
-                  description: One of the possible setting values.
-                label:
-                  type: string
-                  description: If applicable, additional information about the setting value.
-          default:
-            type: string
-            description: The default value of the setting.
+    agents_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey

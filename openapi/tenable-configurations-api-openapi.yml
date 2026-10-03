@@ -1456,6 +1456,222 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
+    Credentials:
+      type: object
+      description: The credentials the scanner uses to run an authenticated scan against the web application. For more information, see the managed credentials category in [Manage Credentials](doc:manage-credentials).
+      required:
+      - credential_ids
+      properties:
+        credential_ids:
+          type: array
+          description: A list of credentials UUIDs.
+          items:
+            type: string
+            format: uuid
+            description: The UUID of the credential.
+    ScanStatus:
+      type: string
+      description: "The scan status. Values include:\n - aborted—Terminated before completion for reason other than a user-requested stop.\n - canceled—Stopped by a user request.\n - completed—Completed successfully.\n - pending—Start requested but not yet running.\n - processing—The scan has completed but the results are still being processed. The scanner is processing vulnerability findings, attachments, notes, and other metadata.\n - ready—Scan is ready to be started.\n - running—Scan is in progress.\n - stopping—Stop requested but not yet stopped."
+      enum:
+      - aborted
+      - canceled
+      - completed
+      - pending
+      - processing
+      - ready
+      - running
+      - stopping
+      example: completed
+    HttpSettings:
+      type: object
+      description: The HTTP request settings for the scan.
+      properties:
+        response_max_size:
+          type: integer
+          minimum: 1
+          default: 500000
+          description: The maximum load size for an audited page.
+        request_redirect_limit:
+          type: integer
+          minimum: 1
+          default: 1
+          description: The number of redirects the scan follows before it stops trying to crawl the page.
+        user_agent:
+          description: The user-agent header the scanner includes in HTTP requests to the web application.
+          type: string
+          default: Nessus WAS/%v
+        custom_user_agent:
+          description: Indicates whether the scanner includes the `user-agent` header in HTTP requests to the web application (`true`).
+          type: boolean
+        request_headers:
+          description: 'The custom headers the scanner includes in HTTP requests to the web application.
+
+
+            **Note:** If you specify a user-agent header value in this parameter, it overrides the `user_agent` parameter value.'
+          type: object
+        request_concurrency:
+          description: The maximum number of concurrent HTTP connections to the web application.
+          type: integer
+          default: 10
+        request_timeout:
+          type: integer
+          description: HTTP request timeout (in milliseconds).
+          default: 5000
+    PauseWindowDaySchedule:
+      type: object
+      required:
+      - start
+      - end
+      properties:
+        start:
+          type: string
+          description: Indicates the time (per 24-hour clock) at which to pause the scan. Do not configure scan pause windows to start within 15 minutes of a scheduled start time for that same day. A 15 minute buffer is always needed.
+          example: 09:00
+        end:
+          type: string
+          description: Indicates the time (per 24-hour clock) at which to resume the scan.
+          example: '18:00'
+    ErrorResponse:
+      type: object
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
+      properties:
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
+    ConfigSettings:
+      type: object
+      description: The scan configuration settings.
+      properties:
+        description:
+          type: string
+          example: Security scan configuration for Facebook applications.
+          description: The description of the scan configuration.
+        timeout:
+          type: string
+          pattern: ^\d{2}:\d{2}:\d{2}$
+          example: 08:00:00
+          description: The maximum duration the scan runs before it stops automatically. The maximum duration you can set for your overall scan max time is 99:59:59 (hours:minutes:seconds).
+        debug_mode:
+          description: Indicates whether scan debug mode is enabled (`true`) or disabled (`false`). Scan debug mode provides additional information to users.
+          type: boolean
+          example: true
+        input_force:
+          description: Indicates whether to force input (`true`) or not (`false`).
+          type: boolean
+        credentials:
+          $ref: '#/components/schemas/Credentials'
+        scope:
+          $ref: '#/components/schemas/ScopeSettings'
+        plugin:
+          $ref: '#/components/schemas/PluginSettings'
+        browser:
+          $ref: '#/components/schemas/BrowserSettings'
+        http:
+          $ref: '#/components/schemas/HttpSettings'
+        chrome_script:
+          $ref: '#/components/schemas/ChromeScript'
+        assessment:
+          $ref: '#/components/schemas/AssessmentSettings'
+        audit:
+          $ref: '#/components/schemas/AuditSettings'
+    Permissions:
+      type: object
+      required:
+      - entity
+      - entity_id
+      - level
+      properties:
+        entity:
+          description: 'The type of permissions object: `user` (permissions for an individual user) or `group` (permissions for a user group).'
+          type: string
+          enum:
+          - user
+          - group
+        entity_id:
+          description: The UUID of the user or group granted the specified permissions.
+          type: string
+          format: uuid
+        level:
+          description: The scan permissions level, as described in [Permissions](doc:permissions).
+          $ref: '#/components/schemas/PermissionLevel'
+        permissions_id:
+          description: The UUID of the permissions object.
+          type: string
+          format: uuid
+          deprecated: true
+    InputErrorResponse:
+      type: object
+      required:
+      - code
+      - fields
+      description: Tenable Web App Scanning invalid input error response.
+      properties:
+        code:
+          type: string
+          description: The Tenable Web App Scanning error code. The code `INPUT_FORM_VIOLATION` is returned if your request body contains invalid input.
+        fields:
+          type: array
+          description: A list of fields that contain invalid input along with a message about the cause of the input error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning input error.
+            properties:
+              field:
+                type: string
+                description: The JSON path of the invalid field.
+              message_type:
+                type: string
+                description: "The type of input violation. Common input errors include:\n - `VALUE_MUST_BE_SPECIFIED`—Returned if a required body parameter is missing.\n - `VALUE_NOT_POSITIVE`—Returned if your input contains a negative integer when it should be positive.\n - `VALUE_IS_NEGATIVE`—Returned if your input contains a positive integer when it should be negative.\n - `VALUE_CANT_BE_CHANGED`—Returned if you attempted to change a value that cannot be changed.\n - `VALUE_MUST_BE_GREATER`—Returned if your input contains a value that is smaller than the minimum required lower bound.\n - `FIELD_CANT_BE_ADDED`—Returned if your input contains a field that can't be added.\n - `INVALID_TYPE`—Returned if your input contains an invalid type (ex. integer or string).\n - `INVALID_FORMAT`—Returned if your input contains an invalid format."
+                enum:
+                - VALUE_MUST_BE_SPECIFIED
+                - VALUE_NOT_POSITIVE
+                - VALUE_IS_NEGATIVE
+                - VALUE_CANT_BE_CHANGED
+                - VALUE_MUST_BE_GREATER
+                - FIELD_CANT_BE_ADDED
+                - INVALID_TYPE
+                - INVALID_FORMAT
+                - ERROR_MESSAGE
+              value:
+                description: Contains an error message describing the cause of the input validation error.
+                type: object
+    ResultsVisibility:
+      description: The visibility of the results (private or dashboard).
+      type: string
+      default: dashboard
+      enum:
+      - private
+      - dashboard
+    FolderResponse:
+      type: object
+      description: Folder data
+      required:
+      - name
+      - folder_id
+      properties:
+        folder_id:
+          type: string
+          format: uuid
+          description: The UUID of the folder.
+        name:
+          type: string
+          description: The name of the folder.
     ConfigMetadata:
       type: object
       required:
@@ -1529,56 +1745,326 @@ components:
             name:
               type: string
               description: The name of the user-defined template.
-    ScanMetadata:
+    ScheduleWindows:
       type: object
-      description: Summary statistics for the scan results.
+      description: Defines scan and pause windows for scheduled scans. Each window specifies when scans run or pause. Schedule windows require a scan schedule to be enabled.
+      required:
+      - enabled
+      - time_zone
+      - windows
       properties:
-        queued_urls:
-          type: integer
-          example: 0
-          description: The number of web application URLs queued for the scan.
-        crawled_urls:
-          type: integer
-          example: 6
-          description: The number of web application URLs crawled by the scan.
-        queued_pages:
-          type: integer
-          example: 0
-          description: The number of web application pages queued for the scan.
-        audited_pages:
-          type: integer
-          example: 29
-          description: The number of pages audited by the scan.
-        request_count:
-          type: integer
-          example: 32339
-          description: The number of requests the scan made to the target web application.
-        response_time:
-          type: integer
-          example: 0
-          description: The average response time (in milliseconds) from the web application.
-        finalized_children:
-          type: integer
-          example: 0
-          description: The total number of finalized children if the scan has multiple targets.
-        total_children:
-          type: integer
-          example: 0
-          description: The total number of children if the scan has multiple targets.
-    PauseWindowDaySchedule:
+        enabled:
+          type: boolean
+          description: Indicates whether schedule windows are enabled.
+        time_zone:
+          type: string
+          description: The time zone used to interpret the schedule windows.
+        windows:
+          type: array
+          description: A list of scan or pause windows.
+          items:
+            $ref: '#/components/schemas/ScheduleWindowItem'
+      example:
+        enabled: true
+        time_zone: America/Chicago
+        windows:
+        - type: scan
+          start:
+            day_of_week: monday
+            time: '10:00'
+          end:
+            day_of_week: tuesday
+            time: '11:00'
+        - type: scan
+          start:
+            day_of_week: tuesday
+            time: '13:00'
+          end:
+            day_of_week: tuesday
+            time: '15:00'
+    ScheduleWindowTime:
       type: object
       required:
+      - day_of_week
+      - time
+      properties:
+        day_of_week:
+          description: The day of the week when the window starts or ends.
+          type: string
+          enum:
+          - monday
+          - tuesday
+          - wednesday
+          - thursday
+          - friday
+          - saturday
+          - sunday
+        time:
+          description: he time in HH:mm (24-hour) format.
+          type: string
+          pattern: ^([01]\d|2[0-3]):[0-5]\d$
+    PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    Notifications:
+      type: object
+      description: Contact information used to send scan notifications upon scan completion.
+      default:
+        emails: []
+      required:
+      - emails
+      properties:
+        emails:
+          type: array
+          description: A list of email addresses.
+          items:
+            type: string
+            format: email
+            description: Email address
+    ScheduleWindowItem:
+      type: object
+      required:
+      - type
       - start
       - end
       properties:
+        type:
+          description: Specifies whether the window allows scanning or pauses scanning.
+          type: string
+          enum:
+          - scan
+          - pause
         start:
-          type: string
-          description: Indicates the time (per 24-hour clock) at which to pause the scan. Do not configure scan pause windows to start within 15 minutes of a scheduled start time for that same day. A 15 minute buffer is always needed.
-          example: 09:00
+          $ref: '#/components/schemas/ScheduleWindowTime'
         end:
+          $ref: '#/components/schemas/ScheduleWindowTime'
+    Scan:
+      type: object
+      required:
+      - scan_id
+      - asset_id
+      - user_id
+      - config_id
+      - created_at
+      - updated_at
+      - requested_action
+      - status
+      - target
+      - notes
+      properties:
+        scan_id:
           type: string
-          description: Indicates the time (per 24-hour clock) at which to resume the scan.
-          example: '18:00'
+          description: The UUID of the scan that detected the vulnerability in the web application.
+          format: uuid
+          example: b74adc0d-52d5-44c5-99cc-0f18d19672c7
+        parent_id:
+          type: string
+          description: The ID of the parent scan in the case of a multi targeted scan.
+          format: uuid
+          example: 497bc024-73d9-4e83-8665-d294b1457bcd
+        asset_id:
+          description: The UUID of the asset being scanned.
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+        user_id:
+          description: The UUID of the user that created the scan.
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+        config_id:
+          type: string
+          description: The UUID of the scan configuration.
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+        target:
+          type: string
+          description: The URI of the web application.
+        created_at:
+          description: An ISO timestamp indicating the date and time when the scan configuration was created, for example, `2018-12-31T13:51:17.243Z`.
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+        updated_at:
+          type: string
+          description: An ISO timestamp indicating the date and time when the scan processing status changed, for example, `2018-12-31T13:51:17.243Z`.
+          format: date-time
+          example: '2017-07-21T17:32:29Z'
+        requested_action:
+          $ref: '#/components/schemas/RequestedAction'
+        status:
+          $ref: '#/components/schemas/ScanStatus'
+        metadata:
+          $ref: '#/components/schemas/ScanMetadata'
+    ScanSchedule:
+      type: object
+      required:
+      - rrule
+      - starttime
+      - timezone
+      properties:
+        rrule:
+          type: string
+          description: A valid `rrule` string per RFC 5545.
+          example: FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1
+        starttime:
+          type: string
+          description: A valid `dtstart` string per RFC 5545, minus TZID (see timezone below) if different than UTC, in which case use Z at the end. For example, `19970105T083000 or 19970105T083000Z (utc)`.
+          example: 19970105T083000 or 19970105T083000Z (utc)
+        timezone:
+          type: string
+          description: A valid `TZID` per RFC 5545. For example, `America/New_York`.
+          example: America/New_York
+        enabled:
+          type: boolean
+          description: Indicates whether a schedule is enabled (`true`) or disabled (`false`).
+        launch:
+          type: string
+          description: Specifies how often the scan schedule repeats.
+          example: DAILY
+          enum:
+          - DAILY
+          - WEEKLY
+          - MONTHLY
+          - ONETIME
+    Request-Config:
+      type: object
+      required:
+      - name
+      - targets
+      - owner_id
+      - template_id
+      - settings
+      properties:
+        name:
+          description: A unique, user-defined name for the scan configuration.
+          type: string
+          example: Quarterly Security Audit
+        description:
+          description: An optional summary or notes about the scan configuration's purpose.
+          type: string
+          example: Internal business applications vulnerability assessment.
+        targets:
+          type: array
+          description: A list of absolute URLs to be included in the scan. Specifying multiple URLs enables you to assess several web applications within a single scan job.
+          items:
+            type: string
+            format: uri
+            example: https://example.com
+        tag_targets:
+          type: array
+          description: A list of unique tag identifiers (UUIDs) to include in the scan. This enables you to dynamically target assets based on their assigned tags rather than manual URL entry.
+          items:
+            type: string
+            format: uuid
+            example: 2f06e776-ecc3-4fbe-a005-6e84b4ed61a3
+        applications:
+          type: array
+          description: A list of unique web application identifiers (UUIDs) to include in the scan. Selecting specific applications enables you to run targeted assessments on pre-defined assets within your inventory.
+          items:
+            type: string
+            format: uuid
+            example: 3b06e776-ecc3-3fbe-a005-6e84b4ed62a1
+        target:
+          type: string
+          description: "The URL of the web application that you want to scan. \n\n**Deprecated:** This parameter is deprecated and will be retired on 2022/04/06. Tenable recommends that you use the `targets` parameter instead. Please update any existing integrations that your organization has."
+          format: uri
+          deprecated: true
+        folder_id:
+          description: The UUID of the folder to assign for the scan configuration.
+          type: string
+          format: uuid
+        owner_id:
+          description: The UUID of the owner of the scan configuration.
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+        template_id:
+          type: string
+          format: uuid
+          description: The UUID of the Tenable-provided configuration template.
+        user_template_id:
+          type: string
+          format: uuid
+          description: The UUID of the user-defined configuration template from which this configuration was derived.
+        scanner_id:
+          type: integer
+          description: "The unique identifier for the scanner or scanner group designated to perform the scan. Specifying a scanner enables you to control the network origin of the scan. If omitted, the system defaults to the default cloud scanner. \n\n**Caution:** To scan internal web applications, you must specify the ID of a local scanner or scanner group to ensure the target is reachable."
+        schedule:
+          description: The scan schedule settings. By default, scans are not scheduled.
+          $ref: '#/components/schemas/ScanSchedule'
+        pause_window:
+          description: 'Defines time frames during which the scheduled scan should not run. Pause windows can be used only when a scan schedule is configured.
+
+
+            **Deprecated:** The `pause_window` object is deprecated. To create a pause window, use a schedule window with the `type` parameter set to `pause`. For more information, see the `schedule_windows` object. Please update any existing integrations that your organization has.'
+          $ref: '#/components/schemas/PauseWindow'
+        schedule_windows:
+          description: Defines scan and pause windows for scheduled scans. Each window specifies when scans run or pause. Requires a scan schedule to be enabled.
+          $ref: '#/components/schemas/ScheduleWindows'
+        notifications:
+          description: Contact information used to send scan notifications upon scan completion.
+          $ref: '#/components/schemas/Notifications'
+        permissions:
+          description: The permissions for the scan configuration.
+          type: array
+          items:
+            $ref: '#/components/schemas/Permissions'
+        settings:
+          $ref: '#/components/schemas/ConfigSettings'
+    PermissionLevel:
+      description: The scan permissions level, as described in [Permissions](doc:permissions).
+      type: string
+      enum:
+      - no_access
+      - view
+      - control
+      - configure
+    RequestedAction:
+      type: string
+      enum:
+      - start
+      - stop
+      example: start
+    PauseWindowSchedule:
+      type: object
+      properties:
+        sunday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Sundays.
+        monday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Mondays.
+        tuesday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Tuesdays.
+        wednesday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Wednesdays.
+        thursday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Thursdays.
+        friday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Fridays.
+        saturday:
+          $ref: '#/components/schemas/PauseWindowDaySchedule'
+          description: The pause window schedule for Saturdays.
+    ConfigUpdate:
+      type: object
+      required:
+      - folder_name
+      properties:
+        folder_name:
+          description: The name of the folder to set for the scan configuration.
+          type: string
     ScopeSettings:
       type: object
       description: The URLs and file types that you want to include or exclude from your scan.
@@ -1690,659 +2176,6 @@ components:
         soap_file_url:
           type: string
           description: "A URL pointing to a WSDL v1.1 file that defines the API schema to scan. The URL must start with `http://` or `https://` and end with `.wsdl`, `.xml`, or `/wsdl/`. \n\nAlternatively, you can provide the WSDL file as a base64-encoded string via the `soap_file` parameter."
-    ConfigSettings:
-      type: object
-      description: The scan configuration settings.
-      properties:
-        description:
-          type: string
-          example: Security scan configuration for Facebook applications.
-          description: The description of the scan configuration.
-        timeout:
-          type: string
-          pattern: ^\d{2}:\d{2}:\d{2}$
-          example: 08:00:00
-          description: The maximum duration the scan runs before it stops automatically. The maximum duration you can set for your overall scan max time is 99:59:59 (hours:minutes:seconds).
-        debug_mode:
-          description: Indicates whether scan debug mode is enabled (`true`) or disabled (`false`). Scan debug mode provides additional information to users.
-          type: boolean
-          example: true
-        input_force:
-          description: Indicates whether to force input (`true`) or not (`false`).
-          type: boolean
-        credentials:
-          $ref: '#/components/schemas/Credentials'
-        scope:
-          $ref: '#/components/schemas/ScopeSettings'
-        plugin:
-          $ref: '#/components/schemas/PluginSettings'
-        browser:
-          $ref: '#/components/schemas/BrowserSettings'
-        http:
-          $ref: '#/components/schemas/HttpSettings'
-        chrome_script:
-          $ref: '#/components/schemas/ChromeScript'
-        assessment:
-          $ref: '#/components/schemas/AssessmentSettings'
-        audit:
-          $ref: '#/components/schemas/AuditSettings'
-    Scan:
-      type: object
-      required:
-      - scan_id
-      - asset_id
-      - user_id
-      - config_id
-      - created_at
-      - updated_at
-      - requested_action
-      - status
-      - target
-      - notes
-      properties:
-        scan_id:
-          type: string
-          description: The UUID of the scan that detected the vulnerability in the web application.
-          format: uuid
-          example: b74adc0d-52d5-44c5-99cc-0f18d19672c7
-        parent_id:
-          type: string
-          description: The ID of the parent scan in the case of a multi targeted scan.
-          format: uuid
-          example: 497bc024-73d9-4e83-8665-d294b1457bcd
-        asset_id:
-          description: The UUID of the asset being scanned.
-          type: string
-          format: uuid
-          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
-        user_id:
-          description: The UUID of the user that created the scan.
-          type: string
-          format: uuid
-          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
-        config_id:
-          type: string
-          description: The UUID of the scan configuration.
-          format: uuid
-          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
-        target:
-          type: string
-          description: The URI of the web application.
-        created_at:
-          description: An ISO timestamp indicating the date and time when the scan configuration was created, for example, `2018-12-31T13:51:17.243Z`.
-          type: string
-          format: date-time
-          example: '2017-07-21T17:32:28Z'
-        updated_at:
-          type: string
-          description: An ISO timestamp indicating the date and time when the scan processing status changed, for example, `2018-12-31T13:51:17.243Z`.
-          format: date-time
-          example: '2017-07-21T17:32:29Z'
-        requested_action:
-          $ref: '#/components/schemas/RequestedAction'
-        status:
-          $ref: '#/components/schemas/ScanStatus'
-        metadata:
-          $ref: '#/components/schemas/ScanMetadata'
-    Permissions:
-      type: object
-      required:
-      - entity
-      - entity_id
-      - level
-      properties:
-        entity:
-          description: 'The type of permissions object: `user` (permissions for an individual user) or `group` (permissions for a user group).'
-          type: string
-          enum:
-          - user
-          - group
-        entity_id:
-          description: The UUID of the user or group granted the specified permissions.
-          type: string
-          format: uuid
-        level:
-          description: The scan permissions level, as described in [Permissions](doc:permissions).
-          $ref: '#/components/schemas/PermissionLevel'
-        permissions_id:
-          description: The UUID of the permissions object.
-          type: string
-          format: uuid
-          deprecated: true
-    RequestedAction:
-      type: string
-      enum:
-      - start
-      - stop
-      example: start
-    AuditSettings:
-      description: The settings that allow the scan to audit elements other than the ones detected during crawling.
-      type: object
-      properties:
-        forms:
-          type: boolean
-          description: Indicates whether to scan for form vulnerabilities (`true`).
-          default: false
-        cookies:
-          type: boolean
-          description: Indicates whether to scan for cookie vulnerabilities (`true`).
-          default: false
-        ui_forms:
-          type: boolean
-          default: false
-          description: Indicates whether to scan input and button groups associated with JavaScript code (`true`).
-        ui_inputs:
-          type: boolean
-          description: Indicates whether to scan orphan input elements with associated DOM events (`true`).
-          default: false
-        headers:
-          type: boolean
-          description: Indicates whether to scan headers for vulnerabilities and insecure configurations (`true`); for example, missing X-Frame-Options.
-          default: false
-        links:
-          type: boolean
-          description: Indicates whether to scan links and their parameters in vulnerability checks (`true`).
-          default: false
-        parameter_names:
-          type: boolean
-          description: Indicates whether to perform extensive fuzzing of parameter names (`true`).
-          default: false
-        parameter_values:
-          type: boolean
-          description: Indicates whether to perform performs extensive fuzzing of parameter values (`true`).
-          default: false
-        jsons:
-          type: boolean
-          description: Indicates whether to scan JSON request data (`true`).
-          default: false
-        xmls:
-          type: boolean
-          description: Indicates whether to scan XML request data (`true`).
-          default: false
-        cookies_extensively:
-          description: Indicates whether an assessment is enabled (`true`) or disabled (`false`).
-          type: boolean
-        with_raw_payloads:
-          description: Indicates whether parameters should be tested with their raw payloads (`true`) or not (`false`).
-          type: boolean
-        with_both_http_methods:
-          description: Indicates if both GET and POST methods should be used during an assessment (`true`) or not (`false`).
-          type: boolean
-        with_extra_parameter:
-          description: Indicates whether to test non-existing parameters (`true`) or disabled (`false`).
-          type: boolean
-    Notifications:
-      type: object
-      description: Contact information used to send scan notifications upon scan completion.
-      default:
-        emails: []
-      required:
-      - emails
-      properties:
-        emails:
-          type: array
-          description: A list of email addresses.
-          items:
-            type: string
-            format: email
-            description: Email address
-    AppliedFilters-ScanConfigs:
-      type: object
-      description: A single filter to apply to the scan configuration search.
-      properties:
-        field:
-          type: string
-          description: The name of the field you want to filter on. You can list available scan configuration filters with the [GET /was/v2/configs/filters](ref:was-v2-filters-scan-configs-list) endpoint.
-          example: folder_name
-        operator:
-          type: string
-          description: The comparison operator to apply to the filter. You can find available comparison operators for the filter in the `operators` attribute of the objects returned by the [GET /was/v2/configs/filters](ref:was-v2-filters-scan-configs-list) endpoint.
-          example: match
-        value:
-          type: string
-          description: The value to compare the given field to using the given operator. You can find valid values for the filter in the `control` attribute of the objects returned by the [GET /was/v2/configs/filters](ref:was-v2-filters-scan-configs-list) endpoint.
-          example: My Scans
-    ScheduleWindowTime:
-      type: object
-      required:
-      - day_of_week
-      - time
-      properties:
-        day_of_week:
-          description: The day of the week when the window starts or ends.
-          type: string
-          enum:
-          - monday
-          - tuesday
-          - wednesday
-          - thursday
-          - friday
-          - saturday
-          - sunday
-        time:
-          description: he time in HH:mm (24-hour) format.
-          type: string
-          pattern: ^([01]\d|2[0-3]):[0-5]\d$
-    ScheduleWindowItem:
-      type: object
-      required:
-      - type
-      - start
-      - end
-      properties:
-        type:
-          description: Specifies whether the window allows scanning or pauses scanning.
-          type: string
-          enum:
-          - scan
-          - pause
-        start:
-          $ref: '#/components/schemas/ScheduleWindowTime'
-        end:
-          $ref: '#/components/schemas/ScheduleWindowTime'
-    AssessmentSettings:
-      type: object
-      description: 'Assessment settings specify which web application elements you want the scanner to audit as it crawls your URLs. '
-      properties:
-        rfi_remote_url:
-          type: string
-          description: The URL of the file on a remote host to use for Remote File Inclusion (RFI) tests. By default, Tenable Web App Scanning uses a safe file hosted by Tenable for RFI testing. If the scanner cannot reach the internet, you can use an internally hosted file for more accurate RFI testing.
-          format: uri
-          default: http://rfi.nessus.org/rfi.txt
-        dictionary:
-          description: The type of dictionary to use when testing common and backup files. Possible values are `full` or `limited`.
-          type: string
-          enum:
-          - limited
-          - full
-          default: limited
-        fingerprinting:
-          description: Indicates whether fingerprinted should be enabled (`true`) or disabled (`false`).
-          type: boolean
-          default: true
-        enable:
-          description: Indicates whether an assessment is enabled (`true`) or disabled (`false`).
-          type: boolean
-        element_exclusions:
-          type: array
-          description: Element exclusions prevent scans from interacting with specific page elements (ex. logout buttons or forms) and their children. This setting is available for Scan, Overview, and PCI scan templates.
-          items:
-            type: object
-            properties:
-              element_type:
-                type: string
-                description: The type of element to exclude. Currently, only `dom_element` is supported.
-                enum:
-                - dom_element
-              selector_type:
-                type: string
-                description: Specifies the selector type. DOM elements can be selected based on either text values or CSS attributes. Use `text` for text contents or `attribute` for a CSS key and value pair.
-                enum:
-                - text
-                - attribute
-              selector:
-                description: If the `selector_type` is `text`, the selector value is a `string` (option 1). If the `selector_type` is `attribute`, the selector value is an object containing one key and value pair (option 2).
-                oneOf:
-                - type: string
-                - type: object
-                  description: 'An object containing one key-value pair, where the key is the CSS attribute name and the value is the attribute value. For example: `{"id": "logout"}`'
-                  example: '{"id": "logout"}'
-                  additionalProperties: true
-                  maxProperties: 1
-    PauseWindowSchedule:
-      type: object
-      properties:
-        sunday:
-          $ref: '#/components/schemas/PauseWindowDaySchedule'
-          description: The pause window schedule for Sundays.
-        monday:
-          $ref: '#/components/schemas/PauseWindowDaySchedule'
-          description: The pause window schedule for Mondays.
-        tuesday:
-          $ref: '#/components/schemas/PauseWindowDaySchedule'
-          description: The pause window schedule for Tuesdays.
-        wednesday:
-          $ref: '#/components/schemas/PauseWindowDaySchedule'
-          description: The pause window schedule for Wednesdays.
-        thursday:
-          $ref: '#/components/schemas/PauseWindowDaySchedule'
-          description: The pause window schedule for Thursdays.
-        friday:
-          $ref: '#/components/schemas/PauseWindowDaySchedule'
-          description: The pause window schedule for Fridays.
-        saturday:
-          $ref: '#/components/schemas/PauseWindowDaySchedule'
-          description: The pause window schedule for Saturdays.
-    ScheduleWindows:
-      type: object
-      description: Defines scan and pause windows for scheduled scans. Each window specifies when scans run or pause. Schedule windows require a scan schedule to be enabled.
-      required:
-      - enabled
-      - time_zone
-      - windows
-      properties:
-        enabled:
-          type: boolean
-          description: Indicates whether schedule windows are enabled.
-        time_zone:
-          type: string
-          description: The time zone used to interpret the schedule windows.
-        windows:
-          type: array
-          description: A list of scan or pause windows.
-          items:
-            $ref: '#/components/schemas/ScheduleWindowItem'
-      example:
-        enabled: true
-        time_zone: America/Chicago
-        windows:
-        - type: scan
-          start:
-            day_of_week: monday
-            time: '10:00'
-          end:
-            day_of_week: tuesday
-            time: '11:00'
-        - type: scan
-          start:
-            day_of_week: tuesday
-            time: '13:00'
-          end:
-            day_of_week: tuesday
-            time: '15:00'
-    Credentials:
-      type: object
-      description: The credentials the scanner uses to run an authenticated scan against the web application. For more information, see the managed credentials category in [Manage Credentials](doc:manage-credentials).
-      required:
-      - credential_ids
-      properties:
-        credential_ids:
-          type: array
-          description: A list of credentials UUIDs.
-          items:
-            type: string
-            format: uuid
-            description: The UUID of the credential.
-    PauseWindow:
-      deprecated: true
-      type: object
-      required:
-      - pause_window_schedule
-      - timezone
-      properties:
-        enabled:
-          type: boolean
-          description: Indicates whether a pause window is enabled (`true`) or disabled (`false`).
-        timezone:
-          type: string
-          description: A valid `TZID` per RFC 5545. For example, `America/New_York`.
-          example: America/New_York
-        pause_window_schedule:
-          $ref: '#/components/schemas/PauseWindowSchedule'
-          description: The start and end times for the pause window configured by day of week.
-    FolderResponse:
-      type: object
-      description: Folder data
-      required:
-      - name
-      - folder_id
-      properties:
-        folder_id:
-          type: string
-          format: uuid
-          description: The UUID of the folder.
-        name:
-          type: string
-          description: The name of the folder.
-    PaginationResponse:
-      description: An object containing pagination information for the current result set.
-      type: object
-      properties:
-        total:
-          type: integer
-          format: int32
-          description: The total number of records matching your search criteria.
-        limit:
-          type: integer
-          format: int32
-          description: The number of records requested (or the default value if omitted from the request).
-        offset:
-          type: integer
-          format: int32
-          description: The starting record you requested (or zero if omitted).
-        sort:
-          description: An array of objects specifying how the current result set is sorted.
-          type: array
-          items:
-            $ref: '#/components/schemas/PaginationResponseSortObject'
-    InputErrorResponse:
-      type: object
-      required:
-      - code
-      - fields
-      description: Tenable Web App Scanning invalid input error response.
-      properties:
-        code:
-          type: string
-          description: The Tenable Web App Scanning error code. The code `INPUT_FORM_VIOLATION` is returned if your request body contains invalid input.
-        fields:
-          type: array
-          description: A list of fields that contain invalid input along with a message about the cause of the input error.
-          items:
-            type: object
-            description: A reason for the Tenable Web App Scanning input error.
-            properties:
-              field:
-                type: string
-                description: The JSON path of the invalid field.
-              message_type:
-                type: string
-                description: "The type of input violation. Common input errors include:\n - `VALUE_MUST_BE_SPECIFIED`—Returned if a required body parameter is missing.\n - `VALUE_NOT_POSITIVE`—Returned if your input contains a negative integer when it should be positive.\n - `VALUE_IS_NEGATIVE`—Returned if your input contains a positive integer when it should be negative.\n - `VALUE_CANT_BE_CHANGED`—Returned if you attempted to change a value that cannot be changed.\n - `VALUE_MUST_BE_GREATER`—Returned if your input contains a value that is smaller than the minimum required lower bound.\n - `FIELD_CANT_BE_ADDED`—Returned if your input contains a field that can't be added.\n - `INVALID_TYPE`—Returned if your input contains an invalid type (ex. integer or string).\n - `INVALID_FORMAT`—Returned if your input contains an invalid format."
-                enum:
-                - VALUE_MUST_BE_SPECIFIED
-                - VALUE_NOT_POSITIVE
-                - VALUE_IS_NEGATIVE
-                - VALUE_CANT_BE_CHANGED
-                - VALUE_MUST_BE_GREATER
-                - FIELD_CANT_BE_ADDED
-                - INVALID_TYPE
-                - INVALID_FORMAT
-                - ERROR_MESSAGE
-              value:
-                description: Contains an error message describing the cause of the input validation error.
-                type: object
-    ChromeScript:
-      type: object
-      properties:
-        finish_wait:
-          description: The time (in milliseconds) that the scanner waits for the Selenium script to complete before the browser loads any remaining contents.
-          type: integer
-          default: 5000
-        page_load_wait:
-          description: The time (in milliseconds) that page rendering is delayed during the Selenium authentication process. It is recommended to wait for some time if a page is known to take time before its contents are rendered.
-          type: integer
-          default: 10000
-        command_wait:
-          description: The time (in milliseconds) to wait after running each command in the Selenium script.
-          type: integer
-          default: 500
-        disable_web_security:
-          description: Disables enforcement of CORS and the Same-Origin Policy in the browser.
-          type: boolean
-          default: false
-    PluginSettings:
-      type: object
-      description: The settings for enabling or disabling individual plugins and/or plugin families to customize your scan.
-      properties:
-        rate_limiter:
-          type: object
-          description: Optional parameters for limiting the rate at which HTTP requests are sent to the target web application.
-          properties:
-            requests_per_second:
-              type: integer
-              description: The maximum number of HTTP requests per second.
-              default: 25
-            autothrottle:
-              description: Indicates whether the scanner slows down the scan when network congestion is detected (`true`). The default value of this parameter is `true`.
-              type: boolean
-              default: true
-            timeout_threshold:
-              type: integer
-              description: The number of consecutive timeouts before Tenable Web App Scanning aborts the scan.
-              default: 100
-        mode:
-          type: string
-          example: disable
-          description: Indicates whether specific plugins and/or plugin families are enabled (`enable`) or disabled (`disable`) for the scan.
-        ids:
-          type: array
-          description: A list of plugin IDs.
-          items:
-            type: integer
-            description: The ID of the plugin.
-          example:
-          - 98000
-          - 98001
-        names:
-          type: array
-          description: A list of plugin names.
-          items:
-            type: string
-            description: The name of the plugin.
-          example:
-          - path_traversal
-        families:
-          type: array
-          description: A list of plugin families.
-          items:
-            type: string
-            description: The name of the plugin family.
-          example:
-          - web_servers
-          - csrf
-    ResultsVisibility:
-      description: The visibility of the results (private or dashboard).
-      type: string
-      default: dashboard
-      enum:
-      - private
-      - dashboard
-    ScanStatus:
-      type: string
-      description: "The scan status. Values include:\n - aborted—Terminated before completion for reason other than a user-requested stop.\n - canceled—Stopped by a user request.\n - completed—Completed successfully.\n - pending—Start requested but not yet running.\n - processing—The scan has completed but the results are still being processed. The scanner is processing vulnerability findings, attachments, notes, and other metadata.\n - ready—Scan is ready to be started.\n - running—Scan is in progress.\n - stopping—Stop requested but not yet stopped."
-      enum:
-      - aborted
-      - canceled
-      - completed
-      - pending
-      - processing
-      - ready
-      - running
-      - stopping
-      example: completed
-    PermissionLevel:
-      description: The scan permissions level, as described in [Permissions](doc:permissions).
-      type: string
-      enum:
-      - no_access
-      - view
-      - control
-      - configure
-    Request-Config:
-      type: object
-      required:
-      - name
-      - targets
-      - owner_id
-      - template_id
-      - settings
-      properties:
-        name:
-          description: A unique, user-defined name for the scan configuration.
-          type: string
-          example: Quarterly Security Audit
-        description:
-          description: An optional summary or notes about the scan configuration's purpose.
-          type: string
-          example: Internal business applications vulnerability assessment.
-        targets:
-          type: array
-          description: A list of absolute URLs to be included in the scan. Specifying multiple URLs enables you to assess several web applications within a single scan job.
-          items:
-            type: string
-            format: uri
-            example: https://example.com
-        tag_targets:
-          type: array
-          description: A list of unique tag identifiers (UUIDs) to include in the scan. This enables you to dynamically target assets based on their assigned tags rather than manual URL entry.
-          items:
-            type: string
-            format: uuid
-            example: 2f06e776-ecc3-4fbe-a005-6e84b4ed61a3
-        applications:
-          type: array
-          description: A list of unique web application identifiers (UUIDs) to include in the scan. Selecting specific applications enables you to run targeted assessments on pre-defined assets within your inventory.
-          items:
-            type: string
-            format: uuid
-            example: 3b06e776-ecc3-3fbe-a005-6e84b4ed62a1
-        target:
-          type: string
-          description: "The URL of the web application that you want to scan. \n\n**Deprecated:** This parameter is deprecated and will be retired on 2022/04/06. Tenable recommends that you use the `targets` parameter instead. Please update any existing integrations that your organization has."
-          format: uri
-          deprecated: true
-        folder_id:
-          description: The UUID of the folder to assign for the scan configuration.
-          type: string
-          format: uuid
-        owner_id:
-          description: The UUID of the owner of the scan configuration.
-          type: string
-          format: uuid
-          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
-        template_id:
-          type: string
-          format: uuid
-          description: The UUID of the Tenable-provided configuration template.
-        user_template_id:
-          type: string
-          format: uuid
-          description: The UUID of the user-defined configuration template from which this configuration was derived.
-        scanner_id:
-          type: integer
-          description: "The unique identifier for the scanner or scanner group designated to perform the scan. Specifying a scanner enables you to control the network origin of the scan. If omitted, the system defaults to the default cloud scanner. \n\n**Caution:** To scan internal web applications, you must specify the ID of a local scanner or scanner group to ensure the target is reachable."
-        schedule:
-          description: The scan schedule settings. By default, scans are not scheduled.
-          $ref: '#/components/schemas/ScanSchedule'
-        pause_window:
-          description: 'Defines time frames during which the scheduled scan should not run. Pause windows can be used only when a scan schedule is configured.
-
-
-            **Deprecated:** The `pause_window` object is deprecated. To create a pause window, use a schedule window with the `type` parameter set to `pause`. For more information, see the `schedule_windows` object. Please update any existing integrations that your organization has.'
-          $ref: '#/components/schemas/PauseWindow'
-        schedule_windows:
-          description: Defines scan and pause windows for scheduled scans. Each window specifies when scans run or pause. Requires a scan schedule to be enabled.
-          $ref: '#/components/schemas/ScheduleWindows'
-        notifications:
-          description: Contact information used to send scan notifications upon scan completion.
-          $ref: '#/components/schemas/Notifications'
-        permissions:
-          description: The permissions for the scan configuration.
-          type: array
-          items:
-            $ref: '#/components/schemas/Permissions'
-        settings:
-          $ref: '#/components/schemas/ConfigSettings'
-    PaginationResponseSortObject:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
-      type: object
-      properties:
-        name:
-          type: string
-          description: The property used to sort the results.
-        order:
-          type: string
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
     Response-Scan-Config:
       type: object
       required:
@@ -2458,6 +2291,22 @@ components:
         schedule_windows:
           description: Defines scan and pause windows for scheduled scans. Each window specifies when scans run or pause. Requires a scan schedule to be enabled.
           $ref: '#/components/schemas/ScheduleWindows'
+    AppliedFilters-ScanConfigs:
+      type: object
+      description: A single filter to apply to the scan configuration search.
+      properties:
+        field:
+          type: string
+          description: The name of the field you want to filter on. You can list available scan configuration filters with the [GET /was/v2/configs/filters](ref:was-v2-filters-scan-configs-list) endpoint.
+          example: folder_name
+        operator:
+          type: string
+          description: The comparison operator to apply to the filter. You can find available comparison operators for the filter in the `operators` attribute of the objects returned by the [GET /was/v2/configs/filters](ref:was-v2-filters-scan-configs-list) endpoint.
+          example: match
+        value:
+          type: string
+          description: The value to compare the given field to using the given operator. You can find valid values for the filter in the `control` attribute of the objects returned by the [GET /was/v2/configs/filters](ref:was-v2-filters-scan-configs-list) endpoint.
+          example: My Scans
     BrowserSettings:
       type: object
       description: The settings for the virtual browser instance used by the scanner.
@@ -2485,103 +2334,254 @@ components:
         pool_size:
           type: integer
           description: The number of browser instances used for the scan.
-    ScanSchedule:
+    ScanMetadata:
+      type: object
+      description: Summary statistics for the scan results.
+      properties:
+        queued_urls:
+          type: integer
+          example: 0
+          description: The number of web application URLs queued for the scan.
+        crawled_urls:
+          type: integer
+          example: 6
+          description: The number of web application URLs crawled by the scan.
+        queued_pages:
+          type: integer
+          example: 0
+          description: The number of web application pages queued for the scan.
+        audited_pages:
+          type: integer
+          example: 29
+          description: The number of pages audited by the scan.
+        request_count:
+          type: integer
+          example: 32339
+          description: The number of requests the scan made to the target web application.
+        response_time:
+          type: integer
+          example: 0
+          description: The average response time (in milliseconds) from the web application.
+        finalized_children:
+          type: integer
+          example: 0
+          description: The total number of finalized children if the scan has multiple targets.
+        total_children:
+          type: integer
+          example: 0
+          description: The total number of children if the scan has multiple targets.
+    AuditSettings:
+      description: The settings that allow the scan to audit elements other than the ones detected during crawling.
+      type: object
+      properties:
+        forms:
+          type: boolean
+          description: Indicates whether to scan for form vulnerabilities (`true`).
+          default: false
+        cookies:
+          type: boolean
+          description: Indicates whether to scan for cookie vulnerabilities (`true`).
+          default: false
+        ui_forms:
+          type: boolean
+          default: false
+          description: Indicates whether to scan input and button groups associated with JavaScript code (`true`).
+        ui_inputs:
+          type: boolean
+          description: Indicates whether to scan orphan input elements with associated DOM events (`true`).
+          default: false
+        headers:
+          type: boolean
+          description: Indicates whether to scan headers for vulnerabilities and insecure configurations (`true`); for example, missing X-Frame-Options.
+          default: false
+        links:
+          type: boolean
+          description: Indicates whether to scan links and their parameters in vulnerability checks (`true`).
+          default: false
+        parameter_names:
+          type: boolean
+          description: Indicates whether to perform extensive fuzzing of parameter names (`true`).
+          default: false
+        parameter_values:
+          type: boolean
+          description: Indicates whether to perform performs extensive fuzzing of parameter values (`true`).
+          default: false
+        jsons:
+          type: boolean
+          description: Indicates whether to scan JSON request data (`true`).
+          default: false
+        xmls:
+          type: boolean
+          description: Indicates whether to scan XML request data (`true`).
+          default: false
+        cookies_extensively:
+          description: Indicates whether an assessment is enabled (`true`) or disabled (`false`).
+          type: boolean
+        with_raw_payloads:
+          description: Indicates whether parameters should be tested with their raw payloads (`true`) or not (`false`).
+          type: boolean
+        with_both_http_methods:
+          description: Indicates if both GET and POST methods should be used during an assessment (`true`) or not (`false`).
+          type: boolean
+        with_extra_parameter:
+          description: Indicates whether to test non-existing parameters (`true`) or disabled (`false`).
+          type: boolean
+    PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/PaginationResponseSortObject'
+    ChromeScript:
+      type: object
+      properties:
+        finish_wait:
+          description: The time (in milliseconds) that the scanner waits for the Selenium script to complete before the browser loads any remaining contents.
+          type: integer
+          default: 5000
+        page_load_wait:
+          description: The time (in milliseconds) that page rendering is delayed during the Selenium authentication process. It is recommended to wait for some time if a page is known to take time before its contents are rendered.
+          type: integer
+          default: 10000
+        command_wait:
+          description: The time (in milliseconds) to wait after running each command in the Selenium script.
+          type: integer
+          default: 500
+        disable_web_security:
+          description: Disables enforcement of CORS and the Same-Origin Policy in the browser.
+          type: boolean
+          default: false
+    PauseWindow:
+      deprecated: true
       type: object
       required:
-      - rrule
-      - starttime
+      - pause_window_schedule
       - timezone
       properties:
-        rrule:
-          type: string
-          description: A valid `rrule` string per RFC 5545.
-          example: FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1
-        starttime:
-          type: string
-          description: A valid `dtstart` string per RFC 5545, minus TZID (see timezone below) if different than UTC, in which case use Z at the end. For example, `19970105T083000 or 19970105T083000Z (utc)`.
-          example: 19970105T083000 or 19970105T083000Z (utc)
+        enabled:
+          type: boolean
+          description: Indicates whether a pause window is enabled (`true`) or disabled (`false`).
         timezone:
           type: string
           description: A valid `TZID` per RFC 5545. For example, `America/New_York`.
           example: America/New_York
-        enabled:
-          type: boolean
-          description: Indicates whether a schedule is enabled (`true`) or disabled (`false`).
-        launch:
-          type: string
-          description: Specifies how often the scan schedule repeats.
-          example: DAILY
-          enum:
-          - DAILY
-          - WEEKLY
-          - MONTHLY
-          - ONETIME
-    HttpSettings:
+        pause_window_schedule:
+          $ref: '#/components/schemas/PauseWindowSchedule'
+          description: The start and end times for the pause window configured by day of week.
+    PluginSettings:
       type: object
-      description: The HTTP request settings for the scan.
+      description: The settings for enabling or disabling individual plugins and/or plugin families to customize your scan.
       properties:
-        response_max_size:
-          type: integer
-          minimum: 1
-          default: 500000
-          description: The maximum load size for an audited page.
-        request_redirect_limit:
-          type: integer
-          minimum: 1
-          default: 1
-          description: The number of redirects the scan follows before it stops trying to crawl the page.
-        user_agent:
-          description: The user-agent header the scanner includes in HTTP requests to the web application.
-          type: string
-          default: Nessus WAS/%v
-        custom_user_agent:
-          description: Indicates whether the scanner includes the `user-agent` header in HTTP requests to the web application (`true`).
-          type: boolean
-        request_headers:
-          description: 'The custom headers the scanner includes in HTTP requests to the web application.
-
-
-            **Note:** If you specify a user-agent header value in this parameter, it overrides the `user_agent` parameter value.'
+        rate_limiter:
           type: object
-        request_concurrency:
-          description: The maximum number of concurrent HTTP connections to the web application.
-          type: integer
-          default: 10
-        request_timeout:
-          type: integer
-          description: HTTP request timeout (in milliseconds).
-          default: 5000
-    ConfigUpdate:
-      type: object
-      required:
-      - folder_name
-      properties:
-        folder_name:
-          description: The name of the folder to set for the scan configuration.
+          description: Optional parameters for limiting the rate at which HTTP requests are sent to the target web application.
+          properties:
+            requests_per_second:
+              type: integer
+              description: The maximum number of HTTP requests per second.
+              default: 25
+            autothrottle:
+              description: Indicates whether the scanner slows down the scan when network congestion is detected (`true`). The default value of this parameter is `true`.
+              type: boolean
+              default: true
+            timeout_threshold:
+              type: integer
+              description: The number of consecutive timeouts before Tenable Web App Scanning aborts the scan.
+              default: 100
+        mode:
           type: string
-    ErrorResponse:
-      type: object
-      required:
-      - reasons
-      description: Tenable Web App Scanning error response.
-      properties:
-        reasons:
+          example: disable
+          description: Indicates whether specific plugins and/or plugin families are enabled (`enable`) or disabled (`disable`) for the scan.
+        ids:
           type: array
-          description: A list of reasons for the Tenable Web App Scanning error.
+          description: A list of plugin IDs.
+          items:
+            type: integer
+            description: The ID of the plugin.
+          example:
+          - 98000
+          - 98001
+        names:
+          type: array
+          description: A list of plugin names.
+          items:
+            type: string
+            description: The name of the plugin.
+          example:
+          - path_traversal
+        families:
+          type: array
+          description: A list of plugin families.
+          items:
+            type: string
+            description: The name of the plugin family.
+          example:
+          - web_servers
+          - csrf
+    AssessmentSettings:
+      type: object
+      description: 'Assessment settings specify which web application elements you want the scanner to audit as it crawls your URLs. '
+      properties:
+        rfi_remote_url:
+          type: string
+          description: The URL of the file on a remote host to use for Remote File Inclusion (RFI) tests. By default, Tenable Web App Scanning uses a safe file hosted by Tenable for RFI testing. If the scanner cannot reach the internet, you can use an internally hosted file for more accurate RFI testing.
+          format: uri
+          default: http://rfi.nessus.org/rfi.txt
+        dictionary:
+          description: The type of dictionary to use when testing common and backup files. Possible values are `full` or `limited`.
+          type: string
+          enum:
+          - limited
+          - full
+          default: limited
+        fingerprinting:
+          description: Indicates whether fingerprinted should be enabled (`true`) or disabled (`false`).
+          type: boolean
+          default: true
+        enable:
+          description: Indicates whether an assessment is enabled (`true`) or disabled (`false`).
+          type: boolean
+        element_exclusions:
+          type: array
+          description: Element exclusions prevent scans from interacting with specific page elements (ex. logout buttons or forms) and their children. This setting is available for Scan, Overview, and PCI scan templates.
           items:
             type: object
-            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
-            minItems: 1
-            required:
-            - code
-            - reason
             properties:
-              code:
+              element_type:
                 type: string
-                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
-              reason:
+                description: The type of element to exclude. Currently, only `dom_element` is supported.
+                enum:
+                - dom_element
+              selector_type:
                 type: string
-                description: The extended description of the cause of the Tenable Web App Scanning error.
+                description: Specifies the selector type. DOM elements can be selected based on either text values or CSS attributes. Use `text` for text contents or `attribute` for a CSS key and value pair.
+                enum:
+                - text
+                - attribute
+              selector:
+                description: If the `selector_type` is `text`, the selector value is a `string` (option 1). If the `selector_type` is `attribute`, the selector value is an object containing one key and value pair (option 2).
+                oneOf:
+                - type: string
+                - type: object
+                  description: 'An object containing one key-value pair, where the key is the CSS attribute name and the value is the attribute value. For example: `{"id": "logout"}`'
+                  example: '{"id": "logout"}'
+                  additionalProperties: true
+                  maxProperties: 1
   parameters:
     sort:
       description: 'The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.
