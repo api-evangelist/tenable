@@ -3144,6 +3144,18 @@ paths:
     - url: https://cloud.tenable.com
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     Response-ScansList:
       type: object
       properties:
@@ -3200,28 +3212,6 @@ components:
           type: number
           format: float
           description: The progress of the scan ranging from 0 to 100.
-    Response-PaginationSortObject:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
-      type: object
-      properties:
-        name:
-          type: string
-          description: The property used to sort the results.
-        order:
-          type: string
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
-    ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     Response-Pagination:
       description: An object containing pagination information for the current result set.
       type: object
@@ -3243,60 +3233,585 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Response-PaginationSortObject'
-    scans_Request-ScanSettings:
-      title: Scan Settings
-      description: Complete scan settings for creating or updating a scan configuration.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/scans_Request-ScanSettings-Basic'
-      - $ref: '#/components/schemas/scans_Request-ScanSettings-Schedule'
-      - $ref: '#/components/schemas/scans_Request-ScanSettings-Discovery'
-      - $ref: '#/components/schemas/scans_Request-ScanSettings-Assessment'
-      - $ref: '#/components/schemas/scans_Request-ScanSettings-Report'
-      - $ref: '#/components/schemas/scans_Request-ScanSettings-Advanced'
-    scans_note:
-      type: object
-      properties:
-        title:
-          type: string
-          description: The title of the note.
-        message:
-          type: string
-          description: The specific message of the note.
-        severity:
-          type: integer
-          description: The severity of the note.
-    scans_filter:
+    Response-PaginationSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
       type: object
       properties:
         name:
           type: string
-          description: The short name of the filter.
-        readable_name:
+          description: The property used to sort the results.
+        order:
           type: string
-          description: The long name of the filter.
-        operators:
-          description: The comparison options for the filter.
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    scans_Request-ScanSettings-Discovery:
+      title: Discovery Settings
+      description: Settings that control how the scanner discovers hosts, including host discovery, ping methods, port scanning, service discovery, and identity collection.
+      type: object
+      properties:
+        ping_the_remote_host:
+          type: string
+          description: "**[Discovery]** Specifies whether the scanner pings remote hosts on multiple ports to determine their availability before beginning the scan. When enabled, the system provides additional configuration options for General Settings and Ping Methods. \n\n**Note:** To scan VMware guest systems, you must set this parameter to `no`."
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'yes'
+        fast_network_discovery:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner uses an accelerated discovery process. When enabled, the system bypasses additional verification tests normally used to distinguish between actual hosts and intermediate devices, such as proxies or load balancers, to improve discovery speed.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+          example: 'no'
+        arp_ping:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner pings a host using its hardware address via the Address Resolution Protocol (ARP). This method only works on local networks.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'yes'
+        tcp_ping:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner pings a host using TCP.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'yes'
+        tcp_ping_dest_ports:
+          type: string
+          description: '**[Discovery]** Specifies the destination ports checked via TCP ping. You can specify `built-in`, a single port, or a comma-separated list of ports. For information bout which ports `built-in` includes, see the [knowledge base article](https://community.tenable.com/s/article/What-ports-does-built-in-represent).'
+          default: built-in
+        icmp_ping:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner pings a host using the Internet Control Message Protocol (ICMP).'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'yes'
+        icmp_unreach_means_host_down:
+          type: string
+          description: '**[Discovery]** Specifies whether the system considers a targeted host dead when the scanner receives an ICMP unreachable message from a gateway. **Note:** Some firewalls and packet filters use this same behavior for active hosts connected to a filtered port or protocol, which can cause the scanner to misidentify them as down.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+          example: 'no'
+        icmp_ping_retries:
+          type: string
+          description: '**[Discovery]** Specifies the maximum number of attempts the system makes to retry pinging a remote host.'
+          default: '2'
+          example: '2'
+        udp_ping:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner pings a host using the User Datagram Protocol (UDP). Because UDP is a stateless protocol, communication is not always reliable and screening devices may prevent remote detection.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+          example: 'no'
+        scan_network_printers:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner scans network printers. When enabled, you can choose to surface the printer OS only or perform a full network scan.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+        scan_netware_hosts:
+          type: string
+          description: '**[Discovery]** Specifies whether to scan Novell Netware hosts.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+          example: 'no'
+        scan_ot_devices_with_discovery:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner uses protocol-specific queries (via OT Discovery) to identify live Operational Technology (OT) devices and retrieve granular attributes such as make, model, and firmware. **Note:** OT discovery assets contribute to your total license count.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+          example: 'no'
+        scan_ot_devices:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner performs a full scan of Operational Technology (OT) devices. **Caution:** Do not enable this setting in high-traffic production environments, as it can cause device interruptions.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+          example: 'no'
+        wol_wait_time:
+          type: string
+          description: '**[Discovery]** Specifies the amount of time, in minutes, the system waits for hosts to start after sending Wake-on-LAN (WOL) magic packets before performing the scan.'
+          default: '5'
+          example: '5'
+        unscanned_closed:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner considers unscanned ports as closed. When enabled, the system treats any port that falls outside the specified scan range or is not scanned by a selected port scanner as closed.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+          example: 'no'
+        portscan_range:
+          type: string
+          description: '**[Discovery]** Specifies the range of ports to be scanned. The `default` keyword instructs the scanner to scan approximately 4,790 commonly used ports. You can also specify `all` for all 65,536 ports or provide a custom comma-separated list or range.'
+          default: default
+          example: default
+        ssh_netstat_scanner:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner uses `netstat` to identify open ports via an SSH connection. This method is intended for Linux-based systems and requires configured SSH credentials.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'yes'
+        wmi_netstat_scanner:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner uses `netstat` to determine open ports while performing a WMI-based scan. This method requires configured Windows credentials.
+
+
+            **Note:** If this setting is enabled, the scanner ignores any custom range specified in the port range setting and treats unscanned ports as closed if the "Consider unscanned ports as closed" setting is enabled.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'yes'
+        snmp_scanner:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner uses SNMP to enumerate open ports and retrieve detailed host information. This method requires configured SNMP credentials. This setting can produce more detailed audit results for devices like Cisco routers where checks determine vulnerabilities present based on the returned SNMP string.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'yes'
+        only_portscan_if_enum_failed:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner performs a traditional port scan only if local port enumerators (such as SSH, WMI, or SNMP) fail to retrieve the port list.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'yes'
+        verify_open_ports:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner performs additional verification to confirm that a port identified as open by a port enumerator is actually accessible.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'no'
+        tcp_scanner:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner performs a full TCP connect scan to identify open ports.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'no'
+        tcp_firewall_detection:
+          type: string
+          description: '**[Discovery]** Specifies the method used to detect firewalls during a TCP scan. `Automatic (normal)` allows the system to determine the most effective detection strategy automatically.'
+          enum:
+          - Do not detect RST rate limitation (soft)
+          - Ignore closed ports (aggressive)
+          - Disabled (softer)
+        syn_scanner:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner performs a TCP SYN (half-open) scan to identify open ports.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'yes'
+        syn_firewall_detection:
+          type: string
+          description: '**[Discovery]** Specifies the method used to detect firewalls during a SYN scan. `Automatic (normal)` allows the system to determine the most effective detection strategy automatically.'
+          enum:
+          - Do not detect RST rate limitation (soft)
+          - Ignore closed ports (aggressive)
+          - Disabled (softer)
+        udp_scanner:
+          type: string
+          description: "**[Discovery]** Specifies whether the scanner performs a UDP scan to identify open ports. \n\n**Note:** Because the UDP protocol is stateless, the scanner often cannot distinguish between open and filtered ports, which can significantly increase scan duration and produce unreliable results. To improve performance and accuracy, Tenable recommends using local port enumerators, such as SSH (netstat), WMI (netstat), or SNMP."
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+          example: 'no'
+        svc_detection_on_all_ports:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner attempts to identify the service running on every open port identified during the scan.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'yes'
+        detect_ssl:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner attempts to detect SSL/TLS encryption on open ports.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'yes'
+        ssl_prob_ports:
+          type: string
+          description: '**[Discovery]** Specifies which ports the scanner probes for SSL/TLS encryption. You can set this to `All ports`, `Known ports`, or `None`.'
+          enum:
+          - All ports
+          - Known SSL ports
+          - None
+          default: Known SSL ports
+          example: All Ports
+        dtls_prob_ports:
+          type: string
+          description: '**[Discovery]** Specifies which ports the scanner probes for DTLS encryption. You can set this to `All ports`, `Known ports`, or `None`.'
+          enum:
+          - None
+          - Known DTLS ports
+          - All ports
+          default: None
+          example: None
+        cert_expiry_warning_days:
+          type: string
+          description: '**[Discovery]** Specifies the number of days before an SSL/TLS certificate expires that the system generates a warning finding.'
+          default: '60'
+          example: '60'
+        enumerate_all_ciphers:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner attempts to enumerate all supported SSL/TLS ciphers for each detected service.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'yes'
+        check_crl:
+          type: string
+          description: '**[Discovery]** Specifies whether the scanner checks the Certificate Revocation List (CRL) to determine if a detected SSL/TLS certificate has been revoked.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+          example: 'no'
+        collect_identity_data_from_ad:
+          type: string
+          description: '**[Discovery]** Specifies whether to collect identity data from Active Directory.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+    scans_vulnerability:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The number of vulnerabilities found.
+        plugin_name:
+          type: string
+          description: The name of the vulnerability plugin.
+        vuln_index:
+          type: integer
+          description: The index of the vulnerability plugin.
+        severity:
+          type: integer
+          description: The severity rating of the plugin.
+        plugin_id:
+          type: integer
+          description: The unique ID of the vulnerability plugin.
+        severity_index:
+          type: integer
+          description: The severity index order of the plugin.
+        plugin_family:
+          type: string
+          description: The parent family of the vulnerability plugin.
+    scans_scan-info-response-object:
+      type: object
+      properties:
+        owner:
+          type: string
+          description: The owner of the scan.
+        name:
+          type: string
+          description: The name of the scan.
+        no_target:
+          type: boolean
+          description: Indicates whether the scan based on this policy can specify targets.
+        folder_id:
+          type: integer
+          description: The unique ID of the destination folder for the scan.
+          format: int32
+        control:
+          type: boolean
+          description: If `true`, the scan has a schedule and can be launched.
+        user_permissions:
+          type: integer
+          description: The sharing permissions for the scan.
+          format: int32
+        schedule_uuid:
+          type: string
+          description: The UUID for a specific instance in the scan schedule.
+        edit_allowed:
+          type: boolean
+          description: If `true`, the requesting user can edit this scan configuration.
+        scanner_name:
+          type: string
+          description: The name of the scanner configured to run the scan.
+        policy:
+          type: string
+          description: The name of the scan template associated with the scan.
+        shared:
+          type: boolean
+          description: If `true`, the scan is shared with users other than the owner. The level of sharing is specified in the `acls` attribute of the scan details.
+        object_id:
+          type: integer
+          description: The unique ID of the scan result object.
+          format: int32
+        tag_targets:
           type: array
+          description: The list of asset tag identifiers the scan uses to determine which assets it evaluates. For more information about tag-based scans, see [Manage Tag-Based Scans](doc:manage-tag-based-scans-tio).  For more information about asset tags, see [Manage Asset Tags](doc:manage-asset-tags-tio).
           items:
             type: string
-        control:
+            description: The UUID for an asset tag value. For more information about asset tags, see [Manage Asset Tags](doc:manage-asset-tags-tio).
+        acls:
+          type: array
+          description: An array of objects that control sharing permissions for the scan.
+          items:
+            $ref: '#/components/schemas/scans_settings-acls'
+        hostcount:
+          type: integer
+          description: The total number of assets scanned for vulnerabilities.
+          format: int32
+        uuid:
+          type: string
+          description: The UUID of the scan.
+        status:
+          type: string
+          description: The status of the scan. For a list of possible values, see [Scan Status](doc:scan-status-tio).
+        scan_type:
+          type: string
+          description: 'The type of scan: `ps` (a scan performed over the network by a cloud scanner), `remote` (a  scan performed over the network by a local scanner), `agent` (a scan on a local host that a Nessus Agent performs directly), or `null` (the scan has never been launched, or the scan is imported).'
+        targets:
+          type: string
+          description: A comma-delimited list of IPv4 addresses that are configured as targets for the scan.
+        alt_targets_used:
+          type: boolean
+          description: If `true`, Tenable Vulnerability Management did not launch the scan with a target list. This parameter is `true` for agent scans.
+        pci-can-upload:
+          type: boolean
+          description: If `true`, you can submit the results of the scan for PCI ASV review. For more information, see [PCI ASV](https://docs.tenable.com/vulnerability-management/Content/PCI_ASV/GetStarted.htm) in the Tenable Vulnerability Management User Guide.
+        scan_start:
+          type: integer
+          description: The Unix timestamp when the scan run started.
+          format: int64
+        timestamp:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the scan run finished.
+        is_archived:
+          type: boolean
+          description: Indicates whether the scan results are older than 35 days (`true`). If this attribute is `true`, the response message for this endpoint excludes the `hosts`, `vulnerabilities`, `comphosts`, `compliance`, and `filters` objects. For complete scan results older than 35 days, use the [Export scan](ref:scans-export-request) endpoint instead.
+        scan_end:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the scan run finished.
+        haskb:
+          type: boolean
+          description: Indicates whether a scan has a Knowledge Base (KB) associated with it. A KB is an ASCII text file containing a log of information relevant to the scan performed and results found.
+        hasaudittrail:
+          type: boolean
+          description: Indicates whether the scan is configured to create an audit trail.
+        scanner_start:
+          type: string
+          description: The scan's start time, if the scan is imported.
+        scanner_end:
+          type: string
+          description: The scan's end time, if the scan is imported.
+    scans_Request-ScanSettings-Schedule:
+      title: Schedule Settings
+      description: Settings that control when and how often the scan runs.
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: '**[Schedule]** Specifies whether the scan schedule is enabled (`true`) or disabled (`false`). For Nessus Scanner scans, this enables the scan schedule. For Nessus Agent scans, this enables triggers for triggered scans. If omitted, the system uses the default value of `false`.
+
+
+            **Note:** Scheduled scans do not run if they are in the scan owner''s trash folder.'
+        launch:
+          type: string
+          description: '**[Schedule]** Specifies the frequency at which to launch the scan. Supported values are `ON_DEMAND`, `DAILY`, `WEEKLY`, `MONTHLY`, and `YEARLY`.
+
+
+            **Note:** Scheduled scans do not run if they are in the scan owner''s trash folder.'
+          enum:
+          - ON_DEMAND
+          - DAILY
+          - WEEKLY
+          - MONTHLY
+          - YEARLY
+        starttime:
+          type: string
+          description: '**[Schedule]** Specifies the starting date and time for the scan. For one-time scans, this is when the scan runs. For recurrent scans, this is the first date the schedule is active and the time that recurring scans launch based on the `rrules` parameter.
+
+
+            Format: `YYYYMMDDTHHMMSS`. Must be set to a future date and time.'
+          example: 20260720T230000
+        rrules:
+          $ref: '#/components/schemas/scans_settings-rrules'
+        timezone:
+          type: string
+          description: '**[Schedule]** Specifies the timezone for the scheduled start time (as specified in the `starttime` parameter). Use the [Get timezones](ref:scans-timezones) endpoint to retrieve valid timezone values.'
+          example: America/Chicago
+        launch_now:
+          type: boolean
+          description: '**[Schedule]** Specifies whether to launch the scan immediately after creation (`true`) or wait for the configured schedule (`false`).'
+        scheduleScan:
+          type: string
+          description: '**[Schedule]** Specifies whether to enable scheduling for the scan.'
+          enum:
+          - 'yes'
+          - 'no'
+    scans_request-update-scan-credentials-object:
+      type: object
+      description: An object that specifies credential parameters that enable a scanner to authenticate a connection to a target host. For more information about using managed credentials with the Tenable Vulnerability Management API, see [Manage Credentials](doc:manage-credentials).
+      properties:
+        add:
           type: object
+          description: 'A credentials object you want to add to the scan. For scan-specific credentials, the parameters of the object vary based on credentials category, credentials type, and type-specific settings. For more information, see [Determine Settings for a Credential Type](doc:determine-settings-for-credential-type). For managed credentials, the object contains a single parameter `id`, which specifies the UUID of the managed credentials you want to add.
+
+
+            **Note:** This form displays limited parameters that support a Windows type of credentials that uses password authentication.'
           properties:
-            type:
-              type: string
-              description: The input type (entry or dropdown).
-            readable_regest:
-              type: string
-              description: The placeholder for the input.
-            regex:
-              type: string
-              description: A regex for checking the value of the input.
-            options:
-              description: A list of options if the input is a dropdown.
-              type: array
-              items:
-                type: string
+            Host:
+              type: object
+              description: "The name of this parameter corresponds to the display name that uniquely identifies the credentials category (in this case, `Host` for credentials from the Host category). This value corresponds to the following response message attributes:\n - `credentials[].data[].name` in the [Get template details](ref:editor-template-details) response message\n - `credentials[].id` in the [List credential types](ref:credentials-list-credential-types) response message"
+              properties:
+                Windows:
+                  type: array
+                  description: "The name of this parameter corresponds to the display name that uniquely identifies the credentials type (in this case, `Windows` for a Windows credential). This value corresponds to the following response message attributes:\n - `credentials[].data[].types[].name` in the [Get template details](ref:editor-template-details) response message\n - `credentials[].types[].id` in the [List credential types](ref:credentials-list-credential-types) response message`"
+                  items:
+                    type: object
+                    properties:
+                      domain:
+                        type: string
+                        description: The Windows domain to which the username belongs.
+                      username:
+                        type: string
+                        description: The username on the target system.
+                      auth_method:
+                        type: string
+                        description: The name for the authentication method. This value corresponds to the credentials[].types[].configuration[].options[].id attribute in the response message for the [List credential types](ref:credentials-list-credential-types) endpoint.
+                        enum:
+                        - Password
+                      password:
+                        type: string
+                        description: The user password on the target system.
+        edit:
+          type: object
+          description: "A scan-specific credentials object you want to modify. The parameters of the object vary based on credential category, credential type, and type-specific settings. For more information, see [Update a Scan](doc:update-scan-tio).\n\n **Note:** This parameter is not supported for use with managed credentials. For more information about editing managed credentials, see [Edit Managed Credentials](doc:edit-managed-credentials-tio)."
+          properties: {}
+        delete:
+          type: array
+          description: A list of identifiers for the credentials you want to remove from the scan. For more information, see [Remove Credentials from a Scan](doc:remove-credentials-from-scan-tio).
+          items:
+            type: string
+    scans_history-in-scan-details-response:
+      type: object
+      properties:
+        history_id:
+          type: integer
+          description: The unique ID of the historical data.
+        owner_id:
+          type: integer
+          description: The unique ID of the owner of the scan.
+        creation_date:
+          type: integer
+          format: int64
+          description: The creation date for the historical data in Unix time.
+        last_modification_date:
+          type: integer
+          format: int64
+          description: The last modification date for the historical data in Unix time.
+        uuid:
+          type: string
+          description: The UUID of the historical data.
+        type:
+          type: string
+          description: 'The type of scan: `local` (a credentialed scan performed over the network), `remote` (an uncredentialed scan performed over the network, `agent` (a scan on a local host that a Nessus Agent performs directly), or `null` (the scan has never been launched, or the scan is imported).'
+        status:
+          type: string
+          description: The terminal status of the scan run. For a list of possible values, see [Scan Status](doc:scan-status-tio).
+        scheduler:
+          type: integer
+          description: If `true`, Tenable Vulnerability Management launched the scan automatically from a schedule.
+        alt_targets_used:
+          type: boolean
+          description: If `true`, Tenable Vulnerability Management did not not launched with a target list. This parameter is `true` for agent scans.
+        is_archived:
+          type: boolean
+          description: Indicates whether the scan results are older than 35 days (`true`). If this parameter is `true`, Tenable Vulnerability Management returns limited data for the scan run. For complete scan results that are older than 35 days, use the [Export scan](ref:scans-export-request) endpoint instead.
+        reporting_mode:
+          type: string
+          description: 'Indicates the reporting mode for Nessus Agent scans: <ul><li>baseline—A scan that always reports all detected findings regardless of severity level. For baseline scans, the Nessus Agent creates a local cache of the plugin outputs generated by the scan. The cache is then used as the base for differential comparisons in subsequent scans.</li><li>differential—A scan that produces smaller results by removing plugin outputs that have not changed since the last scan.</li><li>null—A normal Nessus Agent scan that does not support baseline or differential reporting modes.</li></ul>'
+    scans_Request-ScanSettings-Report:
+      title: Report Settings
+      description: Settings that control how scan results are reported and displayed.
+      type: object
+      properties:
+        report_verbosity:
+          type: string
+          description: '**[Report]** Specifies the level of verbosity in the scan report. `Verbose` reports as much information as possible. `Quiet` reports as little information as possible. When the override toggle is disabled, normal verbosity is used.'
+          enum:
+          - Verbose
+          - Quiet
+        report_superseded_patches:
+          type: string
+          description: '**[Report]** Specifies whether to show missing patches that have been superseded by newer patches.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+          example: 'yes'
+        silent_dependencies:
+          type: string
+          description: '**[Report]** Specifies whether to hide results from plugins that ran only as dependencies of other plugins.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'yes'
+        reverse_lookup:
+          type: string
+          description: '**[Report]** Specifies whether to designate hosts by their DNS name instead of IP address.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+        log_live_hosts:
+          type: string
+          description: '**[Report]** Specifies whether to display hosts that respond to ping in the report.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+        display_unreachable_hosts:
+          type: string
+          description: '**[Report]** Specifies whether to display unreachable hosts in the scan results.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
+        display_unicode_characters:
+          type: string
+          description: '**[Report]** Specifies whether to display Unicode characters in scan results.'
+          enum:
+          - 'yes'
+          - 'no'
+          default: 'no'
     scans_settings-agent-scan-launch-type:
       type: string
       description: For Nessus Agent scans, indicates whether the agent scan should use the scan window (scheduled) or rule-based (triggered) method for scan launches.
@@ -3642,88 +4157,96 @@ components:
           - 'yes'
           - 'no'
           default: 'no'
-    scans_scan-object-list:
+    scans_settings-acls:
       type: object
       properties:
-        control:
-          type: boolean
-          description: If `true`, the scan has a schedule and can be launched.
-        creation_date:
-          type: integer
-          description: For newly-created scans, the date on which the scan configuration was originally created. For scans that have been launched at least once, this attribute does not represent the date on which the scan configuration was originally created. Instead, it represents the date on which the scan was first launched, in Unix time format.
-          format: int64
-        enabled:
-          type: boolean
-          description: For Nessus scanner scans, a value indicating whether the scan schedule is active (`true`) or inactive (`false`). For Nessus Agent scans, a value indicating whether triggers for triggered scans are active (`true`) or inactive (`false`).
-        id:
-          type: integer
-          description: The unique ID of the scan.
-          format: int32
-        last_modification_date:
-          type: integer
-          description: For newly-created scans, the date on which the scan configuration was created. For scans that have been launched at least once, this attribute does not represent the date on which the scan configuration was last modified. Instead, it represents the date on which the scan was last launched, in Unix time format. Tenable Vulnerability Management updates this attribute each time the scan launches.
-          format: int64
-        legacy:
-          type: boolean
-          description: A value indicating whether the scan results were created before a change in storage method. If `true`, Tenable Vulnerability Management stores the results in the old storage method. If `false`, Tenable Vulnerability Management stores the results in the new storage method.
-        name:
-          type: string
-          description: The name of the scan.
-        owner:
-          type: string
-          description: The owner of the scan.
-        policy_id:
-          type: integer
-          description: The unique ID of the user-defined template (policy) on which the scan configuration is based.
-        read:
-          type: boolean
-          description: A value indicating whether the user account associated with the request message has viewed the scan in the Tenable Vulnerability Management user interface. If `1`, the user account has viewed the scan results.
-        schedule_uuid:
-          type: string
-          description: The UUID for a specific instance in the scan schedule.
-        shared:
-          type: boolean
-          description: If `true`, the scan is shared with users other than the scan owner. The level of sharing is specified in the `acls` attribute of the scan details.
-        status:
-          type: string
-          description: The status of the scan. For a list of possible values, see [Scan Status](doc:scan-status-tio).
-        template_uuid:
-          type: string
-          description: The UUID of the template.
-        type:
-          type: string
-          description: The type of scan.
         permissions:
           type: integer
-          description: The requesting user's permissions for the scan.
-          format: int32
-        user_permissions:
+          description: The scan permission. For more information, see [Permissions](doc:permissions).
+        owner:
           type: integer
-          description: The sharing permissions for the scan.
-          format: int32
-        uuid:
+          description: 'A value that indicates whether the user or user group specified in the object owns the scan. Possible values include: `null` (system-owned permissions), `0` (the user is not the owner of the scan), `1` (the user is the owner of the scan).'
+        display_name:
           type: string
-          description: The UUID of the scan.
-        wizard_uuid:
+          description: The name of the user or group granted the specified permissions, as it appears in the Tenable Vulnerability Management user interface.
+        name:
           type: string
-          description: The UUID of the Tenable-provided template used to create either the scan or the user-defined template (policy) on which the scan configuration is based.
-        progress:
+          description: The name of the user or group granted the specified permissions.
+        id:
           type: integer
-          description: The progress of the scan ranging from 0 to 100.
-        timezone:
+          description: A number representing the order in which the user or user groups display in the Permissions tab in the Tenable Vulnerability Management user interface.
+        type:
           type: string
-          description: The timezone of the scheduled start time for the scan.
-        rrules:
-          $ref: '#/components/schemas/scans_settings-rrules'
-        starttime:
-          type: string
-          description: 'For one-time scans, the starting date and time for the scan. For recurrent scans, the first date on which the scan schedule is active and the time that recurring scans launch based on the `rrules` attribute.
+          description: 'The type of scan permissions: `default` (default permissions for the scan), `user` (permissions for an individual user), or `group` (permissions for a user group).'
+    scans_request-create-and-update-plugins-object:
+      description: 'A list of plugins to add to the non-remediation scans. Use the [List plugin families](ref:io-plugins-families-list) endpoint to get a list of plugin families to choose from. Then, use the [List plugins in family](ref:io-plugins-family-details-id) endpoint to find plugins within the family to add to the scan.
 
 
-            This attribute has the following format: `YYYYMMDDTHHMMSS`.'
-        total_targets:
-          type: integer
-          description: The total number of targets in the scan.
+        **Note:** This form displays limited parameters. The example below illustrates how to add two plugins within the `Web Servers` plugin family to a scan.'
+      type: object
+      properties:
+        Web Servers:
+          type: object
+          description: A list of plugin families containing individual plugins to add to the scan. Use the [List plugin families](ref:io-plugins-families-list) endpoint to get a list of plugin families.
+          properties:
+            individual:
+              type: object
+              description: A list of individual plugins within the specified plugin family.
+              properties:
+                '11213':
+                  type: string
+                  description: The status (`enabled` or `disabled`) of the individual plugin within the plugin family to add to the scan.
+                  enum:
+                  - enabled
+                  - disabled
+                '18261':
+                  type: string
+                  description: The status (`enabled` or `disabled`) of the individual plugin within the plugin family to add to the scan.
+                  enum:
+                  - enabled
+                  - disabled
+    scans_filter:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The short name of the filter.
+        readable_name:
+          type: string
+          description: The long name of the filter.
+        operators:
+          description: The comparison options for the filter.
+          type: array
+          items:
+            type: string
+        control:
+          type: object
+          properties:
+            type:
+              type: string
+              description: The input type (entry or dropdown).
+            readable_regest:
+              type: string
+              description: The placeholder for the input.
+            regex:
+              type: string
+              description: A regex for checking the value of the input.
+            options:
+              description: A list of options if the input is a dropdown.
+              type: array
+              items:
+                type: string
+    scans_Request-ScanSettings:
+      title: Scan Settings
+      description: Complete scan settings for creating or updating a scan configuration.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/scans_Request-ScanSettings-Basic'
+      - $ref: '#/components/schemas/scans_Request-ScanSettings-Schedule'
+      - $ref: '#/components/schemas/scans_Request-ScanSettings-Discovery'
+      - $ref: '#/components/schemas/scans_Request-ScanSettings-Assessment'
+      - $ref: '#/components/schemas/scans_Request-ScanSettings-Report'
+      - $ref: '#/components/schemas/scans_Request-ScanSettings-Advanced'
     scans_Request-ScanSettings-Basic:
       title: Basic Settings
       description: Basic scan configuration settings including name, description, targets, scanner assignment, and notifications.
@@ -3914,51 +4437,6 @@ components:
           enum:
           - 'no'
           - 'yes'
-    scans_settings-acls:
-      type: object
-      properties:
-        permissions:
-          type: integer
-          description: The scan permission. For more information, see [Permissions](doc:permissions).
-        owner:
-          type: integer
-          description: 'A value that indicates whether the user or user group specified in the object owns the scan. Possible values include: `null` (system-owned permissions), `0` (the user is not the owner of the scan), `1` (the user is the owner of the scan).'
-        display_name:
-          type: string
-          description: The name of the user or group granted the specified permissions, as it appears in the Tenable Vulnerability Management user interface.
-        name:
-          type: string
-          description: The name of the user or group granted the specified permissions.
-        id:
-          type: integer
-          description: A number representing the order in which the user or user groups display in the Permissions tab in the Tenable Vulnerability Management user interface.
-        type:
-          type: string
-          description: 'The type of scan permissions: `default` (default permissions for the scan), `user` (permissions for an individual user), or `group` (permissions for a user group).'
-    scans_vulnerability:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: The number of vulnerabilities found.
-        plugin_name:
-          type: string
-          description: The name of the vulnerability plugin.
-        vuln_index:
-          type: integer
-          description: The index of the vulnerability plugin.
-        severity:
-          type: integer
-          description: The severity rating of the plugin.
-        plugin_id:
-          type: integer
-          description: The unique ID of the vulnerability plugin.
-        severity_index:
-          type: integer
-          description: The severity index order of the plugin.
-        plugin_family:
-          type: string
-          description: The parent family of the vulnerability plugin.
     scans_Request-ScanAudits:
       type: object
       description: Specifies compliance audit files to include in the scan. Supports both Tenable-provided (feed) audits and user-uploaded (custom) audits. For more information, see [Configure Compliance Audits](doc:configure-compliance-audits) and [Compliance](https://docs.tenable.com/vulnerability-management/Content/Scans/Compliance.htm) in the Tenable Vulnerability Management User Guide.
@@ -4021,51 +4499,54 @@ components:
                 - type
                 - category
                 - file
-    scans_Request-ScanSettings-Schedule:
-      title: Schedule Settings
-      description: Settings that control when and how often the scan runs.
+    scans_host:
       type: object
       properties:
-        enabled:
-          type: boolean
-          description: '**[Schedule]** Specifies whether the scan schedule is enabled (`true`) or disabled (`false`). For Nessus Scanner scans, this enables the scan schedule. For Nessus Agent scans, this enables triggers for triggered scans. If omitted, the system uses the default value of `false`.
-
-
-            **Note:** Scheduled scans do not run if they are in the scan owner''s trash folder.'
-        launch:
+        totalchecksconsidered:
+          type: integer
+          description: The total number of checks considered on the host.
+        numchecksconsidered:
+          type: integer
+          description: The number of checks considered on the host.
+        scanprogresstotal:
+          type: integer
+          description: The total scan progress for the host.
+        scanprogresscurrent:
+          type: integer
+          description: The current scan progress for the host.
+        host_index:
           type: string
-          description: '**[Schedule]** Specifies the frequency at which to launch the scan. Supported values are `ON_DEMAND`, `DAILY`, `WEEKLY`, `MONTHLY`, and `YEARLY`.
-
-
-            **Note:** Scheduled scans do not run if they are in the scan owner''s trash folder.'
-          enum:
-          - ON_DEMAND
-          - DAILY
-          - WEEKLY
-          - MONTHLY
-          - YEARLY
-        starttime:
+          description: The index for the host.
+        score:
+          type: integer
+          description: The overall score for the host.
+        severitycount:
+          type: object
+          properties: {}
+        progress:
           type: string
-          description: '**[Schedule]** Specifies the starting date and time for the scan. For one-time scans, this is when the scan runs. For recurrent scans, this is the first date the schedule is active and the time that recurring scans launch based on the `rrules` parameter.
-
-
-            Format: `YYYYMMDDTHHMMSS`. Must be set to a future date and time.'
-          example: 20260720T230000
-        rrules:
-          $ref: '#/components/schemas/scans_settings-rrules'
-        timezone:
+          description: The scan progress of the host.
+        critical:
+          type: integer
+          description: The percentage of critical findings on the host.
+        high:
+          type: integer
+          description: The percentage of high findings on the host.
+        medium:
+          type: integer
+          description: The percentage of medium findings on the host.
+        low:
+          type: integer
+          description: The percentage of low findings on the host.
+        info:
+          type: integer
+          description: The percentage of info findings on the host.
+        host_id:
+          type: integer
+          description: The unique ID of the host.
+        hostname:
           type: string
-          description: '**[Schedule]** Specifies the timezone for the scheduled start time (as specified in the `starttime` parameter). Use the [Get timezones](ref:scans-timezones) endpoint to retrieve valid timezone values.'
-          example: America/Chicago
-        launch_now:
-          type: boolean
-          description: '**[Schedule]** Specifies whether to launch the scan immediately after creation (`true`) or wait for the configured schedule (`false`).'
-        scheduleScan:
-          type: string
-          description: '**[Schedule]** Specifies whether to enable scheduling for the scan.'
-          enum:
-          - 'yes'
-          - 'no'
+          description: The name of the host.
     scans_settings-scan-triggers:
       type: array
       description: For Nessus Agent scans, describes the scan triggers used when `agent_scan_launch_type` is set to `triggered`.
@@ -4088,312 +4569,6 @@ components:
               filename:
                 type: string
                 description: The name of the file which, when created, will trigger a scan launch. This option is only applicable for scan trigger type `file-exists`.
-    scans_Request-ScanSettings-Discovery:
-      title: Discovery Settings
-      description: Settings that control how the scanner discovers hosts, including host discovery, ping methods, port scanning, service discovery, and identity collection.
-      type: object
-      properties:
-        ping_the_remote_host:
-          type: string
-          description: "**[Discovery]** Specifies whether the scanner pings remote hosts on multiple ports to determine their availability before beginning the scan. When enabled, the system provides additional configuration options for General Settings and Ping Methods. \n\n**Note:** To scan VMware guest systems, you must set this parameter to `no`."
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'yes'
-        fast_network_discovery:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner uses an accelerated discovery process. When enabled, the system bypasses additional verification tests normally used to distinguish between actual hosts and intermediate devices, such as proxies or load balancers, to improve discovery speed.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-          example: 'no'
-        arp_ping:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner pings a host using its hardware address via the Address Resolution Protocol (ARP). This method only works on local networks.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'yes'
-        tcp_ping:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner pings a host using TCP.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'yes'
-        tcp_ping_dest_ports:
-          type: string
-          description: '**[Discovery]** Specifies the destination ports checked via TCP ping. You can specify `built-in`, a single port, or a comma-separated list of ports. For information bout which ports `built-in` includes, see the [knowledge base article](https://community.tenable.com/s/article/What-ports-does-built-in-represent).'
-          default: built-in
-        icmp_ping:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner pings a host using the Internet Control Message Protocol (ICMP).'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'yes'
-        icmp_unreach_means_host_down:
-          type: string
-          description: '**[Discovery]** Specifies whether the system considers a targeted host dead when the scanner receives an ICMP unreachable message from a gateway. **Note:** Some firewalls and packet filters use this same behavior for active hosts connected to a filtered port or protocol, which can cause the scanner to misidentify them as down.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-          example: 'no'
-        icmp_ping_retries:
-          type: string
-          description: '**[Discovery]** Specifies the maximum number of attempts the system makes to retry pinging a remote host.'
-          default: '2'
-          example: '2'
-        udp_ping:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner pings a host using the User Datagram Protocol (UDP). Because UDP is a stateless protocol, communication is not always reliable and screening devices may prevent remote detection.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-          example: 'no'
-        scan_network_printers:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner scans network printers. When enabled, you can choose to surface the printer OS only or perform a full network scan.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-        scan_netware_hosts:
-          type: string
-          description: '**[Discovery]** Specifies whether to scan Novell Netware hosts.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-          example: 'no'
-        scan_ot_devices_with_discovery:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner uses protocol-specific queries (via OT Discovery) to identify live Operational Technology (OT) devices and retrieve granular attributes such as make, model, and firmware. **Note:** OT discovery assets contribute to your total license count.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-          example: 'no'
-        scan_ot_devices:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner performs a full scan of Operational Technology (OT) devices. **Caution:** Do not enable this setting in high-traffic production environments, as it can cause device interruptions.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-          example: 'no'
-        wol_wait_time:
-          type: string
-          description: '**[Discovery]** Specifies the amount of time, in minutes, the system waits for hosts to start after sending Wake-on-LAN (WOL) magic packets before performing the scan.'
-          default: '5'
-          example: '5'
-        unscanned_closed:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner considers unscanned ports as closed. When enabled, the system treats any port that falls outside the specified scan range or is not scanned by a selected port scanner as closed.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-          example: 'no'
-        portscan_range:
-          type: string
-          description: '**[Discovery]** Specifies the range of ports to be scanned. The `default` keyword instructs the scanner to scan approximately 4,790 commonly used ports. You can also specify `all` for all 65,536 ports or provide a custom comma-separated list or range.'
-          default: default
-          example: default
-        ssh_netstat_scanner:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner uses `netstat` to identify open ports via an SSH connection. This method is intended for Linux-based systems and requires configured SSH credentials.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'yes'
-        wmi_netstat_scanner:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner uses `netstat` to determine open ports while performing a WMI-based scan. This method requires configured Windows credentials.
-
-
-            **Note:** If this setting is enabled, the scanner ignores any custom range specified in the port range setting and treats unscanned ports as closed if the "Consider unscanned ports as closed" setting is enabled.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'yes'
-        snmp_scanner:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner uses SNMP to enumerate open ports and retrieve detailed host information. This method requires configured SNMP credentials. This setting can produce more detailed audit results for devices like Cisco routers where checks determine vulnerabilities present based on the returned SNMP string.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'yes'
-        only_portscan_if_enum_failed:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner performs a traditional port scan only if local port enumerators (such as SSH, WMI, or SNMP) fail to retrieve the port list.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'yes'
-        verify_open_ports:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner performs additional verification to confirm that a port identified as open by a port enumerator is actually accessible.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'no'
-        tcp_scanner:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner performs a full TCP connect scan to identify open ports.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'no'
-        tcp_firewall_detection:
-          type: string
-          description: '**[Discovery]** Specifies the method used to detect firewalls during a TCP scan. `Automatic (normal)` allows the system to determine the most effective detection strategy automatically.'
-          enum:
-          - Do not detect RST rate limitation (soft)
-          - Ignore closed ports (aggressive)
-          - Disabled (softer)
-        syn_scanner:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner performs a TCP SYN (half-open) scan to identify open ports.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'yes'
-        syn_firewall_detection:
-          type: string
-          description: '**[Discovery]** Specifies the method used to detect firewalls during a SYN scan. `Automatic (normal)` allows the system to determine the most effective detection strategy automatically.'
-          enum:
-          - Do not detect RST rate limitation (soft)
-          - Ignore closed ports (aggressive)
-          - Disabled (softer)
-        udp_scanner:
-          type: string
-          description: "**[Discovery]** Specifies whether the scanner performs a UDP scan to identify open ports. \n\n**Note:** Because the UDP protocol is stateless, the scanner often cannot distinguish between open and filtered ports, which can significantly increase scan duration and produce unreliable results. To improve performance and accuracy, Tenable recommends using local port enumerators, such as SSH (netstat), WMI (netstat), or SNMP."
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-          example: 'no'
-        svc_detection_on_all_ports:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner attempts to identify the service running on every open port identified during the scan.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'yes'
-        detect_ssl:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner attempts to detect SSL/TLS encryption on open ports.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'yes'
-        ssl_prob_ports:
-          type: string
-          description: '**[Discovery]** Specifies which ports the scanner probes for SSL/TLS encryption. You can set this to `All ports`, `Known ports`, or `None`.'
-          enum:
-          - All ports
-          - Known SSL ports
-          - None
-          default: Known SSL ports
-          example: All Ports
-        dtls_prob_ports:
-          type: string
-          description: '**[Discovery]** Specifies which ports the scanner probes for DTLS encryption. You can set this to `All ports`, `Known ports`, or `None`.'
-          enum:
-          - None
-          - Known DTLS ports
-          - All ports
-          default: None
-          example: None
-        cert_expiry_warning_days:
-          type: string
-          description: '**[Discovery]** Specifies the number of days before an SSL/TLS certificate expires that the system generates a warning finding.'
-          default: '60'
-          example: '60'
-        enumerate_all_ciphers:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner attempts to enumerate all supported SSL/TLS ciphers for each detected service.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'yes'
-        check_crl:
-          type: string
-          description: '**[Discovery]** Specifies whether the scanner checks the Certificate Revocation List (CRL) to determine if a detected SSL/TLS certificate has been revoked.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-          example: 'no'
-        collect_identity_data_from_ad:
-          type: string
-          description: '**[Discovery]** Specifies whether to collect identity data from Active Directory.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-    scans_request-update-scan-credentials-object:
-      type: object
-      description: An object that specifies credential parameters that enable a scanner to authenticate a connection to a target host. For more information about using managed credentials with the Tenable Vulnerability Management API, see [Manage Credentials](doc:manage-credentials).
-      properties:
-        add:
-          type: object
-          description: 'A credentials object you want to add to the scan. For scan-specific credentials, the parameters of the object vary based on credentials category, credentials type, and type-specific settings. For more information, see [Determine Settings for a Credential Type](doc:determine-settings-for-credential-type). For managed credentials, the object contains a single parameter `id`, which specifies the UUID of the managed credentials you want to add.
-
-
-            **Note:** This form displays limited parameters that support a Windows type of credentials that uses password authentication.'
-          properties:
-            Host:
-              type: object
-              description: "The name of this parameter corresponds to the display name that uniquely identifies the credentials category (in this case, `Host` for credentials from the Host category). This value corresponds to the following response message attributes:\n - `credentials[].data[].name` in the [Get template details](ref:editor-template-details) response message\n - `credentials[].id` in the [List credential types](ref:credentials-list-credential-types) response message"
-              properties:
-                Windows:
-                  type: array
-                  description: "The name of this parameter corresponds to the display name that uniquely identifies the credentials type (in this case, `Windows` for a Windows credential). This value corresponds to the following response message attributes:\n - `credentials[].data[].types[].name` in the [Get template details](ref:editor-template-details) response message\n - `credentials[].types[].id` in the [List credential types](ref:credentials-list-credential-types) response message`"
-                  items:
-                    type: object
-                    properties:
-                      domain:
-                        type: string
-                        description: The Windows domain to which the username belongs.
-                      username:
-                        type: string
-                        description: The username on the target system.
-                      auth_method:
-                        type: string
-                        description: The name for the authentication method. This value corresponds to the credentials[].types[].configuration[].options[].id attribute in the response message for the [List credential types](ref:credentials-list-credential-types) endpoint.
-                        enum:
-                        - Password
-                      password:
-                        type: string
-                        description: The user password on the target system.
-        edit:
-          type: object
-          description: "A scan-specific credentials object you want to modify. The parameters of the object vary based on credential category, credential type, and type-specific settings. For more information, see [Update a Scan](doc:update-scan-tio).\n\n **Note:** This parameter is not supported for use with managed credentials. For more information about editing managed credentials, see [Edit Managed Credentials](doc:edit-managed-credentials-tio)."
-          properties: {}
-        delete:
-          type: array
-          description: A list of identifiers for the credentials you want to remove from the scan. For more information, see [Remove Credentials from a Scan](doc:remove-credentials-from-scan-tio).
-          items:
-            type: string
     scans_scan-object-create-update-response:
       type: object
       properties:
@@ -4537,44 +4712,12 @@ components:
           type: integer
           description: The unique ID of the scan.
           format: int32
-    scans_history-in-scan-details-response:
-      type: object
-      properties:
-        history_id:
-          type: integer
-          description: The unique ID of the historical data.
-        owner_id:
-          type: integer
-          description: The unique ID of the owner of the scan.
-        creation_date:
-          type: integer
-          format: int64
-          description: The creation date for the historical data in Unix time.
-        last_modification_date:
-          type: integer
-          format: int64
-          description: The last modification date for the historical data in Unix time.
-        uuid:
-          type: string
-          description: The UUID of the historical data.
-        type:
-          type: string
-          description: 'The type of scan: `local` (a credentialed scan performed over the network), `remote` (an uncredentialed scan performed over the network, `agent` (a scan on a local host that a Nessus Agent performs directly), or `null` (the scan has never been launched, or the scan is imported).'
-        status:
-          type: string
-          description: The terminal status of the scan run. For a list of possible values, see [Scan Status](doc:scan-status-tio).
-        scheduler:
-          type: integer
-          description: If `true`, Tenable Vulnerability Management launched the scan automatically from a schedule.
-        alt_targets_used:
-          type: boolean
-          description: If `true`, Tenable Vulnerability Management did not not launched with a target list. This parameter is `true` for agent scans.
-        is_archived:
-          type: boolean
-          description: Indicates whether the scan results are older than 35 days (`true`). If this parameter is `true`, Tenable Vulnerability Management returns limited data for the scan run. For complete scan results that are older than 35 days, use the [Export scan](ref:scans-export-request) endpoint instead.
-        reporting_mode:
-          type: string
-          description: 'Indicates the reporting mode for Nessus Agent scans: <ul><li>baseline—A scan that always reports all detected findings regardless of severity level. For baseline scans, the Nessus Agent creates a local cache of the plugin outputs generated by the scan. The cache is then used as the base for differential comparisons in subsequent scans.</li><li>differential—A scan that produces smaller results by removing plugin outputs that have not changed since the last scan.</li><li>null—A normal Nessus Agent scan that does not support baseline or differential reporting modes.</li></ul>'
+    scans_settings-rrules:
+      type: string
+      description: 'The interval at which the scan repeats. The interval is formatted as a string of three values delimited by semi-colons. These values are: the frequency (FREQ=ONETIME or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). For a scan that runs every three weeks on Monday Wednesday and Friday, the string would be `FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR`. If the scan is not scheduled to recur, this attribute is `null`. For more information, see [rrules Format](doc:example-assessment-scan-recurring#rrules-format).
+
+
+        **Note:** To set the `rrules` parameter for an agent scan, the request must also include the following body parameters:<ul><li>The `uuid` parameter must specify an agent scan template. For more information, see [Tenable-Provided Agent Templates](https://docs.tenable.com/vulnerability-management/Content/Scans/AgentTemplates.htm) and the [List templates](ref:editor-list-templates) endpoint.</li><li>The `agent_group_id` parameter must specify an agent group. For more information, see [Agent Groups](ref:agent-groups).</li></ul>For an example request body for an agent scan, see [Example Agent Scan: Recurring](doc:example-agent-scan-recurring).'
     scans_request-create-scan-credentials-object:
       type: object
       description: An object that specifies credential parameters that enable a scanner to authenticate a connection to a target host. For more information about using managed credentials with the Tenable Vulnerability Management API, see [Manage Credentials](doc:manage-credentials).
@@ -4610,108 +4753,100 @@ components:
                       password:
                         type: string
                         description: The user password on the target system.
-    scans_scan-info-response-object:
+    scans_scan-object-list:
       type: object
       properties:
-        owner:
-          type: string
-          description: The owner of the scan.
-        name:
-          type: string
-          description: The name of the scan.
-        no_target:
-          type: boolean
-          description: Indicates whether the scan based on this policy can specify targets.
-        folder_id:
-          type: integer
-          description: The unique ID of the destination folder for the scan.
-          format: int32
         control:
           type: boolean
           description: If `true`, the scan has a schedule and can be launched.
+        creation_date:
+          type: integer
+          description: For newly-created scans, the date on which the scan configuration was originally created. For scans that have been launched at least once, this attribute does not represent the date on which the scan configuration was originally created. Instead, it represents the date on which the scan was first launched, in Unix time format.
+          format: int64
+        enabled:
+          type: boolean
+          description: For Nessus scanner scans, a value indicating whether the scan schedule is active (`true`) or inactive (`false`). For Nessus Agent scans, a value indicating whether triggers for triggered scans are active (`true`) or inactive (`false`).
+        id:
+          type: integer
+          description: The unique ID of the scan.
+          format: int32
+        last_modification_date:
+          type: integer
+          description: For newly-created scans, the date on which the scan configuration was created. For scans that have been launched at least once, this attribute does not represent the date on which the scan configuration was last modified. Instead, it represents the date on which the scan was last launched, in Unix time format. Tenable Vulnerability Management updates this attribute each time the scan launches.
+          format: int64
+        legacy:
+          type: boolean
+          description: A value indicating whether the scan results were created before a change in storage method. If `true`, Tenable Vulnerability Management stores the results in the old storage method. If `false`, Tenable Vulnerability Management stores the results in the new storage method.
+        name:
+          type: string
+          description: The name of the scan.
+        owner:
+          type: string
+          description: The owner of the scan.
+        policy_id:
+          type: integer
+          description: The unique ID of the user-defined template (policy) on which the scan configuration is based.
+        read:
+          type: boolean
+          description: A value indicating whether the user account associated with the request message has viewed the scan in the Tenable Vulnerability Management user interface. If `1`, the user account has viewed the scan results.
+        schedule_uuid:
+          type: string
+          description: The UUID for a specific instance in the scan schedule.
+        shared:
+          type: boolean
+          description: If `true`, the scan is shared with users other than the scan owner. The level of sharing is specified in the `acls` attribute of the scan details.
+        status:
+          type: string
+          description: The status of the scan. For a list of possible values, see [Scan Status](doc:scan-status-tio).
+        template_uuid:
+          type: string
+          description: The UUID of the template.
+        type:
+          type: string
+          description: The type of scan.
+        permissions:
+          type: integer
+          description: The requesting user's permissions for the scan.
+          format: int32
         user_permissions:
           type: integer
           description: The sharing permissions for the scan.
           format: int32
-        schedule_uuid:
-          type: string
-          description: The UUID for a specific instance in the scan schedule.
-        edit_allowed:
-          type: boolean
-          description: If `true`, the requesting user can edit this scan configuration.
-        scanner_name:
-          type: string
-          description: The name of the scanner configured to run the scan.
-        policy:
-          type: string
-          description: The name of the scan template associated with the scan.
-        shared:
-          type: boolean
-          description: If `true`, the scan is shared with users other than the owner. The level of sharing is specified in the `acls` attribute of the scan details.
-        object_id:
-          type: integer
-          description: The unique ID of the scan result object.
-          format: int32
-        tag_targets:
-          type: array
-          description: The list of asset tag identifiers the scan uses to determine which assets it evaluates. For more information about tag-based scans, see [Manage Tag-Based Scans](doc:manage-tag-based-scans-tio).  For more information about asset tags, see [Manage Asset Tags](doc:manage-asset-tags-tio).
-          items:
-            type: string
-            description: The UUID for an asset tag value. For more information about asset tags, see [Manage Asset Tags](doc:manage-asset-tags-tio).
-        acls:
-          type: array
-          description: An array of objects that control sharing permissions for the scan.
-          items:
-            $ref: '#/components/schemas/scans_settings-acls'
-        hostcount:
-          type: integer
-          description: The total number of assets scanned for vulnerabilities.
-          format: int32
         uuid:
           type: string
           description: The UUID of the scan.
-        status:
+        wizard_uuid:
           type: string
-          description: The status of the scan. For a list of possible values, see [Scan Status](doc:scan-status-tio).
-        scan_type:
-          type: string
-          description: 'The type of scan: `ps` (a scan performed over the network by a cloud scanner), `remote` (a  scan performed over the network by a local scanner), `agent` (a scan on a local host that a Nessus Agent performs directly), or `null` (the scan has never been launched, or the scan is imported).'
-        targets:
-          type: string
-          description: A comma-delimited list of IPv4 addresses that are configured as targets for the scan.
-        alt_targets_used:
-          type: boolean
-          description: If `true`, Tenable Vulnerability Management did not launch the scan with a target list. This parameter is `true` for agent scans.
-        pci-can-upload:
-          type: boolean
-          description: If `true`, you can submit the results of the scan for PCI ASV review. For more information, see [PCI ASV](https://docs.tenable.com/vulnerability-management/Content/PCI_ASV/GetStarted.htm) in the Tenable Vulnerability Management User Guide.
-        scan_start:
+          description: The UUID of the Tenable-provided template used to create either the scan or the user-defined template (policy) on which the scan configuration is based.
+        progress:
           type: integer
-          description: The Unix timestamp when the scan run started.
-          format: int64
-        timestamp:
-          type: integer
-          format: int64
-          description: The Unix timestamp when the scan run finished.
-        is_archived:
-          type: boolean
-          description: Indicates whether the scan results are older than 35 days (`true`). If this attribute is `true`, the response message for this endpoint excludes the `hosts`, `vulnerabilities`, `comphosts`, `compliance`, and `filters` objects. For complete scan results older than 35 days, use the [Export scan](ref:scans-export-request) endpoint instead.
-        scan_end:
-          type: integer
-          format: int64
-          description: The Unix timestamp when the scan run finished.
-        haskb:
-          type: boolean
-          description: Indicates whether a scan has a Knowledge Base (KB) associated with it. A KB is an ASCII text file containing a log of information relevant to the scan performed and results found.
-        hasaudittrail:
-          type: boolean
-          description: Indicates whether the scan is configured to create an audit trail.
-        scanner_start:
+          description: The progress of the scan ranging from 0 to 100.
+        timezone:
           type: string
-          description: The scan's start time, if the scan is imported.
-        scanner_end:
+          description: The timezone of the scheduled start time for the scan.
+        rrules:
+          $ref: '#/components/schemas/scans_settings-rrules'
+        starttime:
           type: string
-          description: The scan's end time, if the scan is imported.
+          description: 'For one-time scans, the starting date and time for the scan. For recurrent scans, the first date on which the scan schedule is active and the time that recurring scans launch based on the `rrules` attribute.
+
+
+            This attribute has the following format: `YYYYMMDDTHHMMSS`.'
+        total_targets:
+          type: integer
+          description: The total number of targets in the scan.
+    scans_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: string
+          description: The HTTP status code.
+        error:
+          type: integer
+          description: The HTTP status text.
+        message:
+          type: string
+          description: A brief message describing the error Tenable Vulnerability Management encountered.
     scans_Request-ScanSettings-Advanced:
       title: Advanced Settings
       description: Settings that control general scan behavior, performance, debugging, compliance output, vulnerability options, and credential handling.
@@ -5043,335 +5178,251 @@ components:
           - 'yes'
           - 'no'
           default: 'yes'
-    scans_Request-ScanSettings-Report:
-      title: Report Settings
-      description: Settings that control how scan results are reported and displayed.
+    scans_note:
       type: object
       properties:
-        report_verbosity:
+        title:
           type: string
-          description: '**[Report]** Specifies the level of verbosity in the scan report. `Verbose` reports as much information as possible. `Quiet` reports as little information as possible. When the override toggle is disabled, normal verbosity is used.'
-          enum:
-          - Verbose
-          - Quiet
-        report_superseded_patches:
-          type: string
-          description: '**[Report]** Specifies whether to show missing patches that have been superseded by newer patches.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-          example: 'yes'
-        silent_dependencies:
-          type: string
-          description: '**[Report]** Specifies whether to hide results from plugins that ran only as dependencies of other plugins.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'yes'
-        reverse_lookup:
-          type: string
-          description: '**[Report]** Specifies whether to designate hosts by their DNS name instead of IP address.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-        log_live_hosts:
-          type: string
-          description: '**[Report]** Specifies whether to display hosts that respond to ping in the report.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-        display_unreachable_hosts:
-          type: string
-          description: '**[Report]** Specifies whether to display unreachable hosts in the scan results.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-        display_unicode_characters:
-          type: string
-          description: '**[Report]** Specifies whether to display Unicode characters in scan results.'
-          enum:
-          - 'yes'
-          - 'no'
-          default: 'no'
-    scans_settings-rrules:
-      type: string
-      description: 'The interval at which the scan repeats. The interval is formatted as a string of three values delimited by semi-colons. These values are: the frequency (FREQ=ONETIME or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). For a scan that runs every three weeks on Monday Wednesday and Friday, the string would be `FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR`. If the scan is not scheduled to recur, this attribute is `null`. For more information, see [rrules Format](doc:example-assessment-scan-recurring#rrules-format).
-
-
-        **Note:** To set the `rrules` parameter for an agent scan, the request must also include the following body parameters:<ul><li>The `uuid` parameter must specify an agent scan template. For more information, see [Tenable-Provided Agent Templates](https://docs.tenable.com/vulnerability-management/Content/Scans/AgentTemplates.htm) and the [List templates](ref:editor-list-templates) endpoint.</li><li>The `agent_group_id` parameter must specify an agent group. For more information, see [Agent Groups](ref:agent-groups).</li></ul>For an example request body for an agent scan, see [Example Agent Scan: Recurring](doc:example-agent-scan-recurring).'
-    scans_host:
-      type: object
-      properties:
-        totalchecksconsidered:
-          type: integer
-          description: The total number of checks considered on the host.
-        numchecksconsidered:
-          type: integer
-          description: The number of checks considered on the host.
-        scanprogresstotal:
-          type: integer
-          description: The total scan progress for the host.
-        scanprogresscurrent:
-          type: integer
-          description: The current scan progress for the host.
-        host_index:
-          type: string
-          description: The index for the host.
-        score:
-          type: integer
-          description: The overall score for the host.
-        severitycount:
-          type: object
-          properties: {}
-        progress:
-          type: string
-          description: The scan progress of the host.
-        critical:
-          type: integer
-          description: The percentage of critical findings on the host.
-        high:
-          type: integer
-          description: The percentage of high findings on the host.
-        medium:
-          type: integer
-          description: The percentage of medium findings on the host.
-        low:
-          type: integer
-          description: The percentage of low findings on the host.
-        info:
-          type: integer
-          description: The percentage of info findings on the host.
-        host_id:
-          type: integer
-          description: The unique ID of the host.
-        hostname:
-          type: string
-          description: The name of the host.
-    scans_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: string
-          description: The HTTP status code.
-        error:
-          type: integer
-          description: The HTTP status text.
+          description: The title of the note.
         message:
           type: string
-          description: A brief message describing the error Tenable Vulnerability Management encountered.
-    scans_request-create-and-update-plugins-object:
-      description: 'A list of plugins to add to the non-remediation scans. Use the [List plugin families](ref:io-plugins-families-list) endpoint to get a list of plugin families to choose from. Then, use the [List plugins in family](ref:io-plugins-family-details-id) endpoint to find plugins within the family to add to the scan.
-
-
-        **Note:** This form displays limited parameters. The example below illustrates how to add two plugins within the `Web Servers` plugin family to a scan.'
+          description: The specific message of the note.
+        severity:
+          type: integer
+          description: The severity of the note.
+    ReportFindings:
       type: object
+    PluginSettings:
+      type: object
+      description: The settings for enabling or disabling individual plugins and/or plugin families to customize your scan.
       properties:
-        Web Servers:
+        rate_limiter:
           type: object
-          description: A list of plugin families containing individual plugins to add to the scan. Use the [List plugin families](ref:io-plugins-families-list) endpoint to get a list of plugin families.
+          description: Optional parameters for limiting the rate at which HTTP requests are sent to the target web application.
           properties:
-            individual:
-              type: object
-              description: A list of individual plugins within the specified plugin family.
-              properties:
-                '11213':
-                  type: string
-                  description: The status (`enabled` or `disabled`) of the individual plugin within the plugin family to add to the scan.
-                  enum:
-                  - enabled
-                  - disabled
-                '18261':
-                  type: string
-                  description: The status (`enabled` or `disabled`) of the individual plugin within the plugin family to add to the scan.
-                  enum:
-                  - enabled
-                  - disabled
-    Credentials:
-      type: object
-      description: The credentials the scanner uses to run an authenticated scan against the web application. For more information, see the managed credentials category in [Manage Credentials](doc:manage-credentials).
-      required:
-      - credential_ids
-      properties:
-        credential_ids:
+            requests_per_second:
+              type: integer
+              description: The maximum number of HTTP requests per second.
+              default: 25
+            autothrottle:
+              description: Indicates whether the scanner slows down the scan when network congestion is detected (`true`). The default value of this parameter is `true`.
+              type: boolean
+              default: true
+            timeout_threshold:
+              type: integer
+              description: The number of consecutive timeouts before Tenable Web App Scanning aborts the scan.
+              default: 100
+        mode:
+          type: string
+          example: disable
+          description: Indicates whether specific plugins and/or plugin families are enabled (`enable`) or disabled (`disable`) for the scan.
+        ids:
           type: array
-          description: A list of credentials UUIDs.
+          description: A list of plugin IDs.
+          items:
+            type: integer
+            description: The ID of the plugin.
+          example:
+          - 98000
+          - 98001
+        names:
+          type: array
+          description: A list of plugin names.
           items:
             type: string
-            format: uuid
-            description: The UUID of the credential.
-    ScanStatus:
-      type: string
-      description: "The scan status. Values include:\n - aborted—Terminated before completion for reason other than a user-requested stop.\n - canceled—Stopped by a user request.\n - completed—Completed successfully.\n - pending—Start requested but not yet running.\n - processing—The scan has completed but the results are still being processed. The scanner is processing vulnerability findings, attachments, notes, and other metadata.\n - ready—Scan is ready to be started.\n - running—Scan is in progress.\n - stopping—Stop requested but not yet stopped."
-      enum:
-      - aborted
-      - canceled
-      - completed
-      - pending
-      - processing
-      - ready
-      - running
-      - stopping
-      example: completed
-    HttpSettings:
-      type: object
-      description: The HTTP request settings for the scan.
-      properties:
-        response_max_size:
-          type: integer
-          minimum: 1
-          default: 500000
-          description: The maximum load size for an audited page.
-        request_redirect_limit:
-          type: integer
-          minimum: 1
-          default: 1
-          description: The number of redirects the scan follows before it stops trying to crawl the page.
-        user_agent:
-          description: The user-agent header the scanner includes in HTTP requests to the web application.
-          type: string
-          default: Nessus WAS/%v
-        custom_user_agent:
-          description: Indicates whether the scanner includes the `user-agent` header in HTTP requests to the web application (`true`).
-          type: boolean
-        request_headers:
-          description: 'The custom headers the scanner includes in HTTP requests to the web application.
-
-
-            **Note:** If you specify a user-agent header value in this parameter, it overrides the `user_agent` parameter value.'
-          type: object
-        request_concurrency:
-          description: The maximum number of concurrent HTTP connections to the web application.
-          type: integer
-          default: 10
-        request_timeout:
-          type: integer
-          description: HTTP request timeout (in milliseconds).
-          default: 5000
-    ErrorResponse_2:
-      type: object
-      required:
-      - reasons
-      description: Tenable Web App Scanning error response.
-      properties:
-        reasons:
+            description: The name of the plugin.
+          example:
+          - path_traversal
+        families:
           type: array
-          description: A list of reasons for the Tenable Web App Scanning error.
+          description: A list of plugin families.
+          items:
+            type: string
+            description: The name of the plugin family.
+          example:
+          - web_servers
+          - csrf
+    AssessmentSettings:
+      type: object
+      description: 'Assessment settings specify which web application elements you want the scanner to audit as it crawls your URLs. '
+      properties:
+        rfi_remote_url:
+          type: string
+          description: The URL of the file on a remote host to use for Remote File Inclusion (RFI) tests. By default, Tenable Web App Scanning uses a safe file hosted by Tenable for RFI testing. If the scanner cannot reach the internet, you can use an internally hosted file for more accurate RFI testing.
+          format: uri
+          default: http://rfi.nessus.org/rfi.txt
+        dictionary:
+          description: The type of dictionary to use when testing common and backup files. Possible values are `full` or `limited`.
+          type: string
+          enum:
+          - limited
+          - full
+          default: limited
+        fingerprinting:
+          description: Indicates whether fingerprinted should be enabled (`true`) or disabled (`false`).
+          type: boolean
+          default: true
+        enable:
+          description: Indicates whether an assessment is enabled (`true`) or disabled (`false`).
+          type: boolean
+        element_exclusions:
+          type: array
+          description: Element exclusions prevent scans from interacting with specific page elements (ex. logout buttons or forms) and their children. This setting is available for Scan, Overview, and PCI scan templates.
           items:
             type: object
-            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
-            minItems: 1
-            required:
-            - code
-            - reason
             properties:
-              code:
+              element_type:
                 type: string
-                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
-              reason:
+                description: The type of element to exclude. Currently, only `dom_element` is supported.
+                enum:
+                - dom_element
+              selector_type:
                 type: string
-                description: The extended description of the cause of the Tenable Web App Scanning error.
-    Attachment:
+                description: Specifies the selector type. DOM elements can be selected based on either text values or CSS attributes. Use `text` for text contents or `attribute` for a CSS key and value pair.
+                enum:
+                - text
+                - attribute
+              selector:
+                description: If the `selector_type` is `text`, the selector value is a `string` (option 1). If the `selector_type` is `attribute`, the selector value is an object containing one key and value pair (option 2).
+                oneOf:
+                - type: string
+                - type: object
+                  description: 'An object containing one key-value pair, where the key is the CSS attribute name and the value is the attribute value. For example: `{"id": "logout"}`'
+                  example: '{"id": "logout"}'
+                  additionalProperties: true
+                  maxProperties: 1
+    ScanMetadata:
       type: object
-      description: The report attachments for the vulnerability.
-      required:
-      - attachment_id
-      - created_at
-      - attachment_name
-      - md5
-      - file_type
+      description: Summary statistics for the scan results.
       properties:
-        attachment_id:
+        queued_urls:
+          type: integer
+          example: 0
+          description: The number of web application URLs queued for the scan.
+        crawled_urls:
+          type: integer
+          example: 6
+          description: The number of web application URLs crawled by the scan.
+        queued_pages:
+          type: integer
+          example: 0
+          description: The number of web application pages queued for the scan.
+        audited_pages:
+          type: integer
+          example: 29
+          description: The number of pages audited by the scan.
+        request_count:
+          type: integer
+          example: 32339
+          description: The number of requests the scan made to the target web application.
+        response_time:
+          type: integer
+          example: 0
+          description: The average response time (in milliseconds) from the web application.
+        finalized_children:
+          type: integer
+          example: 0
+          description: The total number of finalized children if the scan has multiple targets.
+        total_children:
+          type: integer
+          example: 0
+          description: The total number of children if the scan has multiple targets.
+    Vulnerability:
+      type: object
+      required:
+      - vuln_id
+      - scan_id
+      - plugin_id
+      - created_at
+      - uri
+      - details
+      - attachments
+      properties:
+        vuln_id:
           type: string
           format: uuid
-          description: The UUID of the attachment file.
-          readOnly: true
+          example: 9ef6f286-f79c-443f-a495-8376142d0e8e
+          description: The UUID of the vulnerability.
+        scan_id:
+          type: string
+          format: uuid
+          example: 16af9226-699a-4cb9-9543-6082617a9cd0
+          description: The UUID of the scan that detected the vulnerability in the web application.
+        plugin_id:
+          type: integer
+          example: 98100
+          description: The ID of the plugin associated with the vulnerability.
         created_at:
           type: string
           format: date-time
-          example: '2018-12-31T13:51:17.243Z'
-          description: An ISO timestamp indicating the date and time when a scan generated the attachment file, for example, `2018-12-31T13:51:17.243Z`.
-          readOnly: true
-        attachment_name:
-          description: The name of the attachment file.
+          example: '2017-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when Tenable Web App Scanning detected the vulnerability, for example, `2018-12-31T13:51:17.243Z`.
+        uri:
           type: string
-          readOnly: true
-        md5:
-          type: string
-          description: The MD5 hash of the attachment file.
-          readOnly: true
-        file_type:
-          type: string
-          description: The MIME type of the attachment file.
-          readOnly: true
-    AppliedFilters-VulnerabilitiesByScan:
+          format: uri
+          example: http://example.com
+          description: The URI of the web application associated with the vulnerability.
+        details:
+          type: object
+          $ref: '#/components/schemas/VulnerabilityDetails'
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+    BrowserSettings:
       type: object
-      description: A single filter to apply to the vulnerabilities search for the specified scan.
+      description: The settings for the virtual browser instance used by the scanner.
       properties:
-        field:
-          type: string
-          description: The name of the field you want to filter on. You can list available vulnerability filters for the scan with the [GET /was/v2/scans/{scan_id}/vulnerabilities/filters](ref:was-v2-filters-vulns-scan-list) endpoint.
-          example: folder_name
-        operator:
-          type: string
-          description: The comparison operator to apply to the filter. You can find available comparison operators for the filter in the `operators` attribute of the objects returned by the [GET /was/v2/scans/{scan_id}/vulnerabilities/filters](ref:was-v2-filters-vulns-scan-list) endpoint.
-          example: match
-        value:
-          type: string
-          description: The value to compare the given field to using the given operator. You can find valid values for the filter in the `control` attribute of the objects returned by the [GET /was/v2/scans/{scan_id}/vulnerabilities/filters](ref:was-v2-filters-vulns-scan-list) endpoint.
-          example: My Scans
-    VulnerabilityDetails:
+        screen_width:
+          type: integer
+          description: The screen width (in pixels) of the browser embedded into the scanner.
+          default: 1600
+        screen_height:
+          type: integer
+          description: The screen height (in pixels) of the browser embedded into the scanner.
+          default: 1200
+        ignore_images:
+          type: boolean
+          description: Indicates whether the browser should crawl images on web pages (`false`) or ignore those images (`true`) . The default value of this parameter is `true`.
+          default: true
+        job_timeout:
+          type: integer
+          description: The browser timeout (in milliseconds).
+          default: 10000
+        analysis:
+          type: boolean
+          description: Indicates whether DOM page analysis should be enabled (`true`) or (`disabled`) during the scan.
+          default: true
+        pool_size:
+          type: integer
+          description: The number of browser instances used for the scan.
+    PaginationResponse:
+      description: An object containing pagination information for the current result set.
       type: object
-      description: The details for the vulnerability.
-      readOnly: true
       properties:
-        input_name:
-          type: string
-          example: cmd
-          description: The vulnerable input of the page element where the payload has been injected.
-          readOnly: true
-        input_type:
-          type: string
-          example: form
-          description: The type of the page element containing the vulnerable input.
-          readOnly: true
-        output:
-          type: string
-          example: 'The backup directory detected at URL: http://webscantest.com/rfplaces/somedir1.rar
-
-            Identified by converting the original directory name of ''somedir1'' to ''somedir1.rar''.'
-          description: The output from the plugin.
-          readOnly: true
-        proof:
-          type: string
-          example: <xss_9a3511f8-7852-4096-a7c0-6065ff8ebad3/>
-          description: The output from the web application corroborating that the vulnerability is present.
-          readOnly: true
-        payload:
-          type: string
-          example: alert('xss')
-          description: The attack payload used to detect the vulnerability.
-          readOnly: true
-        selector:
-          type: string
-          example: //form[@action = "/foo"]
-          description: The path to the element in the document.
-          readOnly: true
-        selector_url:
-          type: string
-          example: http://webscantest.com/rfplaces/somedir1
-          description: The URL where the element is located.
-          readOnly: true
-        signature:
-          type: string
-          example: (?-mix::.+:\d+:\d+:.+:[0-9a-zA-Z\/]+)
-          description: The pattern used to validate the vulnerability.
-          readOnly: true
-    ReportFindings:
-      type: object
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/PaginationResponseSortObject'
+    RequestedAction:
+      type: string
+      enum:
+      - start
+      - stop
+      example: start
     ReportInfo:
       type: object
       properties:
@@ -5397,43 +5448,38 @@ components:
           $ref: '#/components/schemas/ReportFindings'
         notes:
           $ref: '#/components/schemas/ReportScanNotes'
-    ReportScanSettings:
+    AppliedFilters-Vulnerabilities:
       type: object
+      description: A single filter to apply to the vulnerabilities search.
       properties:
-        http:
-          $ref: '#/components/schemas/HttpSettings'
-        audit:
-          $ref: '#/components/schemas/AuditSettings'
-        scope:
-          $ref: '#/components/schemas/ScopeSettings'
-        plugin:
-          $ref: '#/components/schemas/PluginSettings'
-        target:
+        field:
           type: string
-          format: uri
-          example: https://example.com
-          description: The URL of the target web application.
-        browser:
-          $ref: '#/components/schemas/BrowserSettings'
-        timeout:
+          description: The name of the field you want to filter on. You can list available vulnerability filters with the [GET /was/v2/vulnerabilities/filters](ref:was-v2-filters-vulns-list) endpoint.
+          example: folder_name
+        operator:
           type: string
-          pattern: ^\d{2}:\d{2}:\d{2}$
-          example: 08:00:00
-          description: The time (in milliseconds) that the scanner waits for a response from the web application host.
-        assessment:
-          $ref: '#/components/schemas/AssessmentSettings'
-        credentials:
-          $ref: '#/components/schemas/Credentials'
-    PaginationResponseSortObject:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+          description: The comparison operator to apply to the filter. You can find available comparison operators for the filter in the `operators` attribute of the objects returned by the [GET /was/v2/vulnerabilities/filters](ref:wwas-v2-filters-vulns-list) endpoint.
+          example: match
+        value:
+          type: string
+          description: The value to compare the given field to using the given operator. You can find valid values for the filter in the `control` attribute of the objects returned by the [GET /was/v2/vulnerabilities/filters](ref:was-v2-filters-vulns-list) endpoint.
+          example: My Scans
+    AppliedFilters-VulnerabilitiesByScan:
       type: object
+      description: A single filter to apply to the vulnerabilities search for the specified scan.
       properties:
-        name:
+        field:
           type: string
-          description: The property used to sort the results.
-        order:
+          description: The name of the field you want to filter on. You can list available vulnerability filters for the scan with the [GET /was/v2/scans/{scan_id}/vulnerabilities/filters](ref:was-v2-filters-vulns-scan-list) endpoint.
+          example: folder_name
+        operator:
           type: string
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+          description: The comparison operator to apply to the filter. You can find available comparison operators for the filter in the `operators` attribute of the objects returned by the [GET /was/v2/scans/{scan_id}/vulnerabilities/filters](ref:was-v2-filters-vulns-scan-list) endpoint.
+          example: match
+        value:
+          type: string
+          description: The value to compare the given field to using the given operator. You can find valid values for the filter in the `control` attribute of the objects returned by the [GET /was/v2/scans/{scan_id}/vulnerabilities/filters](ref:was-v2-filters-vulns-scan-list) endpoint.
+          example: My Scans
     Scan:
       type: object
       required:
@@ -5492,139 +5538,79 @@ components:
           $ref: '#/components/schemas/ScanStatus'
         metadata:
           $ref: '#/components/schemas/ScanMetadata'
-    AppliedFilters-Vulnerabilities:
+    ScanNote:
       type: object
-      description: A single filter to apply to the vulnerabilities search.
+      description: A note describing error conditions the scanner encountered for a given scan.
       properties:
-        field:
-          type: string
-          description: The name of the field you want to filter on. You can list available vulnerability filters with the [GET /was/v2/vulnerabilities/filters](ref:was-v2-filters-vulns-list) endpoint.
-          example: folder_name
-        operator:
-          type: string
-          description: The comparison operator to apply to the filter. You can find available comparison operators for the filter in the `operators` attribute of the objects returned by the [GET /was/v2/vulnerabilities/filters](ref:wwas-v2-filters-vulns-list) endpoint.
-          example: match
-        value:
-          type: string
-          description: The value to compare the given field to using the given operator. You can find valid values for the filter in the `control` attribute of the objects returned by the [GET /was/v2/vulnerabilities/filters](ref:was-v2-filters-vulns-list) endpoint.
-          example: My Scans
-    ReportConfig:
-      type: object
-      properties:
-        config_id:
+        scan_note_id:
+          description: The UUID of the note.
           type: string
           format: uuid
-          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
-          description: The UUID of the scan configuration.
-        owner_id:
-          type: string
-          format: uuid
-          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
-          description: The UUID of owner of the scan configuration.
-        settings:
-          $ref: '#/components/schemas/ReportScanSettings'
-        scanner_type:
-          description: "Indicates the type of scanner that ran the scan, as configured in the scanner_id parameter of the scan configuration. Possible values are: \n - `scanner` -- A single scanner running on premises in the client's own infrastructure or environment. \n - `container_group` -- A group of client scanners running on premises. \n - `cloud` -- A group of managed scanners running within Tenable's cloud infrastructure."
-          type: string
-        scanner_instance_id:
-          type: string
-          format: uuid
-          description: The ID of the scanner (if the `type` is set to `scanner`), or scanner group (if the type is `container_group`) that performs the scan.
-        name:
-          description: The name of the scan configuration.
-          type: string
-        description:
-          description: The description of the scan configuration.
-          type: string
-    Vulnerability:
-      type: object
-      required:
-      - vuln_id
-      - scan_id
-      - plugin_id
-      - created_at
-      - uri
-      - details
-      - attachments
-      properties:
-        vuln_id:
-          type: string
-          format: uuid
-          example: 9ef6f286-f79c-443f-a495-8376142d0e8e
-          description: The UUID of the vulnerability.
+          example: b74adc0d-52d5-44c5-99cc-0f18d19672c7
+          readOnly: true
         scan_id:
+          description: The UUID of the scan.
           type: string
           format: uuid
           example: 16af9226-699a-4cb9-9543-6082617a9cd0
-          description: The UUID of the scan that detected the vulnerability in the web application.
-        plugin_id:
-          type: integer
-          example: 98100
-          description: The ID of the plugin associated with the vulnerability.
+          readOnly: true
         created_at:
+          description: An ISO timestamp indicating the date and time when the scan was created, for example, `2018-12-31T13:51:17.243Z`.
           type: string
           format: date-time
           example: '2017-07-21T17:32:28Z'
-          description: An ISO timestamp indicating the date and time when Tenable Web App Scanning detected the vulnerability, for example, `2018-12-31T13:51:17.243Z`.
-        uri:
+          readOnly: true
+        severity:
+          description: 'The severity rating. For example: `info`, `low`, `medium`, `high`, `critical`.'
           type: string
-          format: uri
-          example: http://example.com
-          description: The URI of the web application associated with the vulnerability.
-        details:
-          type: object
-          $ref: '#/components/schemas/VulnerabilityDetails'
-        attachments:
-          type: array
-          items:
-            $ref: '#/components/schemas/Attachment'
-    ReportScan:
+          enum:
+          - info
+          - low
+          - medium
+          - high
+          - critical
+        title:
+          description: The title of the note.
+          type: string
+          example: Target Unreachable
+          readOnly: true
+        message:
+          description: The specific message of the note.
+          type: string
+          example: Scan has not been able to connect to the target, or the request to the target URL returns no response.
+          readOnly: true
+    Attachment:
       type: object
+      description: The report attachments for the vulnerability.
+      required:
+      - attachment_id
+      - created_at
+      - attachment_name
+      - md5
+      - file_type
       properties:
-        user_id:
-          description: The UUID of the user that created the scan.
+        attachment_id:
           type: string
           format: uuid
-          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
-        scan_id:
-          type: string
-          description: The UUID of the scan that detected the vulnerability in the web application.
-          format: uuid
-          example: b74adc0d-52d5-44c5-99cc-0f18d19672c7
-        target:
-          type: string
-          description: The URI of the web application.
-        created_at:
-          description: An ISO timestamp indicating the date and time when the scan configuration was created, for example, `2018-12-31T13:51:17.243Z`.
-          type: string
-          format: date-time
-          example: '2017-07-21T17:32:28Z'
-    AppliedFilters-Scans:
-      type: object
-      description: A single filter to apply to the scan search.
-      properties:
-        field:
-          type: string
-          description: The name of the field you want to filter on. You can list available scan filters with the [GET /was/v2/configs/{config_id}/scans/filters](ref:was-v2-filters-scans-list) endpoint.
-          example: folder_name
-        operator:
-          type: string
-          description: The comparison operator to apply to the filter. You can find available comparison operators for the filter in the `operators` attribute of the objects returned by the [GET /was/v2/configs/{config_id}/scans/filters](ref:was-v2-filters-scans-list) endpoint.
-          example: match
-        value:
-          type: string
-          description: The value to compare the given field to using the given operator. You can find valid values for the filter in the `control` attribute of the objects returned by the [GET /was/v2/configs/{config_id}/scans/filters](ref:was-v2-filters-scans-list) endpoint.
-          example: My Scans
-    ScanReport:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ReportInfo'
+          description: The UUID of the attachment file.
+          readOnly: true
         created_at:
           type: string
           format: date-time
           example: '2018-12-31T13:51:17.243Z'
           description: An ISO timestamp indicating the date and time when a scan generated the attachment file, for example, `2018-12-31T13:51:17.243Z`.
+          readOnly: true
+        attachment_name:
+          description: The name of the attachment file.
+          type: string
+          readOnly: true
+        md5:
+          type: string
+          description: The MD5 hash of the attachment file.
+          readOnly: true
+        file_type:
+          type: string
+          description: The MIME type of the attachment file.
           readOnly: true
     ReportScanTemplate:
       type: object
@@ -5645,12 +5631,78 @@ components:
         description:
           description: The description of the Tenable-provided template.
           type: string
-    RequestedAction:
-      type: string
-      enum:
-      - start
-      - stop
-      example: start
+    AppliedFilters-Scans:
+      type: object
+      description: A single filter to apply to the scan search.
+      properties:
+        field:
+          type: string
+          description: The name of the field you want to filter on. You can list available scan filters with the [GET /was/v2/configs/{config_id}/scans/filters](ref:was-v2-filters-scans-list) endpoint.
+          example: folder_name
+        operator:
+          type: string
+          description: The comparison operator to apply to the filter. You can find available comparison operators for the filter in the `operators` attribute of the objects returned by the [GET /was/v2/configs/{config_id}/scans/filters](ref:was-v2-filters-scans-list) endpoint.
+          example: match
+        value:
+          type: string
+          description: The value to compare the given field to using the given operator. You can find valid values for the filter in the `control` attribute of the objects returned by the [GET /was/v2/configs/{config_id}/scans/filters](ref:was-v2-filters-scans-list) endpoint.
+          example: My Scans
+    AuditSettings:
+      description: The settings that allow the scan to audit elements other than the ones detected during crawling.
+      type: object
+      properties:
+        forms:
+          type: boolean
+          description: Indicates whether to scan for form vulnerabilities (`true`).
+          default: false
+        cookies:
+          type: boolean
+          description: Indicates whether to scan for cookie vulnerabilities (`true`).
+          default: false
+        ui_forms:
+          type: boolean
+          default: false
+          description: Indicates whether to scan input and button groups associated with JavaScript code (`true`).
+        ui_inputs:
+          type: boolean
+          description: Indicates whether to scan orphan input elements with associated DOM events (`true`).
+          default: false
+        headers:
+          type: boolean
+          description: Indicates whether to scan headers for vulnerabilities and insecure configurations (`true`); for example, missing X-Frame-Options.
+          default: false
+        links:
+          type: boolean
+          description: Indicates whether to scan links and their parameters in vulnerability checks (`true`).
+          default: false
+        parameter_names:
+          type: boolean
+          description: Indicates whether to perform extensive fuzzing of parameter names (`true`).
+          default: false
+        parameter_values:
+          type: boolean
+          description: Indicates whether to perform performs extensive fuzzing of parameter values (`true`).
+          default: false
+        jsons:
+          type: boolean
+          description: Indicates whether to scan JSON request data (`true`).
+          default: false
+        xmls:
+          type: boolean
+          description: Indicates whether to scan XML request data (`true`).
+          default: false
+        cookies_extensively:
+          description: Indicates whether an assessment is enabled (`true`) or disabled (`false`).
+          type: boolean
+        with_raw_payloads:
+          description: Indicates whether parameters should be tested with their raw payloads (`true`) or not (`false`).
+          type: boolean
+        with_both_http_methods:
+          description: Indicates if both GET and POST methods should be used during an assessment (`true`) or not (`false`).
+          type: boolean
+        with_extra_parameter:
+          description: Indicates whether to test non-existing parameters (`true`) or disabled (`false`).
+          type: boolean
     ScopeSettings:
       type: object
       description: The URLs and file types that you want to include or exclude from your scan.
@@ -5762,110 +5814,128 @@ components:
         soap_file_url:
           type: string
           description: "A URL pointing to a WSDL v1.1 file that defines the API schema to scan. The URL must start with `http://` or `https://` and end with `.wsdl`, `.xml`, or `/wsdl/`. \n\nAlternatively, you can provide the WSDL file as a base64-encoded string via the `soap_file` parameter."
-    ScanNote:
+    ReportConfig:
       type: object
-      description: A note describing error conditions the scanner encountered for a given scan.
       properties:
-        scan_note_id:
-          description: The UUID of the note.
+        config_id:
           type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+          description: The UUID of the scan configuration.
+        owner_id:
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+          description: The UUID of owner of the scan configuration.
+        settings:
+          $ref: '#/components/schemas/ReportScanSettings'
+        scanner_type:
+          description: "Indicates the type of scanner that ran the scan, as configured in the scanner_id parameter of the scan configuration. Possible values are: \n - `scanner` -- A single scanner running on premises in the client's own infrastructure or environment. \n - `container_group` -- A group of client scanners running on premises. \n - `cloud` -- A group of managed scanners running within Tenable's cloud infrastructure."
+          type: string
+        scanner_instance_id:
+          type: string
+          format: uuid
+          description: The ID of the scanner (if the `type` is set to `scanner`), or scanner group (if the type is `container_group`) that performs the scan.
+        name:
+          description: The name of the scan configuration.
+          type: string
+        description:
+          description: The description of the scan configuration.
+          type: string
+    PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    ReportScanSettings:
+      type: object
+      properties:
+        http:
+          $ref: '#/components/schemas/HttpSettings'
+        audit:
+          $ref: '#/components/schemas/AuditSettings'
+        scope:
+          $ref: '#/components/schemas/ScopeSettings'
+        plugin:
+          $ref: '#/components/schemas/PluginSettings'
+        target:
+          type: string
+          format: uri
+          example: https://example.com
+          description: The URL of the target web application.
+        browser:
+          $ref: '#/components/schemas/BrowserSettings'
+        timeout:
+          type: string
+          pattern: ^\d{2}:\d{2}:\d{2}$
+          example: 08:00:00
+          description: The time (in milliseconds) that the scanner waits for a response from the web application host.
+        assessment:
+          $ref: '#/components/schemas/AssessmentSettings'
+        credentials:
+          $ref: '#/components/schemas/Credentials'
+    ReportScan:
+      type: object
+      properties:
+        user_id:
+          description: The UUID of the user that created the scan.
+          type: string
+          format: uuid
+          example: d30881ae-6b5c-4b1e-ad60-f2643d0da492
+        scan_id:
+          type: string
+          description: The UUID of the scan that detected the vulnerability in the web application.
           format: uuid
           example: b74adc0d-52d5-44c5-99cc-0f18d19672c7
-          readOnly: true
-        scan_id:
-          description: The UUID of the scan.
+        target:
           type: string
-          format: uuid
-          example: 16af9226-699a-4cb9-9543-6082617a9cd0
-          readOnly: true
+          description: The URI of the web application.
         created_at:
-          description: An ISO timestamp indicating the date and time when the scan was created, for example, `2018-12-31T13:51:17.243Z`.
+          description: An ISO timestamp indicating the date and time when the scan configuration was created, for example, `2018-12-31T13:51:17.243Z`.
           type: string
           format: date-time
           example: '2017-07-21T17:32:28Z'
-          readOnly: true
-        severity:
-          description: 'The severity rating. For example: `info`, `low`, `medium`, `high`, `critical`.'
-          type: string
-          enum:
-          - info
-          - low
-          - medium
-          - high
-          - critical
-        title:
-          description: The title of the note.
-          type: string
-          example: Target Unreachable
-          readOnly: true
-        message:
-          description: The specific message of the note.
-          type: string
-          example: Scan has not been able to connect to the target, or the request to the target URL returns no response.
-          readOnly: true
-    BrowserSettings:
+    ScanStatus:
+      type: string
+      description: "The scan status. Values include:\n - aborted—Terminated before completion for reason other than a user-requested stop.\n - canceled—Stopped by a user request.\n - completed—Completed successfully.\n - pending—Start requested but not yet running.\n - processing—The scan has completed but the results are still being processed. The scanner is processing vulnerability findings, attachments, notes, and other metadata.\n - ready—Scan is ready to be started.\n - running—Scan is in progress.\n - stopping—Stop requested but not yet stopped."
+      enum:
+      - aborted
+      - canceled
+      - completed
+      - pending
+      - processing
+      - ready
+      - running
+      - stopping
+      example: completed
+    ErrorResponse_2:
       type: object
-      description: The settings for the virtual browser instance used by the scanner.
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
       properties:
-        screen_width:
-          type: integer
-          description: The screen width (in pixels) of the browser embedded into the scanner.
-          default: 1600
-        screen_height:
-          type: integer
-          description: The screen height (in pixels) of the browser embedded into the scanner.
-          default: 1200
-        ignore_images:
-          type: boolean
-          description: Indicates whether the browser should crawl images on web pages (`false`) or ignore those images (`true`) . The default value of this parameter is `true`.
-          default: true
-        job_timeout:
-          type: integer
-          description: The browser timeout (in milliseconds).
-          default: 10000
-        analysis:
-          type: boolean
-          description: Indicates whether DOM page analysis should be enabled (`true`) or (`disabled`) during the scan.
-          default: true
-        pool_size:
-          type: integer
-          description: The number of browser instances used for the scan.
-    ScanMetadata:
-      type: object
-      description: Summary statistics for the scan results.
-      properties:
-        queued_urls:
-          type: integer
-          example: 0
-          description: The number of web application URLs queued for the scan.
-        crawled_urls:
-          type: integer
-          example: 6
-          description: The number of web application URLs crawled by the scan.
-        queued_pages:
-          type: integer
-          example: 0
-          description: The number of web application pages queued for the scan.
-        audited_pages:
-          type: integer
-          example: 29
-          description: The number of pages audited by the scan.
-        request_count:
-          type: integer
-          example: 32339
-          description: The number of requests the scan made to the target web application.
-        response_time:
-          type: integer
-          example: 0
-          description: The average response time (in milliseconds) from the web application.
-        finalized_children:
-          type: integer
-          example: 0
-          description: The total number of finalized children if the scan has multiple targets.
-        total_children:
-          type: integer
-          example: 0
-          description: The total number of children if the scan has multiple targets.
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
     ReportUserScanTemplate:
       type: object
       properties:
@@ -5879,187 +5949,127 @@ components:
         description:
           description: The description for the user-defined template.
           type: string
-    AuditSettings:
-      description: The settings that allow the scan to audit elements other than the ones detected during crawling.
-      type: object
-      properties:
-        forms:
-          type: boolean
-          description: Indicates whether to scan for form vulnerabilities (`true`).
-          default: false
-        cookies:
-          type: boolean
-          description: Indicates whether to scan for cookie vulnerabilities (`true`).
-          default: false
-        ui_forms:
-          type: boolean
-          default: false
-          description: Indicates whether to scan input and button groups associated with JavaScript code (`true`).
-        ui_inputs:
-          type: boolean
-          description: Indicates whether to scan orphan input elements with associated DOM events (`true`).
-          default: false
-        headers:
-          type: boolean
-          description: Indicates whether to scan headers for vulnerabilities and insecure configurations (`true`); for example, missing X-Frame-Options.
-          default: false
-        links:
-          type: boolean
-          description: Indicates whether to scan links and their parameters in vulnerability checks (`true`).
-          default: false
-        parameter_names:
-          type: boolean
-          description: Indicates whether to perform extensive fuzzing of parameter names (`true`).
-          default: false
-        parameter_values:
-          type: boolean
-          description: Indicates whether to perform performs extensive fuzzing of parameter values (`true`).
-          default: false
-        jsons:
-          type: boolean
-          description: Indicates whether to scan JSON request data (`true`).
-          default: false
-        xmls:
-          type: boolean
-          description: Indicates whether to scan XML request data (`true`).
-          default: false
-        cookies_extensively:
-          description: Indicates whether an assessment is enabled (`true`) or disabled (`false`).
-          type: boolean
-        with_raw_payloads:
-          description: Indicates whether parameters should be tested with their raw payloads (`true`) or not (`false`).
-          type: boolean
-        with_both_http_methods:
-          description: Indicates if both GET and POST methods should be used during an assessment (`true`) or not (`false`).
-          type: boolean
-        with_extra_parameter:
-          description: Indicates whether to test non-existing parameters (`true`) or disabled (`false`).
-          type: boolean
     NessusScanReport:
       type: object
-    PaginationResponse:
-      description: An object containing pagination information for the current result set.
-      type: object
-      properties:
-        total:
-          type: integer
-          format: int32
-          description: The total number of records matching your search criteria.
-        limit:
-          type: integer
-          format: int32
-          description: The number of records requested (or the default value if omitted from the request).
-        offset:
-          type: integer
-          format: int32
-          description: The starting record you requested (or zero if omitted).
-        sort:
-          description: An array of objects specifying how the current result set is sorted.
-          type: array
-          items:
-            $ref: '#/components/schemas/PaginationResponseSortObject'
     ReportScanNotes:
       type: object
-    PluginSettings:
+    Credentials:
       type: object
-      description: The settings for enabling or disabling individual plugins and/or plugin families to customize your scan.
+      description: The credentials the scanner uses to run an authenticated scan against the web application. For more information, see the managed credentials category in [Manage Credentials](doc:manage-credentials).
+      required:
+      - credential_ids
       properties:
-        rate_limiter:
+        credential_ids:
+          type: array
+          description: A list of credentials UUIDs.
+          items:
+            type: string
+            format: uuid
+            description: The UUID of the credential.
+    VulnerabilityDetails:
+      type: object
+      description: The details for the vulnerability.
+      readOnly: true
+      properties:
+        input_name:
+          type: string
+          example: cmd
+          description: The vulnerable input of the page element where the payload has been injected.
+          readOnly: true
+        input_type:
+          type: string
+          example: form
+          description: The type of the page element containing the vulnerable input.
+          readOnly: true
+        output:
+          type: string
+          example: 'The backup directory detected at URL: http://webscantest.com/rfplaces/somedir1.rar
+
+            Identified by converting the original directory name of ''somedir1'' to ''somedir1.rar''.'
+          description: The output from the plugin.
+          readOnly: true
+        proof:
+          type: string
+          example: <xss_9a3511f8-7852-4096-a7c0-6065ff8ebad3/>
+          description: The output from the web application corroborating that the vulnerability is present.
+          readOnly: true
+        payload:
+          type: string
+          example: alert('xss')
+          description: The attack payload used to detect the vulnerability.
+          readOnly: true
+        selector:
+          type: string
+          example: //form[@action = "/foo"]
+          description: The path to the element in the document.
+          readOnly: true
+        selector_url:
+          type: string
+          example: http://webscantest.com/rfplaces/somedir1
+          description: The URL where the element is located.
+          readOnly: true
+        signature:
+          type: string
+          example: (?-mix::.+:\d+:\d+:.+:[0-9a-zA-Z\/]+)
+          description: The pattern used to validate the vulnerability.
+          readOnly: true
+    HttpSettings:
+      type: object
+      description: The HTTP request settings for the scan.
+      properties:
+        response_max_size:
+          type: integer
+          minimum: 1
+          default: 500000
+          description: The maximum load size for an audited page.
+        request_redirect_limit:
+          type: integer
+          minimum: 1
+          default: 1
+          description: The number of redirects the scan follows before it stops trying to crawl the page.
+        user_agent:
+          description: The user-agent header the scanner includes in HTTP requests to the web application.
+          type: string
+          default: Nessus WAS/%v
+        custom_user_agent:
+          description: Indicates whether the scanner includes the `user-agent` header in HTTP requests to the web application (`true`).
+          type: boolean
+        request_headers:
+          description: 'The custom headers the scanner includes in HTTP requests to the web application.
+
+
+            **Note:** If you specify a user-agent header value in this parameter, it overrides the `user_agent` parameter value.'
           type: object
-          description: Optional parameters for limiting the rate at which HTTP requests are sent to the target web application.
-          properties:
-            requests_per_second:
-              type: integer
-              description: The maximum number of HTTP requests per second.
-              default: 25
-            autothrottle:
-              description: Indicates whether the scanner slows down the scan when network congestion is detected (`true`). The default value of this parameter is `true`.
-              type: boolean
-              default: true
-            timeout_threshold:
-              type: integer
-              description: The number of consecutive timeouts before Tenable Web App Scanning aborts the scan.
-              default: 100
-        mode:
-          type: string
-          example: disable
-          description: Indicates whether specific plugins and/or plugin families are enabled (`enable`) or disabled (`disable`) for the scan.
-        ids:
-          type: array
-          description: A list of plugin IDs.
-          items:
-            type: integer
-            description: The ID of the plugin.
-          example:
-          - 98000
-          - 98001
-        names:
-          type: array
-          description: A list of plugin names.
-          items:
-            type: string
-            description: The name of the plugin.
-          example:
-          - path_traversal
-        families:
-          type: array
-          description: A list of plugin families.
-          items:
-            type: string
-            description: The name of the plugin family.
-          example:
-          - web_servers
-          - csrf
-    AssessmentSettings:
+        request_concurrency:
+          description: The maximum number of concurrent HTTP connections to the web application.
+          type: integer
+          default: 10
+        request_timeout:
+          type: integer
+          description: HTTP request timeout (in milliseconds).
+          default: 5000
+    ScanReport:
       type: object
-      description: 'Assessment settings specify which web application elements you want the scanner to audit as it crawls your URLs. '
       properties:
-        rfi_remote_url:
+        data:
+          $ref: '#/components/schemas/ReportInfo'
+        created_at:
           type: string
-          description: The URL of the file on a remote host to use for Remote File Inclusion (RFI) tests. By default, Tenable Web App Scanning uses a safe file hosted by Tenable for RFI testing. If the scanner cannot reach the internet, you can use an internally hosted file for more accurate RFI testing.
-          format: uri
-          default: http://rfi.nessus.org/rfi.txt
-        dictionary:
-          description: The type of dictionary to use when testing common and backup files. Possible values are `full` or `limited`.
-          type: string
-          enum:
-          - limited
-          - full
-          default: limited
-        fingerprinting:
-          description: Indicates whether fingerprinted should be enabled (`true`) or disabled (`false`).
-          type: boolean
-          default: true
-        enable:
-          description: Indicates whether an assessment is enabled (`true`) or disabled (`false`).
-          type: boolean
-        element_exclusions:
-          type: array
-          description: Element exclusions prevent scans from interacting with specific page elements (ex. logout buttons or forms) and their children. This setting is available for Scan, Overview, and PCI scan templates.
-          items:
-            type: object
-            properties:
-              element_type:
-                type: string
-                description: The type of element to exclude. Currently, only `dom_element` is supported.
-                enum:
-                - dom_element
-              selector_type:
-                type: string
-                description: Specifies the selector type. DOM elements can be selected based on either text values or CSS attributes. Use `text` for text contents or `attribute` for a CSS key and value pair.
-                enum:
-                - text
-                - attribute
-              selector:
-                description: If the `selector_type` is `text`, the selector value is a `string` (option 1). If the `selector_type` is `attribute`, the selector value is an object containing one key and value pair (option 2).
-                oneOf:
-                - type: string
-                - type: object
-                  description: 'An object containing one key-value pair, where the key is the CSS attribute name and the value is the attribute value. For example: `{"id": "logout"}`'
-                  example: '{"id": "logout"}'
-                  additionalProperties: true
-                  maxProperties: 1
+          format: date-time
+          example: '2018-12-31T13:51:17.243Z'
+          description: An ISO timestamp indicating the date and time when a scan generated the attachment file, for example, `2018-12-31T13:51:17.243Z`.
+          readOnly: true
   parameters:
+    offset:
+      description: The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`.
+      in: query
+      name: offset
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
     sort:
       description: 'The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `name:desc` would sort results by the `name` field in descending order.
 
@@ -6071,16 +6081,6 @@ components:
       required: false
       schema:
         type: string
-    offset:
-      description: The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`.
-      in: query
-      name: offset
-      required: false
-      schema:
-        type: integer
-        format: int32
-        minimum: 0
-        default: 0
     limit:
       description: The number of records to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `10`. The minimum value is `0` and the maximum value is `200`. If you need to retrieve more than 200 records, use the offset value to iterate through page responses.
       in: query

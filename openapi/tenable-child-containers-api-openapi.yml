@@ -274,6 +274,30 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Response-Child-Accounts:
+      type: object
+      properties:
+        parent_uuid:
+          description: The UUID of the parent account.
+          type: string
+          format: uuid
+        account_uuids:
+          type: array
+          description: An array of child account UUIDs that you want to link with the parent account.
+          items:
+            type: string
     Response-Child-Accounts-History-Object:
       type: object
       properties:
@@ -309,30 +333,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Response-Child-Accounts-History-Object'
-    ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    Response-Child-Accounts:
-      type: object
-      properties:
-        parent_uuid:
-          description: The UUID of the parent account.
-          type: string
-          format: uuid
-        account_uuids:
-          type: array
-          description: An array of child account UUIDs that you want to link with the parent account.
-          items:
-            type: string
   securitySchemes:
     cloud:
       type: apiKey

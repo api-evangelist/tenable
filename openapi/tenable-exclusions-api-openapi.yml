@@ -527,69 +527,7 @@ paths:
       security:
       - exclusions_cloud: []
 components:
-  parameters:
-    exclusions_exclusion_id_param:
-      description: The ID of the exclusion. The value can be either the integer ID or the exclusion UUID.
-      required: true
-      name: exclusion_id
-      in: path
-      schema:
-        type: string
   schemas:
-    exclusions_pagination:
-      type: object
-      description: The pagination metadata for the response results.
-      properties:
-        total:
-          type: integer
-          description: The total number of exclusions available across all pages that match the request criteria.
-          example: 1379
-        limit:
-          type: integer
-          description: The maximum number of exclusions returned in the current response page.
-          example: 200
-        offset:
-          type: integer
-          description: The number of records skipped for offset-based pagination.
-          example: 1000
-        sort:
-          type: string
-          description: The property and direction used to sort the results, formatted as `<property>:<direction>`.
-          example: last_modification_date:desc
-    exclusions_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    exclusions_schedule:
-      type: object
-      description: The schedule parameters for the exclusion. When `enabled` is `false` (Always On), only the `enabled` field is returned.
-      properties:
-        enabled:
-          type: boolean
-          description: If `true`, the exclusion schedule is active (Scheduled). If `false`, the exclusion is always active (Always On).
-          example: true
-        starttime:
-          type: string
-          description: The start time for the exclusion formatted as `YYYY-MM-DD HH:MM:SS` (ISO 8601 format).
-          example: '2023-09-01 00:00:00'
-        endtime:
-          type: string
-          description: The end time for the exclusion formatted as `YYYY-MM-DD HH:MM:SS` (ISO 8601 format).
-          example: '2023-09-02 00:00:00'
-        rrules:
-          $ref: '#/components/schemas/exclusions_rrules'
-        timezone:
-          type: string
-          description: The timezone for the exclusion. You can retrieve a list of timezones from the [Get timezones](ref:scans-timezones) endpoint.
-          example: America/New_York
     exclusions_exclusion-response:
       type: object
       properties:
@@ -655,6 +593,60 @@ components:
           type: string
           description: The ID of the network object associated with scanners where Tenable Vulnerability Management applies the exclusion. The default network ID is `00000000-0000-0000-0000-000000000000`. To determine the ID of a custom network, use the [GET /networks](ref:networks-list) endpoint. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
           example: 00000000-0000-0000-0000-000000000000
+    exclusions_pagination:
+      type: object
+      description: The pagination metadata for the response results.
+      properties:
+        total:
+          type: integer
+          description: The total number of exclusions available across all pages that match the request criteria.
+          example: 1379
+        limit:
+          type: integer
+          description: The maximum number of exclusions returned in the current response page.
+          example: 200
+        offset:
+          type: integer
+          description: The number of records skipped for offset-based pagination.
+          example: 1000
+        sort:
+          type: string
+          description: The property and direction used to sort the results, formatted as `<property>:<direction>`.
+          example: last_modification_date:desc
+    exclusions_schedule:
+      type: object
+      description: The schedule parameters for the exclusion. When `enabled` is `false` (Always On), only the `enabled` field is returned.
+      properties:
+        enabled:
+          type: boolean
+          description: If `true`, the exclusion schedule is active (Scheduled). If `false`, the exclusion is always active (Always On).
+          example: true
+        starttime:
+          type: string
+          description: The start time for the exclusion formatted as `YYYY-MM-DD HH:MM:SS` (ISO 8601 format).
+          example: '2023-09-01 00:00:00'
+        endtime:
+          type: string
+          description: The end time for the exclusion formatted as `YYYY-MM-DD HH:MM:SS` (ISO 8601 format).
+          example: '2023-09-02 00:00:00'
+        rrules:
+          $ref: '#/components/schemas/exclusions_rrules'
+        timezone:
+          type: string
+          description: The timezone for the exclusion. You can retrieve a list of timezones from the [Get timezones](ref:scans-timezones) endpoint.
+          example: America/New_York
+    exclusions_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     exclusions_rrules:
       type: object
       description: The recurrence rules for the exclusion.
@@ -681,6 +673,14 @@ components:
           type: integer
           description: The day of the month to repeat a MONTHLY freq rule on.
           example: 1
+  parameters:
+    exclusions_exclusion_id_param:
+      description: The ID of the exclusion. The value can be either the integer ID or the exclusion UUID.
+      required: true
+      name: exclusion_id
+      in: path
+      schema:
+        type: string
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey

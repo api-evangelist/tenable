@@ -3634,6 +3634,121 @@ paths:
       - Inventory_cloud: []
 components:
   schemas:
+    Inventory_Response-Search-Findings:
+      description: The findings search results.
+      type: object
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Inventory_Response-Search-Findings-Object'
+          type: array
+        pagination:
+          description: An object containing pagination information for the current result set.
+          properties:
+            total:
+              description: The total number of findings included in the result set of the search.
+              type: integer
+            offset:
+              description: The requested starting record of the result set to retrieve. Offsets are used to paginate through the result set. If this parameter is omitted, Tenable Exposure Management uses the default value of `0`.
+              type: integer
+              format: int32
+            limit:
+              description: The requested number of records to retrieve from the result set. The maximum value is `1000`. If this parameter is omitted, Tenable Exposure Management uses the default value of `1000`.
+              type: integer
+              format: int32
+              default: 1000
+            sort:
+              $ref: '#/components/schemas/Inventory_Public-Sort-Object'
+          required:
+          - limit
+          - offset
+          - total
+          - sort
+          type: object
+    Inventory_Response-Search-Assets-Object:
+      properties:
+        id:
+          description: The unique identifier (UUID) of the asset in Tenable Exposure Management. Use this value as the unique key for the asset.
+          type: string
+        asset_class:
+          description: The class that Tenable Exposure Management has assigned to the asset. Asset classes enable users to easily separate asset data based on its type. For more information about asset classes, see [Asset Classes](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) in the Tenable Exposure Management User Guide.
+          type: string
+          enum:
+          - ACCOUNT
+          - APPLICATION
+          - CONTAINER
+          - DEVICE
+          - GENERAL
+          - GROUP
+          - IAC
+          - IDENTITY
+          - RESOURCE
+          - ROLE
+          - STORAGE
+          - UNKNOWN
+        name:
+          description: The name of the asset.
+          type: string
+        aes:
+          description: The Tenable-defined Asset Exposure Score (AES) for the asset. This metric weighs an asset's [Vulnerability Priority Rating (VPR)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Vulnerability-Priority-Rating-(VPR)) and [Asset Criticality Rating (AES)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Exposure-Score-(AES)) and then assigns a number from 1 to 1000, with higher numbers for more exposed assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm) in the _Tenable Exposure Management User Guide_.
+          type: integer
+          maximum: 1000
+          minimum: 0
+        acr:
+          description: The Tenable-defined Asset Criticality Rating (ACR) for the asset. With Lumin, Tenable uses an algorithm based on the [asset class](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) to assign a metric rating the importance of an asset to your organization from 1 to 10, with higher numbers for more critical assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Criticality-Rating-(ACR)) in the _Tenable Exposure Management User Guide_.
+          type: integer
+          maximum: 10
+          minimum: 0
+        extra_properties:
+          description: "Additional information about the assets as requested in the `extra_properties` parameter of the search request. \n\nYou can use the [List asset properties](ref:inventory-asset-properties-list) endpoint to retrieve a list of properties that can be used as values for the `extra_properties` parameter. For example, you may want to include `created_at`, `sources`, and `fqdns` as extra properties."
+          type: object
+      required:
+      - asset_class
+      - id
+      - tag_count
+      - weakness_severity_counts
+      type: object
+    Inventory_Properties-Object:
+      type: object
+      properties:
+        key:
+          description: The unique property that can be used as a filter.
+          type: string
+        readable_name:
+          description: The human-readable property name.
+          type: string
+        control:
+          $ref: '#/components/schemas/Inventory_Control'
+        operators:
+          type: array
+          description: The logical operators that be used for the property filter.
+          items:
+            type: string
+          enum:
+          - '='
+          - '!='
+          - <=
+          - between
+          - match
+          - '>='
+          - <
+          - '>'
+          - contains
+          - not contains
+          - exists
+          - not exists
+          - older than
+          - newer than
+          - within last
+        sortable:
+          description: Indicates whether or not the property is sortable.
+          type: boolean
+        filterable:
+          description: Indicates whether or not the property is filterable.
+          type: boolean
+        description:
+          description: An AI-generated description of the property.
+          type: string
     Inventory_Response-Search-Software-Object:
       type: object
       properties:
@@ -3658,28 +3773,19 @@ components:
         extra_properties:
           description: "Additional information about the software as requested in the `extra_properties` parameter of the search request. \n\nYou can use the [List software properties](ref:inventory-software-properties-list) endpoint to retrieve a list of properties that can be used as values for the `extra_properties` parameter. For example, you may want to include `cpe`, `version`, and `file_location` as extra properties."
           type: object
-    Inventory_ErrorResponse-400:
-      type: object
-      properties:
-        message:
-          type: string
-          description: An error message indicating the invalid parameter or value.
-        status:
-          type: integer
-          description: The HTTP response response status code.
-    Inventory_Response-Search-Software:
-      description: The software search results.
+    Inventory_Response-Search-Assets:
+      description: The asset search results.
       type: object
       properties:
         data:
-          type: array
           items:
-            $ref: '#/components/schemas/Inventory_Response-Search-Software-Object'
+            $ref: '#/components/schemas/Inventory_Response-Search-Assets-Object'
+          type: array
         pagination:
           description: An object containing pagination information for the current result set.
           properties:
             total:
-              description: The total number of software included in the result set of the search.
+              description: The total number of assets included in the result set of the search.
               type: integer
             offset:
               description: The requested starting record of the result set to retrieve. Offsets are used to paginate through the result set. If this parameter is omitted, Tenable Exposure Management uses the default value of `0`.
@@ -3741,19 +3847,6 @@ components:
             expression:
               description: Defines a regular expression matching the property's possible values.
               type: string
-    Inventory_Public-Sort-Object:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
-      type: object
-      properties:
-        name:
-          description: The property used to sort the results.
-          type: string
-        order:
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
-          type: string
-          enum:
-          - asc
-          - desc
     Inventory_AssetClasses:
       enum:
       - ACCOUNT
@@ -3769,167 +3862,37 @@ components:
       - STORAGE
       - UNKNOWN
       type: string
-    Inventory_Request-Search-Findings:
-      description: An object containing a query and/or filters for a Tenable Exposure Management finding search.
+    Inventory_Response-Search-Software:
+      description: The software search results.
       type: object
       properties:
-        query:
-          type: object
-          description: Filter the search results by query. A query consists of search mode and query text.
-          properties:
-            mode:
-              description: The mode to use for the query. Currently, the findings search only supports the `simple` mode.
-              type: string
-              default: simple
-              enum:
-              - simple
-            text:
-              description: 'For simple searches, either a finding name or a finding ID. This parameter value can be left empty to search all software, for example `"text": ""`'
-              type: string
-              example: Microsoft
-          required:
-          - mode
-          - text
-        filters:
-          description: "A set of finding properties used to filter the search results. \n\nUse the [List finding properties](ref:inventory-finding-properties-list) endpoint to view available finding properties that can be used as filters."
+        data:
           type: array
           items:
-            type: object
-            required:
-            - operator
-            - property
-            - value
-            properties:
-              property:
-                description: "The finding property to filter on.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve a list of valid finding properties for filtering. For example, you might filter by `asset_name`, `solution`, or `vpr_score`."
-                type: string
-              operator:
-                type: string
-                description: "The comparison operator to apply to the filter. \n\nFor example: `=`, `!=`, `match`, etc. Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve supported comparison operators for the selected filter."
-                enum:
-                - '='
-                - '!='
-                - <=
-                - between
-                - match
-                - '>='
-                - <
-                - '>'
-                - contains
-                - not contains
-                - exists
-                - not exists
-                - older than
-                - newer than
-                - within last
-              value:
-                description: "The value to use for comparison in the filter.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve the supported values for the selected filter."
-                type: array
-                items:
-                  type: string
-    Inventory_Response-Search-Findings-Object:
-      type: object
-      properties:
-        id:
-          description: The unique identifier (UUID) of the finding in Tenable Exposure Management. Use this value as the unique key for the finding.
-          type: string
-        name:
-          description: The name of the finding. This typically corresponds with the plugin name that detected the finding.
-          type: string
-        asset_id:
-          description: The unique identifier (UUID) of the asset on which the finding was identified.
-          type: string
-        state:
-          description: 'The current status of the finding.
-
-
-            The state of a finding reflects the current status of a security issue or vulnerability identified within your IT environment. It helps you track the progress of remediation efforts and provides insights into the overall security posture.
-
-
-            The following are the different states for findings in Tenable Exposure Management:
-
-
-            - **ACTIVE** — The finding is new or has not yet been addressed. It requires further investigation and potential remediation.
-
-            - **RESURFACED**—The finding was fixed but got back.
-
-            - **FIXED**—The issue identified in the finding has been successfully resolved.'
-          type: string
-          enum:
-          - ACTIVE
-          - RESURFACED
-          - FIXED
-        severity:
-          description: 'Indicates the level of risk posed to your organization. The severity of a finding, often referred to as vulnerability severity, is a classification that indicates the level of potential risk posed by a security vulnerability. It helps prioritize remediation efforts by highlighting the most critical vulnerabilities that require immediate attention.
-
-
-            Here''s a breakdown of common severity levels and their implications:
-
-
-            - **CRITICAL**—Critically severe vulnerabilities pose an immediate and significant risk to your organization. They often allow for remote code execution, complete system compromise, or data breaches.
-
-            - **HIGH**—High-severity vulnerabilities have a high likelihood of exploitation and could lead to significant damage or disruption.
-
-            - **MEDIUM**—Medium-severity vulnerabilities may not be easily exploitable but still represent a potential security risk. They might require specific conditions or user interaction to be exploited.
-
-            - **LOW**—Low-severity vulnerabilities pose a minimal risk to your organization. They might only result in minor inconveniences or limited impact.
-
-            - **INFO**—Informational findings highlight potential security issues that do not directly pose a threat but could be leveraged in future attacks.'
-          type: string
-          enum:
-          - CRITICAL
-          - HIGH
-          - MEDIUM
-          - LOW
-          - INFO
-        extra_properties:
-          description: "Additional information about the finding as requested in the `extra_properties` parameter of the search request. \n\nYou can use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve a list of properties that can be used as values for the `extra_properties` parameter. For example, you may want to include `asset_name`, `solution`, and `vpr_score` as extra properties."
+            $ref: '#/components/schemas/Inventory_Response-Search-Software-Object'
+        pagination:
+          description: An object containing pagination information for the current result set.
+          properties:
+            total:
+              description: The total number of software included in the result set of the search.
+              type: integer
+            offset:
+              description: The requested starting record of the result set to retrieve. Offsets are used to paginate through the result set. If this parameter is omitted, Tenable Exposure Management uses the default value of `0`.
+              type: integer
+              format: int32
+            limit:
+              description: The requested number of records to retrieve from the result set. The maximum value is `1000`. If this parameter is omitted, Tenable Exposure Management uses the default value of `1000`.
+              type: integer
+              format: int32
+              default: 1000
+            sort:
+              $ref: '#/components/schemas/Inventory_Public-Sort-Object'
+          required:
+          - limit
+          - offset
+          - total
+          - sort
           type: object
-          additionalProperties: true
-          properties: {}
-    Inventory_Response-Search-Assets-Object:
-      properties:
-        id:
-          description: The unique identifier (UUID) of the asset in Tenable Exposure Management. Use this value as the unique key for the asset.
-          type: string
-        asset_class:
-          description: The class that Tenable Exposure Management has assigned to the asset. Asset classes enable users to easily separate asset data based on its type. For more information about asset classes, see [Asset Classes](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) in the Tenable Exposure Management User Guide.
-          type: string
-          enum:
-          - ACCOUNT
-          - APPLICATION
-          - CONTAINER
-          - DEVICE
-          - GENERAL
-          - GROUP
-          - IAC
-          - IDENTITY
-          - RESOURCE
-          - ROLE
-          - STORAGE
-          - UNKNOWN
-        name:
-          description: The name of the asset.
-          type: string
-        aes:
-          description: The Tenable-defined Asset Exposure Score (AES) for the asset. This metric weighs an asset's [Vulnerability Priority Rating (VPR)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Vulnerability-Priority-Rating-(VPR)) and [Asset Criticality Rating (AES)](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Exposure-Score-(AES)) and then assigns a number from 1 to 1000, with higher numbers for more exposed assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm) in the _Tenable Exposure Management User Guide_.
-          type: integer
-          maximum: 1000
-          minimum: 0
-        acr:
-          description: The Tenable-defined Asset Criticality Rating (ACR) for the asset. With Lumin, Tenable uses an algorithm based on the [asset class](https://docs.tenable.com/exposure-management/Content/exposure-management/inventory/classes.htm) to assign a metric rating the importance of an asset to your organization from 1 to 10, with higher numbers for more critical assets. For more information, see [Tenable Exposure Management Metrics](https://docs.tenable.com/exposure-management/Content/exposure-management/getting-started/metrics.htm#Asset-Criticality-Rating-(ACR)) in the _Tenable Exposure Management User Guide_.
-          type: integer
-          maximum: 10
-          minimum: 0
-        extra_properties:
-          description: "Additional information about the assets as requested in the `extra_properties` parameter of the search request. \n\nYou can use the [List asset properties](ref:inventory-asset-properties-list) endpoint to retrieve a list of properties that can be used as values for the `extra_properties` parameter. For example, you may want to include `created_at`, `sources`, and `fqdns` as extra properties."
-          type: object
-      required:
-      - asset_class
-      - id
-      - tag_count
-      - weakness_severity_counts
-      type: object
     Inventory_Request-Search-Software:
       description: An object containing a query and/or filters to search for installed software on your assets.
       type: object
@@ -3994,59 +3957,6 @@ components:
                 type: array
                 items:
                   type: string
-    Inventory_Properties-Object:
-      type: object
-      properties:
-        key:
-          description: The unique property that can be used as a filter.
-          type: string
-        readable_name:
-          description: The human-readable property name.
-          type: string
-        control:
-          $ref: '#/components/schemas/Inventory_Control'
-        operators:
-          type: array
-          description: The logical operators that be used for the property filter.
-          items:
-            type: string
-          enum:
-          - '='
-          - '!='
-          - <=
-          - between
-          - match
-          - '>='
-          - <
-          - '>'
-          - contains
-          - not contains
-          - exists
-          - not exists
-          - older than
-          - newer than
-          - within last
-        sortable:
-          description: Indicates whether or not the property is sortable.
-          type: boolean
-        filterable:
-          description: Indicates whether or not the property is filterable.
-          type: boolean
-        description:
-          description: An AI-generated description of the property.
-          type: string
-    Inventory_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     Inventory_Request-Search-Assets:
       description: An object containing a query and/or filters for a Tenable Exposure Management asset search.
       type: object
@@ -4113,68 +4023,158 @@ components:
                 type: array
                 items:
                   type: string
-    Inventory_Response-Search-Findings:
-      description: The findings search results.
+    Inventory_Response-Search-Findings-Object:
       type: object
       properties:
-        data:
-          items:
-            $ref: '#/components/schemas/Inventory_Response-Search-Findings-Object'
-          type: array
-        pagination:
-          description: An object containing pagination information for the current result set.
-          properties:
-            total:
-              description: The total number of findings included in the result set of the search.
-              type: integer
-            offset:
-              description: The requested starting record of the result set to retrieve. Offsets are used to paginate through the result set. If this parameter is omitted, Tenable Exposure Management uses the default value of `0`.
-              type: integer
-              format: int32
-            limit:
-              description: The requested number of records to retrieve from the result set. The maximum value is `1000`. If this parameter is omitted, Tenable Exposure Management uses the default value of `1000`.
-              type: integer
-              format: int32
-              default: 1000
-            sort:
-              $ref: '#/components/schemas/Inventory_Public-Sort-Object'
-          required:
-          - limit
-          - offset
-          - total
-          - sort
+        id:
+          description: The unique identifier (UUID) of the finding in Tenable Exposure Management. Use this value as the unique key for the finding.
+          type: string
+        name:
+          description: The name of the finding. This typically corresponds with the plugin name that detected the finding.
+          type: string
+        asset_id:
+          description: The unique identifier (UUID) of the asset on which the finding was identified.
+          type: string
+        state:
+          description: 'The current status of the finding.
+
+
+            The state of a finding reflects the current status of a security issue or vulnerability identified within your IT environment. It helps you track the progress of remediation efforts and provides insights into the overall security posture.
+
+
+            The following are the different states for findings in Tenable Exposure Management:
+
+
+            - **ACTIVE** — The finding is new or has not yet been addressed. It requires further investigation and potential remediation.
+
+            - **RESURFACED**—The finding was fixed but got back.
+
+            - **FIXED**—The issue identified in the finding has been successfully resolved.'
+          type: string
+          enum:
+          - ACTIVE
+          - RESURFACED
+          - FIXED
+        severity:
+          description: 'Indicates the level of risk posed to your organization. The severity of a finding, often referred to as vulnerability severity, is a classification that indicates the level of potential risk posed by a security vulnerability. It helps prioritize remediation efforts by highlighting the most critical vulnerabilities that require immediate attention.
+
+
+            Here''s a breakdown of common severity levels and their implications:
+
+
+            - **CRITICAL**—Critically severe vulnerabilities pose an immediate and significant risk to your organization. They often allow for remote code execution, complete system compromise, or data breaches.
+
+            - **HIGH**—High-severity vulnerabilities have a high likelihood of exploitation and could lead to significant damage or disruption.
+
+            - **MEDIUM**—Medium-severity vulnerabilities may not be easily exploitable but still represent a potential security risk. They might require specific conditions or user interaction to be exploited.
+
+            - **LOW**—Low-severity vulnerabilities pose a minimal risk to your organization. They might only result in minor inconveniences or limited impact.
+
+            - **INFO**—Informational findings highlight potential security issues that do not directly pose a threat but could be leveraged in future attacks.'
+          type: string
+          enum:
+          - CRITICAL
+          - HIGH
+          - MEDIUM
+          - LOW
+          - INFO
+        extra_properties:
+          description: "Additional information about the finding as requested in the `extra_properties` parameter of the search request. \n\nYou can use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve a list of properties that can be used as values for the `extra_properties` parameter. For example, you may want to include `asset_name`, `solution`, and `vpr_score` as extra properties."
           type: object
-    Inventory_Response-Search-Assets:
-      description: The asset search results.
+          additionalProperties: true
+          properties: {}
+    Inventory_ErrorResponse-400:
       type: object
       properties:
-        data:
-          items:
-            $ref: '#/components/schemas/Inventory_Response-Search-Assets-Object'
-          type: array
-        pagination:
-          description: An object containing pagination information for the current result set.
-          properties:
-            total:
-              description: The total number of assets included in the result set of the search.
-              type: integer
-            offset:
-              description: The requested starting record of the result set to retrieve. Offsets are used to paginate through the result set. If this parameter is omitted, Tenable Exposure Management uses the default value of `0`.
-              type: integer
-              format: int32
-            limit:
-              description: The requested number of records to retrieve from the result set. The maximum value is `1000`. If this parameter is omitted, Tenable Exposure Management uses the default value of `1000`.
-              type: integer
-              format: int32
-              default: 1000
-            sort:
-              $ref: '#/components/schemas/Inventory_Public-Sort-Object'
-          required:
-          - limit
-          - offset
-          - total
-          - sort
+        message:
+          type: string
+          description: An error message indicating the invalid parameter or value.
+        status:
+          type: integer
+          description: The HTTP response response status code.
+    Inventory_Public-Sort-Object:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          description: The property used to sort the results.
+          type: string
+        order:
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+          type: string
+          enum:
+          - asc
+          - desc
+    Inventory_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Inventory_Request-Search-Findings:
+      description: An object containing a query and/or filters for a Tenable Exposure Management finding search.
+      type: object
+      properties:
+        query:
           type: object
+          description: Filter the search results by query. A query consists of search mode and query text.
+          properties:
+            mode:
+              description: The mode to use for the query. Currently, the findings search only supports the `simple` mode.
+              type: string
+              default: simple
+              enum:
+              - simple
+            text:
+              description: 'For simple searches, either a finding name or a finding ID. This parameter value can be left empty to search all software, for example `"text": ""`'
+              type: string
+              example: Microsoft
+          required:
+          - mode
+          - text
+        filters:
+          description: "A set of finding properties used to filter the search results. \n\nUse the [List finding properties](ref:inventory-finding-properties-list) endpoint to view available finding properties that can be used as filters."
+          type: array
+          items:
+            type: object
+            required:
+            - operator
+            - property
+            - value
+            properties:
+              property:
+                description: "The finding property to filter on.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve a list of valid finding properties for filtering. For example, you might filter by `asset_name`, `solution`, or `vpr_score`."
+                type: string
+              operator:
+                type: string
+                description: "The comparison operator to apply to the filter. \n\nFor example: `=`, `!=`, `match`, etc. Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve supported comparison operators for the selected filter."
+                enum:
+                - '='
+                - '!='
+                - <=
+                - between
+                - match
+                - '>='
+                - <
+                - '>'
+                - contains
+                - not contains
+                - exists
+                - not exists
+                - older than
+                - newer than
+                - within last
+              value:
+                description: "The value to use for comparison in the filter.\n\n Use the [List finding properties](ref:inventory-finding-properties-list) endpoint to retrieve the supported values for the selected filter."
+                type: array
+                items:
+                  type: string
   securitySchemes:
     Attack_Path_cloud:
       type: apiKey

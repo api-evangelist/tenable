@@ -747,173 +747,6 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
-    Response-UndisputedFailuresList:
-      type: object
-      properties:
-        severity:
-          type: integer
-          format: int64
-          description: The severity of the plugin.
-        plugin_id:
-          type: integer
-          format: int64
-          description: The plugin ID in the PCI ASV scan for the dispute.
-        cvss_score:
-          type: integer
-          example: int64
-          description: The Common Vulnerability Scoring System (CVSS) base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
-        address:
-          type: string
-          example: 127.0.0.1
-          description: The IP address of the asset.
-        scan_uuid:
-          type: string
-          format: uuid
-          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
-          description: The UUID of the scan associated with an asset.
-        duplicate:
-          type: boolean
-          description: Indicates whether or not the failure is duplicated.
-        rerank_type:
-          type: string
-          format: not-reranked
-          example: not-reranked
-          description: The rank type value of the undisputed failure.
-        plugin_name:
-          type: string
-          example: OpenSSH < 9.3 Multiple Vulnerabilities
-          description: The plugin name in the PCI ASV scan for the failure.
-        uuid:
-          type: string
-          format: uuid
-          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
-          description: The UUID of the undisputed failure in PCI ASV.
-        protocol:
-          type: string
-          format: tcp
-          example: tcp
-          description: The protocol value of the failure.
-        asset_name:
-          type: string
-          format: Asset name
-          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
-          description: The name of the asset.
-        port:
-          type: integer
-          format: int64
-          description: The port on which the plugin detected the failure.
-        attestation_uuid:
-          type: string
-          format: uuid
-          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
-          description: The UUID of the attestation.
-        scan_name:
-          type: string
-          format: Scan Name
-          description: The name of the scan associated with the asset.
-        scan_date:
-          type: string
-          format: date-time
-          example: '2018-07-21T17:32:28Z'
-          description: An ISO timestamp indicating the date and time when the scan ended. For example, `2018-12-31T13:51:17.243Z`
-    Response-PaginationSortObject:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
-      type: object
-      properties:
-        name:
-          type: string
-          description: The property used to sort the results.
-        order:
-          type: string
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
-    Response-AttestationAssetList:
-      type: object
-      properties:
-        excluded:
-          type: boolean
-          description: The number of assets included or excluded
-        undisputed_failure_count:
-          type: integer
-          format: int64
-          description: The number of undisputed failures in the attestation.
-        address:
-          type: string
-          example: 127.0.0.1
-          description: The IP address of the asset.
-        fqdn:
-          type: string
-          format: fqdn
-          example: target.asset.com
-          description: The fully qualified domain name for the asset.
-        attestation_uuid:
-          type: string
-          format: uuid
-          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
-          description: The UUID of the attestation.
-        name:
-          type: string
-          format: Asset Name
-          description: The name of the asset.
-        scan_uuid:
-          type: string
-          format: uuid
-          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
-          description: The UUID of the scan associated with an asset.
-        operating_system:
-          type: string
-          example: Windows
-          description: The operating system installed on the asset.
-        failure_count:
-          type: integer
-          format: int64
-          description: The number of failures for the asset.
-        scan_name:
-          type: string
-          format: Scan Name
-          description: The name of the scan associated with the asset.
-        uuid:
-          type: string
-          format: uuid
-          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
-          description: The UUID of the PCI asset in the Tenable PCI ASV.
-        scan_date:
-          type: string
-          format: date-time
-          example: '2018-07-21T17:32:28Z'
-          description: An ISO timestamp indicating the date and time when the scan ended. For example, `2018-12-31T13:51:17.243Z`
-    Response-Pagination:
-      description: An object containing pagination information for the current result set.
-      type: object
-      properties:
-        total:
-          type: integer
-          format: int32
-          description: The total number of records matching your search criteria.
-        offset:
-          type: integer
-          format: int32
-          description: The starting record you requested (or zero if omitted).
-        limit:
-          type: integer
-          format: int32
-          description: The number of records requested (or the default value if omitted from the request).
-        sort:
-          description: An array of objects specifying how the current result set is sorted.
-          type: array
-          items:
-            $ref: '#/components/schemas/Response-PaginationSortObject'
-    ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     Response-AttestationList:
       type: object
       properties:
@@ -1025,6 +858,75 @@ components:
           type: string
           example: needs-work
           description: The status of the attestation.
+    Response-UndisputedFailuresList:
+      type: object
+      properties:
+        severity:
+          type: integer
+          format: int64
+          description: The severity of the plugin.
+        plugin_id:
+          type: integer
+          format: int64
+          description: The plugin ID in the PCI ASV scan for the dispute.
+        cvss_score:
+          type: integer
+          example: int64
+          description: The Common Vulnerability Scoring System (CVSS) base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
+        address:
+          type: string
+          example: 127.0.0.1
+          description: The IP address of the asset.
+        scan_uuid:
+          type: string
+          format: uuid
+          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
+          description: The UUID of the scan associated with an asset.
+        duplicate:
+          type: boolean
+          description: Indicates whether or not the failure is duplicated.
+        rerank_type:
+          type: string
+          format: not-reranked
+          example: not-reranked
+          description: The rank type value of the undisputed failure.
+        plugin_name:
+          type: string
+          example: OpenSSH < 9.3 Multiple Vulnerabilities
+          description: The plugin name in the PCI ASV scan for the failure.
+        uuid:
+          type: string
+          format: uuid
+          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
+          description: The UUID of the undisputed failure in PCI ASV.
+        protocol:
+          type: string
+          format: tcp
+          example: tcp
+          description: The protocol value of the failure.
+        asset_name:
+          type: string
+          format: Asset name
+          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
+          description: The name of the asset.
+        port:
+          type: integer
+          format: int64
+          description: The port on which the plugin detected the failure.
+        attestation_uuid:
+          type: string
+          format: uuid
+          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
+          description: The UUID of the attestation.
+        scan_name:
+          type: string
+          format: Scan Name
+          description: The name of the scan associated with the asset.
+        scan_date:
+          type: string
+          format: date-time
+          example: '2018-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when the scan ended. For example, `2018-12-31T13:51:17.243Z`
     Response-DisputeList:
       type: object
       properties:
@@ -1171,6 +1073,104 @@ components:
         address_2:
           type: string
           description: The contact's secondary address.
+    Response-Pagination:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/Response-PaginationSortObject'
+    Response-PaginationSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+    Response-AttestationAssetList:
+      type: object
+      properties:
+        excluded:
+          type: boolean
+          description: The number of assets included or excluded
+        undisputed_failure_count:
+          type: integer
+          format: int64
+          description: The number of undisputed failures in the attestation.
+        address:
+          type: string
+          example: 127.0.0.1
+          description: The IP address of the asset.
+        fqdn:
+          type: string
+          format: fqdn
+          example: target.asset.com
+          description: The fully qualified domain name for the asset.
+        attestation_uuid:
+          type: string
+          format: uuid
+          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
+          description: The UUID of the attestation.
+        name:
+          type: string
+          format: Asset Name
+          description: The name of the asset.
+        scan_uuid:
+          type: string
+          format: uuid
+          example: 783f7000-734e-46d0-9fea-2a8ac2f8e9f4
+          description: The UUID of the scan associated with an asset.
+        operating_system:
+          type: string
+          example: Windows
+          description: The operating system installed on the asset.
+        failure_count:
+          type: integer
+          format: int64
+          description: The number of failures for the asset.
+        scan_name:
+          type: string
+          format: Scan Name
+          description: The name of the scan associated with the asset.
+        uuid:
+          type: string
+          format: uuid
+          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
+          description: The UUID of the PCI asset in the Tenable PCI ASV.
+        scan_date:
+          type: string
+          format: date-time
+          example: '2018-07-21T17:32:28Z'
+          description: An ISO timestamp indicating the date and time when the scan ended. For example, `2018-12-31T13:51:17.243Z`
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
   securitySchemes:
     cloud:
       type: apiKey

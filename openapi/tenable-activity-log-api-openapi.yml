@@ -249,6 +249,36 @@ paths:
       - activity-log_cloud: []
 components:
   schemas:
+    activity-log_actor:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The UUID of the user that took the action.
+        name:
+          type: string
+          description: The username of the user that took the action.
+    activity-log_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    activity-log_pair:
+      type: object
+      properties:
+        key:
+          type: string
+          description: A key. The exact string varies based on the action that was taken.
+        value:
+          type: string
+          description: A value that corresponds to the key. The exact value varies based on the action that was taken.
     activity-log_Response-Pagination:
       description: An object containing pagination information for the current result set.
       type: object
@@ -269,36 +299,18 @@ components:
           description: The total number of events that match the search criteria.
           type: integer
           format: int32
-    activity-log_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    activity-log_actor:
+    activity-log_target:
       type: object
       properties:
         id:
           type: string
-          description: The UUID of the user that took the action.
+          description: The UUID of the target entity. For example, a user UUID.
         name:
           type: string
-          description: The username of the user that took the action.
-    activity-log_pair:
-      type: object
-      properties:
-        key:
+          description: The name of the target entity. For example, a username.
+        type:
           type: string
-          description: A key. The exact string varies based on the action that was taken.
-        value:
-          type: string
-          description: A value that corresponds to the key. The exact value varies based on the action that was taken.
+          description: The type of entity that was the target of the action. For example, a user.
     activity-log_fields:
       type: array
       items:
@@ -333,18 +345,6 @@ components:
           $ref: '#/components/schemas/activity-log_target'
         fields:
           $ref: '#/components/schemas/activity-log_fields'
-    activity-log_target:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The UUID of the target entity. For example, a user UUID.
-        name:
-          type: string
-          description: The name of the target entity. For example, a username.
-        type:
-          type: string
-          description: The type of entity that was the target of the action. For example, a user.
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey

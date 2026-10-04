@@ -355,27 +355,27 @@ paths:
       - Scan_History_cloud: []
 components:
   schemas:
-    Scan_History_history_list_response:
+    Scan_History_PaginationResponse:
+      description: An object containing pagination information for the current result set.
       type: object
       properties:
-        pagination:
-          $ref: '#/components/schemas/Scan_History_PaginationResponse'
-        history:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
           type: array
           items:
-            $ref: '#/components/schemas/Scan_History_history_list'
-    Scan_History_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
+            $ref: '#/components/schemas/Scan_History_PaginationResponseSortObject'
     Scan_History_history_list:
       type: object
       properties:
@@ -407,6 +407,15 @@ components:
           type: integer
           format: int64
           description: The Unix timestamp when the scan started running.
+    Scan_History_history_list_response:
+      type: object
+      properties:
+        pagination:
+          $ref: '#/components/schemas/Scan_History_PaginationResponse'
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/Scan_History_history_list'
     Scan_History_targets-history-response-object:
       type: object
       description: The target parameters used to launch the scan.
@@ -417,37 +426,18 @@ components:
         default:
           type: boolean
           description: If `true`, default parameters were used to launch the scan.
-    Scan_History_PaginationResponse:
-      description: An object containing pagination information for the current result set.
+    Scan_History_ErrorResponse:
       type: object
       properties:
-        total:
+        statusCode:
           type: integer
-          format: int32
-          description: The total number of records matching your search criteria.
-        limit:
-          type: integer
-          format: int32
-          description: The number of records requested (or the default value if omitted from the request).
-        offset:
-          type: integer
-          format: int32
-          description: The starting record you requested (or zero if omitted).
-        sort:
-          description: An array of objects specifying how the current result set is sorted.
-          type: array
-          items:
-            $ref: '#/components/schemas/Scan_History_PaginationResponseSortObject'
-    Scan_History_PaginationResponseSortObject:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
-      type: object
-      properties:
-        name:
+          description: The HTTP status code of the error.
+        error:
           type: string
-          description: The property used to sort the results.
-        order:
+          description: The standard HTTP error name.
+        message:
           type: string
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
+          description: A brief message about the cause of the error.
     Scan_History_history-in-history-details-response:
       type: object
       description: A history object containing data about a run of the specified scan.
@@ -497,6 +487,16 @@ components:
         name:
           type: string
           description: The name of the scan.
+    Scan_History_PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
   securitySchemes:
     assets_cloud:
       type: apiKey

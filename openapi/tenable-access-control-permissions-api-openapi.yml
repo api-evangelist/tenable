@@ -785,6 +785,112 @@ paths:
       - Access_Control_Permissions_cloud: []
 components:
   schemas:
+    Access_Control_Permissions_Response-Permission:
+      type: object
+      properties:
+        permission_uuid:
+          description: The unique identifier (UUID) of the permission.
+          type: string
+          format: uuid
+        name:
+          description: The name of the permission.
+          type: string
+        subjects:
+          description: The users or user groups to which the permission is granted.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_PermissionSubject'
+        actions:
+          description: The actions granted by the permission. User-created permissions support `CanScan`, `CanView`, `CanEdit`, and `CanUse`. System-generated administrator permissions may include additional actions such as `CanViewMssp`, `CanEditMssp`, `CanImpersonateAdmin`, `CanImpersonateScanManager`, and `CanImpersonateScanOperator`.
+          type: array
+          items:
+            type: string
+            enum:
+            - CanScan
+            - CanView
+            - CanEdit
+            - CanUse
+            - CanViewMssp
+            - CanEditMssp
+            - CanImpersonateAdmin
+            - CanImpersonateScanManager
+            - CanImpersonateScanOperator
+        objects:
+          description: The objects (tags or assets) to which the permission applies.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_PermissionObject'
+        created_at:
+          description: A timestamp in Unix milliseconds indicating when the permission was created. This property is not present on system-generated permissions (for example, the Administrators permission).
+          type: integer
+          format: int64
+        created_by:
+          description: The username of the user who created the permission, or `System` for system-generated permissions. This property is not present on system-generated permissions that predate audit tracking.
+          type: string
+        updated_at:
+          description: A timestamp in Unix milliseconds indicating when the permission was last updated. This property is only present if the permission has been updated at least once.
+          type: integer
+          format: int64
+        updated_by:
+          description: The username of the user who last updated the permission. This property is only present if the permission has been updated at least once.
+          type: string
+    Access_Control_Permissions_PermissionObject:
+      type: object
+      properties:
+        type:
+          description: 'Specifies the type of object. Supported values are:
+
+            * `Tag` — A specific tag. Requires `uuid` and `name`.
+
+            * `AllAssets` — All assets in the container. No `uuid` or `name` required.
+
+            * `AllTags` — All tags in the container. No `uuid` or `name` required.
+
+            * `AllObjects` — All objects in the container (system-generated only).'
+          type: string
+          enum:
+          - Tag
+          - AllAssets
+          - AllTags
+          - AllObjects
+        uuid:
+          description: 'Specifies the unique identifier (UUID) of the tag object.
+
+
+            **Note:** This parameter is valid for objects of type `Tag` only. This parameter is ignored for the `AllAssets`, `AllTags`, and `AllObjects` types.'
+          type: string
+          format: uuid
+        name:
+          description: 'Specifies the name of the tag object.
+
+
+            **Note:** This parameter is valid for objects of type `Tag` only. Use the format `Category,Value` when passing this parameter in a request. The system returns this value in the format `Category:Value` in responses. This parameter is ignored for the `AllAssets`, `AllTags`, and `AllObjects` types.'
+          type: string
+    Access_Control_Permissions_Response-UserPermissions:
+      type: object
+      properties:
+        permissions_available:
+          description: The permissions available but not currently applied to the specified user or user group.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_Response-Permission'
+        permissions_granted:
+          description: The permissions currently granted to the specified user or user group.
+          type: array
+          items:
+            $ref: '#/components/schemas/Access_Control_Permissions_Response-Permission'
+    Access_Control_Permissions_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     Access_Control_Permissions_PermissionSubject:
       type: object
       properties:
@@ -874,112 +980,6 @@ components:
       - actions
       - objects
       - subjects
-    Access_Control_Permissions_Response-Permission:
-      type: object
-      properties:
-        permission_uuid:
-          description: The unique identifier (UUID) of the permission.
-          type: string
-          format: uuid
-        name:
-          description: The name of the permission.
-          type: string
-        subjects:
-          description: The users or user groups to which the permission is granted.
-          type: array
-          items:
-            $ref: '#/components/schemas/Access_Control_Permissions_PermissionSubject'
-        actions:
-          description: The actions granted by the permission. User-created permissions support `CanScan`, `CanView`, `CanEdit`, and `CanUse`. System-generated administrator permissions may include additional actions such as `CanViewMssp`, `CanEditMssp`, `CanImpersonateAdmin`, `CanImpersonateScanManager`, and `CanImpersonateScanOperator`.
-          type: array
-          items:
-            type: string
-            enum:
-            - CanScan
-            - CanView
-            - CanEdit
-            - CanUse
-            - CanViewMssp
-            - CanEditMssp
-            - CanImpersonateAdmin
-            - CanImpersonateScanManager
-            - CanImpersonateScanOperator
-        objects:
-          description: The objects (tags or assets) to which the permission applies.
-          type: array
-          items:
-            $ref: '#/components/schemas/Access_Control_Permissions_PermissionObject'
-        created_at:
-          description: A timestamp in Unix milliseconds indicating when the permission was created. This property is not present on system-generated permissions (for example, the Administrators permission).
-          type: integer
-          format: int64
-        created_by:
-          description: The username of the user who created the permission, or `System` for system-generated permissions. This property is not present on system-generated permissions that predate audit tracking.
-          type: string
-        updated_at:
-          description: A timestamp in Unix milliseconds indicating when the permission was last updated. This property is only present if the permission has been updated at least once.
-          type: integer
-          format: int64
-        updated_by:
-          description: The username of the user who last updated the permission. This property is only present if the permission has been updated at least once.
-          type: string
-    Access_Control_Permissions_Response-UserPermissions:
-      type: object
-      properties:
-        permissions_available:
-          description: The permissions available but not currently applied to the specified user or user group.
-          type: array
-          items:
-            $ref: '#/components/schemas/Access_Control_Permissions_Response-Permission'
-        permissions_granted:
-          description: The permissions currently granted to the specified user or user group.
-          type: array
-          items:
-            $ref: '#/components/schemas/Access_Control_Permissions_Response-Permission'
-    Access_Control_Permissions_PermissionObject:
-      type: object
-      properties:
-        type:
-          description: 'Specifies the type of object. Supported values are:
-
-            * `Tag` — A specific tag. Requires `uuid` and `name`.
-
-            * `AllAssets` — All assets in the container. No `uuid` or `name` required.
-
-            * `AllTags` — All tags in the container. No `uuid` or `name` required.
-
-            * `AllObjects` — All objects in the container (system-generated only).'
-          type: string
-          enum:
-          - Tag
-          - AllAssets
-          - AllTags
-          - AllObjects
-        uuid:
-          description: 'Specifies the unique identifier (UUID) of the tag object.
-
-
-            **Note:** This parameter is valid for objects of type `Tag` only. This parameter is ignored for the `AllAssets`, `AllTags`, and `AllObjects` types.'
-          type: string
-          format: uuid
-        name:
-          description: 'Specifies the name of the tag object.
-
-
-            **Note:** This parameter is valid for objects of type `Tag` only. Use the format `Category,Value` when passing this parameter in a request. The system returns this value in the format `Category:Value` in responses. This parameter is ignored for the `AllAssets`, `AllTags`, and `AllObjects` types.'
-          type: string
-    Access_Control_Permissions_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey

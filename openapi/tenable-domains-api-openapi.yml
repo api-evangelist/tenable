@@ -389,6 +389,22 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
+    Response-Domains-List-Object:
+      type: object
+      properties:
+        container_uuid:
+          type: string
+          format: uuid
+          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
+          description: The UUID of the child container in the Tenable MSSP Portal.
+        domains:
+          type: array
+          description: An array of domains associated with the container.
+          items:
+            type: string
+        message:
+          type: string
+          description: A short status message about the operation.
     Request-Domains-Add:
       type: object
       required:
@@ -407,22 +423,6 @@ components:
         activation_code:
           type: string
           description: The required activation code to add the domain to the specified container.
-    Response-Domains-List:
-      type: object
-      properties:
-        domains_list:
-          description: An array of customer account objects.
-          type: array
-          items:
-            $ref: '#/components/schemas/Response-Domains-List-Object'
-    Response-Domains-Details-List:
-      type: object
-      properties:
-        domains:
-          description: An array of domain objects.
-          type: array
-          items:
-            $ref: '#/components/schemas/Response-Domains-Details-List-Object'
     Response-Domains-Details-List-Object:
       type: object
       properties:
@@ -440,6 +440,14 @@ components:
           type: integer
           description: The Unix timestamp when the domain was added.
           format: int64
+    Response-Domains-Details-List:
+      type: object
+      properties:
+        domains:
+          description: An array of domain objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/Response-Domains-Details-List-Object'
     ErrorResponse:
       type: object
       properties:
@@ -473,22 +481,14 @@ components:
         is_resend:
           type: boolean
           description: Indicates whether or not to resend the verification code.
-    Response-Domains-List-Object:
+    Response-Domains-List:
       type: object
       properties:
-        container_uuid:
-          type: string
-          format: uuid
-          example: 483f7000-734e-46d0-9fea-2a8ac2f8e9f6
-          description: The UUID of the child container in the Tenable MSSP Portal.
-        domains:
+        domains_list:
+          description: An array of customer account objects.
           type: array
-          description: An array of domains associated with the container.
           items:
-            type: string
-        message:
-          type: string
-          description: A short status message about the operation.
+            $ref: '#/components/schemas/Response-Domains-List-Object'
   securitySchemes:
     cloud:
       type: apiKey

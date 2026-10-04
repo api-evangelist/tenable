@@ -589,12 +589,15 @@ paths:
                     message: An internal server error occurred. Please wait a moment and try your request again.
 components:
   schemas:
-    ErrorResponse-400:
+    LogoListResponse:
       type: object
       properties:
-        error:
-          type: string
-          description: A brief message about the missing or invalid parameter value(s).
+        logos:
+          description: An array of logo objects.
+          type: array
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/LogoObject'
     LogoAssignmentBulk:
       type: object
       required:
@@ -609,12 +612,6 @@ components:
           description: An array of customer account UUIDs in the Tenable MSSP Portal.
           items:
             type: string
-    ErrorResponse-404:
-      type: object
-      properties:
-        error:
-          type: string
-          description: A brief message about the object that could not be found.
     ErrorResponse:
       type: object
       properties:
@@ -642,15 +639,18 @@ components:
         filename:
           type: string
           description: The filename of the logo.
-    LogoListResponse:
+    ErrorResponse-400:
       type: object
       properties:
-        logos:
-          description: An array of logo objects.
-          type: array
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/LogoObject'
+        error:
+          type: string
+          description: A brief message about the missing or invalid parameter value(s).
+    ErrorResponse-404:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A brief message about the object that could not be found.
     LogoUuidResponse:
       type: object
       required:

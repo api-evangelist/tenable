@@ -2811,11 +2811,6 @@ paths:
     - url: https://cloud.tenable.com
 components:
   schemas:
-    filters:
-      type: array
-      description: A list of filters available for the record type.
-      items:
-        $ref: '#/components/schemas/filter'
     ErrorResponse:
       type: object
       properties:
@@ -2828,6 +2823,16 @@ components:
         message:
           type: string
           description: A brief message about the cause of the error.
+    wildcard_fields:
+      description: Array of strings which represent each field which supports "wildcard" search. Wildcard search is a mechanism where multiple fields of a record are filtered against one specific filter string. If any one of the supported fields' values matches against the filter string, then the record matches the wildcard filter. Note that for a record to be returned, it must pass the wildcard filter (if there is one) AND the set of standard filters.
+      type: array
+      items:
+        type: string
+    filters:
+      type: array
+      description: A list of filters available for the record type.
+      items:
+        $ref: '#/components/schemas/filter'
     filter:
       type: object
       properties:
@@ -2860,11 +2865,18 @@ components:
         group_name:
           type: string
           description: Always set to `NULL`. Legacy attribute associated with deprecated functionality.
-    wildcard_fields:
-      description: Array of strings which represent each field which supports "wildcard" search. Wildcard search is a mechanism where multiple fields of a record are filtered against one specific filter string. If any one of the supported fields' values matches against the filter string, then the record matches the wildcard filter. Note that for a record to be returned, it must pass the wildcard filter (if there is one) AND the set of standard filters.
-      type: array
-      items:
-        type: string
+    filters_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     filters_sort:
       type: object
       description: The sorting parameters supported for data returned by the endpoint.
@@ -2877,11 +2889,6 @@ components:
           type: array
           items:
             type: string
-    filters_filters:
-      type: array
-      description: A list of filters available for the record type.
-      items:
-        $ref: '#/components/schemas/filters_filter'
     filters_response-report-filters:
       type: object
       properties:
@@ -2901,23 +2908,16 @@ components:
           type: array
           items:
             type: string
+    filters_filters:
+      type: array
+      description: A list of filters available for the record type.
+      items:
+        $ref: '#/components/schemas/filters_filter'
     filters_wildcard_fields:
       description: Array of strings which represent each field which supports "wildcard" search. Wildcard search is a mechanism where multiple fields of a record are filtered against one specific filter string. If any one of the supported fields' values matches against the filter string, then the record matches the wildcard filter. Note that for a record to be returned, it must pass the wildcard filter (if there is one) AND the set of standard filters.
       type: array
       items:
         type: string
-    filters_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     filters_filter:
       type: object
       properties:
@@ -2947,6 +2947,29 @@ components:
         group_name:
           type: string
           description: Always set to `NULL`. Legacy attribute associated with deprecated functionality.
+    ErrorResponse_2:
+      type: object
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
+      properties:
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
     Filters:
       type: array
       description: A list of filters available for the record type.
@@ -2981,29 +3004,6 @@ components:
             max_length:
               type: integer
               description: The max length of the filter.
-    ErrorResponse_2:
-      type: object
-      required:
-      - reasons
-      description: Tenable Web App Scanning error response.
-      properties:
-        reasons:
-          type: array
-          description: A list of reasons for the Tenable Web App Scanning error.
-          items:
-            type: object
-            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
-            minItems: 1
-            required:
-            - code
-            - reason
-            properties:
-              code:
-                type: string
-                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
-              reason:
-                type: string
-                description: The extended description of the cause of the Tenable Web App Scanning error.
   securitySchemes:
     cloud:
       type: apiKey

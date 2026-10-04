@@ -652,47 +652,35 @@ paths:
       - Access_Control_Groups_cloud: []
 components:
   schemas:
-    Access_Control_Groups_ErrorResponse:
+    Access_Control_Groups_Response-Group:
       type: object
       properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
+        uuid:
           type: string
-          description: A brief message about the cause of the error.
-    Access_Control_Groups_Request-Group:
-      type: object
-      properties:
+          format: uuid
+          description: The unique identifier (UUID) for the group.
         name:
           type: string
-          description: Specifies the name of the group.
+          description: The name of the group.
+        id:
+          type: integer
+          description: The unique integer identifier of the group.
+        container_uuid:
+          type: string
+          format: uuid
+          description: The UUID of the container the group belongs to.
+        user_count:
+          type: integer
+          description: The number of users in the group. Only present on list and update responses.
         managed_by_saml:
           type: boolean
-          description: Specifies whether to allow users to be added to or removed from this group during SAML single sign-on (`true`) or to manage group membership independently of SAML (`false`).
-      required:
-      - name
-    Access_Control_Groups_TwoFactor:
-      type: object
-      properties:
-        sms_phone:
-          type: string
-          description: The phone number used for two-factor authentication. The phone number begins with the `+` character and the country code. This field is required when sms_enabled is set to `true`.
-        sms_enabled:
-          type: integer
-          description: Indicates whether two-factor authentication is enabled (`1`) or disabled (`0`).
-        email_enabled:
-          type: integer
-          description: Indicates whether backup notification for two-factor authentication is enabled (`1`) or disabled (`0`). If enabled, Tenable Vulnerability Management sends the two-factor verification code via e-mail, as well as via the default SMS message.
-    Access_Control_Groups_ErrorResponse-Error:
-      type: object
-      properties:
-        error:
-          type: string
-          description: A brief description of the error.
+          description: A flag indicating whether users can be added to or removed from this group during SAML single sign-on. Only present if SAML management is enabled for the group.
+        immutable:
+          type: boolean
+          description: A flag indicating the group cannot be modified. Only present on the default `All Users` group.
+        membership_fixed:
+          type: boolean
+          description: A flag indicating users cannot be added to or removed from this group. Only present on the default `All Users` group.
     Access_Control_Groups_user-object:
       type: object
       properties:
@@ -793,35 +781,47 @@ components:
         uuid_id:
           type: string
           description: The UUID for the user.
-    Access_Control_Groups_Response-Group:
+    Access_Control_Groups_TwoFactor:
       type: object
       properties:
-        uuid:
+        sms_phone:
           type: string
-          format: uuid
-          description: The unique identifier (UUID) for the group.
+          description: The phone number used for two-factor authentication. The phone number begins with the `+` character and the country code. This field is required when sms_enabled is set to `true`.
+        sms_enabled:
+          type: integer
+          description: Indicates whether two-factor authentication is enabled (`1`) or disabled (`0`).
+        email_enabled:
+          type: integer
+          description: Indicates whether backup notification for two-factor authentication is enabled (`1`) or disabled (`0`). If enabled, Tenable Vulnerability Management sends the two-factor verification code via e-mail, as well as via the default SMS message.
+    Access_Control_Groups_Request-Group:
+      type: object
+      properties:
         name:
           type: string
-          description: The name of the group.
-        id:
-          type: integer
-          description: The unique integer identifier of the group.
-        container_uuid:
-          type: string
-          format: uuid
-          description: The UUID of the container the group belongs to.
-        user_count:
-          type: integer
-          description: The number of users in the group. Only present on list and update responses.
+          description: Specifies the name of the group.
         managed_by_saml:
           type: boolean
-          description: A flag indicating whether users can be added to or removed from this group during SAML single sign-on. Only present if SAML management is enabled for the group.
-        immutable:
-          type: boolean
-          description: A flag indicating the group cannot be modified. Only present on the default `All Users` group.
-        membership_fixed:
-          type: boolean
-          description: A flag indicating users cannot be added to or removed from this group. Only present on the default `All Users` group.
+          description: Specifies whether to allow users to be added to or removed from this group during SAML single sign-on (`true`) or to manage group membership independently of SAML (`false`).
+      required:
+      - name
+    Access_Control_Groups_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Access_Control_Groups_ErrorResponse-Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A brief description of the error.
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey

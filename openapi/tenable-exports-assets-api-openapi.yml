@@ -1186,254 +1186,6 @@ paths:
       - Export_Assets_cloud: []
 components:
   schemas:
-    Export_Assets_network:
-      type: object
-      properties:
-        network_id:
-          type: string
-          description: The unique identifier of the network assigned to the scanners that identified the asset. The default network ID is `00000000-0000-0000-0000-000000000000`. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
-        network_name:
-          type: string
-          description: The name of the network object associated with scanners that identified the asset. The default network name is `Default`. All other network names are user-defined. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
-        bios_uuid:
-          type: string
-          description: The BIOS UUID associated with the asset.
-        ipv4s:
-          type: array
-          description: A list of IPv4 addresses associated with the asset.
-          items:
-            type: string
-        ipv6s:
-          type: array
-          description: A list of IPv6 addresses associated with the asset.
-          items:
-            type: string
-        fqdns:
-          type: array
-          description: A list of fully qualified domain names (FQDNs) associated with the asset.
-          items:
-            type: string
-        mac_addresses:
-          type: array
-          description: A list of MAC addresses associated with the asset.
-          items:
-            type: string
-        netbios_names:
-          type: array
-          description: A list of NetBIOS names associated with the asset.
-          items:
-            type: string
-        hostnames:
-          type: array
-          description: A list of host names associated with the asset.
-          items:
-            type: string
-        ssh_fingerprints:
-          type: array
-          description: A list of SSH key fingerprints associated with the asset.
-          items:
-            type: string
-        network_interfaces:
-          type: array
-          description: The network interfaces that scans identified on the asset.
-          items:
-            $ref: '#/components/schemas/Export_Assets_network_interfaces_v2'
-        open_ports:
-          type: array
-          description: "An array of open ports and their services as reported by the info-level plugins. \n\nFor more information about open ports reported by info-level plugins, see [Relocate Open Port Findings](https://docs.tenable.com/vulnerability-management/Content/Settings/General/General.htm#Relocate-Open-Port-Findings) in the Tenable Vulnerability Management User Guide and the [Relocate Open Port Findings Quick Reference Guide](https://docs.tenable.com/quick-reference/relocate-open-port-findings/)."
-          items:
-            $ref: '#/components/schemas/Export_Assets_open_ports'
-    Export_Assets_scan:
-      type: object
-      properties:
-        first_scan_time:
-          type: string
-          description: The date and time of the first scan run against the asset.
-        last_scan_time:
-          type: string
-          description: The date and time of the last scan run against the asset.
-        last_authenticated_scan_date:
-          type: string
-          description: The date and time of the most recent credentialed scan performed on the asset.
-        last_licensed_scan_date:
-          type: string
-          description: The date and time of the last scan that identified the asset as licensed. Tenable Vulnerability Management categorizes an asset as licensed if a scan of that asset has returned results from a non-discovery plugin within the last 90 days.
-        last_scan_id:
-          type: string
-          format: uuid
-          description: The unique identifier of the scan configuration used for the most recent scan of the asset.
-        last_schedule_id:
-          type: string
-          description: The `schedule_uuid` of the scan schedule used for the most recent scan of the asset.
-        last_authentication_attempt_date:
-          type: string
-          description: The date and time a scan last attempted to authenticate using SSH (on Unix-based systems) or SMB (on Windows systems).
-        last_authentication_success_date:
-          type: string
-          description: 'The date and time a scan last authenticated successfully. Note: This property is not updated by Tenable Agent scans, as agents do not perform login-based authentication.'
-        last_authentication_scan_status:
-          type: string
-          description: The last authentication scan status.
-        last_scan_target:
-          type: string
-          description: The last scan target which was scanned.
-    Export_Assets_tags:
-      type: object
-      properties:
-        uuid:
-          type: string
-          description: The unique identifier of the tag.
-        key:
-          type: string
-          description: The tag key, representing the category portion of a category:value tag pair.
-        value:
-          type: string
-          description: The tag value, representing the value portion of a category:value tag pair.
-        added_by:
-          type: string
-          description: The unique identifier of the user who assigned the tag to the asset.
-        added_at:
-          type: string
-          description: A timestamp in ISO 8601 format indicating the date and time the tag was assigned to the asset.
-    Export_Assets_network_interfaces_v2:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the interface.
-        mac_addresses:
-          type: array
-          description: The MAC addresses of the interface.
-          items:
-            type: string
-        ipv4s:
-          type: array
-          description: One or more IPv4 addresses belonging to the interface.
-          items:
-            type: string
-        ipv6s:
-          type: array
-          description: One or more IPv6 addresses belonging to the interface.
-          items:
-            type: string
-        fqdns:
-          type: array
-          description: One or more FQDN belonging to the interface.
-          items:
-            type: string
-        virtual:
-          type: boolean
-          description: True if network interface is a virtual interface.
-        aliased:
-          type: boolean
-          description: True if network interface is a virtual interface.
-    Export_Assets_aws:
-      type: object
-      properties:
-        ec2_instance_ami_id:
-          type: string
-          description: The unique identifier of the Linux AMI image in Amazon Elastic Compute Cloud (Amazon EC2). For more information, see the Amazon Elastic Compute Cloud documentation.
-        ec2_instance_id:
-          type: string
-          description: The unique identifier of the Linux instance in Amazon EC2. For more information, see the Amazon Elastic Compute Cloud documentation.
-        owner_id:
-          type: string
-          description: The canonical user identifier for the AWS account associated with the virtual machine instance. For example, `79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be`. For more information, see AWS Account Identifiers in the AWS documentation.
-        availability_zone:
-          type: string
-          description: The availability zone where Amazon Web Services hosts the virtual machine instance, for example, `us-east-1a``. Availability zones are subdivisions of AWS regions. For more information, see "Regions and Availability Zones" in the AWS documentation.
-        region:
-          type: string
-          description: The region where AWS hosts the virtual machine instance, for example, `us-east-1`. For more information, see "Regions and Availability Zones" in the AWS documentation.
-        vpc_id:
-          type: string
-          description: The unique identifier for the virtual public cloud that hosts the AWS virtual machine instance. For more information, see the Amazon Virtual Private Cloud User Guide.
-        ec2_instance_group_name:
-          type: string
-          description: The unique identifier for the virtual public cloud that hosts the AWS virtual machine instance. For more information, see the Amazon Virtual Private Cloud User Guide.
-        ec2_instance_state_name:
-          type: string
-          description: The state of the virtual machine instance in AWS at the time of the scan.
-        ec2_instance_type:
-          type: string
-          description: The type of instance in AWS EC2.
-        subnet_id:
-          type: string
-          description: The unique identifier of the AWS subnet where the virtual machine instance was running at the time of the scan.
-        ec2_product_code:
-          type: string
-          description: The product code associated with the AMI used to launch the virtual machine instance in AWS EC2.
-        ec2_name:
-          type: string
-          description: The name of the virtual machine instance in AWS EC2.
-    Export_Assets_network_interfaces:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the interface.
-        mac_addresses:
-          type: array
-          description: The MAC addresses of the interface.
-          items:
-            type: string
-        ipv4s:
-          type: array
-          description: One or more IPv4 addresses belonging to the interface.
-          items:
-            type: string
-        ipv6s:
-          type: array
-          description: One or more IPv6 addresses belonging to the interface.
-          items:
-            type: string
-        fqdns:
-          type: array
-          description: One or more FQDN belonging to the interface.
-          items:
-            type: string
-    Export_Assets_ratings-object:
-      type: object
-      description: A list of metrics that provide a comprehensive view of asset exposure and prioritization. Currently, the available metrics include the Asset Criticality Rating (ACR), which measures the relative business importance of an asset, and the Asset Exposure Score (AES), which quantifies the risk exposure of an asset based on its vulnerabilities.
-      properties:
-        acr:
-          description: "The Tenable-defined Asset Criticality Rating (ACR) assigned to the asset. This score, ranging from 1 to 10, reflects the relative importance of the asset to your organization, with higher values indicating more critical assets. In Lumin, the ACR is calculated using an algorithm based on the [asset profile](http://docs.tenable.com/vulnerability-management/Content/Explore/asset-types.htm). \n\nFor more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the _Tenable Vulnerability Management User Guide_."
-          type: object
-          properties:
-            score:
-              description: The Asset Criticality Rating (ACR) value.
-              type: number
-              format: float
-              maximum: 10
-              minimum: 0
-        aes:
-          description: "The Tenable-defined Asset Exposure Score (AES) assigned to the asset. This score, ranging from 1 to 1000, represents how exposed an asset is based on a weighted calculation of its [Vulnerability Priority Rating (VPR)](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm#VPR) and [Asset Criticality Rating (ACR)](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm#ACR). Higher values indicate greater exposure. \n\nFor more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the _Tenable Vulnerability Management User Guide_."
-          type: object
-          properties:
-            score:
-              description: The Asset Exposure Score (AES) value.
-              type: number
-              format: float
-              maximum: 1000
-              minimum: 0
-    Export_Assets_custom_attributes:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Id of the attribute.
-        value:
-          type: string
-          description: Value of the attribute.
-    Export_Assets_resource_tags:
-      type: object
-      properties:
-        key:
-          type: string
-          description: The resource tag key.
-        value:
-          type: string
-          description: The resource tag value.
     Export_Assets_timestamps:
       type: object
       description: Timestamps associated with the asset.
@@ -1763,18 +1515,164 @@ components:
           description: "An array of resource tags applicable to the asset. Resource tags are imported from a cloud provider like AWS, Azure, or GCP by a Cloud Discovery Connector and are used to identify cloud assets. \n\nFor more information about resource tags, see [Cloud Resources](https://docs.tenable.com/vulnerability-management/Content/Explore/Assets/exploreAssetsCloudResources.htm) and [Host Assets](https://docs.tenable.com/vulnerability-management/Content/Explore/Assets/ExploreAssetsHosts.htm) in the Tenable Vulnerability Management User Guide."
           items:
             $ref: '#/components/schemas/Export_Assets_resource_tags'
-    Export_Assets_sources:
+    Export_Assets_tags:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: The unique identifier of the tag.
+        key:
+          type: string
+          description: The tag key, representing the category portion of a category:value tag pair.
+        value:
+          type: string
+          description: The tag value, representing the value portion of a category:value tag pair.
+        added_by:
+          type: string
+          description: The unique identifier of the user who assigned the tag to the asset.
+        added_at:
+          type: string
+          description: A timestamp in ISO 8601 format indicating the date and time the tag was assigned to the asset.
+    Export_Assets_network:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: The unique identifier of the network assigned to the scanners that identified the asset. The default network ID is `00000000-0000-0000-0000-000000000000`. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        network_name:
+          type: string
+          description: The name of the network object associated with scanners that identified the asset. The default network name is `Default`. All other network names are user-defined. For more information about network objects, see [Manage Networks](doc:manage-networks-tio).
+        bios_uuid:
+          type: string
+          description: The BIOS UUID associated with the asset.
+        ipv4s:
+          type: array
+          description: A list of IPv4 addresses associated with the asset.
+          items:
+            type: string
+        ipv6s:
+          type: array
+          description: A list of IPv6 addresses associated with the asset.
+          items:
+            type: string
+        fqdns:
+          type: array
+          description: A list of fully qualified domain names (FQDNs) associated with the asset.
+          items:
+            type: string
+        mac_addresses:
+          type: array
+          description: A list of MAC addresses associated with the asset.
+          items:
+            type: string
+        netbios_names:
+          type: array
+          description: A list of NetBIOS names associated with the asset.
+          items:
+            type: string
+        hostnames:
+          type: array
+          description: A list of host names associated with the asset.
+          items:
+            type: string
+        ssh_fingerprints:
+          type: array
+          description: A list of SSH key fingerprints associated with the asset.
+          items:
+            type: string
+        network_interfaces:
+          type: array
+          description: The network interfaces that scans identified on the asset.
+          items:
+            $ref: '#/components/schemas/Export_Assets_network_interfaces_v2'
+        open_ports:
+          type: array
+          description: "An array of open ports and their services as reported by the info-level plugins. \n\nFor more information about open ports reported by info-level plugins, see [Relocate Open Port Findings](https://docs.tenable.com/vulnerability-management/Content/Settings/General/General.htm#Relocate-Open-Port-Findings) in the Tenable Vulnerability Management User Guide and the [Relocate Open Port Findings Quick Reference Guide](https://docs.tenable.com/quick-reference/relocate-open-port-findings/)."
+          items:
+            $ref: '#/components/schemas/Export_Assets_open_ports'
+    Export_Assets_aws:
+      type: object
+      properties:
+        ec2_instance_ami_id:
+          type: string
+          description: The unique identifier of the Linux AMI image in Amazon Elastic Compute Cloud (Amazon EC2). For more information, see the Amazon Elastic Compute Cloud documentation.
+        ec2_instance_id:
+          type: string
+          description: The unique identifier of the Linux instance in Amazon EC2. For more information, see the Amazon Elastic Compute Cloud documentation.
+        owner_id:
+          type: string
+          description: The canonical user identifier for the AWS account associated with the virtual machine instance. For example, `79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be`. For more information, see AWS Account Identifiers in the AWS documentation.
+        availability_zone:
+          type: string
+          description: The availability zone where Amazon Web Services hosts the virtual machine instance, for example, `us-east-1a``. Availability zones are subdivisions of AWS regions. For more information, see "Regions and Availability Zones" in the AWS documentation.
+        region:
+          type: string
+          description: The region where AWS hosts the virtual machine instance, for example, `us-east-1`. For more information, see "Regions and Availability Zones" in the AWS documentation.
+        vpc_id:
+          type: string
+          description: The unique identifier for the virtual public cloud that hosts the AWS virtual machine instance. For more information, see the Amazon Virtual Private Cloud User Guide.
+        ec2_instance_group_name:
+          type: string
+          description: The unique identifier for the virtual public cloud that hosts the AWS virtual machine instance. For more information, see the Amazon Virtual Private Cloud User Guide.
+        ec2_instance_state_name:
+          type: string
+          description: The state of the virtual machine instance in AWS at the time of the scan.
+        ec2_instance_type:
+          type: string
+          description: The type of instance in AWS EC2.
+        subnet_id:
+          type: string
+          description: The unique identifier of the AWS subnet where the virtual machine instance was running at the time of the scan.
+        ec2_product_code:
+          type: string
+          description: The product code associated with the AMI used to launch the virtual machine instance in AWS EC2.
+        ec2_name:
+          type: string
+          description: The name of the virtual machine instance in AWS EC2.
+    Export_Assets_custom_attributes:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id of the attribute.
+        value:
+          type: string
+          description: Value of the attribute.
+    Export_Assets_network_interfaces:
       type: object
       properties:
         name:
           type: string
-          description: "The name of the entity that reported the asset details. Sources can include sensors, connectors, and API imports. Source names can be customized by your organization (for example, you specify a name when you import asset records). If your organization does not customize source names, the system-generated names include:\n - AWS—The asset data was obtained from an Amazon Web Services connector.\n - NESSUS_AGENT—The asset data was obtained from a Tenable Nessus Agent scan.\n - PVS—The asset data was obtained from a Tenable Nessus Network Monitor (NNM) scan.\n - NESSUS_SCAN—The asset data was obtained from a Tenable Nessus scan.\n - WAS—The asset data was obtained from a Web App Scanning scan."
-        first_seen:
+          description: The name of the interface.
+        mac_addresses:
+          type: array
+          description: The MAC addresses of the interface.
+          items:
+            type: string
+        ipv4s:
+          type: array
+          description: One or more IPv4 addresses belonging to the interface.
+          items:
+            type: string
+        ipv6s:
+          type: array
+          description: One or more IPv6 addresses belonging to the interface.
+          items:
+            type: string
+        fqdns:
+          type: array
+          description: One or more FQDN belonging to the interface.
+          items:
+            type: string
+    Export_Assets_azure:
+      type: object
+      properties:
+        vm_id:
           type: string
-          description: The ISO timestamp when the source first reported the asset.
-        last_seen:
+          description: The unique identifier of the Microsoft Azure virtual machine instance. For more information, see "Accessing and Using Azure VM Unique ID" in the Microsoft Azure documentation.
+        resource_id:
           type: string
-          description: The ISO timestamp when the source last reported the asset.
+          description: The unique identifier of the resource in the Azure Resource Manager. For more information, see the Azure Resource Manager Documentation.
     Export_Assets_ErrorResponse:
       type: object
       properties:
@@ -1787,15 +1685,6 @@ components:
         message:
           type: string
           description: A brief message about the cause of the error.
-    Export_Assets_azure:
-      type: object
-      properties:
-        vm_id:
-          type: string
-          description: The unique identifier of the Microsoft Azure virtual machine instance. For more information, see "Accessing and Using Azure VM Unique ID" in the Microsoft Azure documentation.
-        resource_id:
-          type: string
-          description: The unique identifier of the resource in the Azure Resource Manager. For more information, see the Azure Resource Manager Documentation.
     Export_Assets_gcp:
       type: object
       properties:
@@ -1808,6 +1697,69 @@ components:
         instance_id:
           type: string
           description: The zone where the virtual machine instance runs in GCP. For more information, see "Regions and Zones" in the GCP documentation.
+    Export_Assets_resource_tags:
+      type: object
+      properties:
+        key:
+          type: string
+          description: The resource tag key.
+        value:
+          type: string
+          description: The resource tag value.
+    Export_Assets_open_ports:
+      type: object
+      properties:
+        port:
+          type: integer
+          description: The open port number.
+        protocol:
+          type: string
+          description: The communication protocol corresponding to the open port.
+        service_names:
+          type: array
+          description: The names of the services associated with the open port.
+          items:
+            type: string
+        first_seen:
+          type: string
+          description: The ISO timestamp when the source first detected the open port on the asset.
+        last_seen:
+          type: string
+          description: The ISO timestamp when the source last detected the open port on the asset.
+    Export_Assets_scan:
+      type: object
+      properties:
+        first_scan_time:
+          type: string
+          description: The date and time of the first scan run against the asset.
+        last_scan_time:
+          type: string
+          description: The date and time of the last scan run against the asset.
+        last_authenticated_scan_date:
+          type: string
+          description: The date and time of the most recent credentialed scan performed on the asset.
+        last_licensed_scan_date:
+          type: string
+          description: The date and time of the last scan that identified the asset as licensed. Tenable Vulnerability Management categorizes an asset as licensed if a scan of that asset has returned results from a non-discovery plugin within the last 90 days.
+        last_scan_id:
+          type: string
+          format: uuid
+          description: The unique identifier of the scan configuration used for the most recent scan of the asset.
+        last_schedule_id:
+          type: string
+          description: The `schedule_uuid` of the scan schedule used for the most recent scan of the asset.
+        last_authentication_attempt_date:
+          type: string
+          description: The date and time a scan last attempted to authenticate using SSH (on Unix-based systems) or SMB (on Windows systems).
+        last_authentication_success_date:
+          type: string
+          description: 'The date and time a scan last authenticated successfully. Note: This property is not updated by Tenable Agent scans, as agents do not perform login-based authentication.'
+        last_authentication_scan_status:
+          type: string
+          description: The last authentication scan status.
+        last_scan_target:
+          type: string
+          description: The last scan target which was scanned.
     Export_Assets_third-party-ids:
       type: object
       properties:
@@ -1838,26 +1790,50 @@ components:
           description: The hardware keys for the asset in Symantec Endpoint Protection.
           items:
             type: string
-    Export_Assets_open_ports:
+    Export_Assets_sources:
       type: object
       properties:
-        port:
-          type: integer
-          description: The open port number.
-        protocol:
+        name:
           type: string
-          description: The communication protocol corresponding to the open port.
-        service_names:
-          type: array
-          description: The names of the services associated with the open port.
-          items:
-            type: string
+          description: "The name of the entity that reported the asset details. Sources can include sensors, connectors, and API imports. Source names can be customized by your organization (for example, you specify a name when you import asset records). If your organization does not customize source names, the system-generated names include:\n - AWS—The asset data was obtained from an Amazon Web Services connector.\n - NESSUS_AGENT—The asset data was obtained from a Tenable Nessus Agent scan.\n - PVS—The asset data was obtained from a Tenable Nessus Network Monitor (NNM) scan.\n - NESSUS_SCAN—The asset data was obtained from a Tenable Nessus scan.\n - WAS—The asset data was obtained from a Web App Scanning scan."
         first_seen:
           type: string
-          description: The ISO timestamp when the source first detected the open port on the asset.
+          description: The ISO timestamp when the source first reported the asset.
         last_seen:
           type: string
-          description: The ISO timestamp when the source last detected the open port on the asset.
+          description: The ISO timestamp when the source last reported the asset.
+    Export_Assets_network_interfaces_v2:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the interface.
+        mac_addresses:
+          type: array
+          description: The MAC addresses of the interface.
+          items:
+            type: string
+        ipv4s:
+          type: array
+          description: One or more IPv4 addresses belonging to the interface.
+          items:
+            type: string
+        ipv6s:
+          type: array
+          description: One or more IPv6 addresses belonging to the interface.
+          items:
+            type: string
+        fqdns:
+          type: array
+          description: One or more FQDN belonging to the interface.
+          items:
+            type: string
+        virtual:
+          type: boolean
+          description: True if network interface is a virtual interface.
+        aliased:
+          type: boolean
+          description: True if network interface is a virtual interface.
     Export_Assets_response-assets-chunk-v2:
       type: object
       properties:
@@ -1964,6 +1940,30 @@ components:
           description: "An array of resource tags applicable to the asset. Resource tags are imported from a cloud provider like AWS, Azure, or GCP by a Cloud Discovery Connector and are used to identify cloud assets. \n\nFor more information about resource tags, see [Cloud Resources](https://docs.tenable.com/vulnerability-management/Content/Explore/Assets/exploreAssetsCloudResources.htm) and [Host Assets](https://docs.tenable.com/vulnerability-management/Content/Explore/Assets/ExploreAssetsHosts.htm) in the Tenable Vulnerability Management User Guide."
           items:
             $ref: '#/components/schemas/Export_Assets_resource_tags'
+    Export_Assets_ratings-object:
+      type: object
+      description: A list of metrics that provide a comprehensive view of asset exposure and prioritization. Currently, the available metrics include the Asset Criticality Rating (ACR), which measures the relative business importance of an asset, and the Asset Exposure Score (AES), which quantifies the risk exposure of an asset based on its vulnerabilities.
+      properties:
+        acr:
+          description: "The Tenable-defined Asset Criticality Rating (ACR) assigned to the asset. This score, ranging from 1 to 10, reflects the relative importance of the asset to your organization, with higher values indicating more critical assets. In Lumin, the ACR is calculated using an algorithm based on the [asset profile](http://docs.tenable.com/vulnerability-management/Content/Explore/asset-types.htm). \n\nFor more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the _Tenable Vulnerability Management User Guide_."
+          type: object
+          properties:
+            score:
+              description: The Asset Criticality Rating (ACR) value.
+              type: number
+              format: float
+              maximum: 10
+              minimum: 0
+        aes:
+          description: "The Tenable-defined Asset Exposure Score (AES) assigned to the asset. This score, ranging from 1 to 1000, represents how exposed an asset is based on a weighted calculation of its [Vulnerability Priority Rating (VPR)](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm#VPR) and [Asset Criticality Rating (ACR)](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm#ACR). Higher values indicate greater exposure. \n\nFor more details, see [Lumin Metrics](https://docs.tenable.com/vulnerability-management/Content/Lumin/LuminMetrics.htm) in the _Tenable Vulnerability Management User Guide_."
+          type: object
+          properties:
+            score:
+              description: The Asset Exposure Score (AES) value.
+              type: number
+              format: float
+              maximum: 1000
+              minimum: 0
   securitySchemes:
     assets_cloud:
       type: apiKey

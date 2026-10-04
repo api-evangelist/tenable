@@ -2112,6 +2112,49 @@ paths:
       - editor_cloud: []
 components:
   schemas:
+    editor_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    editor_filter:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The short name of the filter.
+        readable_name:
+          type: string
+          description: The long name of the filter.
+        operators:
+          description: The comparison options for the filter.
+          type: array
+          items:
+            type: object
+        control:
+          type: object
+          properties:
+            type:
+              type: string
+              description: The input type (entry or dropdown).
+            readable_regest:
+              type: string
+              description: The placeholder for the input.
+            regex:
+              type: string
+              description: A regex for checking the value of the input.
+            options:
+              description: A list of options if the input is a dropdown.
+              type: array
+              items:
+                type: object
     editor_template:
       type: object
       description: Templates are used to create scans or policies with predefined parameters.
@@ -2146,6 +2189,30 @@ components:
         name:
           type: string
           description: The short name of the template.
+    editor_settings:
+      description: Scan or policy settings organized into the Basic, Discovery, Assessment, Report, and Advanced configuration categories.
+      type: object
+      properties:
+        basic:
+          type: object
+          description: The Basic scan settings are used to specify certain organizational and security-related aspects of the scan or policy, including the name of the scan, its targets, whether the scan is scheduled, and who has access to the scan, among other settings.
+        discovery:
+          type: object
+          description: The Discovery settings relate to discovery and port scanning, including port ranges and methods.
+        assessment:
+          type: object
+          description: You can use Assessment settings to configure how a scan identifies vulnerabilities, as well as what vulnerabilities are identified. This includes identifying malware, assessing the vulnerability of a system to brute force attacks, and the susceptibility of web applications.
+        advanced:
+          type: object
+          description: The Advanced settings provide increased control over scan efficiency and the operations of a scan, as well as the ability to enabled plugin debugging.
+    editor_plugins:
+      description: The settings for compliance audit checks.
+      type: object
+      properties: {}
+    editor_credentials:
+      description: Credentials that grant the scanner access to the target system without requiring an agent. Credentialed scans can perform a wider variety of checks than non-credentialed scans, which can result in more accurate scan results. This facilitates scanning of a very large network to determine local exposures or compliance violations. You can configure credentials for Cloud Services, Database, Host, Miscellaneous, Mobile Device Management, and Plaintext Authentication.
+      type: object
+      properties: {}
     editor_plugindescription:
       description: The detailed information for a Tenable Vulnerability Management plugin.
       type: object
@@ -2165,82 +2232,15 @@ components:
         pluginid:
           type: integer
           description: The ID of the plugin.
-    editor_filter:
+    editor_compliance:
+      description: Plugins options enables you to select security checks by Plugin Family or individual plugins checks.
       type: object
-      properties:
-        name:
-          type: string
-          description: The short name of the filter.
-        readable_name:
-          type: string
-          description: The long name of the filter.
-        operators:
-          description: The comparison options for the filter.
-          type: array
-          items:
-            type: object
-        control:
-          type: object
-          properties:
-            type:
-              type: string
-              description: The input type (entry or dropdown).
-            readable_regest:
-              type: string
-              description: The placeholder for the input.
-            regex:
-              type: string
-              description: A regex for checking the value of the input.
-            options:
-              description: A list of options if the input is a dropdown.
-              type: array
-              items:
-                type: object
+      properties: {}
     editor_templates:
       type: array
       description: The list of available templates.
       items:
         $ref: '#/components/schemas/editor_template'
-    editor_settings:
-      description: Scan or policy settings organized into the Basic, Discovery, Assessment, Report, and Advanced configuration categories.
-      type: object
-      properties:
-        basic:
-          type: object
-          description: The Basic scan settings are used to specify certain organizational and security-related aspects of the scan or policy, including the name of the scan, its targets, whether the scan is scheduled, and who has access to the scan, among other settings.
-        discovery:
-          type: object
-          description: The Discovery settings relate to discovery and port scanning, including port ranges and methods.
-        assessment:
-          type: object
-          description: You can use Assessment settings to configure how a scan identifies vulnerabilities, as well as what vulnerabilities are identified. This includes identifying malware, assessing the vulnerability of a system to brute force attacks, and the susceptibility of web applications.
-        advanced:
-          type: object
-          description: The Advanced settings provide increased control over scan efficiency and the operations of a scan, as well as the ability to enabled plugin debugging.
-    editor_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    editor_plugins:
-      description: The settings for compliance audit checks.
-      type: object
-      properties: {}
-    editor_compliance:
-      description: Plugins options enables you to select security checks by Plugin Family or individual plugins checks.
-      type: object
-      properties: {}
-    editor_credentials:
-      description: Credentials that grant the scanner access to the target system without requiring an agent. Credentialed scans can perform a wider variety of checks than non-credentialed scans, which can result in more accurate scan results. This facilitates scanning of a very large network to determine local exposures or compliance violations. You can configure credentials for Cloud Services, Database, Host, Miscellaneous, Mobile Device Management, and Plaintext Authentication.
-      type: object
-      properties: {}
   securitySchemes:
     assets_cloud:
       type: apiKey

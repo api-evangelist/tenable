@@ -361,82 +361,22 @@ paths:
       - Scanner_Tasks_cloud: []
 components:
   schemas:
-    Scanner_Tasks_scanner-directive:
+    Scanner_Tasks_response-directive-option:
       type: object
+      description: The instructions to perform.
       properties:
-        options:
-          type: object
-          description: Specifies the instructions you wish to send to the scanner. The `options` object is different depending on whether you want to restart the scanner service or change settings for the scanner.
-          oneOf:
-          - title: Restart Scanner Service (OPTION 1)
-            type: object
-            description: The options for the restart scanner service operation.
-            properties:
-              hard:
-                type: boolean
-                description: Indicates whether or not to perform a hard restart of the scanner service. A hard restart will inform the scanner service to restart immediately regardless of what it is doing.
-              idle:
-                type: boolean
-                description: Indicates whether or not to restart the scanner service when the scanning engine is idle.
-          - title: Change Settings (OPTION 2)
-            type: object
-            description: The settings to change.
-            properties:
-              settings:
-                type: array
-                description: An array of objects where each object is one individual setting or instruction to perform. Each object contains a `setting` property to specify the setting and a `value` property to specify the value for setting. For example, `{"setting":"backend_log_level","value":"debug"}`.
-                items:
-                  type: object
-                  properties:
-                    setting:
-                      description: The setting to send to the scanner. Supported settings are `backend_log_level`, `auto_update`, and `auto_update_delay`. For information about these settings and a list of possible values to use with the settings, see [Advanced Settings](https://docs.tenable.com/nessus/Content/SettingsAdvanced.htm) in the Nessus User Guide.
-                      type: string
-                      enum:
-                      - backend_log_level
-                      - auto_update
-                      - auto_update_delay
-                    value:
-                      oneOf:
-                      - title: Single String Value
-                        type: string
-                      - title: Single Integer Value
-                        type: integer
-                      description: The value to use for the specified setting. Choose either a single string value or a single integer value to use for the value.
-                      example:
-                      - 'no'
-    Scanner_Tasks_bulk-scanner-directive:
-      type: object
-      properties:
-        all_scanners:
-          type: string
-          description: Indicates whether or not to send the directives to all scanners.
-          enum:
-          - 'true'
-          - 'false'
-        scanners:
+        settings:
           type: array
-          description: An array of scanner UUIDs to send the directives to.
+          description: An array of objects where each object is one individual setting or instruction to perform. Each object contains a `setting` property to specify the setting and a `value` property to specify the value for setting. For example, `{"setting":"backend_log_level","value":"debug"}`.
           items:
-            type: string
-        directive:
-          type: object
-          description: Specifies the instructions you wish to send to the scanners. The `directive` object is different depending on whether you want to restart the scanners' service or change settings for the scanners.
-          allOf:
-          - type: object
-            required:
-            - type
+            type: object
             properties:
-              type:
+              setting:
+                description: The setting that was sent in the directive to the scanner.
                 type: string
-                description: The type of instruction to perform. To restart the scanner service, choose `restart`. To modify settings, choose `settings`.
-                enum:
-                - restart
-                - settings
-          - $ref: '#/components/schemas/Scanner_Tasks_scanner-directive'
-    Scanner_Tasks_response-bulk-scanner-directive:
-      type: array
-      items:
-        $ref: '#/components/schemas/Scanner_Tasks_response-scanner-directive'
+              value:
+                description: The value of the setting.
+                type: string
     Scanner_Tasks_response-scanner-directive:
       type: object
       properties:
@@ -488,6 +428,78 @@ components:
           type: string
           format: UUID
           description: The UUID of the directive task.
+    Scanner_Tasks_bulk-scanner-directive:
+      type: object
+      properties:
+        all_scanners:
+          type: string
+          description: Indicates whether or not to send the directives to all scanners.
+          enum:
+          - 'true'
+          - 'false'
+        scanners:
+          type: array
+          description: An array of scanner UUIDs to send the directives to.
+          items:
+            type: string
+        directive:
+          type: object
+          description: Specifies the instructions you wish to send to the scanners. The `directive` object is different depending on whether you want to restart the scanners' service or change settings for the scanners.
+          allOf:
+          - type: object
+            required:
+            - type
+            properties:
+              type:
+                type: string
+                description: The type of instruction to perform. To restart the scanner service, choose `restart`. To modify settings, choose `settings`.
+                enum:
+                - restart
+                - settings
+          - $ref: '#/components/schemas/Scanner_Tasks_scanner-directive'
+    Scanner_Tasks_scanner-directive:
+      type: object
+      properties:
+        options:
+          type: object
+          description: Specifies the instructions you wish to send to the scanner. The `options` object is different depending on whether you want to restart the scanner service or change settings for the scanner.
+          oneOf:
+          - title: Restart Scanner Service (OPTION 1)
+            type: object
+            description: The options for the restart scanner service operation.
+            properties:
+              hard:
+                type: boolean
+                description: Indicates whether or not to perform a hard restart of the scanner service. A hard restart will inform the scanner service to restart immediately regardless of what it is doing.
+              idle:
+                type: boolean
+                description: Indicates whether or not to restart the scanner service when the scanning engine is idle.
+          - title: Change Settings (OPTION 2)
+            type: object
+            description: The settings to change.
+            properties:
+              settings:
+                type: array
+                description: An array of objects where each object is one individual setting or instruction to perform. Each object contains a `setting` property to specify the setting and a `value` property to specify the value for setting. For example, `{"setting":"backend_log_level","value":"debug"}`.
+                items:
+                  type: object
+                  properties:
+                    setting:
+                      description: The setting to send to the scanner. Supported settings are `backend_log_level`, `auto_update`, and `auto_update_delay`. For information about these settings and a list of possible values to use with the settings, see [Advanced Settings](https://docs.tenable.com/nessus/Content/SettingsAdvanced.htm) in the Nessus User Guide.
+                      type: string
+                      enum:
+                      - backend_log_level
+                      - auto_update
+                      - auto_update_delay
+                    value:
+                      oneOf:
+                      - title: Single String Value
+                        type: string
+                      - title: Single Integer Value
+                        type: integer
+                      description: The value to use for the specified setting. Choose either a single string value or a single integer value to use for the value.
+                      example:
+                      - 'no'
     Scanner_Tasks_ErrorResponse:
       type: object
       properties:
@@ -500,22 +512,10 @@ components:
         message:
           type: string
           description: A brief message about the cause of the error.
-    Scanner_Tasks_response-directive-option:
-      type: object
-      description: The instructions to perform.
-      properties:
-        settings:
-          type: array
-          description: An array of objects where each object is one individual setting or instruction to perform. Each object contains a `setting` property to specify the setting and a `value` property to specify the value for setting. For example, `{"setting":"backend_log_level","value":"debug"}`.
-          items:
-            type: object
-            properties:
-              setting:
-                description: The setting that was sent in the directive to the scanner.
-                type: string
-              value:
-                description: The value of the setting.
-                type: string
+    Scanner_Tasks_response-bulk-scanner-directive:
+      type: array
+      items:
+        $ref: '#/components/schemas/Scanner_Tasks_response-scanner-directive'
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey

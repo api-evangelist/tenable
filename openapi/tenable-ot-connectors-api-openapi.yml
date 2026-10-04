@@ -460,6 +460,14 @@ paths:
       - OT_Connectors_cloud: []
 components:
   parameters:
+    OT_Connectors_x-target-site-header:
+      description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+      required: true
+      name: x-target-site
+      in: header
+      schema:
+        type: string
+        example: us-2b
     OT_Connectors_type-path-param:
       description: The type of connector or sensor. This value is always `ot` for OT connectors.
       required: true
@@ -485,15 +493,19 @@ components:
       in: header
       schema:
         type: string
-    OT_Connectors_x-target-site-header:
-      description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
-      required: true
-      name: x-target-site
-      in: header
-      schema:
-        type: string
-        example: us-2b
   schemas:
+    OT_Connectors_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     OT_Connectors_Sensor-Object:
       type: object
       properties:
@@ -619,29 +631,6 @@ components:
             modified: 1681330682
             lastAuth: 1681330682
             enabled: true
-    OT_Connectors_sensor-linking-key-create-response:
-      type: object
-      properties:
-        x-linking-key:
-          type: string
-          description: The linking key for the OT connector. You can generate the required linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
-          example: a24a1edc4b1c7737b7830df9c534afba76593247972f02144dc15ba1a7bd1fd0
-        x-target-site:
-          type: string
-          description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
-          example: us-2b
-    OT_Connectors_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
     OT_Connectors_sensor-update-request-body:
       type: object
       properties:
@@ -659,6 +648,17 @@ components:
         enabled:
           type: boolean
           description: Indicates whether or not the OT connector is enabled.
+    OT_Connectors_sensor-linking-key-create-response:
+      type: object
+      properties:
+        x-linking-key:
+          type: string
+          description: The linking key for the OT connector. You can generate the required linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+          example: a24a1edc4b1c7737b7830df9c534afba76593247972f02144dc15ba1a7bd1fd0
+        x-target-site:
+          type: string
+          description: The target site for the OT connector. The target site value is returned when you generate a linking key with the [Create linking key](ref:sensors-ot-linking-key-create) endpoint.
+          example: us-2b
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey
