@@ -822,6 +822,23 @@ paths:
     - url: https://cloud.tenable.com
 components:
   schemas:
+    plugins_plugin:
+      type: object
+      properties:
+        attributes:
+          type: array
+          description: The plugin attributes.
+          items:
+            $ref: '#/components/schemas/plugins_attributes_short'
+        family_name:
+          type: string
+          description: The name of the plugin family.
+        name:
+          type: string
+          description: The name of the plugin.
+        id:
+          type: integer
+          description: The ID of the plugin.
     plugins_plugins_list_response:
       type: object
       properties:
@@ -870,23 +887,41 @@ components:
         id:
           type: integer
           description: The unique ID of the plugin family.
-    plugins_plugin:
+    plugins_ErrorResponse:
       type: object
       properties:
-        attributes:
-          type: array
-          description: The plugin attributes.
-          items:
-            $ref: '#/components/schemas/plugins_attributes_short'
-        family_name:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
           type: string
-          description: The name of the plugin family.
-        name:
+          description: The standard HTTP error name.
+        message:
           type: string
-          description: The name of the plugin.
+          description: A brief message about the cause of the error.
+    plugins_plugin_list_details:
+      type: object
+      properties:
         id:
           type: integer
           description: The ID of the plugin.
+        name:
+          type: string
+          description: The name of the plugin.
+        attributes:
+          type: array
+          description: The plugin attributes. For more information, see [Tenable Plugin Attributes](/docs/tenable-plugin-attributes).
+          items:
+            $ref: '#/components/schemas/plugins_attributes_full'
+    plugins_attributes_short:
+      type: object
+      properties:
+        attribute_name:
+          type: string
+          description: The name of the attribute.
+        attribute_value:
+          type: string
+          description: The value of the attribute.
     plugins_cvss_vector:
       type: object
       description: The raw CVSSv2 metrics for the vulnerability. For more information, see CVSSv2 documentation.
@@ -1032,113 +1067,6 @@ components:
             updated:
               type: string
               description: The ISO timestamp when Tenable Vulnerability Management last imported the VPR for this vulnerability. Vulnerability Management imports updated VPR values every time you run a scan.
-    plugins_attributes_short:
-      type: object
-      properties:
-        attribute_name:
-          type: string
-          description: The name of the attribute.
-        attribute_value:
-          type: string
-          description: The value of the attribute.
-    plugins_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    plugins_plugin_list_details:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The ID of the plugin.
-        name:
-          type: string
-          description: The name of the plugin.
-        attributes:
-          type: array
-          description: The plugin attributes. For more information, see [Tenable Plugin Attributes](/docs/tenable-plugin-attributes).
-          items:
-            $ref: '#/components/schemas/plugins_attributes_full'
-    PaginationResponseSortObject:
-      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
-      type: object
-      properties:
-        name:
-          type: string
-          description: The property used to sort the results.
-        order:
-          type: string
-          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
-    ErrorResponse:
-      type: object
-      required:
-      - reasons
-      description: Tenable Web App Scanning error response.
-      properties:
-        reasons:
-          type: array
-          description: A list of reasons for the Tenable Web App Scanning error.
-          items:
-            type: object
-            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
-            minItems: 1
-            required:
-            - code
-            - reason
-            properties:
-              code:
-                type: string
-                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
-              reason:
-                type: string
-                description: The extended description of the cause of the Tenable Web App Scanning error.
-    PaginationResponse:
-      description: An object containing pagination information for the current result set.
-      type: object
-      properties:
-        total:
-          type: integer
-          format: int32
-          description: The total number of records matching your search criteria.
-        limit:
-          type: integer
-          format: int32
-          description: The number of records requested (or the default value if omitted from the request).
-        offset:
-          type: integer
-          format: int32
-          description: The starting record you requested (or zero if omitted).
-        sort:
-          description: An array of objects specifying how the current result set is sorted.
-          type: array
-          items:
-            $ref: '#/components/schemas/PaginationResponseSortObject'
-    Plugin:
-      type: object
-      description: The plugin properties.
-      required:
-      - plugin_id
-      - name
-      - family
-      properties:
-        plugin_id:
-          description: The ID of the plugin.
-          type: integer
-          example: 98100
-        name:
-          description: The name of the plugin.
-          type: string
-        family:
-          description: The name of the plugin family.
-          type: string
     PluginWithMetadata:
       type: object
       required:
@@ -1241,17 +1169,79 @@ components:
               year:
                 type: string
                 example: '2010'
+    Plugin:
+      type: object
+      description: The plugin properties.
+      required:
+      - plugin_id
+      - name
+      - family
+      properties:
+        plugin_id:
+          description: The ID of the plugin.
+          type: integer
+          example: 98100
+        name:
+          description: The name of the plugin.
+          type: string
+        family:
+          description: The name of the plugin family.
+          type: string
+    PaginationResponse:
+      description: An object containing pagination information for the current result set.
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records matching your search criteria.
+        limit:
+          type: integer
+          format: int32
+          description: The number of records requested (or the default value if omitted from the request).
+        offset:
+          type: integer
+          format: int32
+          description: The starting record you requested (or zero if omitted).
+        sort:
+          description: An array of objects specifying how the current result set is sorted.
+          type: array
+          items:
+            $ref: '#/components/schemas/PaginationResponseSortObject'
+    ErrorResponse:
+      type: object
+      required:
+      - reasons
+      description: Tenable Web App Scanning error response.
+      properties:
+        reasons:
+          type: array
+          description: A list of reasons for the Tenable Web App Scanning error.
+          items:
+            type: object
+            description: A reason for the Tenable Web App Scanning error, including a code and an extended description.
+            minItems: 1
+            required:
+            - code
+            - reason
+            properties:
+              code:
+                type: string
+                description: "The Tenable Web App Scanning error code. Error code values include:\n - `NOT_FOUND`—Returned if Tenable Web App Scanning could not find the resource you specified.\n - `INVALID_ID_FORMAT`—Returned if you specify a resource ID in an invalid format.\n - `INVALID_PARAMETER`—Returned if you specify an invalid URL parameter.\n- `INVALID_JSON_BODY`—Returned if you specify invalid JSON in request payload.\n - `DUPLICATE_ENTITY`—Returned if you attempt to create a duplicate resource.\n - `NOT_ALLOWED`—Returned if Tenable Web App Scanning encounters a stateful conflict, for example, if you attempt to start a scan that is already in progress.\n - `OPERATION_FORBIDDEN`—Returned if you do not have sufficient permissions to access a resource or complete a task."
+              reason:
+                type: string
+                description: The extended description of the cause of the Tenable Web App Scanning error.
+    PaginationResponseSortObject:
+      description: An object specifying how the current result set is sorted, including the property by which the results were sorted and the sort direction.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The property used to sort the results.
+        order:
+          type: string
+          description: The sort direction for the results. `asc` for ascending or `desc` for descending.
   parameters:
-    offset:
-      description: The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`.
-      in: query
-      name: offset
-      required: false
-      schema:
-        type: integer
-        format: int32
-        minimum: 0
-        default: 0
     sort-plugins:
       description: 'The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (`asc` or `desc`). For example, `plugin_id:asc` would sort results by the `plugin_id` field in ascending order.
 
@@ -1274,6 +1264,16 @@ components:
         minimum: 0
         maximum: 200
         default: 10
+    offset:
+      description: The starting record to retrieve. If this parameter is omitted, Tenable Web App Scanning uses the default value of `0`.
+      in: query
+      name: offset
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
   securitySchemes:
     assets_cloud:
       type: apiKey

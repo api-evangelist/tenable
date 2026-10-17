@@ -650,119 +650,6 @@ paths:
       - Export_Compliance_Data_cloud: []
 components:
   schemas:
-    Export_Compliance_Data_response-compliance-export-jobs:
-      description: Information about the last 1000 compliance export jobs.
-      type: object
-      properties:
-        uuid:
-          type: string
-          description: The UUID of the compliance export request.
-        status:
-          type: string
-          description: "The status of the compliance export request. Possible values include:\n - PROCESSING—Tenable Vulnerability Management has started processing the compliance export request.\n - FINISHED—Tenable Vulnerability Management has completed processing the export request, the list of chunks is complete, and all chunks are available for download.\n - READY—Some chunks are now available for download, but Tenable Vulnerability Management is still processing the export request.\n - CANCELLED—An administrator has canceled the export request.\n - ERROR—Tenable Vulnerability Management encountered an error while processing the export request. Tenable recommends that you retry the request. If the status persists on retry, contact Support."
-        chunks_available_count:
-          type: integer
-          description: The total number of completed chunks available for download.
-        empty_chunks_count:
-          type: integer
-          description: The total number of empty chunks.
-        finished_chunks:
-          type: integer
-          description: The number of chunks that have been processed and are available for download.
-        filters:
-          type: object
-          description: The filters used in the compliance export job request. For a list of possible filters, see the [POST /compliance/export](ref:io-exports-compliance-create) endpoint.
-          properties: {}
-        num_findings:
-          type: integer
-          description: The number of findings contained in each compliance export chunk.
-        asset:
-          type: array
-          description: A comma-separated list of asset UUIDs.
-          items:
-            type: string
-            format: uuid
-        created:
-          type: integer
-          format: int64
-          description: The Unix timestamp when the compliance export job was created.
-    Export_Compliance_Data_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: string
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    Export_Compliance_Data_compliance-tags:
-      type: object
-      properties:
-        category:
-          type: string
-          description: The tag category.
-        values:
-          type: array
-          description: The tag value,
-          items:
-            type: string
-    Export_Compliance_Data_response-compliance-export-status:
-      description: Information about the compliance export job, including the current status of the export and the total number of chunks.
-      type: object
-      properties:
-        uuid:
-          type: string
-          description: The UUID of the compliance export request.
-        status:
-          type: string
-          description: "The status of the compliance export request. Possible values include:\n - PROCESSING—Tenable Vulnerability Management has started processing the compliance export request.\n - FINISHED—Tenable Vulnerability Management has completed processing the export request, the list of chunks is complete, and all chunks are available for download.\n - READY—Some chunks are now available for download, but Tenable Vulnerability Management is still processing the export request.\n - CANCELLED—An administrator has canceled the export request.\n - ERROR—Tenable Vulnerability Management encountered an error while processing the export request. Tenable recommends that you retry the request. If the status persists on retry, contact Support."
-        chunks_available:
-          type: array
-          description: A comma-separated list of completed chunks available for download. Chunks appear in the list as they become available, so numbering may not start at 1 and gaps between chunk numbers are possible.
-          items:
-            type: integer
-            format: int32
-        chunks_failed:
-          type: array
-          description: A comma-separated list of failed chunks. If a chunk fails processing, submit the export request again. If the chunk continues to fail, contact Support.
-          items:
-            type: integer
-            format: int32
-        chunks_cancelled:
-          type: array
-          description: A comma-separated list of cancelled chunks.
-          items:
-            type: integer
-            format: int32
-        chunks_available_count:
-          type: integer
-          description: The total number of completed chunks available for download.
-        empty_chunks_count:
-          type: integer
-          description: The total number of empty chunks.
-        finished_chunks:
-          type: integer
-          description: The number of chunks that have been processed and are available for download.
-        filters:
-          type: object
-          description: The filters used in the compliance export job request. For a list of possible filters, see the [POST /compliance/export](ref:io-exports-compliance-create) endpoint.
-          properties: {}
-        num_findings:
-          type: integer
-          description: The number of findings contained in each compliance export chunk.
-        asset:
-          type: array
-          description: A comma-separated list of asset UUIDs.
-          items:
-            type: string
-            format: uuid
-        created:
-          type: integer
-          format: int64
-          description: The Unix timestamp when the compliance export job was created.
     Export_Compliance_Data_response-compliance-export-chunk-asset:
       type: object
       properties:
@@ -817,6 +704,119 @@ components:
           description: The tags assigned to the asset in Tenable Vulnerability Management.
           items:
             $ref: '#/components/schemas/Export_Compliance_Data_compliance-tags'
+    Export_Compliance_Data_response-compliance-export-jobs:
+      description: Information about the last 1000 compliance export jobs.
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: The UUID of the compliance export request.
+        status:
+          type: string
+          description: "The status of the compliance export request. Possible values include:\n - PROCESSING—Tenable Vulnerability Management has started processing the compliance export request.\n - FINISHED—Tenable Vulnerability Management has completed processing the export request, the list of chunks is complete, and all chunks are available for download.\n - READY—Some chunks are now available for download, but Tenable Vulnerability Management is still processing the export request.\n - CANCELLED—An administrator has canceled the export request.\n - ERROR—Tenable Vulnerability Management encountered an error while processing the export request. Tenable recommends that you retry the request. If the status persists on retry, contact Support."
+        chunks_available_count:
+          type: integer
+          description: The total number of completed chunks available for download.
+        empty_chunks_count:
+          type: integer
+          description: The total number of empty chunks.
+        finished_chunks:
+          type: integer
+          description: The number of chunks that have been processed and are available for download.
+        filters:
+          type: object
+          description: The filters used in the compliance export job request. For a list of possible filters, see the [POST /compliance/export](ref:io-exports-compliance-create) endpoint.
+          properties: {}
+        num_findings:
+          type: integer
+          description: The number of findings contained in each compliance export chunk.
+        asset:
+          type: array
+          description: A comma-separated list of asset UUIDs.
+          items:
+            type: string
+            format: uuid
+        created:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the compliance export job was created.
+    Export_Compliance_Data_response-compliance-export-status:
+      description: Information about the compliance export job, including the current status of the export and the total number of chunks.
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: The UUID of the compliance export request.
+        status:
+          type: string
+          description: "The status of the compliance export request. Possible values include:\n - PROCESSING—Tenable Vulnerability Management has started processing the compliance export request.\n - FINISHED—Tenable Vulnerability Management has completed processing the export request, the list of chunks is complete, and all chunks are available for download.\n - READY—Some chunks are now available for download, but Tenable Vulnerability Management is still processing the export request.\n - CANCELLED—An administrator has canceled the export request.\n - ERROR—Tenable Vulnerability Management encountered an error while processing the export request. Tenable recommends that you retry the request. If the status persists on retry, contact Support."
+        chunks_available:
+          type: array
+          description: A comma-separated list of completed chunks available for download. Chunks appear in the list as they become available, so numbering may not start at 1 and gaps between chunk numbers are possible.
+          items:
+            type: integer
+            format: int32
+        chunks_failed:
+          type: array
+          description: A comma-separated list of failed chunks. If a chunk fails processing, submit the export request again. If the chunk continues to fail, contact Support.
+          items:
+            type: integer
+            format: int32
+        chunks_cancelled:
+          type: array
+          description: A comma-separated list of cancelled chunks.
+          items:
+            type: integer
+            format: int32
+        chunks_available_count:
+          type: integer
+          description: The total number of completed chunks available for download.
+        empty_chunks_count:
+          type: integer
+          description: The total number of empty chunks.
+        finished_chunks:
+          type: integer
+          description: The number of chunks that have been processed and are available for download.
+        filters:
+          type: object
+          description: The filters used in the compliance export job request. For a list of possible filters, see the [POST /compliance/export](ref:io-exports-compliance-create) endpoint.
+          properties: {}
+        num_findings:
+          type: integer
+          description: The number of findings contained in each compliance export chunk.
+        asset:
+          type: array
+          description: A comma-separated list of asset UUIDs.
+          items:
+            type: string
+            format: uuid
+        created:
+          type: integer
+          format: int64
+          description: The Unix timestamp when the compliance export job was created.
+    Export_Compliance_Data_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: string
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
+    Export_Compliance_Data_compliance-tags:
+      type: object
+      properties:
+        category:
+          type: string
+          description: The tag category.
+        values:
+          type: array
+          description: The tag value,
+          items:
+            type: string
     Export_Compliance_Data_response-compliance-export-chunk:
       description: ''
       type: object

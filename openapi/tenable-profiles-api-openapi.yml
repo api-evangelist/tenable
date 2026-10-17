@@ -975,137 +975,55 @@ paths:
       - Profiles_cloud: []
 components:
   schemas:
-    Profiles_response-scanner-config-object:
-      title: Scanner Config Object
-      description: Configuration settings and options applied to the scanner profile.
+    Profiles_response-sensor-type-profile:
       type: object
-      properties:
-        version:
-          description: The version applied to the members of the scanner profile.
-          type: string
-          example: 10.7.1
-        pluginset:
-          description: 'The plugin update plan configuration. You can specify what plugins to install on linked scanners during the daily plugin update.
-
-
-            You can choose from the following options: <ul><li>Auto update to the latest—Specify the value `latest` to auto update to the latest.</li><li>Delay plugin updates by days—Specify a two digit number `1` to `30` indicating the number of days to delay plugin updates.</li><li>Select plugin set from last 30 days—Specify a plugin set from the last 30 days, for example `202407172302`. Plugin sets must be 12 digits.'
-          type: string
-          example: '202407172302'
-        update_disabled:
-          description: Indicates whether or not the scanners are excluded from software updates. If set to true, all scanners assigned to this profile are prevented from receiving software updates. This setting overrides scheduled freeze windows.
-          type: boolean
-    Profiles_request-agent-profile-config-object:
-      title: Agent Profile Config
-      description: Configuration settings and options to apply to the profile.
-      type: object
-      properties:
-        version:
-          description: The version to apply to the members of the agent profile.
-          type: string
-          example: 10.7.1
-        pluginset:
-          description: "The plugin update plan configuration. You can specify what plugins to install on linked agents during the daily plugin update. \n\nYou can choose from the following options: <ul><li>Auto update to the latest—Specify the value `latest` to auto update to the latest.</li><li>Delay plugin updates by days—Specify a two digit number `1` to `30` indicating the number of days to delay plugin updates.</li><li>Select plugin set from last 30 days—Specify a plugin set from the last 30 days, for example `202407172302`. Plugin sets must be 12 digits."
-          type: string
-          example: '202407172302'
-        immediate_plugin_update:
-          description: Determines whether agents assigned to this profile accelerate plugin set updates. When set to `true`, agents immediately update their plugin sets after receiving a new plugin set assignment that replaces an earlier set assigned by the profile. When set to `false`, agents update their plugin sets during their regular check-in cycle, which occurs at least every 24 hours.
-          type: boolean
-        update_disabled:
-          description: Indicates whether or not to exclude agents from software updates. If set to true, all agents assigned to this profile are prevented from receiving software updates. This setting overrides scheduled freeze windows.
-          type: boolean
-        modules:
-          description: Configuration settings and options for the members of the profile. Nessus agent identifier service options are defined in the `com.tenable.agent_identifier_service` object, and Nessus agent settings are defined in the `com.tenable.nessus_agent` object.
-          type: object
-          properties:
-            com.tenable.nessus_agent:
-              description: Nessus agent settings.
-              type: object
-              properties:
-                enabled:
-                  description: Indicates whether or not to enable additional agent settings. Currently, the only supported setting is `backend_log_level`.
-                  type: boolean
-                settings:
-                  type: array
-                  description: An array of objects where each object is one individual setting. Each object contains a `setting` property to specify the setting and a `value` property to specify the value for setting. For example, `{"setting":"backend_log_level","value":"debug"}`.
-                  items:
-                    type: object
-                    properties:
-                      setting:
-                        description: The setting to apply to the agents in the profile.
-                        type: string
-                        default: backend_log_level
-                        enum:
-                        - backend_log_level
-                      value:
-                        description: The value for the setting.
-                        type: string
-                        enum:
-                        - normal
-                        - debug
-                        - verbose
-            com.tenable.agent_identifier_service:
-              description: Nessus agent identifier service options.
-              type: object
-              properties:
-                enabled:
-                  description: Indicates whether or not to enable an open agent port for the agent identifier service. This setting enables Tenable network scanners to positively identity scan targets hosting Tenable agents. These hosts will appear as a single asset regardless of whether they are the target of a network scan or are generating agent scans. Note that enabling this option configures your network scanners to probe each target system on the port you select.
-                  type: boolean
-                open_agent_port:
-                  description: The port to use for the agent identifier service.
-                  type: integer
-                  example: 5050
-            com.tenable.fredi_module:
-              description: 'Nessus agent continuous assessment scanning settings.
-
-
-                Continuous assessment scanning provides continuous monitoring and reporting of vulnerability status changes on your hosts. In the case of vulnerabilities that can be mitigated with software updates, continuous assessment scanning provides automatic remediation scan in near-time.'
-              type: object
-              properties:
-                enabled:
-                  description: Indicates whether or not to enable continuous assessment scanning.
-                  type: boolean
-                base_inventory_freq:
-                  description: Indicates how often the agents perform a full software inventory scan via continuous assessment scanning in days. You can choose any integer between `1` and `14`.
-                  type: integer
-                  minimum: 1
-                  maximum: 14
-        resources:
-          description: Defines resource configuration settings.
-          type: object
-          properties:
-            cpu_quota:
-              description: 'Specifies the maximum percentage of the host''s CPU that Windows and Linux agents can use. Supported values range from 1 to 100. **Note:**: This setting applies only to agents running version 11.1.0 or later and is not supported on macOS hosts.'
-              type: integer
-              minimum: 1
-              maximum: 100
-              example: 30
-    Profiles_response-scanner-profile-deletion:
-      title: Scanner Profile Deletion
-      type: object
-      properties:
-        message:
-          type: string
-          description: A message indicating whether or not the deletion request was successfully received.
-        request_status_id:
-          type: string
-          description: The unique identifier (UUID) of the scanner profile deletion request task. You can check the status of deletion task via the [Get scanner task status](ref:scanner-task-status) endpoint.
-    Profiles_request-create-profile:
-      type: object
-      required:
-      - name
       properties:
         name:
-          description: A name for the profile.
+          description: The name of the profile.
           type: string
           example: US-1A Sensors
         description:
           description: A short description explaining the purpose or targets of the profile.
           type: string
           example: This profile targets sensors for US-1A.
+        profile_uuid:
+          description: The unique identifier (UUID) of the profile.
+          type: string
+          example: 52cddf58-f10f-49f6-969f-d17f623171f5
+        created:
+          description: An ISO timestamp indicating the date and time when the profile was created.
+          type: string
+          example: '2024-07-19T00:11:47.227483Z'
+        updated:
+          description: An ISO timestamp indicating the date and time when the profile was last updated.
+          type: string
+          example: 52cddf58-f10f-49f6-969f-d17f623171f5
         config:
           oneOf:
-          - $ref: '#/components/schemas/Profiles_request-agent-profile-config-object'
-          - $ref: '#/components/schemas/Profiles_request-scanner-profile-config-object'
+          - $ref: '#/components/schemas/Profiles_response-agent-config-object'
+          - $ref: '#/components/schemas/Profiles_response-scanner-config-object'
+    Profiles_response-agent-profile-deletion:
+      title: Agent Profile Deletion
+      type: object
+      properties:
+        task_id:
+          type: string
+          description: The unique identifier (UUID) of the agent profile deletion task. You can check the status of deletion task via the [Get agent task status](ref:bulk-task-agent-status) endpoint.
+        container_uuid:
+          type: string
+          description: The unique identifier (UUID) of the container where the task is operating.
+        status:
+          type: string
+          description: The status of the task. Possible status values are:<ul><li>`NEW`—The task was created but has not yet started running.</li><li>`RUNNING`—The task is in progress.</li><li>`COMPLETED`—The task is done.</li><li>`FAILED`—There was an error completing the task.</li><li>`STALE`—The task has not been updated in a long time.</li></ul>
+          enum:
+          - NEW
+          - RUNNING
+          - COMPLETED
+          - FAILED
+          - STALE
+        message:
+          type: string
+          description: An informative message about the state of the task.
     Profiles_response-agent-config-object:
       title: Agent Config Object
       description: Configuration settings and options applied to the agent profile.
@@ -1227,60 +1145,127 @@ components:
               minimum: 1
               maximum: 100
               example: 30
-    Profiles_response-sensor-type-profile:
+    Profiles_request-create-profile:
       type: object
+      required:
+      - name
       properties:
         name:
-          description: The name of the profile.
+          description: A name for the profile.
           type: string
           example: US-1A Sensors
         description:
           description: A short description explaining the purpose or targets of the profile.
           type: string
           example: This profile targets sensors for US-1A.
-        profile_uuid:
-          description: The unique identifier (UUID) of the profile.
-          type: string
-          example: 52cddf58-f10f-49f6-969f-d17f623171f5
-        created:
-          description: An ISO timestamp indicating the date and time when the profile was created.
-          type: string
-          example: '2024-07-19T00:11:47.227483Z'
-        updated:
-          description: An ISO timestamp indicating the date and time when the profile was last updated.
-          type: string
-          example: 52cddf58-f10f-49f6-969f-d17f623171f5
         config:
           oneOf:
-          - $ref: '#/components/schemas/Profiles_response-agent-config-object'
-          - $ref: '#/components/schemas/Profiles_response-scanner-config-object'
-    Profiles_response-agent-profile-deletion:
-      title: Agent Profile Deletion
+          - $ref: '#/components/schemas/Profiles_request-agent-profile-config-object'
+          - $ref: '#/components/schemas/Profiles_request-scanner-profile-config-object'
+    Profiles_response-scanner-config-object:
+      title: Scanner Config Object
+      description: Configuration settings and options applied to the scanner profile.
       type: object
       properties:
-        task_id:
+        version:
+          description: The version applied to the members of the scanner profile.
           type: string
-          description: The unique identifier (UUID) of the agent profile deletion task. You can check the status of deletion task via the [Get agent task status](ref:bulk-task-agent-status) endpoint.
-        container_uuid:
+          example: 10.7.1
+        pluginset:
+          description: 'The plugin update plan configuration. You can specify what plugins to install on linked scanners during the daily plugin update.
+
+
+            You can choose from the following options: <ul><li>Auto update to the latest—Specify the value `latest` to auto update to the latest.</li><li>Delay plugin updates by days—Specify a two digit number `1` to `30` indicating the number of days to delay plugin updates.</li><li>Select plugin set from last 30 days—Specify a plugin set from the last 30 days, for example `202407172302`. Plugin sets must be 12 digits.'
           type: string
-          description: The unique identifier (UUID) of the container where the task is operating.
-        status:
+          example: '202407172302'
+        update_disabled:
+          description: Indicates whether or not the scanners are excluded from software updates. If set to true, all scanners assigned to this profile are prevented from receiving software updates. This setting overrides scheduled freeze windows.
+          type: boolean
+    Profiles_request-agent-profile-config-object:
+      title: Agent Profile Config
+      description: Configuration settings and options to apply to the profile.
+      type: object
+      properties:
+        version:
+          description: The version to apply to the members of the agent profile.
           type: string
-          description: The status of the task. Possible status values are:<ul><li>`NEW`—The task was created but has not yet started running.</li><li>`RUNNING`—The task is in progress.</li><li>`COMPLETED`—The task is done.</li><li>`FAILED`—There was an error completing the task.</li><li>`STALE`—The task has not been updated in a long time.</li></ul>
-          enum:
-          - NEW
-          - RUNNING
-          - COMPLETED
-          - FAILED
-          - STALE
-        message:
+          example: 10.7.1
+        pluginset:
+          description: "The plugin update plan configuration. You can specify what plugins to install on linked agents during the daily plugin update. \n\nYou can choose from the following options: <ul><li>Auto update to the latest—Specify the value `latest` to auto update to the latest.</li><li>Delay plugin updates by days—Specify a two digit number `1` to `30` indicating the number of days to delay plugin updates.</li><li>Select plugin set from last 30 days—Specify a plugin set from the last 30 days, for example `202407172302`. Plugin sets must be 12 digits."
           type: string
-          description: An informative message about the state of the task.
-    Profiles_response-profiles:
-      description: An array of profile objects.
-      type: array
-      items:
-        $ref: '#/components/schemas/Profiles_response-sensor-type-profile'
+          example: '202407172302'
+        immediate_plugin_update:
+          description: Determines whether agents assigned to this profile accelerate plugin set updates. When set to `true`, agents immediately update their plugin sets after receiving a new plugin set assignment that replaces an earlier set assigned by the profile. When set to `false`, agents update their plugin sets during their regular check-in cycle, which occurs at least every 24 hours.
+          type: boolean
+        update_disabled:
+          description: Indicates whether or not to exclude agents from software updates. If set to true, all agents assigned to this profile are prevented from receiving software updates. This setting overrides scheduled freeze windows.
+          type: boolean
+        modules:
+          description: Configuration settings and options for the members of the profile. Nessus agent identifier service options are defined in the `com.tenable.agent_identifier_service` object, and Nessus agent settings are defined in the `com.tenable.nessus_agent` object.
+          type: object
+          properties:
+            com.tenable.nessus_agent:
+              description: Nessus agent settings.
+              type: object
+              properties:
+                enabled:
+                  description: Indicates whether or not to enable additional agent settings. Currently, the only supported setting is `backend_log_level`.
+                  type: boolean
+                settings:
+                  type: array
+                  description: An array of objects where each object is one individual setting. Each object contains a `setting` property to specify the setting and a `value` property to specify the value for setting. For example, `{"setting":"backend_log_level","value":"debug"}`.
+                  items:
+                    type: object
+                    properties:
+                      setting:
+                        description: The setting to apply to the agents in the profile.
+                        type: string
+                        default: backend_log_level
+                        enum:
+                        - backend_log_level
+                      value:
+                        description: The value for the setting.
+                        type: string
+                        enum:
+                        - normal
+                        - debug
+                        - verbose
+            com.tenable.agent_identifier_service:
+              description: Nessus agent identifier service options.
+              type: object
+              properties:
+                enabled:
+                  description: Indicates whether or not to enable an open agent port for the agent identifier service. This setting enables Tenable network scanners to positively identity scan targets hosting Tenable agents. These hosts will appear as a single asset regardless of whether they are the target of a network scan or are generating agent scans. Note that enabling this option configures your network scanners to probe each target system on the port you select.
+                  type: boolean
+                open_agent_port:
+                  description: The port to use for the agent identifier service.
+                  type: integer
+                  example: 5050
+            com.tenable.fredi_module:
+              description: 'Nessus agent continuous assessment scanning settings.
+
+
+                Continuous assessment scanning provides continuous monitoring and reporting of vulnerability status changes on your hosts. In the case of vulnerabilities that can be mitigated with software updates, continuous assessment scanning provides automatic remediation scan in near-time.'
+              type: object
+              properties:
+                enabled:
+                  description: Indicates whether or not to enable continuous assessment scanning.
+                  type: boolean
+                base_inventory_freq:
+                  description: Indicates how often the agents perform a full software inventory scan via continuous assessment scanning in days. You can choose any integer between `1` and `14`.
+                  type: integer
+                  minimum: 1
+                  maximum: 14
+        resources:
+          description: Defines resource configuration settings.
+          type: object
+          properties:
+            cpu_quota:
+              description: 'Specifies the maximum percentage of the host''s CPU that Windows and Linux agents can use. Supported values range from 1 to 100. **Note:**: This setting applies only to agents running version 11.1.0 or later and is not supported on macOS hosts.'
+              type: integer
+              minimum: 1
+              maximum: 100
+              example: 30
     Profiles_request-scanner-profile-config-object:
       title: Scanner Profile Config
       description: Configuration settings and options to apply to the profile.
@@ -1297,6 +1282,21 @@ components:
         update_disabled:
           description: Indicates whether or not to exclude scanners from software updates. If set to true, all scanners assigned to this profile are prevented from receiving software updates. This setting overrides scheduled freeze windows.
           type: boolean
+    Profiles_response-profiles:
+      description: An array of profile objects.
+      type: array
+      items:
+        $ref: '#/components/schemas/Profiles_response-sensor-type-profile'
+    Profiles_response-scanner-profile-deletion:
+      title: Scanner Profile Deletion
+      type: object
+      properties:
+        message:
+          type: string
+          description: A message indicating whether or not the deletion request was successfully received.
+        request_status_id:
+          type: string
+          description: The unique identifier (UUID) of the scanner profile deletion request task. You can check the status of deletion task via the [Get scanner task status](ref:scanner-task-status) endpoint.
     Profiles_ErrorResponse:
       type: object
       properties:

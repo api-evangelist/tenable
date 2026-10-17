@@ -1671,60 +1671,6 @@ paths:
       - recast-rules_cloud: []
 components:
   schemas:
-    recast-rules_ErrorResponse:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          description: The HTTP status code of the error.
-        error:
-          type: integer
-          description: The standard HTTP error name.
-        message:
-          type: string
-          description: A brief message about the cause of the error.
-    recast-rules_filterProperty:
-      type: object
-      properties:
-        property:
-          type: string
-          description: The property of the vulnerability finding to filter by. For a list of supported properties, see the [List recast rule filters](ref:recast-rules-filters-list) endpoint.
-        operator:
-          type: string
-          description: The operator used to compare the property with the specified value.
-        value:
-          description: 'The value to compare the given property to using the specified operator. Example value for an plugin ID: `10114`'
-          oneOf:
-          - title: Single String Value
-            description: A single value to compare with the selected property using the chosen operator.
-            type: string
-          - title: Multiple String Values
-            description: Multiple values to compare with the selected property using the chosen operator.
-            type: array
-            items:
-              type: string
-          example:
-          - property: definition.id
-            operator: eq
-            value: '10114'
-    recast-rules_Response-Disabled-Details:
-      type: object
-      description: Details about a rule when it is disabled.
-      properties:
-        disabled:
-          type: boolean
-          description: Indicates whether or not the rule is disabled.
-        disabled_at:
-          type: string
-          format: date-time
-          description: A timestamp in ISO 8601 format indicating the date and time the rule was disabled.
-        disabled_by:
-          type: string
-          format: uuid
-          description: The unique identifier (UUID) of the user who disabled the rule.
-        disabled_reason:
-          type: string
-          description: An explanation for why the rule was disabled.
     recast-rules_recastFilterProperty:
       type: object
       properties:
@@ -1764,6 +1710,140 @@ components:
         searchOnly:
           type: boolean
           description: If the filter can only be used for recast rules search.
+    recast-rules_Request-Disabled-Details:
+      type: object
+      description: Specifies details for disabling the rule.
+      properties:
+        disabled:
+          type: boolean
+          description: Indicates whether the rule should be disabled.
+        disabled_reason:
+          type: string
+          description: An optional explanation for disabling the rule.
+    recast-rules_Rule-Object:
+      type: object
+      properties:
+        rule_value:
+          type: object
+          description: Details of the rule action and its settings.
+          properties:
+            action:
+              description: 'The rule action: `Recast` or `Accept` (for Vulnerabilities and Web Applications) or `Change Result` and `Accept Result` (for Host Audits).'
+              enum:
+              - RECAST
+              - ACCEPT
+              - CHANGE_RESULT
+              - ACCEPT_RESULT
+            comment:
+              type: string
+              description: Optional notes or rationale for the rule.
+            false_positive:
+              type: boolean
+              description: Indicates whether the plugin was flagged as producing inaccurate findings for review.
+            severity:
+              description: For `RECAST` rules only. The reassigned severity of the targeted vulnerabilities.
+              enum:
+              - NONE
+              - LOW
+              - MEDIUM
+              - HIGH
+              - CRITICAL
+            original_severity:
+              description: The original severity assigned to the finding detected by the plugin.
+              enum:
+              - NONE
+              - LOW
+              - MEDIUM
+              - HIGH
+              - CRITICAL
+              - MIXED
+            compliance_result:
+              description: For `CHANGE_RESULT` rules only. The reassigned result of the targeted host audits.
+              enum:
+              - PASSED
+              - FAILED
+              - WARNING
+        rule_name:
+          type: string
+          description: The name assigned to the rule.
+        rule_id:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the rule.
+        container_id:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the container.
+        created_by:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the user who created the rule.
+        updated_by:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the user who last updated the rule.
+        created_at:
+          type: string
+          format: date-time
+          description: An ISO timestamp indicating the date and time when the rule was created.
+        updated_at:
+          type: string
+          format: date-time
+          description: An ISO timestamp indicating the date and time when the rule was last updated.
+        last_processed_at:
+          type: string
+          format: date-time
+          description: An ISO timestamp indicating the date and time when the rule was last processed.
+        description:
+          type: string
+          description: The description of the rule.
+        resource_type:
+          type: string
+          description: The type of findings the rule targets.
+          enum:
+          - HOST
+          - HOST_AUDIT
+          - WEBAPP
+        filter:
+          $ref: '#/components/schemas/recast-rules_recastFilter'
+        expires_at:
+          type: string
+          format: date-time
+          description: Optional date and time indicating when the rule will expire. It has to be an ISO timestamp. If no expiry date is specified, the rule is set to never expire.
+        disabled_details:
+          $ref: '#/components/schemas/recast-rules_Response-Disabled-Details'
+    recast-rules_recastSortObject:
+      type: object
+      properties:
+        property:
+          type: string
+          description: The property to sort the rules by.
+          example: uuid
+        order:
+          type: string
+          description: The sort direction for the specified property.
+          enum:
+          - desc
+          - asc
+          example: desc
+    recast-rules_Response-Disabled-Details:
+      type: object
+      description: Details about a rule when it is disabled.
+      properties:
+        disabled:
+          type: boolean
+          description: Indicates whether or not the rule is disabled.
+        disabled_at:
+          type: string
+          format: date-time
+          description: A timestamp in ISO 8601 format indicating the date and time the rule was disabled.
+        disabled_by:
+          type: string
+          format: uuid
+          description: The unique identifier (UUID) of the user who disabled the rule.
+        disabled_reason:
+          type: string
+          description: An explanation for why the rule was disabled.
     recast-rules_recastFilterProperties:
       type: array
       description: Recast filter properties for recast rule creation.
@@ -1868,6 +1948,42 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/recast-rules_filterProperty'
+    recast-rules_filterProperty:
+      type: object
+      properties:
+        property:
+          type: string
+          description: The property of the vulnerability finding to filter by. For a list of supported properties, see the [List recast rule filters](ref:recast-rules-filters-list) endpoint.
+        operator:
+          type: string
+          description: The operator used to compare the property with the specified value.
+        value:
+          description: 'The value to compare the given property to using the specified operator. Example value for an plugin ID: `10114`'
+          oneOf:
+          - title: Single String Value
+            description: A single value to compare with the selected property using the chosen operator.
+            type: string
+          - title: Multiple String Values
+            description: Multiple values to compare with the selected property using the chosen operator.
+            type: array
+            items:
+              type: string
+          example:
+          - property: definition.id
+            operator: eq
+            value: '10114'
+    recast-rules_ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code of the error.
+        error:
+          type: integer
+          description: The standard HTTP error name.
+        message:
+          type: string
+          description: A brief message about the cause of the error.
     recast-rules_Response-Recast-Search:
       type: object
       properties:
@@ -1891,122 +2007,6 @@ components:
             next:
               type: string
               description: An encrypted token used for fetching the next iteration of data records.
-    recast-rules_recastSortObject:
-      type: object
-      properties:
-        property:
-          type: string
-          description: The property to sort the rules by.
-          example: uuid
-        order:
-          type: string
-          description: The sort direction for the specified property.
-          enum:
-          - desc
-          - asc
-          example: desc
-    recast-rules_Request-Disabled-Details:
-      type: object
-      description: Specifies details for disabling the rule.
-      properties:
-        disabled:
-          type: boolean
-          description: Indicates whether the rule should be disabled.
-        disabled_reason:
-          type: string
-          description: An optional explanation for disabling the rule.
-    recast-rules_Rule-Object:
-      type: object
-      properties:
-        rule_value:
-          type: object
-          description: Details of the rule action and its settings.
-          properties:
-            action:
-              description: 'The rule action: `Recast` or `Accept` (for Vulnerabilities and Web Applications) or `Change Result` and `Accept Result` (for Host Audits).'
-              enum:
-              - RECAST
-              - ACCEPT
-              - CHANGE_RESULT
-              - ACCEPT_RESULT
-            comment:
-              type: string
-              description: Optional notes or rationale for the rule.
-            false_positive:
-              type: boolean
-              description: Indicates whether the plugin was flagged as producing inaccurate findings for review.
-            severity:
-              description: For `RECAST` rules only. The reassigned severity of the targeted vulnerabilities.
-              enum:
-              - NONE
-              - LOW
-              - MEDIUM
-              - HIGH
-              - CRITICAL
-            original_severity:
-              description: The original severity assigned to the finding detected by the plugin.
-              enum:
-              - NONE
-              - LOW
-              - MEDIUM
-              - HIGH
-              - CRITICAL
-              - MIXED
-            compliance_result:
-              description: For `CHANGE_RESULT` rules only. The reassigned result of the targeted host audits.
-              enum:
-              - PASSED
-              - FAILED
-              - WARNING
-        rule_name:
-          type: string
-          description: The name assigned to the rule.
-        rule_id:
-          type: string
-          format: uuid
-          description: The unique identifier (UUID) of the rule.
-        container_id:
-          type: string
-          format: uuid
-          description: The unique identifier (UUID) of the container.
-        created_by:
-          type: string
-          format: uuid
-          description: The unique identifier (UUID) of the user who created the rule.
-        updated_by:
-          type: string
-          format: uuid
-          description: The unique identifier (UUID) of the user who last updated the rule.
-        created_at:
-          type: string
-          format: date-time
-          description: An ISO timestamp indicating the date and time when the rule was created.
-        updated_at:
-          type: string
-          format: date-time
-          description: An ISO timestamp indicating the date and time when the rule was last updated.
-        last_processed_at:
-          type: string
-          format: date-time
-          description: An ISO timestamp indicating the date and time when the rule was last processed.
-        description:
-          type: string
-          description: The description of the rule.
-        resource_type:
-          type: string
-          description: The type of findings the rule targets.
-          enum:
-          - HOST
-          - HOST_AUDIT
-          - WEBAPP
-        filter:
-          $ref: '#/components/schemas/recast-rules_recastFilter'
-        expires_at:
-          type: string
-          format: date-time
-          description: Optional date and time indicating when the rule will expire. It has to be an ISO timestamp. If no expiry date is specified, the rule is set to never expire.
-        disabled_details:
-          $ref: '#/components/schemas/recast-rules_Response-Disabled-Details'
   securitySchemes:
     Access_Control_API_cloud:
       type: apiKey
